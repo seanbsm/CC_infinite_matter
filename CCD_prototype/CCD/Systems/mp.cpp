@@ -82,13 +82,28 @@ double MP::assym(int p, int q, int r, int s){
     int sr = m_states(4,r); int tr = m_states(5,r);
     int ss = m_states(4,s); int ts = m_states(5,s);
 
-    if ( vecDelta(kp+kq, kr+ks) ){
-        double returnVal = 0;
-        return 0;
-    }
-    else{
-        return 0;
-    }
+    if ( vecDelta(kp+kq, kr+ks) == 0){ return 0;}   //momentum conservation
+    if ( sp+sq != sr+ss){ return 0; }               //spin conservation
+    if ( tp+tq != tr+ts){ return 0; }               //isospin conservation
+
+    //I'm not certain if this indexing is correct
+    double q2_dir = 0.5*(kp-kq-kr+ks).adjoint()*(kp-kq-kr+ks);
+    double q2_exc = 0.5*(kp-kq+kr-ks).adjoint()*(kp-kq+kr-ks);
+
+    double V_1R = V_0R_fac*exp(-q2_dir/(4*kappa_R))/L3;
+    double V_1T = V_0T_fac*exp(-q2_dir/(4*kappa_T))/L3;
+    double V_1S = V_0S_fac*exp(-q2_dir/(4*kappa_S))/L3;
+
+    double V_2R = V_0R_fac*exp(-q2_ex /(4*kappa_R))/L3;
+    double V_2T = V_0T_fac*exp(-q2_ex /(4*kappa_T))/L3;
+    double V_2S = V_0S_fac*exp(-q2_ex /(4*kappa_S))/L3;
+
+    double returnVal = 0;
+    //I'm really unsure about the spin-tests here, might be horribly wrong
+    returnVal += ( V_1R + 0.5*(sp==ss)*(sq==sr)*V_1T + 0.5*(sp==ss)*(sq==sr)*V_1S )*(tp==ts)*(tq==tr);
+    returnVal -= ( V_2R + 0.5*(sp==sr)*(sq==ss)*V_2T + 0.5*(sp==sr)*(sq==ss)*V_2S )*(tp==tr)*(tq==ts);
+
+    return 0.5*returnVal;
 }
 
 bool MP::vecDelta(Eigen::VectorXi v1, Eigen::VectorXi v2){

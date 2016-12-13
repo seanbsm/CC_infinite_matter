@@ -12,12 +12,12 @@ class MP : public System
 private:
     bool vecDelta(Eigen::VectorXi v1, Eigen::VectorXi v2);
 
-    const double V_0R    = 200;    //MeV
-    const double V_0T    = 178;    //MeV
-    const double V_0S    = 91.85;  //MeV
-    const double kappa_R = 1.487;  //fm^-2
-    const double kappa_T = 0.639;  //fm^-2
-    const double kappa_S = 0.465;  //fm^-2
+    const double V_0R_fac = 200*pow(pi/kappa_R, 1.5);    //MeV
+    const double V_0T_fac = 178*pow(pi/kappa_T, 1.5);    //MeV
+    const double V_0S_fac = 91.85*pow(pi/kappa_S, 1.5);  //MeV
+    const double kappa_R  = 1.487;  //fm^-2
+    const double kappa_T  = 0.639;  //fm^-2
+    const double kappa_S  = 0.465;  //fm^-2
 
 public:
     double          pi     = M_PI;
