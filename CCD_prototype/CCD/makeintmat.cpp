@@ -129,7 +129,10 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     m_Ns = Ns;
 
     mapper(0,0); //hh
+    cout << "made blockArrays and sortVec for hh" << endl;
+
     mapper(1,1); //pp
+    cout << "made blockArrays and sortVec for pp" << endl;
 
     int counter         = 0;
 
@@ -194,7 +197,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             }
         }
     }
-
+    cout << "made Vhhpp" << endl;
     //Vpppp
     for (int l=0; l<sortVec_pp.size(); l++){
         int val = sortVec_pp[l];
@@ -209,6 +212,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         Vpppp_i.push_back( val );
         range_lower = range_upper; //doing this reset here is not a problem, unlike for that of Vhhpp
     }
+    cout << "make Vpppp" << endl;
 }
 
 

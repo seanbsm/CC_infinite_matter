@@ -54,7 +54,11 @@ int main()
     Eigen::Vector4i v1(1,2,3,4);
     Eigen::Vector4i v2(1,2,3,4);
 
-    Eigen::VectorXi v = Eigen::VectorXi(1,2,3);
+    //Eigen::VectorXi v = Eigen::VectorXi(1,2,3);
+
+    Eigen::Matrix<int, 5, 1> vec;
+    vec << 1,2,3,4,5;
+    cout << vec.adjoint()*vec << endl;
 
     /*Eigen::VectorXi vec1;
     vec1 << 1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,4,4,4,4,5,5,5,5,5,5,5,5,6,6,6,6;

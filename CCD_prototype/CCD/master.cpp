@@ -24,7 +24,7 @@ double Master::Iterator(double eps, double conFac){
     Diagrams*   diagrams    = new Diagrams;
     std::cout << m_Ns << std::endl;
     Interaction->makeBlockMat(m_system, m_Nh, m_Ns);
-    //std::cout << "hey" << std::endl;
+
     Amplituder->makeBlockMat(Interaction->Vhhpp);
 
     double ECCD     = 0;

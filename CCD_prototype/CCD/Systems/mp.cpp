@@ -24,16 +24,16 @@ void MP::makeStateSpace(){
             for (int ny=-n2; ny<n2+1; ny++){
                 for (int nz=-n2; nz<n2+1; nz++){
                     if (nx*nx + ny*ny + nz*nz == n2){
-                        m_states.conservativeResize(Eigen::NoChange, m_states.cols()+2);
+                        m_states.conservativeResize(Eigen::NoChange, m_states.cols()+4);
                         m_states.col(m_states.cols()-4) << n2,nx,ny,nz, 1, 1;
                         m_states.col(m_states.cols()-3) << n2,nx,ny,nz, 1,-1;
                         m_states.col(m_states.cols()-2) << n2,nx,ny,nz,-1, 1;
                         m_states.col(m_states.cols()-1) << n2,nx,ny,nz,-1,-1;
-                    }
-                }
-            }
-        }
-    }
+                    } //end of nx^2 + ny^2 + nz^2 == n^2
+                }//end of nz-loop
+            }//end of ny-loop
+        }//end of nx-loop
+    }//end of n2-loop
 
     m_master->m_Ns = m_states.cols();
     below_fermi = Eigen::VectorXi::LinSpaced(m_Nh,0,m_Nh);
@@ -42,8 +42,10 @@ void MP::makeStateSpace(){
 
 //I think using eigen here is a bit over-the-top for such a function, but whatevs~
 int MP::kUnique2(int k, int p){
-    Eigen::Vector4i kk( m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k) );
-    Eigen::Vector4i kp( m_states(1,p), m_states(2,p), m_states(3,p), m_states(4,p) );
+    Eigen::Matrix<int, 5, 1> kk;
+    Eigen::Matrix<int, 5, 1> kp;
+    kk << m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k), m_states(5,k);
+    kp << m_states(1,p), m_states(2,p), m_states(3,p), m_states(4,p), m_states(5,k);
     Eigen::VectorXi mom = kk+kp;
 
     int val = 0;
@@ -54,7 +56,7 @@ int MP::kUnique2(int k, int p){
     }
 
     int dk = 2*val + 1;
-    int kuni = mom(0) + mom(1)*dk + mom(2)*dk*dk + mom(3)*dk*dk*dk;
+    int kuni = mom(0) + mom(1)*dk + mom(2)*dk*dk + mom(3)*dk*dk*dk + mom(4)*dk*dk*dk*dk;
     return kuni;
 }
 
@@ -82,27 +84,32 @@ double MP::assym(int p, int q, int r, int s){
     int sr = m_states(4,r); int tr = m_states(5,r);
     int ss = m_states(4,s); int ts = m_states(5,s);
 
+    //these test should be already performed through k_unique
     if ( vecDelta(kp+kq, kr+ks) == 0){ return 0;}   //momentum conservation
     if ( sp+sq != sr+ss){ return 0; }               //spin conservation
     if ( tp+tq != tr+ts){ return 0; }               //isospin conservation
 
     //I'm not certain if this indexing is correct
-    double q2_dir = 0.5*(kp-kq-kr+ks).adjoint()*(kp-kq-kr+ks);
-    double q2_exc = 0.5*(kp-kq+kr-ks).adjoint()*(kp-kq+kr-ks);
+    double q2_dir = 0.5*((kp-kq-kr+ks).adjoint()*(kp-kq-kr+ks))(0,0);
+    double q2_ex  = 0.5*((kp-kq+kr-ks).adjoint()*(kp-kq+kr-ks))(0,0);
 
-    double V_1R = V_0R_fac*exp(-q2_dir/(4*kappa_R))/L3;
-    double V_1T = V_0T_fac*exp(-q2_dir/(4*kappa_T))/L3;
-    double V_1S = V_0S_fac*exp(-q2_dir/(4*kappa_S))/L3;
+    //cout << q2_dir << endl;
 
-    double V_2R = V_0R_fac*exp(-q2_ex /(4*kappa_R))/L3;
-    double V_2T = V_0T_fac*exp(-q2_ex /(4*kappa_T))/L3;
-    double V_2S = V_0S_fac*exp(-q2_ex /(4*kappa_S))/L3;
+    double V_1R = V_0R_fac*exp(-q2_dir/(4*kappa_R))/m_L3;
+    double V_1T = V_0T_fac*exp(-q2_dir/(4*kappa_T))/m_L3;
+    double V_1S = V_0S_fac*exp(-q2_dir/(4*kappa_S))/m_L3;
 
+    double V_2R = V_0R_fac*exp(-q2_ex /(4*kappa_R))/m_L3;
+    double V_2T = V_0T_fac*exp(-q2_ex /(4*kappa_T))/m_L3;
+    double V_2S = V_0S_fac*exp(-q2_ex /(4*kappa_S))/m_L3;
+
+    //cout << a << endl;
     double returnVal = 0;
     //I'm really unsure about the spin-tests here, might be horribly wrong
     returnVal += ( V_1R + 0.5*(sp==ss)*(sq==sr)*V_1T + 0.5*(sp==ss)*(sq==sr)*V_1S )*(tp==ts)*(tq==tr);
     returnVal -= ( V_2R + 0.5*(sp==sr)*(sq==ss)*V_2T + 0.5*(sp==sr)*(sq==ss)*V_2S )*(tp==tr)*(tq==ts);
 
+    //cout << returnVal << endl;
     return 0.5*returnVal;
 }
 
