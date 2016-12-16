@@ -20,14 +20,14 @@ private:
     Eigen::MatrixXi intMat_hhpp;
     Eigen::MatrixXi fockMat;
 
+
+    //bool contractor(int i, int j){ return i==j; } //contracts repeated elements to a single edit
+public:
     //blockArrays hold quantum numbers, sortVec holds distinct kUnique
     Eigen::MatrixXi blockArrays_hh; std::vector<int> sortVec_hh;
     Eigen::MatrixXi blockArrays_hp; std::vector<int> sortVec_hp;
     Eigen::MatrixXi blockArrays_ph; std::vector<int> sortVec_ph;
     Eigen::MatrixXi blockArrays_pp; std::vector<int> sortVec_pp;
-
-    //bool contractor(int i, int j){ return i==j; } //contracts repeated elements to a single edit
-public:
     MakeIntMat();
     System* m_system = nullptr;
     void                            mapper(int i1, int i2);

@@ -22,17 +22,18 @@ double Master::Iterator(double eps, double conFac){
     MakeIntMat* Interaction = new MakeIntMat;
     MakeAmpMat* Amplituder  = new MakeAmpMat;
     Diagrams*   diagrams    = new Diagrams;
-    std::cout << m_Ns << std::endl;
+    cout << m_Ns << endl;
     Interaction->makeBlockMat(m_system, m_Nh, m_Ns);
 
     Amplituder->makeBlockMat(Interaction->Vhhpp);
 
     double ECCD     = 0;
     double ECCD_old = 0;
+    double denominator = 0;
     for (int h = 0; h<Interaction->Vhhpp.size(); h++){
         ECCD_old += 0.25*((Interaction->Vhhpp[h].transpose())*(Amplituder->Amplitudes[h])).trace();
     }
-    std::cout << "ECCD_old: " << ECCD_old << std::endl;
+    std::cout << "MBPT2: " << ECCD_old << std::endl;
 
     while (conFac > eps){
         ECCD = 0;

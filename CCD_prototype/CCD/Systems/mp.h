@@ -13,14 +13,16 @@ private:
     bool vecDelta(Eigen::VectorXi v1, Eigen::VectorXi v2);
 
     double          pi     = M_PI;  //this HAS to be before V_0... values
-    const double kappa_R  = 1.487;  //fm^-2
-    const double kappa_T  = 0.639;  //fm^-2
-    const double kappa_S  = 0.465;  //fm^-2
-    const double V_0R_fac = 200*pow(pi/kappa_R, 1.5);    //MeV
-    const double V_0T_fac = 178*pow(pi/kappa_T, 1.5);    //MeV
-    const double V_0S_fac = 91.85*pow(pi/kappa_S, 1.5);  //MeV
-    const int b = 5;
-    const int a = b;
+    const double kappa_R = 1.487;    //fm^-2
+    const double kappa_T = 0.639;    //fm^-2
+    const double kappa_S = 0.465;    //fm^-2
+    const double V_0R    = 200;      //MeV
+    const double V_0T    = 178;      //MeV
+    const double V_0S    = 91.85;    //MeV
+    double V_0R_fac;
+    double V_0T_fac;
+    double V_0S_fac;
+    double piOverL;
 
 public:
     double          m_m    = 0;
@@ -40,6 +42,7 @@ public:
     class   Master* m_master = nullptr;
     void    makeStateSpace  ();
     double  assym           (int p, int q, int r, int s);
+  //  double  assym_single    (int p, int q);
     double  h0              (int p);
     double  f               (int p);
     int     kUnique2        (int p, int q);

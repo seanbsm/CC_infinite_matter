@@ -82,15 +82,15 @@ double HEG::assym(int p, int q, int r, int s){
 
     if ( vecDelta(kp+kq, kr+ks) ){
         double returnVal = 0;
-        double var1 = 0;
-        double var2 = 0;
+        //double var1 = 0;
+        //double var2 = 0;
         if ( vecDelta( kp, kr) == 0 ){
             returnVal += (sp==sr)*(sq==ss)/( (double)(kr-kp).squaredNorm() );
-            var1 = (sp==sr)*(sq==ss)/( (double)(kr-kp).squaredNorm() );
+            //var1 = (sp==sr)*(sq==ss)/( (double)(kr-kp).squaredNorm() );
         }
         if ( vecDelta( kp, ks) == 0){
             returnVal -= (sp==ss)*(sq==sr)/( (double)(ks-kp).squaredNorm() );
-            var2 = (sp==ss)*(sq==sr)/( (double)(ks-kp).squaredNorm() );
+            //var2 = (sp==ss)*(sq==sr)/( (double)(ks-kp).squaredNorm() );
         }
         return returnVal/(m_L1*pi);
     }
@@ -98,6 +98,29 @@ double HEG::assym(int p, int q, int r, int s){
         return 0;
     }
 }
+/*
+double HEG::assym_single(int p, int q){
+
+    Eigen::Vector3i kp( m_states(1,p), m_states(2,p), m_states(3,p) );
+    Eigen::Vector3i kq( m_states(1,q), m_states(2,q), m_states(3,q) );
+    int sp = m_states(4,p);
+    int sq = m_states(4,q);
+    int sr = m_states(4,r);//= sp
+    int ss = m_states(4,s);//= sq
+
+    double returnVal = 0;
+    double var1 = 0;
+    double var2 = 0;
+    if ( vecDelta( kp, kr) == 0 ){
+        returnVal += 1/( (double)(kr-kp).squaredNorm() );
+        var1 = (sp==sr)*(sq==ss)/( (double)(kr-kp).squaredNorm() );
+    }
+    if ( vecDelta( kp, ks) == 0){
+        returnVal -= (sp==ss)*(sq==sr)/( (double)(ks-kp).squaredNorm() );
+        var2 = (sp==ss)*(sq==sr)/( (double)(ks-kp).squaredNorm() );
+    }
+    return returnVal/(m_L1*pi);
+}*/
 
 bool HEG::vecDelta(Eigen::VectorXi v1, Eigen::VectorXi v2){
     int dim1 = v1.rows();
