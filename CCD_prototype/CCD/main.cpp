@@ -35,7 +35,7 @@ int main()
     Master* master = new Master;
     master->setSize(Nh, Nb);
 
-    master->setSystem(new MP(master, m, L3, L2, L1));
+    master->setSystem(new HEG(master, m, L3, L2, L1));
 
     double ECCD = master->Iterator(eps, conFac);
 

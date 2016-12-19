@@ -17,7 +17,7 @@ public:
     class Master*   m_master        = nullptr;
     virtual void    makeStateSpace  ()                              = 0;
     virtual double  assym           (int p, int q, int r, int s)    = 0;
-   // virtual double  assym_single    (int p, int q)                  = 0;
+    virtual double  assym_single    (int p, int q)                  = 0;
     virtual double  h0              (int p)                         = 0;
     virtual double  f               (int p)                         = 0;
     virtual int     kUnique2        (int p, int q)                  = 0;

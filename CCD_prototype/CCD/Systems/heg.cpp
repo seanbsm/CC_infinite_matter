@@ -59,7 +59,7 @@ int HEG::kUnique2(int k, int p){
 double HEG::f(int p){
     double returnVal = h0(p);
     for (int i=0; i<below_fermi.rows(); i++){
-        returnVal += assym(p,below_fermi(i),p,below_fermi(i));
+        returnVal += assym_single(p, below_fermi(i));
     };
     return returnVal;
 }
@@ -98,29 +98,24 @@ double HEG::assym(int p, int q, int r, int s){
         return 0;
     }
 }
-/*
+
+//can also do a test by copying assym, and set int s = p, int r = q
 double HEG::assym_single(int p, int q){
 
     Eigen::Vector3i kp( m_states(1,p), m_states(2,p), m_states(3,p) );
     Eigen::Vector3i kq( m_states(1,q), m_states(2,q), m_states(3,q) );
     int sp = m_states(4,p);
     int sq = m_states(4,q);
-    int sr = m_states(4,r);//= sp
-    int ss = m_states(4,s);//= sq
+   // int sr = m_states(4,r);//= sp
+   // int ss = m_states(4,s);//= sq
 
     double returnVal = 0;
-    double var1 = 0;
-    double var2 = 0;
-    if ( vecDelta( kp, kr) == 0 ){
-        returnVal += 1/( (double)(kr-kp).squaredNorm() );
-        var1 = (sp==sr)*(sq==ss)/( (double)(kr-kp).squaredNorm() );
-    }
-    if ( vecDelta( kp, ks) == 0){
-        returnVal -= (sp==ss)*(sq==sr)/( (double)(ks-kp).squaredNorm() );
-        var2 = (sp==ss)*(sq==sr)/( (double)(ks-kp).squaredNorm() );
+    if ( vecDelta( kp, kq) == 0){
+        returnVal -= (sp==sq)/( (double)(kq-kp).squaredNorm() );
+        //var2 = (sp==ss)*(sq==sr)/( (double)(ks-kp).squaredNorm() );
     }
     return returnVal/(m_L1*pi);
-}*/
+}
 
 bool HEG::vecDelta(Eigen::VectorXi v1, Eigen::VectorXi v2){
     int dim1 = v1.rows();

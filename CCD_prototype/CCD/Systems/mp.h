@@ -42,7 +42,7 @@ public:
     class   Master* m_master = nullptr;
     void    makeStateSpace  ();
     double  assym           (int p, int q, int r, int s);
-  //  double  assym_single    (int p, int q);
+    double  assym_single    (int p, int q);
     double  h0              (int p);
     double  f               (int p);
     int     kUnique2        (int p, int q);

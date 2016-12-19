@@ -25,13 +25,20 @@ double Master::Iterator(double eps, double conFac){
     cout << m_Ns << endl;
     Interaction->makeBlockMat(m_system, m_Nh, m_Ns);
 
-    Amplituder->makeBlockMat(Interaction->Vhhpp);
+    //would be better to simply let Amplituder inherit master?
+    Amplituder->setIntClass(Interaction);
+    Amplituder->setSystem(m_system);
+    Amplituder->makeBlockMat();
+    Amplituder->makeDenomMat();
 
     double ECCD     = 0;
     double ECCD_old = 0;
-    double denominator = 0;
     for (int h = 0; h<Interaction->Vhhpp.size(); h++){
-        ECCD_old += 0.25*((Interaction->Vhhpp[h].transpose())*(Amplituder->Amplitudes[h])).trace();
+        cout << "hey" << endl;
+        cout << Amplituder->Amplitudes[h].rows() << " " << Amplituder->Amplitudes[h].cols() << endl;
+        cout << Amplituder->denomMat[h].rows() << " " << Amplituder->denomMat[h].cols() << endl;
+        Eigen::MatrixXf temp = Amplituder->Amplitudes[h]*Amplituder->denomMat[h];
+        ECCD_old += 0.25*((Interaction->Vhhpp[h].transpose())*(temp)).trace();
     }
     std::cout << "MBPT2: " << ECCD_old << std::endl;
 

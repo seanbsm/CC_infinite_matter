@@ -28,6 +28,12 @@ public:
     Eigen::MatrixXi blockArrays_hp; std::vector<int> sortVec_hp;
     Eigen::MatrixXi blockArrays_ph; std::vector<int> sortVec_ph;
     Eigen::MatrixXi blockArrays_pp; std::vector<int> sortVec_pp;
+    //indexHolder hold upper and lower bound of indices for a certain kUnique, same indexing as The corresponding matrices
+    Eigen::MatrixXi boundsHolder_hhpp_hh;
+    //Eigen::MatrixXi indexHolder_hp;
+    //Eigen::MatrixXi indexHolder_ph;
+    Eigen::MatrixXi boundsHolder_hhpp_pp;
+
     MakeIntMat();
     System* m_system = nullptr;
     void                            mapper(int i1, int i2);
@@ -36,14 +42,17 @@ public:
     Eigen::MatrixXf                 makeRektBlock(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
 
 
+    //interaction matrices for CCD
     std::vector<Eigen::MatrixXf>   Vhhhh;
     std::vector<Eigen::MatrixXf>   Vhphp;
     std::vector<Eigen::MatrixXf>   Vhhpp;
     std::vector<Eigen::MatrixXf>   Vpppp;
-    std::vector<int>                Vhhhh_i;
-    std::vector<int>                Vhphp_i;
-    std::vector<int>                Vhhpp_i;
-    std::vector<int>                Vpppp_i;
+
+    //vectors with kUnique for each matrix, indices match ( that is, Vhhhh_i[h] <-> Vhhhh[h] )
+    std::vector<int>               Vhhhh_i;
+    std::vector<int>               Vhphp_i;
+    std::vector<int>               Vhhpp_i;
+    std::vector<int>               Vpppp_i;
 };
 
 #endif // MAKEINTMAT_H
