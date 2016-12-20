@@ -39,14 +39,11 @@ void MakeAmpMat::makeDenomMat(){
             for (int pp=lowBound_pp; pp<highBound_pp; pp++){
                 int ii = m_intClass->blockArrays_hh(1,hh);
                 int jj = m_intClass->blockArrays_hh(2,hh);
-                int aa = m_intClass->blockArrays_hh(1,pp);
-                int bb = m_intClass->blockArrays_hh(2,pp);
-                //std::cout << hh-lowBound_hh << std::endl;
-                newMat(hh-lowBound_hh, pp-lowBound_pp) = m_system->f(ii) + m_system->f(jj) - m_system->f(aa) - m_system->f(bb);
+                int aa = m_intClass->blockArrays_pp(1,pp);
+                int bb = m_intClass->blockArrays_pp(2,pp);
+                newMat(hh-lowBound_hh, pp-lowBound_pp) = 1/( (double)(m_system->f(ii) + m_system->f(jj) - m_system->f(aa) - m_system->f(bb)) );
             }
         }
-
         denomMat.push_back( newMat );
     }
 }
-

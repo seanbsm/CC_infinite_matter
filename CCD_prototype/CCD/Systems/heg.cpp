@@ -65,7 +65,7 @@ double HEG::f(int p){
 }
 
 double HEG::h0(int p){
-    double energy = m_states(p,0);
+    double energy = m_states(0,p);
     return energy*2*pi*pi/(m_m*m_L2);
 }
 
@@ -99,7 +99,7 @@ double HEG::assym(int p, int q, int r, int s){
     }
 }
 
-//can also do a test by copying assym, and set int s = p, int r = q
+//can do a test by copying assym, and set int s = p, int r = q
 double HEG::assym_single(int p, int q){
 
     Eigen::Vector3i kp( m_states(1,p), m_states(2,p), m_states(3,p) );

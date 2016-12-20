@@ -343,38 +343,39 @@ for i in range(0,N):
 				if abs(F[j,j] + F[i,i] - F[a,a] - F[b,b]) > eps:
 					T[i,j,a-N,b-N] = Vhhpp[i,j,a-N,b-N]/(F[j,j] + F[i,i] - F[a,a] - F[b,b])
 					
-#print (np.einsum('klcd,klcd',V[0:N,0:N,N:NS,N:NS],T)/(N*27.211383))*1e6
+print (np.einsum('klcd,klcd',Vhhpp,T)) #/(N*27.211383))*1e6
+
 
 #iterate for T
-ECCD = 0.25*np.einsum('klcd,klcd',Vhhpp,T)
-while conFac > eps:
-	T_new = np.zeros((N, N, NS-N, NS-N))
-	D = diagrams()
-	for i in range(0,N):
-		for j in range(0,N):
-			for a in range(N,NS):
-				for b in range(N,NS):
-					if abs(F[j,j] + F[i,i] - F[a,a] - F[b,b]) > eps:
-						T_new[i,j,a-N,b-N] = (Vhhpp[i,j,a-N,b-N] + D[i,j,a-N,b-N])/(F[j,j] + F[i,i] - F[a,a] - F[b,b])
-
-	T = T_new
-	ECCD_new = 0.25*np.einsum('klcd,klcd',Vhhpp,T)
-	
-	#print T
-	#print ECCD_new
-	
-	conFac = abs(ECCD_new - ECCD)
-	ECCD = ECCD_new
-	print ECCD
-
-if PM_on == true:	
-	E_REF = -g*N/4
-	for p in below_fermi:
-		E_REF += states[p,0]-1
-	
-	print "g value:", g
-	print "E_REF:", E_REF
-	print "FCI correlation:", system.FCI() - E_REF
-	print ECCD - system.FCI() + E_REF
-print "CCD correlation:", ECCD/N, "Hatrees"
+#ECCD = 0.25*np.einsum('klcd,klcd',Vhhpp,T)
+#while conFac > eps:
+#	T_new = np.zeros((N, N, NS-N, NS-N))
+#	D = diagrams()
+#	for i in range(0,N):
+#		for j in range(0,N):
+#			for a in range(N,NS):
+#				for b in range(N,NS):
+#					if abs(F[j,j] + F[i,i] - F[a,a] - F[b,b]) > eps:
+#						T_new[i,j,a-N,b-N] = (Vhhpp[i,j,a-N,b-N] + D[i,j,a-N,b-N])/(F[j,j] + F[i,i] - F[a,a] - F[b,b])
+#
+#	T = T_new
+#	ECCD_new = 0.25*np.einsum('klcd,klcd',Vhhpp,T)
+#	
+#	#print T
+#	#print ECCD_new
+#	
+#	conFac = abs(ECCD_new - ECCD)
+#	ECCD = ECCD_new
+#	print ECCD
+#
+#if PM_on == true:	
+#	E_REF = -g*N/4
+#	for p in below_fermi:
+#		E_REF += states[p,0]-1
+#	
+#	print "g value:", g
+#	print "E_REF:", E_REF
+#	print "FCI correlation:", system.FCI() - E_REF
+#	print ECCD - system.FCI() + E_REF
+#print "CCD correlation:", ECCD/N, "Hatrees"
 

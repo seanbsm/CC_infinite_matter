@@ -21,7 +21,7 @@ int main()
 //we use natural units
     double  pi      =   M_PI;
     int     Nh      =   14;							//number of particles
-    int     Nb      =   3;							//number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 can at max have N=14)
+    int     Nb      =   4;							//number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 can at max have N=14)
     double  rs      =   1;                        //Wigner Seitz radius
     double  rb      =   1;                          //Bohr radius [MeV^-1]
     double  m       =   1;                          //electron mass [MeV]
@@ -31,7 +31,7 @@ int main()
 
     double  eps     =   1e-10;
     double  conFac  =   1;                          //convergence factor
-    //cout << "jey" << endl;
+
     Master* master = new Master;
     master->setSize(Nh, Nb);
 

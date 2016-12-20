@@ -25,7 +25,9 @@ double Master::Iterator(double eps, double conFac){
     cout << m_Ns << endl;
     Interaction->makeBlockMat(m_system, m_Nh, m_Ns);
 
-    //would be better to simply let Amplituder inherit master?
+    //would be better to simply let "Amplituder" and "diagrams" inherit master?
+    diagrams->setAmpClass(Amplituder);
+    diagrams->setIntClass(Interaction);
     Amplituder->setIntClass(Interaction);
     Amplituder->setSystem(m_system);
     Amplituder->makeBlockMat();
@@ -34,22 +36,29 @@ double Master::Iterator(double eps, double conFac){
     double ECCD     = 0;
     double ECCD_old = 0;
     for (int h = 0; h<Interaction->Vhhpp.size(); h++){
-        cout << "hey" << endl;
-        cout << Amplituder->Amplitudes[h].rows() << " " << Amplituder->Amplitudes[h].cols() << endl;
-        cout << Amplituder->denomMat[h].rows() << " " << Amplituder->denomMat[h].cols() << endl;
-        Eigen::MatrixXf temp = Amplituder->Amplitudes[h]*Amplituder->denomMat[h];
-        ECCD_old += 0.25*((Interaction->Vhhpp[h].transpose())*(temp)).trace();
+        //Using array<->matrix conversion costs no cpu time in Eigen, so this is fine
+        Eigen::MatrixXf temp = Amplituder->Amplitudes[h].array()*Amplituder->denomMat[h].array();
+        ECCD_old += ((Interaction->Vhhpp[h].transpose())*(temp)).trace();
     }
     std::cout << "MBPT2: " << ECCD_old << std::endl;
 
     while (conFac > eps){
         ECCD = 0;
         for (int hh = 0; hh<Interaction->Vhhpp.size(); hh++){
-            for (int pp = 0; pp<Interaction->Vpppp.size(); pp++){
+
+            for (int pp = 0; pp<Interaction->Vpppp.size(); pp++){ //all Q diagrams fall within this loop
                 if (Interaction->Vhhpp_i[hh] == Interaction->Vpppp_i[pp]){
-                    Amplituder->Amplitudes[hh] = Interaction->Vhhpp[hh] + diagrams->D3(Amplituder->Amplitudes[hh], Interaction->Vpppp[pp]);
+                    Amplituder->Amplitudes[hh] = ( Interaction->Vhhpp[hh] + diagrams->La(hh, pp) ).array()
+                                                 *Amplituder->denomMat[hh].array();
                 }
             }
+
+            /*for (int hp = 0; hp<Interaction->Vhphp.size(); hp++){ //this loop covers Lc
+                if (Interaction->Vhhpp_i[hh] == Interaction->Vhphp_i[hp]){
+                    Amplituder->Amplitudes[hh] =
+                }
+            }*/
+
             ECCD += 0.25*((Interaction->Vhhpp[hh].transpose())*(Amplituder->Amplitudes[hh])).trace();
         }
         cout << ECCD << endl;
