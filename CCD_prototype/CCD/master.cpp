@@ -5,6 +5,7 @@
 #include "diagrams.h"
 
 #include <iostream>
+ #include <iomanip> //needed for std::setprecision
 
 using namespace std;
 
@@ -40,32 +41,41 @@ double Master::Iterator(double eps, double conFac){
         Eigen::MatrixXf temp = Amplituder->Amplitudes[h].array()*Amplituder->denomMat[h].array();
         ECCD_old += ((Interaction->Vhhpp[h].transpose())*(temp)).trace();
     }
-    std::cout << "MBPT2: " << ECCD_old << std::endl;
+    std::cout << "MBPT2: " << std::setprecision (12) << ECCD_old << std::endl;
 
-    while (conFac > eps){
+    int counter = 0;
+    while (conFac > eps && counter < 1e3){
         ECCD = 0;
         for (int hh = 0; hh<Interaction->Vhhpp.size(); hh++){
 
+            Amplituder->Amplitudes[hh] = ( Interaction->Vhhpp[hh]
+                                           + diagrams->La(hh)
+                                           + diagrams->Lb(hh) ).array()
+                                         *Amplituder->denomMat[hh].array();
+            /*
             for (int pp = 0; pp<Interaction->Vpppp.size(); pp++){ //all Q diagrams fall within this loop
                 if (Interaction->Vhhpp_i[hh] == Interaction->Vpppp_i[pp]){
                     Amplituder->Amplitudes[hh] = ( Interaction->Vhhpp[hh] + diagrams->La(hh, pp) ).array()
                                                  *Amplituder->denomMat[hh].array();
                 }
             }
+            */
 
-            /*for (int hp = 0; hp<Interaction->Vhphp.size(); hp++){ //this loop covers Lc
+            /*
+            for (int hp = 0; hp<Interaction->Vhphp.size(); hp++){ //this loop covers Lc
                 if (Interaction->Vhhpp_i[hh] == Interaction->Vhphp_i[hp]){
                     Amplituder->Amplitudes[hh] =
                 }
-            }*/
+            }
+            */
 
             ECCD += 0.25*((Interaction->Vhhpp[hh].transpose())*(Amplituder->Amplitudes[hh])).trace();
         }
-        cout << ECCD << endl;
+        cout << std::setprecision (12) << ECCD << endl;
         conFac = abs(ECCD - ECCD_old);
         ECCD_old = ECCD;
-
-        //ECCD = 0; too good to delete
+        counter += 1;
+        //ECCD = 0; too good to delete; you don't want to know how long i used on this
     }
     return ECCD;
 

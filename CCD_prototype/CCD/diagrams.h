@@ -14,13 +14,13 @@ public:
     Diagrams();
     void setIntClass(class MakeIntMat* intClass);
     void setAmpClass(class MakeAmpMat* ampClass);
-    Eigen::MatrixXf La(int i1, int i2); //I made this only with the ladder diagram in mind
-    Eigen::MatrixXf Lb(int i1, int i2);
-    Eigen::MatrixXf Lc(int i1, int i2);
-    Eigen::MatrixXf Qa(int i1, int i2);
-    Eigen::MatrixXf Qb(int i1, int i2);
-    Eigen::MatrixXf Qc(int i1, int i2);
-    Eigen::MatrixXf Qd(int i1, int i2);
+    Eigen::MatrixXf La(int index); //I made this only with the ladder diagram in mind
+    Eigen::MatrixXf Lb(int index);
+    Eigen::MatrixXf Lc(int index);
+    Eigen::MatrixXf Qa(int index);
+    Eigen::MatrixXf Qb(int index);
+    Eigen::MatrixXf Qc(int index);
+    Eigen::MatrixXf Qd(int index);
 };
 
 #endif // DIAGRAMS_H

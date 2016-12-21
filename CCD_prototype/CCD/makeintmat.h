@@ -30,9 +30,10 @@ public:
     Eigen::MatrixXi blockArrays_pp; std::vector<int> sortVec_pp;
     //indexHolder hold upper and lower bound of indices for a certain kUnique, same indexing as The corresponding matrices
     Eigen::MatrixXi boundsHolder_hhpp_hh;
+    Eigen::MatrixXi boundsHolder_hhpp_pp;
     //Eigen::MatrixXi indexHolder_hp;
     //Eigen::MatrixXi indexHolder_ph;
-    Eigen::MatrixXi boundsHolder_hhpp_pp;
+    //Eigen::MatrixXi boundsHolder_pppp_pp;
 
     MakeIntMat();
     System* m_system = nullptr;
@@ -49,10 +50,10 @@ public:
     std::vector<Eigen::MatrixXf>   Vpppp;
 
     //vectors with kUnique for each matrix, indices match ( that is, Vhhhh_i[h] <-> Vhhhh[h] )
-    std::vector<int>               Vhhhh_i;
-    std::vector<int>               Vhphp_i;
-    std::vector<int>               Vhhpp_i;
-    std::vector<int>               Vpppp_i;
+    //std::vector<int>               Vhhhh_i;
+    //std::vector<int>               Vhphp_i;
+    //std::vector<int>               Vhhpp_i;
+    //std::vector<int>               Vpppp_i;
 };
 
 #endif // MAKEINTMAT_H

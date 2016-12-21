@@ -182,18 +182,8 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     cout << "made indexHolders" << endl;
 
     //DON'T DELETE
-    //Vhhhh
-    /*for (int l=0; l<sortVec_hh.size(); l++){
-        int val = sortVec[l];
-        for (int h=0; h<m_Nh*m_Nh; h++){ //goes through the entire blockArrays (which is sorted, so there'll be no interrupted repetitions)
-            if ( val == blockArrays_hh(0,h) ){
-                range_upper += 1;
-            }
-        }
-        Vhhhh.push_back( makeSquareBlock(range_lower, range_upper) );//NEED MATRIX GENERATOR HERE
-        range_lower = range_upper; //should i set range_upper + 1 ?
-    }
 
+    /*
     //Vhphp
     for (int l=0; l<sortVec_hh.size(); l++){
         int val = sortVec[l];
@@ -233,18 +223,46 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             }
         }
     }*/
+
+    //Vhhhh
+    /*
+    for (int l=0; l<sortVec_hh.size(); l++){
+        int val = sortVec[l];
+        for (int h=0; h<m_Nh*m_Nh; h++){ //goes through the entire blockArrays (which is sorted, so there'll be no interrupted repetitions)
+            if ( val == blockArrays_hh(0,h) ){
+                range_upper += 1;
+            }
+        }
+        Vhhhh.push_back( makeSquareBlock(range_lower, range_upper) );//NEED MATRIX GENERATOR HERE
+        range_lower = range_upper; //should i set range_upper + 1 ?
+    }
+    */
+
     for (int h=0; h<boundsHolder_hhpp_hh.cols(); h++){
         range_lower_hh = boundsHolder_hhpp_hh(0,h);
         range_upper_hh = boundsHolder_hhpp_hh(1,h);
         range_lower_pp = boundsHolder_hhpp_pp(0,h);
         range_upper_pp = boundsHolder_hhpp_pp(1,h);
         Vhhpp.push_back( makeRektBlock(blockArrays_hh, blockArrays_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp) );
-        Vhhpp_i.push_back( sortVec_hh[h] );
+        //Vhhpp_i.push_back( sortVec_hh[h] );
     }
     cout << "made Vhhpp" << endl;
 
+    for (int h=0; h<boundsHolder_hhpp_hh.cols(); h++){
+        range_lower_hh = boundsHolder_hhpp_hh(0,h);
+        range_upper_hh = boundsHolder_hhpp_hh(1,h);
+        Vhhhh.push_back( makeSquareBlock(blockArrays_hh, range_lower_hh, range_upper_hh) );
+    }
+
+    for (int p=0; p<boundsHolder_hhpp_pp.cols(); p++){
+        range_lower_pp = boundsHolder_hhpp_pp(0,p);
+        range_upper_pp = boundsHolder_hhpp_pp(1,p);
+        Vpppp.push_back( makeSquareBlock(blockArrays_pp, range_lower_pp, range_upper_pp) );
+        //Vpppp_i.push_back( sortVec_pp[p] );
+    }
+
     //Vpppp
-    for (int l=0; l<sortVec_pp.size(); l++){
+    /*for (int l=0; l<sortVec_pp.size(); l++){
         int val = sortVec_pp[l];
         for (int h=0; h<(m_Ns-m_Nh)*(m_Ns-m_Nh); h++){ //goes through the entire blockArrays (which is sorted, so there'll be no interrupted repetitions)
             if ( val == blockArrays_pp(0,h) ){
@@ -256,8 +274,8 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         Vpppp.push_back( newElement );
         Vpppp_i.push_back( val );
         range_lower = range_upper; //doing this reset here is not a problem, unlike for that of Vhhpp
-    }
-    cout << "make Vpppp" << endl;
+    }*/
+    cout << "made Vpppp" << endl;
 }
 
 

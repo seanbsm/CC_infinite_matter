@@ -66,8 +66,8 @@ int MP::kUnique2(int k, int p){
 
 double MP::f(int p){
     double returnVal = h0(p);
-    for (int i=0; i<below_fermi.rows(); i++){
-        returnVal += assym_single(p, below_fermi(i));
+    for (int i=0; i<m_Nh; i++){
+        returnVal += assym_single(p, i);
     };
     return returnVal;
 }

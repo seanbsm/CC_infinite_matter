@@ -195,8 +195,8 @@ class PM:	#Pairing Model
 #END OF CLASSES
 
 #we use natural units
-N 	= 14							#number of particles
-NB 	= 4							#number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 can at max have N=14)
+N 	= 2							#number of particles
+NB 	= 2							#number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 can at max have N=14)
 rs 	= 1.0						#Wigner Seitz radius
 rb 	= 1.#2.68#268*1e-6/27.211			#Bohr radius [MeV^-1]
 m 	= 1.#0.511#*1e6/21.211			#electron mass [MeV]
@@ -315,7 +315,7 @@ def D9():	#Q_d
 	return factor*returnVal
 	
 def diagrams():	#sum over all L_i and Q_i diagrams
-	returnVal = D3()# + D4() + D5() + D6() + D7() + D8() + D9()
+	returnVal = D3() + D4() + D5() + D6() + D7() + D8() + D9()
 	return returnVal
 
 

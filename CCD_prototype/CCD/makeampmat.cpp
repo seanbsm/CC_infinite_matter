@@ -24,7 +24,7 @@ void MakeAmpMat::makeBlockMat(){
 //for now we store the Fock matrix, but perhaps later it would be better to calculate it "on the fly"
 //I deliberately declared a lot of ints here, but merely for easier debugging and readability
 void MakeAmpMat::makeDenomMat(){
-    for (int i=0; i<m_intClass->Vhhpp_i.size(); i++){   //remember, Vhhpp_i holds all kUnique for Vhhpp
+    for (int i=0; i<m_intClass->Vhhpp.size(); i++){   //remember, Vhhpp_i holds all kUnique for Vhhpp
         int lowBound_hh  = m_intClass->boundsHolder_hhpp_hh(0,i);
         int highBound_hh = m_intClass->boundsHolder_hhpp_hh(1,i);
         int lowBound_pp  = m_intClass->boundsHolder_hhpp_pp(0,i);
