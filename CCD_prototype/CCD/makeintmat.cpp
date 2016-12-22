@@ -244,7 +244,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         range_lower_pp = boundsHolder_hhpp_pp(0,h);
         range_upper_pp = boundsHolder_hhpp_pp(1,h);
         Vhhpp.push_back( makeRektBlock(blockArrays_hh, blockArrays_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp) );
-        //Vhhpp_i.push_back( sortVec_hh[h] );
+        Vhhpp_i.push_back( sortVec_hh[h] );
     }
     cout << "made Vhhpp" << endl;
 
@@ -254,12 +254,17 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         Vhhhh.push_back( makeSquareBlock(blockArrays_hh, range_lower_hh, range_upper_hh) );
     }
 
-    for (int p=0; p<boundsHolder_hhpp_pp.cols(); p++){
+    for (int p=0; p<boundsHolder_hhpp_hh.cols(); p++){
         range_lower_pp = boundsHolder_hhpp_pp(0,p);
         range_upper_pp = boundsHolder_hhpp_pp(1,p);
+        //Vpppp.push_back( makeRektBlock(blockArrays_pp,blockArrays_pp, range_lower_pp, range_upper_pp,range_lower_pp, range_upper_pp) );
         Vpppp.push_back( makeSquareBlock(blockArrays_pp, range_lower_pp, range_upper_pp) );
         //Vpppp_i.push_back( sortVec_pp[p] );
     }
+
+    //for (int i = 0; i<Vhhpp_i.size(); i++){
+    //    cout << blockArrays_pp(0,boundsHolder_hhpp_pp(0,i)) << endl;
+    //}
 
     //Vpppp
     /*for (int l=0; l<sortVec_pp.size(); l++){
@@ -269,7 +274,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
                 range_upper = h+1;
             }
         }
-        Eigen::MatrixXf newElement = makeSquareBlock(blockArrays_pp, range_lower, range_upper);
+        Eigen::MatrixXd newElement = makeSquareBlock(blockArrays_pp, range_lower, range_upper);
 
         Vpppp.push_back( newElement );
         Vpppp_i.push_back( val );
@@ -279,10 +284,10 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
 }
 
 
-
-Eigen::MatrixXf MakeIntMat::makeSquareBlock(Eigen::MatrixXi& array, int range_lower, int range_upper){
+//I get the same result using this as I get using Rektblock
+Eigen::MatrixXd MakeIntMat::makeSquareBlock(Eigen::MatrixXi& array, int range_lower, int range_upper){
     int dim = range_upper - range_lower;
-    Eigen::MatrixXf returnMat;
+    Eigen::MatrixXd returnMat;
     returnMat.conservativeResize(dim, dim);
     for (int i = range_lower; i<range_upper; i++){
         for (int j = range_lower; j<range_upper; j++){
@@ -292,10 +297,10 @@ Eigen::MatrixXf MakeIntMat::makeSquareBlock(Eigen::MatrixXi& array, int range_lo
     return returnMat;
 }
 
-Eigen::MatrixXf MakeIntMat::makeRektBlock(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2){
+Eigen::MatrixXd MakeIntMat::makeRektBlock(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2){
     int dim1 = range_upper1 - range_lower1;
     int dim2 = range_upper2 - range_lower2;
-    Eigen::MatrixXf returnMat;
+    Eigen::MatrixXd returnMat;
     returnMat.conservativeResize(dim1, dim2);
     for (int i = range_lower1; i<range_upper1; i++){
         for (int j = range_lower2; j<range_upper2; j++){

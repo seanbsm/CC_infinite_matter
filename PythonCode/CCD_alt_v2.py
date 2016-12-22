@@ -262,7 +262,7 @@ def makeIntMatrix():	#just fyi, this function took me half a day, I'm not fluent
 
 print NS
 Vpppp, idpppp, Vhhpp, idhhpp = makeIntMatrix() #, F, idF, tempRet = makeIntMatrix()
-
+print idpppp
 #counter = 0
 #for i in range(0,len(Vpppp)):
 #	dim = np.shape(Vpppp[i])[0]

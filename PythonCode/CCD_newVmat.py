@@ -345,7 +345,7 @@ for i in range(0,N):
 					
 print (np.einsum('klcd,klcd',Vhhpp,T)) #/(N*27.211383))*1e6
 
-
+print "Python code"
 #iterate for T
 ECCD = 0.25*np.einsum('klcd,klcd',Vhhpp,T)
 while conFac > eps:
@@ -357,6 +357,7 @@ while conFac > eps:
 				for b in range(N,NS):
 					if abs(F[j,j] + F[i,i] - F[a,a] - F[b,b]) > eps:
 						T_new[i,j,a-N,b-N] = (Vhhpp[i,j,a-N,b-N] + D[i,j,a-N,b-N])/(F[j,j] + F[i,i] - F[a,a] - F[b,b])
+						#T_new[i,j,a-N,b-N] = (Vhhpp[i,j,a-N,b-N])/(F[j,j] + F[i,i] - F[a,a] - F[b,b])
 
 	T = T_new
 	ECCD_new = 0.25*np.einsum('klcd,klcd',Vhhpp,T)

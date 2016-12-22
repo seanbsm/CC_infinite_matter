@@ -38,18 +38,33 @@ double Master::Iterator(double eps, double conFac){
     double ECCD_old = 0;
     for (int h = 0; h<Interaction->Vhhpp.size(); h++){
         //Using array<->matrix conversion costs no cpu time in Eigen, so this is fine
-        Eigen::MatrixXf temp = Amplituder->Amplitudes[h].array()*Amplituder->denomMat[h].array();
+        Eigen::MatrixXd temp = Amplituder->Amplitudes[h].array()*Amplituder->denomMat[h].array();
         ECCD_old += ((Interaction->Vhhpp[h].transpose())*(temp)).trace();
     }
     std::cout << "MBPT2: " << std::setprecision (12) << ECCD_old << std::endl;
 
     int counter = 0;
-    while (conFac > eps && counter < 1e3){
+    while (conFac > eps && counter < 1e1){
         ECCD = 0;
         for (int hh = 0; hh<Interaction->Vhhpp.size(); hh++){
 
+            /*Notes:
+             * I've been testing this program with CCD_newVmat.py, as it handles all diagrams
+             * My python script also gives the exact same results as Audun's code, for all diagrams
+             *
+             * Vhhpp and denomMat works for all Nh and Nb
+             *
+             * La gives wrong results --> probably Vpppp that is wrong
+             *
+             * Vhhhh (i.e. diagrams Lb) works for Nh=2, not for Nh=14 (regardless of Nb)... weird
+             *
+             * makeSquareBlock works same as makeRektBlock, as I've tried using both for Vpppp -> same results
+             *
+             * thoughts: i think there's something wrong with making the blocks, but i can't figure out what
+             * perhaps i can't rewrite amplitudes the way i am doing now (need a Tnew ?)
+             */
             Amplituder->Amplitudes[hh] = ( Interaction->Vhhpp[hh]
-                                           + diagrams->La(hh)
+                                           /*+ diagrams->La(hh)*/
                                            + diagrams->Lb(hh) ).array()
                                          *Amplituder->denomMat[hh].array();
             /*

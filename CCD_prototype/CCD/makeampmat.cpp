@@ -15,10 +15,13 @@ void MakeAmpMat::setSystem(class System* system){
 
 //recall that this function actually also needs to divide by the single fock energies (or FockMat)
 void MakeAmpMat::makeBlockMat(){
+    /*
     int range = m_intClass->Vhhpp.size();
     for (int i = 0; i<range; i++){
         Amplitudes.push_back( m_intClass->Vhhpp[i] );
     }
+    */
+    Amplitudes = m_intClass->Vhhpp;
 }
 
 //for now we store the Fock matrix, but perhaps later it would be better to calculate it "on the fly"
@@ -32,7 +35,7 @@ void MakeAmpMat::makeDenomMat(){
 
         int dim_hh = highBound_hh - lowBound_hh;
         int dim_pp = highBound_pp - lowBound_pp;
-        Eigen::MatrixXf newMat;
+        Eigen::MatrixXd newMat;
         newMat.conservativeResize(dim_hh, dim_pp);
 
         for (int hh=lowBound_hh; hh<highBound_hh; hh++){

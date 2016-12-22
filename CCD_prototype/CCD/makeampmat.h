@@ -12,11 +12,11 @@ class MakeAmpMat
 {
 public:
     MakeAmpMat();
-    std::vector<Eigen::MatrixXf> denomMat;
+    std::vector<Eigen::MatrixXd> denomMat;
 
     MakeIntMat*  m_intClass = nullptr;
     System*      m_system   = nullptr;
-    std::vector<Eigen::MatrixXf>  Amplitudes;
+    std::vector<Eigen::MatrixXd>  Amplitudes;
 
     void setIntClass(class MakeIntMat* intClass);
     void setSystem(class System* system);

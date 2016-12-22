@@ -246,7 +246,7 @@ class CCD():
         
         #Terms linear in T2
         
-        T2new += .5*np.einsum("abcd,cdij->abij", self.V([1,1,1,1]), self.T2) #La (ladder)
+        #T2new += .5*np.einsum("abcd,cdij->abij", self.V([1,1,1,1]), self.T2) #La (ladder)
         
         T2new += .5*np.einsum("klij,abkl->abij", self.V([0,0,0,0]), self.T2) #Lb 
 
@@ -280,11 +280,11 @@ class CCD():
             
             
 #Initialize basis for 4 shells, rs = 1.0, 14 occupied states
-bs = electronbasis(2,1.0,2)
+bs = electronbasis(3,1.0,14)
 print "Number of states:", bs.nstates
 
 CC = CCD(bs) #initialize CCD solver for basis bs
-for i in range(30):   
+for i in range(10):   
 	CC.advance() #advance amplitudes one iteration
 	print CC.e() #show correlation energy
 
