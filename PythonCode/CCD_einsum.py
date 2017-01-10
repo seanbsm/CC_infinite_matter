@@ -246,7 +246,7 @@ class CCD():
         
         #Terms linear in T2
         
-        #T2new += .5*np.einsum("abcd,cdij->abij", self.V([1,1,1,1]), self.T2) #La (ladder)
+        T2new += .5*np.einsum("abcd,cdij->abij", self.V([1,1,1,1]), self.T2) #La (ladder)
         
         T2new += .5*np.einsum("klij,abkl->abij", self.V([0,0,0,0]), self.T2) #Lb 
 
@@ -258,7 +258,7 @@ class CCD():
         Vklcd = self.V([0,0,1,1]) #compute this once
 
         dtemp = np.einsum("klcd,cdij->klij", Vklcd, self.T2) #Qa
-        #T2new +=.25*np.einsum("klij,abkl->abij", dtemp, self.T2)
+        T2new +=.25*np.einsum("klij,abkl->abij", dtemp, self.T2)
         
         dtemp = np.einsum("klcd,acik->adil", Vklcd, self.T2) #Qb
         dtemp = np.einsum("adil,dblj->abij", dtemp, self.T2) #Qb
@@ -284,7 +284,7 @@ bs = electronbasis(3,1.0,14)
 print "Number of states:", bs.nstates
 
 CC = CCD(bs) #initialize CCD solver for basis bs
-for i in range(10):   
+for i in range(20):   
 	CC.advance() #advance amplitudes one iteration
 	print CC.e() #show correlation energy
 

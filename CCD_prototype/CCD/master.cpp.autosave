@@ -73,7 +73,7 @@ double Master::Iterator(double eps, double conFac){
                                                         + diagrams->Lb(hh)
                                                         + diagrams->Qa(hh)
                                                       ).array()
-                                                    ;//*Amplituder->denomMat[hh].array();
+                                                    *Amplituder->denomMat[hh].array();
             Amplituder->Amplitudes[hh] = Ampltitudes_new;
 
             /*
