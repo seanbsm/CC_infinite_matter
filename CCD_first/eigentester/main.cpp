@@ -62,11 +62,12 @@ int main()
     //cout << vec.adjoint()*vec << endl;
 
 
-    map<int, int> places;
+    map<int, double> places;
 
-    places[42] = 372;
-
-    cout << places[42] << endl;
+    for (int i=0; i<1e3; i++){
+        places[i] = (double) i;
+    }
+    cout << places[9999] << endl;
 
     /*Eigen::VectorXi vec1;
     vec1 << 1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,4,4,4,4,5,5,5,5,5,5,5,5,6,6,6,6;

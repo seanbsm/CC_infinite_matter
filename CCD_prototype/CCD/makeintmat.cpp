@@ -281,6 +281,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     mapper_2(1,1); //pp
     cout << "made blockArrays and sortVec for pp" << endl;
 
+
     int counter         = 0;
 
     int range_lower     = 0;
@@ -384,14 +385,25 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     }
     */
 
-    for (int h=0; h<boundsHolder_hhpp_hh.cols(); h++){
+    /*for (int h=0; h<boundsHolder_hhpp_hh.cols(); h++){
         range_lower_hh = boundsHolder_hhpp_hh(0,h);
         range_upper_hh = boundsHolder_hhpp_hh(1,h);
         range_lower_pp = boundsHolder_hhpp_pp(0,h);
         range_upper_pp = boundsHolder_hhpp_pp(1,h);
         Vhhpp.push_back( makeRektBlock(blockArrays_hh, blockArrays_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp) );
         Vhhpp_i.push_back( sortVec_hh[h] );
+    }*/
+
+    for (int h=0; h<boundsHolder_hhpp_hh.cols(); h++){
+        range_lower_hh = boundsHolder_hhpp_hh(0,h);
+        range_upper_hh = boundsHolder_hhpp_hh(1,h);
+        range_lower_pp = boundsHolder_hhpp_pp(0,h);
+        range_upper_pp = boundsHolder_hhpp_pp(1,h);
+        makeMatMap(blockArrays_hh, blockArrays_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp);
+        Vhhpp.push_back( makeRektBlock(blockArrays_hh, blockArrays_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp) );
+        Vhhpp_i.push_back( sortVec_hh[h] );
     }
+
     cout << "made Vhhpp" << endl;
 
     for (int h=0; h<boundsHolder_hhpp_hh.cols(); h++){
@@ -460,8 +472,25 @@ Eigen::MatrixXd MakeIntMat::makeRektBlock(Eigen::MatrixXi& array1, Eigen::Matrix
     returnMat.conservativeResize(dim1, dim2);
     for (int i = range_lower1; i<range_upper1; i++){
         for (int j = range_lower2; j<range_upper2; j++){
-            returnMat(i-range_lower1, j-range_lower2) = m_system->assym((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j));
+            //returnMat(i-range_lower1, j-range_lower2) = m_system->assym((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j));
+            returnMat(i-range_lower1, j-range_lower2) = Vhhpp_elements[Identity((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j))];
         }
     }
     return returnMat;
+}
+
+void MakeIntMat::makeMatMap(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2){
+    for (int i = range_lower1; i<range_upper1; i++){
+        for (int j = range_lower2; j<range_upper2; j++){
+            double val = m_system->assym((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j));
+            if (val != 0){
+                Vhhpp_elements[Identity((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j))] = val;
+            }
+
+        }
+    }
+}
+
+int MakeIntMat::Identity(int h1, int h2, int p1, int p2){
+    return h1 + h2*m_Nh + p1*m_Nh*(m_Ns-m_Nh) + p2*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
 }

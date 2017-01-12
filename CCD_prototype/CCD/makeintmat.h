@@ -61,9 +61,11 @@ public:
     Eigen::MatrixXd                 makeSquareBlock(Eigen::MatrixXi& array, int range_lower, int range_upper);
     Eigen::MatrixXd                 makeRektBlock(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
 
+    void                            makeMatMap(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
+    int                             Identity(int h1, int h2, int p1, int p2);
+    std::map<int, double>           Vhhpp_elements;
 
     //interaction matrices for CCD
-    std::map<int, int>             V_elements;
     std::vector<Eigen::MatrixXd>   Vhhhh;
     std::vector<Eigen::MatrixXd>   Vhphp;
     std::vector<Eigen::MatrixXd>   Vhhpp;
