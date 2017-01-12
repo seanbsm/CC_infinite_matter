@@ -20,7 +20,9 @@ public:
     virtual double  assym_single    (int p, int q)                  = 0;
     virtual double  h0              (int p)                         = 0;
     virtual double  f               (int p)                         = 0;
+    virtual int     kUnique1        (int p)                         = 0;
     virtual int     kUnique2        (int p, int q)                  = 0;
+    virtual int     kUnique3        (int p, int q, int r)           = 0;
 };
 
 #endif // SYSTEM_H

@@ -5,6 +5,7 @@
 #include <Systems/system.h>
 #include <Systems/heg.h>
 #include <iostream>
+#include <map>
 
 class MakeIntMat
 {
@@ -24,14 +25,26 @@ private:
     //bool contractor(int i, int j){ return i==j; } //contracts repeated elements to a single edit
 public:
     //blockArrays hold quantum numbers, sortVec holds distinct kUnique
+    Eigen::MatrixXi blockArrays_h;
+    Eigen::MatrixXi blockArrays_p;
     Eigen::MatrixXi blockArrays_hh;
     Eigen::MatrixXi blockArrays_hp;
-    Eigen::MatrixXi blockArrays_ph;
     Eigen::MatrixXi blockArrays_pp;
+    Eigen::MatrixXi blockArrays_hhh;
+    Eigen::MatrixXi blockArrays_hhp;
+    Eigen::MatrixXi blockArrays_hpp;
+    Eigen::MatrixXi blockArrays_ppp;
+
+    std::vector<int> sortVec_h;
+    std::vector<int> sortVec_p;
     std::vector<int> sortVec_hh;
     std::vector<int> sortVec_hp;
-    std::vector<int> sortVec_ph;
     std::vector<int> sortVec_pp;
+    std::vector<int> sortVec_hhh;
+    std::vector<int> sortVec_hhp;
+    std::vector<int> sortVec_hpp;
+    std::vector<int> sortVec_ppp;
+
     //indexHolder hold upper and lower bound of indices for a certain kUnique, same indexing as The corresponding matrices
     Eigen::MatrixXi boundsHolder_hhpp_hh;
     Eigen::MatrixXi boundsHolder_hhpp_pp;
@@ -41,13 +54,16 @@ public:
 
     MakeIntMat();
     System* m_system = nullptr;
-    void                            mapper(int i1, int i2);
+    void                            mapper_1(int i1);
+    void                            mapper_2(int i1, int i2);
+    void                            mapper_3(int i1, int i2, int i3);
     void                            makeBlockMat(System* system, int Nh, int Ns);
     Eigen::MatrixXd                 makeSquareBlock(Eigen::MatrixXi& array, int range_lower, int range_upper);
     Eigen::MatrixXd                 makeRektBlock(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
 
 
     //interaction matrices for CCD
+    std::map<int, int>             V_elements;
     std::vector<Eigen::MatrixXd>   Vhhhh;
     std::vector<Eigen::MatrixXd>   Vhphp;
     std::vector<Eigen::MatrixXd>   Vhhpp;

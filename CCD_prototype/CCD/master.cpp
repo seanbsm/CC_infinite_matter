@@ -64,17 +64,20 @@ double Master::Iterator(double eps, double conFac){
              *
              * Qa, which only uses Vhhpp, doesn't work either -> something iffy about my iteration?
              */
-            Eigen::MatrixXd Ampltitudes_new = Amplituder->Amplitudes[hh];
-            //Amplituder->Amplitudes[hh] = ( Interaction->Vhhpp[hh]
-            //                              /*+ diagrams->La(hh)*/
-            //                              + diagrams->Lb(hh) ).array()
-            //                            *Amplituder->denomMat[hh].array();
-            Ampltitudes_new = ( Interaction->Vhhpp[hh]  + diagrams->La(hh)
-                                                        + diagrams->Lb(hh)
-                                                        + diagrams->Qa(hh)
-                                                      ).array()
-                                                    ;//*Amplituder->denomMat[hh].array();
-            Amplituder->Amplitudes[hh] = Ampltitudes_new;
+
+            Amplituder->Amplitudes[hh] = ( Interaction->Vhhpp[hh] + diagrams->La(hh)
+                                                                  + diagrams->Lb(hh)
+                                                                  + diagrams->Qa(hh)
+                                         ).array()
+                                        *Amplituder->denomMat[hh].array();
+
+            //Eigen::MatrixXd Ampltitudes_new = Amplituder->Amplitudes[hh];
+            //Ampltitudes_new = ( Interaction->Vhhpp[hh]  + diagrams->La(hh)
+            //                                            + diagrams->Lb(hh)
+            //                                            + diagrams->Qa(hh)
+            //                                          ).array()
+            //                                        *Amplituder->denomMat[hh].array();
+            //Amplituder->Amplitudes[hh] = Ampltitudes_new;
 
             /*
             for (int pp = 0; pp<Interaction->Vpppp.size(); pp++){ //all Q diagrams fall within this loop

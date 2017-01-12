@@ -2,6 +2,7 @@
 #include <math.h>
 #include <cmath>
 #include <eigen3/Eigen/Dense>
+#include <map>
 
 using namespace std;
 
@@ -58,14 +59,21 @@ int main()
 
     Eigen::Matrix<int, 5, 1> vec;
     vec << 1,2,3,4,5;
-    cout << vec.adjoint()*vec << endl;
+    //cout << vec.adjoint()*vec << endl;
+
+
+    map<int, int> places;
+
+    places[42] = 372;
+
+    cout << places[42] << endl;
 
     /*Eigen::VectorXi vec1;
     vec1 << 1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,4,4,4,4,5,5,5,5,5,5,5,5,6,6,6,6;
     Eigen::VectorXi vec2;
     vec2 << -1,-1,-1,-1,-1,-1,-1,-1,0,0,0,0,0,1,1,1,2,2,2,2,3,3,3,3,3,4,4,4,5,5,5,5,5,5,5,5,6,6,6,6,7,7,7;*/
 
-    cout << vecDelta(v1+v1,v2+v2) << endl;
+    //cout << vecDelta(v1+v1,v2+v2) << endl;
 
     /*for (int i= 0; i<1; i++){
         cout << i << endl;

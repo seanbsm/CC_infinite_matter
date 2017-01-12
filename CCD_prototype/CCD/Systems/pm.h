@@ -10,7 +10,9 @@ public:
     double  assym_single    (int p, int q);
     double  h0              (int p);
     double  f               (int p);
-    int     kunique2        (int p, int q);
+    int     kUnique1        (int p);
+    int     kUnique2        (int p, int q);
+    int     kUnique3        (int p, int q, int r);
 };
 
 #endif // PM_H
