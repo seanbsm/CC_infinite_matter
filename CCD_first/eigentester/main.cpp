@@ -61,13 +61,29 @@ int main()
     vec << 1,2,3,4,5;
     //cout << vec.adjoint()*vec << endl;
 
+    std::vector<int> Vec;
 
-    map<int, double> places;
+    for (int i=0; i<1e3; i++){
+        Vec.push_back(i+1);
+    }
+    int index;
+    auto it = std::find(Vec.begin(), Vec.end(), 3);
+    if (it == Vec.end())
+    {
+      cout << "hey" << endl;// name not in vector
+    } else
+    {
+      index = distance(Vec.begin(), it);
+    }
+
+    cout << Vec[index] << endl;
+
+   /* map<int, double> places;
 
     for (int i=0; i<1e3; i++){
         places[i] = (double) i;
     }
-    cout << places[9999] << endl;
+    cout << places[9999] << endl;*/
 
     /*Eigen::VectorXi vec1;
     vec1 << 1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,4,4,4,4,5,5,5,5,5,5,5,5,6,6,6,6;

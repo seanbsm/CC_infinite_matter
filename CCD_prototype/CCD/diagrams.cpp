@@ -35,7 +35,7 @@ Eigen::MatrixXd Diagrams::Qa(int index){
 }
 
 Eigen::MatrixXd Diagrams::Qb(int index){
-    Eigen::MatrixXd product;
+    Eigen::MatrixXd product; //= m_intClass->make3x1Block(ku);
     return 0.5*product;
 }
 
