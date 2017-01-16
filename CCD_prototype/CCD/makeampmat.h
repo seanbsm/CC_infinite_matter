@@ -18,9 +18,15 @@ public:
     System*      m_system   = nullptr;
     std::vector<Eigen::MatrixXd>  Amplitudes;
 
+    std::map<int, double>           T_elements;
+
+    Eigen::MatrixXd                 make3x1Block(int ku, int i1, int i2, int i3, int i4);
+    Eigen::MatrixXd                 make2x2Block(int ku, int i1, int i2, int i3, int i4);
+
     void setIntClass(class MakeIntMat* intClass);
     void setSystem(class System* system);
-    void makeBlockMat();
+    void setElements();
+    Eigen::MatrixXd makeBlockMat(int index);
     void makeDenomMat();
 };
 

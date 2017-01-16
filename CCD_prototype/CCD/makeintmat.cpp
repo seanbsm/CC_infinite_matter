@@ -333,9 +333,13 @@ Eigen::MatrixXd MakeIntMat::make3x1Block(int ku, int i1, int i2, int i3, int i4)
 
     int index1; int index2;
 
+    Eigen::MatrixXd returnMat;
+
     auto it1 = std::find(sortVec1.begin(), sortVec1.end(), ku);
     if (it1 == sortVec1.end()){
-      return 0;
+        returnMat.conservativeResize(1,1);
+        returnMat(0,0) = 0;
+      return returnMat;
     }
     else{
       index1 = distance(sortVec1.begin(), it1);
@@ -343,7 +347,9 @@ Eigen::MatrixXd MakeIntMat::make3x1Block(int ku, int i1, int i2, int i3, int i4)
 
     auto it2 = std::find(sortVec2.begin(), sortVec2.end(), ku);
     if (it2 == sortVec2.end()){
-      return 0;
+        returnMat.conservativeResize(1,1);
+        returnMat(0,0) = 0;
+      return returnMat;
     }
     else{
       index2 = distance(sortVec2.begin(), it2);
@@ -356,54 +362,119 @@ Eigen::MatrixXd MakeIntMat::make3x1Block(int ku, int i1, int i2, int i3, int i4)
 
     int dim1 = range_upper1 - range_lower1;
     int dim2 = range_upper2 - range_lower2;
-    Eigen::MatrixXd returnMat;
+
     returnMat.conservativeResize(dim1, dim2);
     for (int i = range_lower1; i<range_upper1; i++){
         for (int j = range_lower2; j<range_upper2; j++){
-            returnMat(i-range_lower1, j-range_lower2) = Vhhpp_elements[Identity((blockArrays1_pointer)(1,j), (blockArrays1_pointer)(2,j), (blockArrays1_pointer)(3,j), (blockArrays2_pointer)(1,j))];
+            returnMat(i-range_lower1, j-range_lower2) = Vhhpp_elements[Identity((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j))];
         }
     }
     return returnMat;
-
-    /*int N1_lower = i1*m_Nh;
-    int N2_lower = i2*m_Nh;
-    int N3_lower = i3*m_Nh;
-    int N4_lower = i4*m_Nh;
-
-    int N1_upper = (1-i1)*m_Nh + i1*(m_Ns-m_Nh);
-    int N2_upper = (1-i2)*m_Nh + i2*(m_Ns-m_Nh);
-    int N3_upper = (1-i3)*m_Nh + i3*(m_Ns-m_Nh);
-    int N4_upper = (1-i4)*m_Nh + i4*(m_Ns-m_Nh);
-
-    int dim1 = 0;
-    int dim2 = 0;
-
-    int ku1;
-    int ku2;
-
-    for (int g1=N1_lower; g1<N1; g1++){
-        for (int g2=N2_lower; g2<N2; g2++){
-            for (int g3=N3_lower; g3<N3; g3++){
-                ku1 = m_system->kUnique3(g1,g2,g3);
-                if (ku1 == ku){
-                }
-            }
-        }
-    }
-
-    for (int g4=N4_lower; g4<N4; g4++){
-        ku2 = m_system->kUnique1(g4);
-        if (ku2 == ku){
-
-        }
-    }*/
-
 }
 
 //returns a block matrix of dimensions 2x2, currently only made for Vhhpp
 // i1,i2,i3,i4 specify whether there is a hole or particle (by a 0 or 1) index at index ij, for j=1-4
 Eigen::MatrixXd MakeIntMat::make2x2Block(int ku, int i1, int i2, int i3, int i4){
 
+    bool cond_hh1 = (i1 == 0 && i2 == 0);
+    bool cond_hp1 = (i1 == 0 && i2 == 1);
+    bool cond_pp1 = (i1 == 1 && i2 == 1);
+
+    bool cond_hh2 = (i3 == 0 && i4 == 0);
+    bool cond_hp2 = (i3 == 0 && i4 == 1);
+    bool cond_pp2 = (i3 == 1 && i4 == 1);
+
+
+    Eigen::MatrixXi blockArrays1_pointer;
+    Eigen::MatrixXi blockArrays2_pointer;
+
+    std::vector<int> sortVec1;
+    std::vector<int> sortVec2;
+
+    Eigen::MatrixXi indexHolder1_pointer;
+    Eigen::MatrixXi indexHolder2_pointer;
+
+
+    // 0 0
+    if (cond_hh1){
+        blockArrays1_pointer = blockArrays_hh;
+        sortVec1             = sortVec_hh;
+        indexHolder1_pointer = indexHolder_hh;
+    }
+    // 0 1
+    else if (cond_hp1){
+        blockArrays1_pointer = blockArrays_hp;
+        sortVec1             = sortVec_hp;
+        indexHolder1_pointer = indexHolder_hp;
+    }
+    // 1 1
+    else {
+        blockArrays1_pointer = blockArrays_pp;
+        sortVec1             = sortVec_pp;
+        indexHolder1_pointer = indexHolder_pp;
+    }
+
+    // 0 0
+    if (cond_hh2){
+        blockArrays2_pointer = blockArrays_hh;
+        sortVec2             = sortVec_hh;
+        indexHolder2_pointer = indexHolder_hh;
+    }
+    // 0 1
+    else if (cond_hp2){
+        blockArrays2_pointer = blockArrays_hp;
+        sortVec2             = sortVec_hp;
+        indexHolder2_pointer = indexHolder_hp;
+    }
+    // 1 1
+    else {
+        blockArrays2_pointer = blockArrays_pp;
+        sortVec2             = sortVec_pp;
+        indexHolder2_pointer = indexHolder_pp;
+    }
+
+    int length1 = indexHolder1_pointer.cols();
+    int length2 = indexHolder2_pointer.cols();
+
+    int index1; int index2;
+
+    Eigen::MatrixXd returnMat;
+
+    auto it1 = std::find(sortVec1.begin(), sortVec1.end(), ku);
+    if (it1 == sortVec1.end()){
+        returnMat.conservativeResize(1,1);
+        returnMat(0,0) = 0;
+      return returnMat;
+    }
+    else{
+      index1 = distance(sortVec1.begin(), it1);
+    }
+
+    auto it2 = std::find(sortVec2.begin(), sortVec2.end(), ku);
+    if (it2 == sortVec2.end()){
+        returnMat.conservativeResize(1,1);
+        returnMat(0,0) = 0;
+      return returnMat;
+    }
+    else{
+      index2 = distance(sortVec2.begin(), it2);
+    }
+
+    int range_lower1 = indexHolder1_pointer(0,index1);
+    int range_upper1 = indexHolder1_pointer(1,index1);
+    int range_lower2 = indexHolder2_pointer(0,index2);
+    int range_upper2 = indexHolder2_pointer(1,index2);
+
+    int dim1 = range_upper1 - range_lower1;
+    int dim2 = range_upper2 - range_lower2;
+
+    returnMat.conservativeResize(dim1, dim2);
+    for (int i = range_lower1; i<range_upper1; i++){
+        for (int j = range_lower2; j<range_upper2; j++){
+            returnMat(i-range_lower1, j-range_lower2) = Vhhpp_elements[Identity((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j))];
+        }
+    }
+    return returnMat;
 }
 
 void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
@@ -680,12 +751,6 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         range_upper_pp = boundsHolder_hhpp_pp(1,h);
         makeMatMap(blockArrays_hh, blockArrays_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp);
     }
-
-
-
-
-
-
 
 
 

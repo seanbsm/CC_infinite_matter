@@ -25,7 +25,9 @@ Eigen::MatrixXd Diagrams::Lb(int index){
 }
 
 Eigen::MatrixXd Diagrams::Lc(int index){
+    int ku = m_intClass->sortVec_hh[index];
     Eigen::MatrixXd product;// = m_intClass->Vhphp[index]*m_ampClass->Amplitudes;
+
     return -product;
 }
 

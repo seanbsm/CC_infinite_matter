@@ -66,15 +66,19 @@ int main()
     for (int i=0; i<1e3; i++){
         Vec.push_back(i+1);
     }
+    int val = 9;
     int index;
-    auto it = std::find(Vec.begin(), Vec.end(), 3);
-    if (it == Vec.end())
-    {
-      cout << "hey" << endl;// name not in vector
-    } else
-    {
+    auto it = std::find(Vec.begin(), Vec.end(), val);
+    if (it == Vec.end()){
+      cout << "value not in map" << endl;// name not in vector
+    }
+    else{
       index = distance(Vec.begin(), it);
     }
+
+    cout << Vec[index] << endl;
+
+    Vec[index] = 12;
 
     cout << Vec[index] << endl;
 

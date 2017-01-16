@@ -31,7 +31,7 @@ double Master::Iterator(double eps, double conFac){
     diagrams->setIntClass(Interaction);
     Amplituder->setIntClass(Interaction);
     Amplituder->setSystem(m_system);
-    Amplituder->makeBlockMat();
+    Amplituder->setElements();
     Amplituder->makeDenomMat();
 
     double ECCD     = 0;
@@ -70,31 +70,6 @@ double Master::Iterator(double eps, double conFac){
                                                                   + diagrams->Qa(hh)
                                          ).array()
                                         *Amplituder->denomMat[hh].array();
-
-            //Eigen::MatrixXd Ampltitudes_new = Amplituder->Amplitudes[hh];
-            //Ampltitudes_new = ( Interaction->Vhhpp[hh]  + diagrams->La(hh)
-            //                                            + diagrams->Lb(hh)
-            //                                            + diagrams->Qa(hh)
-            //                                          ).array()
-            //                                        *Amplituder->denomMat[hh].array();
-            //Amplituder->Amplitudes[hh] = Ampltitudes_new;
-
-            /*
-            for (int pp = 0; pp<Interaction->Vpppp.size(); pp++){ //all Q diagrams fall within this loop
-                if (Interaction->Vhhpp_i[hh] == Interaction->Vpppp_i[pp]){
-                    Amplituder->Amplitudes[hh] = ( Interaction->Vhhpp[hh] + diagrams->La(hh, pp) ).array()
-                                                 *Amplituder->denomMat[hh].array();
-                }
-            }
-            */
-
-            /*
-            for (int hp = 0; hp<Interaction->Vhphp.size(); hp++){ //this loop covers Lc
-                if (Interaction->Vhhpp_i[hh] == Interaction->Vhphp_i[hp]){
-                    Amplituder->Amplitudes[hh] =
-                }
-            }
-            */
 
             ECCD += 0.25*((Interaction->Vhhpp[hh].transpose())*(Amplituder->Amplitudes[hh])).trace();
         }
