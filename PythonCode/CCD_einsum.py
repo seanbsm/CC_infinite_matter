@@ -246,9 +246,9 @@ class CCD():
         
         #Terms linear in T2
         
-        T2new += .5*np.einsum("abcd,cdij->abij", self.V([1,1,1,1]), self.T2) #La (ladder)
+        #T2new += .5*np.einsum("abcd,cdij->abij", self.V([1,1,1,1]), self.T2) #La (ladder)
         
-        T2new += .5*np.einsum("klij,abkl->abij", self.V([0,0,0,0]), self.T2) #Lb 
+        #T2new += .5*np.einsum("klij,abkl->abij", self.V([0,0,0,0]), self.T2) #Lb 
 
         dtemp = np.einsum("kbcj,acik->abij", self.V([0,1,1,0]), self.T2) 
         #T2new += dtemp - np.einsum("abij->baij", dtemp) - np.einsum("abij->abji", dtemp) + np.einsum("abij->baji", dtemp) #Lc
@@ -258,7 +258,7 @@ class CCD():
         Vklcd = self.V([0,0,1,1]) #compute this once
 
         dtemp = np.einsum("klcd,cdij->klij", Vklcd, self.T2) #Qa
-        T2new +=.25*np.einsum("klij,abkl->abij", dtemp, self.T2)
+        #T2new +=.25*np.einsum("klij,abkl->abij", dtemp, self.T2)
         
         dtemp = np.einsum("klcd,acik->adil", Vklcd, self.T2) #Qb
         dtemp = np.einsum("adil,dblj->abij", dtemp, self.T2) #Qb
@@ -280,7 +280,7 @@ class CCD():
             
             
 #Initialize basis for 4 shells, rs = 1.0, 14 occupied states
-bs = electronbasis(3,1.0,14)
+bs = electronbasis(2,1.0,14)
 print "Number of states:", bs.nstates
 
 CC = CCD(bs) #initialize CCD solver for basis bs

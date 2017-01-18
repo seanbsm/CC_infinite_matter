@@ -376,6 +376,7 @@ Eigen::MatrixXd MakeIntMat::make3x1Block(int ku, int i1, int i2, int i3, int i4)
 // i1,i2,i3,i4 specify whether there is a hole or particle (by a 0 or 1) index at index ij, for j=1-4
 Eigen::MatrixXd MakeIntMat::make2x2Block(int ku, int i1, int i2, int i3, int i4){
 
+    //std::cout << "hey" << std::endl;
     bool cond_hh1 = (i1 == 0 && i2 == 0);
     bool cond_hp1 = (i1 == 0 && i2 == 1);
     bool cond_pp1 = (i1 == 1 && i2 == 1);
@@ -444,6 +445,7 @@ Eigen::MatrixXd MakeIntMat::make2x2Block(int ku, int i1, int i2, int i3, int i4)
     if (it1 == sortVec1.end()){
         returnMat.conservativeResize(1,1);
         returnMat(0,0) = 0;
+        std::cout << "make2x2Block in MakeIntMat, kUnique not found for rows" << std::endl;
       return returnMat;
     }
     else{
@@ -454,6 +456,7 @@ Eigen::MatrixXd MakeIntMat::make2x2Block(int ku, int i1, int i2, int i3, int i4)
     if (it2 == sortVec2.end()){
         returnMat.conservativeResize(1,1);
         returnMat(0,0) = 0;
+        std::cout << "make2x2Block in MakeIntMat, kUnique not found for columns" << std::endl;
       return returnMat;
     }
     else{
@@ -707,9 +710,14 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
                 boundsHolder_hhpp_pp.conservativeResize(Eigen::NoChange, boundsHolder_hhpp_pp.cols()+1);
                 boundsHolder_hhpp_hh.col(boundsHolder_hhpp_hh.cols()-1) << range_lower_hh, range_upper_hh;
                 boundsHolder_hhpp_pp.col(boundsHolder_hhpp_pp.cols()-1) << range_lower_pp, range_upper_pp;
+                Vhhpp_i.push_back(val_hh);
             }
         }
     }
+
+    numOfKu = boundsHolder_hhpp_hh.cols();
+    //cout << numOfKu <<" "<< sortVec_hh.size() << endl;
+
     cout << "made indexHolders" << endl;
 
     /*for (int h=0; h<boundsHolder_hhpp_hh.cols(); h++){
@@ -720,8 +728,8 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         Vhhpp.push_back( makeRektBlock(blockArrays_hh, blockArrays_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp) );
         Vhhpp_i.push_back( sortVec_hh[h] );
     }*/
-/*
-    for (int h=0; h<boundsHolder_hhpp_hh.cols(); h++){
+
+    /*for (int h=0; h<boundsHolder_hhpp_hh.cols(); h++){
         range_lower_hh = boundsHolder_hhpp_hh(0,h);
         range_upper_hh = boundsHolder_hhpp_hh(1,h);
         range_lower_pp = boundsHolder_hhpp_pp(0,h);
@@ -733,14 +741,8 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
 
         //These two lines should no longer be needed
         Vhhpp.push_back( makeRektBlock(blockArrays_hh, blockArrays_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp) );
-        Vhhpp_i.push_back( sortVec_hh[h] );
-    }
-
-    cout << "made Vhhpp" << endl;
-*/
-
-
-
+        //Vhhpp_i.push_back( sortVec_hh[h] );
+    }*/
 
 
     //make Vhhpp map
@@ -751,6 +753,14 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         range_upper_pp = boundsHolder_hhpp_pp(1,h);
         makeMatMap(blockArrays_hh, blockArrays_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp);
     }
+
+    cout << "made Vhhpp" << endl;
+
+
+
+
+
+
 
 
 
@@ -771,10 +781,11 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         //Vpppp.push_back( makeRektBlock(blockArrays_pp,blockArrays_pp, range_lower_pp, range_upper_pp,range_lower_pp, range_upper_pp) );
         Vpppp.push_back( makeSquareBlock(blockArrays_pp, range_lower_pp, range_upper_pp) );
 
-        if (prev < p/(double)length){
+        //this printout is handy for large systems
+        /*if (prev < p/(double)length){
             cout << 100*p/(double)length << "%  " << range_upper_pp-range_lower_pp << endl;
             prev = p/(double)length;
-        }
+        }*/
         //Vpppp_i.push_back( sortVec_pp[p] );
     }
 

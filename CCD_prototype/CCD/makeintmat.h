@@ -69,6 +69,7 @@ public:
     void                            mapper_2(int i1, int i2);
     void                            mapper_3(int i1, int i2, int i3);
     void                            makeBlockMat(System* system, int Nh, int Ns);
+    int                             numOfKu;        //number of blocks in V_hh_pp
     Eigen::MatrixXd                 makeSquareBlock(Eigen::MatrixXi& array, int range_lower, int range_upper);
     Eigen::MatrixXd                 makeRektBlock(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
 

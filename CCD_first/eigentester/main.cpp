@@ -82,12 +82,18 @@ int main()
 
     cout << Vec[index] << endl;
 
-   /* map<int, double> places;
+
+
+    map<int, double> places1;
+    map<int, double> places2;
 
     for (int i=0; i<1e3; i++){
-        places[i] = (double) i;
+        places1[i] = (double) i;
+        places2[i] = (double) 1e3-i;
     }
-    cout << places[9999] << endl;*/
+
+    places1 = places2;
+    cout << places2[333] << endl;
 
     /*Eigen::VectorXi vec1;
     vec1 << 1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,4,4,4,4,5,5,5,5,5,5,5,5,6,6,6,6;

@@ -36,17 +36,28 @@ double Master::Iterator(double eps, double conFac){
 
     double ECCD     = 0;
     double ECCD_old = 0;
-    for (int h = 0; h<Interaction->Vhhpp.size(); h++){
+    //for (int h = 0; h<Interaction->sortVec_hh.size(); h++){
+    //std::cout << Interaction->Vhhpp_i.size() << " " << Interaction->numOfKu << std::endl;
+    for (int h = 0; h<Interaction->numOfKu; h++){
         //Using array<->matrix conversion costs no cpu time in Eigen, so this is fine
-        Eigen::MatrixXd temp = Amplituder->Amplitudes[h].array()*Amplituder->denomMat[h].array();
-        ECCD_old += ((Interaction->Vhhpp[h].transpose())*(temp)).trace();
+        Eigen::MatrixXd Vhhpp = Interaction->make2x2Block(Interaction->Vhhpp_i[h],0,0,1,1);
+        Eigen::MatrixXd temp = Vhhpp.array()*Amplituder->denomMat[h].array();
+        ECCD_old += ((Vhhpp.transpose())*(temp)).trace();
     }
-    std::cout << "MBPT2: " << std::setprecision (12) << ECCD_old << std::endl;
+
+    //check whether or not to multiply by 0.25 for MBPT2
+    std::cout << "MBPT2: " << std::setprecision (12) << 0.25*ECCD_old << std::endl;
 
     int counter = 0;
+    bool old_version = 1;
+    bool new_version = 0;
+
+    //std::cout << Interaction->numOfKu << " " << Interaction->Vhhpp_i.size() << std::endl;
+
     while (/*conFac > eps &&*/ counter < 2e1){
         ECCD = 0;
-        for (int hh = 0; hh<Interaction->Vhhpp.size(); hh++){
+        Amplituder->T_elements = Amplituder->T_elements_new;    //could make an Amplituder::updateT or something
+        for (int hh = 0; hh<Interaction->numOfKu; hh++){
 
             /*Notes:
              * I've been testing this program with CCD_newVmat.py, as it handles all diagrams
@@ -65,13 +76,26 @@ double Master::Iterator(double eps, double conFac){
              * Qa, which only uses Vhhpp, doesn't work either -> something iffy about my iteration?
              */
 
-            Amplituder->Amplitudes[hh] = ( Interaction->Vhhpp[hh] + diagrams->La(hh)
+            /*Amplituder->Amplitudes[hh] = ( Interaction->Vhhpp[hh] + diagrams->La(hh)
                                                                   + diagrams->Lb(hh)
                                                                   + diagrams->Qa(hh)
                                          ).array()
-                                        *Amplituder->denomMat[hh].array();
+                                        *Amplituder->denomMat[hh].array();*/
+            //Amplituder->T_elements[];
 
-            ECCD += 0.25*((Interaction->Vhhpp[hh].transpose())*(Amplituder->Amplitudes[hh])).trace();
+            int ku = Interaction->Vhhpp_i[hh];
+            //std::cout << "diagrams start" << std::endl;
+            //diagrams->Qa(ku);
+            //std::cout << "diagrams end" << std::endl;
+
+            Eigen::MatrixXd Vhhpp = Interaction->make2x2Block(ku,0,0,1,1); //works
+            Eigen::MatrixXd Tijab = Amplituder->make2x2Block(ku,0,0,1,1, Amplituder->T_elements_new);
+            Eigen::MatrixXd temp = (Vhhpp + Tijab).array()*Amplituder->denomMat[hh].array(); //works
+            Amplituder->make2x2Block_inverse(temp, ku, 0,0,1,1, Amplituder->T_elements_new);
+
+            Tijab = Amplituder->make2x2Block(ku,0,0,1,1, Amplituder->T_elements_new);
+            ECCD += 0.25*((Vhhpp.transpose())*(Tijab)).trace();
+            //ECCD += 0.25*((Interaction->Vhhpp[hh].transpose())*(Amplituder->Amplitudes[hh])).trace();
         }
         cout << std::setprecision (12) << ECCD << endl;
         conFac = abs(ECCD - ECCD_old);
