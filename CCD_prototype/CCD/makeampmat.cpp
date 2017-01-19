@@ -73,7 +73,7 @@ void MakeAmpMat::make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
 
 }
 
-void MakeAmpMat::make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list){
+void MakeAmpMat::make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list, bool add){
 
     bool cond_hh1 = (i1 == 0 && i2 == 0);
     bool cond_hp1 = (i1 == 0 && i2 == 1);
@@ -160,11 +160,25 @@ void MakeAmpMat::make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
     int range_lower2 = indexHolder2_pointer(0,index2);
     int range_upper2 = indexHolder2_pointer(1,index2);
 
-    for (int i = range_lower1; i<range_upper1; i++){
-        for (int j = range_lower2; j<range_upper2; j++){
-            T_list[m_intClass->Identity((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j))] += inMat(i-range_lower1,j-range_lower2);
+
+    int id;
+    if (add == true){
+        for (int i = range_lower1; i<range_upper1; i++){
+            for (int j = range_lower2; j<range_upper2; j++){
+                id = m_intClass->Identity((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j));
+                T_list[id] += inMat(i-range_lower1,j-range_lower2);
+            }
         }
     }
+    else{
+        for (int i = range_lower1; i<range_upper1; i++){
+            for (int j = range_lower2; j<range_upper2; j++){
+                id = m_intClass->Identity((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j));
+                T_list[id] = inMat(i-range_lower1,j-range_lower2);
+            }
+        }
+    }
+
 }
 
 //returns a block matrix of dimensions 3x1, currently only made for Vhhpp

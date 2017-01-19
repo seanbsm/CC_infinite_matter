@@ -93,7 +93,8 @@ int main()
     }
 
     places1 = places2;
-    cout << places2[333] << endl;
+    //places1[9999] += 2;
+    cout << places1[9999] << endl;
 
     /*Eigen::VectorXi vec1;
     vec1 << 1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,4,4,4,4,5,5,5,5,5,5,5,5,6,6,6,6;
