@@ -48,6 +48,7 @@ void Diagrams::Qa(int ku){
 }
 
 void Diagrams::Qb(int ku){
+
     Eigen::MatrixXd mat1 = m_ampClass->make2x2Block(ku,0,1,0,1, m_ampClass->T_elements);
     Eigen::MatrixXd mat2 = m_intClass->make2x2Block(ku,0,1,0,1);
     Eigen::MatrixXd mat3 = m_ampClass->make2x2Block(ku,0,1,0,1, m_ampClass->T_elements);

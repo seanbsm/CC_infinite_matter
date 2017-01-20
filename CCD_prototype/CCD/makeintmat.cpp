@@ -41,7 +41,7 @@ void MakeIntMat::mapper_1(int i1){
         blockArrays_temp.conservativeResize(2, colSize);
 
         for (int i=0; i<m_Nh; i++){
-            blockArrays_temp.col(index) << m_system->kUnique1(i),i;
+            blockArrays_temp.col(index) << m_system->kUnique1(i, 1),i;
             index += 1;
 
         }
@@ -51,7 +51,7 @@ void MakeIntMat::mapper_1(int i1){
         colSize = (m_Ns-m_Nh);
         blockArrays_temp.conservativeResize(2, colSize);
         for (int a=m_Nh; a<m_Ns; a++){
-            blockArrays_temp.col(index) << m_system->kUnique1(a),a;
+            blockArrays_temp.col(index) << m_system->kUnique1(a, 1),a;
             index += 1;
 
         }
@@ -102,7 +102,7 @@ void  MakeIntMat::mapper_2(int i1, int i2){
 
         for (int i=0; i<m_Nh; i++){
             for (int j=0; j<m_Nh; j++){
-                blockArrays_temp.col(index) << m_system->kUnique2(i,j),i,j;
+                blockArrays_temp.col(index) << m_system->kUnique2(i,j,1,1),i,j;
                 index += 1;
             }
         }
@@ -114,7 +114,7 @@ void  MakeIntMat::mapper_2(int i1, int i2){
 
         for (int i=0; i<m_Nh; i++){
             for (int a=m_Nh; a<m_Ns; a++){
-                blockArrays_temp.col(index) << m_system->kUnique2(i,a),i,a;
+                blockArrays_temp.col(index) << m_system->kUnique2(i,a,1,-1),i,a;
                 index += 1;
             }
         }
@@ -125,7 +125,7 @@ void  MakeIntMat::mapper_2(int i1, int i2){
         blockArrays_temp.conservativeResize(3, colSize);
         for (int a=m_Nh; a<m_Ns; a++){
             for (int b=m_Nh; b<m_Ns; b++){
-                blockArrays_temp.col(index) << m_system->kUnique2(a,b),a,b;
+                blockArrays_temp.col(index) << m_system->kUnique2(a,b,1,1),a,b;
                 index += 1;
             }
         }

@@ -45,7 +45,7 @@ void MP::makeStateSpace(){
 }
 
 //I think using eigen here is a bit over-the-top for such a function, but whatevs~
-int MP::kUnique1(int k){
+int MP::kUnique1(int k, int s1){
     Eigen::Matrix<int, 5, 1> kk;
     kk << m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k), m_states(5,k);
     Eigen::VectorXi mom = kk;
@@ -62,7 +62,7 @@ int MP::kUnique1(int k){
     return kuni;
 }
 
-int MP::kUnique2(int k, int p){
+int MP::kUnique2(int k, int p, int s1, int s2){
     Eigen::Matrix<int, 5, 1> kk;
     Eigen::Matrix<int, 5, 1> kp;
     kk << m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k), m_states(5,k);
@@ -81,7 +81,7 @@ int MP::kUnique2(int k, int p){
     return kuni;
 }
 
-int MP::kUnique3(int k, int p, int q){
+int MP::kUnique3(int k, int p, int q, int s1, int s2, int s3){
     Eigen::Matrix<int, 5, 1> kk;
     Eigen::Matrix<int, 5, 1> kp;
     Eigen::Matrix<int, 5, 1> kq;
