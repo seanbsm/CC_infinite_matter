@@ -75,12 +75,15 @@ void MakeAmpMat::make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
 
 void MakeAmpMat::make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list, bool add){
 
+    //std::cout << "hey" << std::endl;
     bool cond_hh1 = (i1 == 0 && i2 == 0);
     bool cond_hp1 = (i1 == 0 && i2 == 1);
+    bool cond_ph1 = (i1 == 1 && i2 == 0);
     bool cond_pp1 = (i1 == 1 && i2 == 1);
 
     bool cond_hh2 = (i3 == 0 && i4 == 0);
     bool cond_hp2 = (i3 == 0 && i4 == 1);
+    bool cond_ph2 = (i3 == 1 && i4 == 0);
     bool cond_pp2 = (i3 == 1 && i4 == 1);
 
 
@@ -106,6 +109,12 @@ void MakeAmpMat::make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
         sortVec1             = m_intClass->sortVec_hp;
         indexHolder1_pointer = m_intClass->indexHolder_hp;
     }
+    // 1 0
+    else if (cond_ph1){
+        blockArrays1_pointer = m_intClass->blockArrays_ph;
+        sortVec1             = m_intClass->sortVec_ph;
+        indexHolder1_pointer = m_intClass->indexHolder_ph;
+    }
     // 1 1
     else {
         blockArrays1_pointer = m_intClass->blockArrays_pp;
@@ -124,6 +133,12 @@ void MakeAmpMat::make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
         blockArrays2_pointer = m_intClass->blockArrays_hp;
         sortVec2             = m_intClass->sortVec_hp;
         indexHolder2_pointer = m_intClass->indexHolder_hp;
+    }
+    // 1 0
+    else if (cond_ph2){
+        blockArrays2_pointer = m_intClass->blockArrays_ph;
+        sortVec2             = m_intClass->sortVec_ph;
+        indexHolder2_pointer = m_intClass->indexHolder_ph;
     }
     // 1 1
     else {
@@ -185,10 +200,8 @@ void MakeAmpMat::make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
 // i1,i2,i3,i4 specify whether there is a hole or particle (by a 0 or 1)  index at index ij, for j=1-4
 Eigen::MatrixXd MakeAmpMat::make3x1Block(int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list){
 
-    bool cond_hhh = (i1 == 0 && i2 == 0 && i3==0);
     bool cond_hhp = (i1 == 0 && i2 == 0 && i3==1);
-    bool cond_hpp = (i1 == 0 && i2 == 1 && i3==1);
-    bool cond_ppp = (i1 == 1 && i2 == 1 && i3==1);
+    bool cond_pph = (i1 == 1 && i2 == 1 && i3==0);
 
     bool cond_h   = (i4 == 0);
     bool cond_p   = (i4 == 1);
@@ -204,29 +217,17 @@ Eigen::MatrixXd MakeAmpMat::make3x1Block(int ku, int i1, int i2, int i3, int i4,
     Eigen::MatrixXi indexHolder2_pointer;
 
 
-    // 0 0 0
-    if (cond_hhh){
-        blockArrays1_pointer = m_intClass->blockArrays_hhh;
-        sortVec1             = m_intClass->sortVec_hhh;
-        indexHolder1_pointer = m_intClass->indexHolder_hhh;
-    }
     // 0 0 1
-    else if (cond_hhp){
+    if (cond_hhp){
         blockArrays1_pointer = m_intClass->blockArrays_hhp;
         sortVec1             = m_intClass->sortVec_hhp;
         indexHolder1_pointer = m_intClass->indexHolder_hhp;
     }
     // 0 1 1
-    else if (cond_hpp){
-        blockArrays1_pointer = m_intClass->blockArrays_hpp;
-        sortVec1             = m_intClass->sortVec_hpp;
-        indexHolder1_pointer = m_intClass->indexHolder_hpp;
-    }
-    // 1 1 1
-    else{
-        blockArrays1_pointer = m_intClass->blockArrays_ppp;
-        sortVec1             = m_intClass->sortVec_ppp;
-        indexHolder1_pointer = m_intClass->indexHolder_ppp;
+    else if (cond_pph){
+        blockArrays1_pointer = m_intClass->blockArrays_pph;
+        sortVec1             = m_intClass->sortVec_pph;
+        indexHolder1_pointer = m_intClass->indexHolder_pph;
     }
 
     // 0
@@ -295,10 +296,12 @@ Eigen::MatrixXd MakeAmpMat::make2x2Block(int ku, int i1, int i2, int i3, int i4,
     //std::cout << "hey" << std::endl;
     bool cond_hh1 = (i1 == 0 && i2 == 0);
     bool cond_hp1 = (i1 == 0 && i2 == 1);
+    bool cond_ph1 = (i1 == 1 && i2 == 0);
     bool cond_pp1 = (i1 == 1 && i2 == 1);
 
     bool cond_hh2 = (i3 == 0 && i4 == 0);
     bool cond_hp2 = (i3 == 0 && i4 == 1);
+    bool cond_ph2 = (i3 == 1 && i4 == 0);
     bool cond_pp2 = (i3 == 1 && i4 == 1);
 
 
@@ -324,6 +327,12 @@ Eigen::MatrixXd MakeAmpMat::make2x2Block(int ku, int i1, int i2, int i3, int i4,
         sortVec1             = m_intClass->sortVec_hp;
         indexHolder1_pointer = m_intClass->indexHolder_hp;
     }
+    // 1 0
+    else if (cond_ph1){
+        blockArrays1_pointer = m_intClass->blockArrays_ph;
+        sortVec1             = m_intClass->sortVec_ph;
+        indexHolder1_pointer = m_intClass->indexHolder_ph;
+    }
     // 1 1
     else {
         blockArrays1_pointer = m_intClass->blockArrays_pp;
@@ -342,6 +351,12 @@ Eigen::MatrixXd MakeAmpMat::make2x2Block(int ku, int i1, int i2, int i3, int i4,
         blockArrays2_pointer = m_intClass->blockArrays_hp;
         sortVec2             = m_intClass->sortVec_hp;
         indexHolder2_pointer = m_intClass->indexHolder_hp;
+    }
+    // 1 0
+    else if (cond_ph2){
+        blockArrays2_pointer = m_intClass->blockArrays_ph;
+        sortVec2             = m_intClass->sortVec_ph;
+        indexHolder2_pointer = m_intClass->indexHolder_ph;
     }
     // 1 1
     else {

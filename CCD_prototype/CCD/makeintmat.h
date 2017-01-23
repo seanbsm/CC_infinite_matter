@@ -29,35 +29,33 @@ public:
     Eigen::MatrixXi blockArrays_p;
     Eigen::MatrixXi blockArrays_hh;
     Eigen::MatrixXi blockArrays_hp;
+    Eigen::MatrixXi blockArrays_ph;
     Eigen::MatrixXi blockArrays_pp;
-    Eigen::MatrixXi blockArrays_hhh;
     Eigen::MatrixXi blockArrays_hhp;
-    Eigen::MatrixXi blockArrays_hpp;
-    Eigen::MatrixXi blockArrays_ppp;
+    Eigen::MatrixXi blockArrays_pph;
 
+    //sortVec holds all distinct kUnique for each index series
     std::vector<int> sortVec_h;
     std::vector<int> sortVec_p;
     std::vector<int> sortVec_hh;
     std::vector<int> sortVec_hp;
+    std::vector<int> sortVec_ph;
     std::vector<int> sortVec_pp;
-    std::vector<int> sortVec_hhh;
     std::vector<int> sortVec_hhp;
-    std::vector<int> sortVec_hpp;
-    std::vector<int> sortVec_ppp;
+    std::vector<int> sortVec_pph;
 
-    //indexHolder hold upper and lower bound of indices for a certain kUnique, same indexing as the corresponding matrices
-    Eigen::MatrixXi boundsHolder_hhpp_hh;
-    Eigen::MatrixXi boundsHolder_hhpp_pp;
-
+    //indexHolder holds upper and lower bound of indices for a certain kUnique, same indexing as the corresponding matrices
     Eigen::MatrixXi indexHolder_h;
     Eigen::MatrixXi indexHolder_p;
     Eigen::MatrixXi indexHolder_hh;
     Eigen::MatrixXi indexHolder_hp;
+    Eigen::MatrixXi indexHolder_ph;
     Eigen::MatrixXi indexHolder_pp;
-    Eigen::MatrixXi indexHolder_hhh;
     Eigen::MatrixXi indexHolder_hhp;
-    Eigen::MatrixXi indexHolder_hpp;
-    Eigen::MatrixXi indexHolder_ppp;
+    Eigen::MatrixXi indexHolder_pph;
+
+    Eigen::MatrixXi boundsHolder_hhpp_hh;
+    Eigen::MatrixXi boundsHolder_hhpp_pp;
 
     //Eigen::MatrixXi indexHolder_hp;
     //Eigen::MatrixXi indexHolder_ph;

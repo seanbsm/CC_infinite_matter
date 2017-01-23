@@ -21,6 +21,9 @@ public:
     void Qb(int ku);
     void Qc(int ku);
     void Qd(int ku);
+
+    Eigen::MatrixXd Pab(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4);
+    Eigen::MatrixXd Pij();
 };
 
 #endif // DIAGRAMS_H
