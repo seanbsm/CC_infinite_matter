@@ -449,9 +449,18 @@ Eigen::MatrixXd MakeIntMat::make2x2Block(int ku, int i1, int i2, int i3, int i4)
     int dim2 = range_upper2 - range_lower2;
 
     returnMat.conservativeResize(dim1, dim2);
-    for (int i = range_lower1; i<range_upper1; i++){
-        for (int j = range_lower2; j<range_upper2; j++){
-            returnMat(i-range_lower1, j-range_lower2) = Vhhpp_elements[Identity((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j))];
+    if (cond_hp1 && cond_ph2){
+        for (int i = range_lower1; i<range_upper1; i++){
+            for (int j = range_lower2; j<range_upper2; j++){
+                returnMat(i-range_lower1, j-range_lower2) = Vhhpp_elements[Identity((blockArrays1_pointer)(1,i), (blockArrays2_pointer)(2,j), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j))];
+            }
+        }
+    }
+    else if (cond_hh1 && cond_pp2){
+        for (int i = range_lower1; i<range_upper1; i++){
+            for (int j = range_lower2; j<range_upper2; j++){
+                returnMat(i-range_lower1, j-range_lower2) = Vhhpp_elements[Identity((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j))];
+            }
         }
     }
     return returnMat;

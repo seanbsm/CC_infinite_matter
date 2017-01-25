@@ -178,18 +178,38 @@ void MakeAmpMat::make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
 
     int id;
     if (add == true){
-        for (int i = range_lower1; i<range_upper1; i++){
-            for (int j = range_lower2; j<range_upper2; j++){
-                id = m_intClass->Identity((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j));
-                T_list[id] += inMat(i-range_lower1,j-range_lower2);
+        if (cond_hp1 && cond_ph2){
+            for (int i = range_lower1; i<range_upper1; i++){
+                for (int j = range_lower2; j<range_upper2; j++){
+                    id = m_intClass->Identity((blockArrays1_pointer)(1,i), (blockArrays2_pointer)(2,j), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j));
+                    T_list[id] += inMat(i-range_lower1,j-range_lower2);
+                }
+            }
+        }
+        else if (cond_hh1 && cond_pp2){
+            for (int i = range_lower1; i<range_upper1; i++){
+                for (int j = range_lower2; j<range_upper2; j++){
+                    id = m_intClass->Identity((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j));
+                    T_list[id] += inMat(i-range_lower1,j-range_lower2);
+                }
             }
         }
     }
     else{
-        for (int i = range_lower1; i<range_upper1; i++){
-            for (int j = range_lower2; j<range_upper2; j++){
-                id = m_intClass->Identity((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j));
-                T_list[id] = inMat(i-range_lower1,j-range_lower2);
+        if (cond_hp1 && cond_ph2){
+            for (int i = range_lower1; i<range_upper1; i++){
+                for (int j = range_lower2; j<range_upper2; j++){
+                    id = m_intClass->Identity((blockArrays1_pointer)(1,i), (blockArrays2_pointer)(2,j), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j));
+                    T_list[id] = inMat(i-range_lower1,j-range_lower2);
+                }
+            }
+        }
+        else if (cond_hh1 && cond_pp2){
+            for (int i = range_lower1; i<range_upper1; i++){
+                for (int j = range_lower2; j<range_upper2; j++){
+                    id = m_intClass->Identity((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j));
+                    T_list[id] = inMat(i-range_lower1,j-range_lower2);
+                }
             }
         }
     }
@@ -403,9 +423,18 @@ Eigen::MatrixXd MakeAmpMat::make2x2Block(int ku, int i1, int i2, int i3, int i4,
     int dim2 = range_upper2 - range_lower2;
 
     returnMat.conservativeResize(dim1, dim2);
-    for (int i = range_lower1; i<range_upper1; i++){
-        for (int j = range_lower2; j<range_upper2; j++){
-            returnMat(i-range_lower1, j-range_lower2) = T_list[m_intClass->Identity((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j))];
+    if (cond_hp1 && cond_ph2){
+        for (int i = range_lower1; i<range_upper1; i++){
+            for (int j = range_lower2; j<range_upper2; j++){
+                returnMat(i-range_lower1, j-range_lower2) = T_list[m_intClass->Identity((blockArrays1_pointer)(1,i), (blockArrays2_pointer)(2,j), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j))];
+            }
+        }
+    }
+    else if (cond_hh1 && cond_pp2){
+        for (int i = range_lower1; i<range_upper1; i++){
+            for (int j = range_lower2; j<range_upper2; j++){
+                returnMat(i-range_lower1, j-range_lower2) = T_list[m_intClass->Identity((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j))];
+            }
         }
     }
     return returnMat;

@@ -49,14 +49,14 @@ void Diagrams::Qa(int ku){
 
 void Diagrams::Qb(int ku){
     auto it1 = std::find(m_intClass->sortVec_hp.begin(), m_intClass->sortVec_hp.end(), ku);
-    //auto it2 = std::find(m_intClass->sortVec2.begin(), m_intClass->sortVec2.end(), ku);
-    if (it1 != m_intClass->sortVec_hp.end() ){   // && it2 != sortVec2.end()){
+    auto it2 = std::find(m_intClass->sortVec_ph.begin(), m_intClass->sortVec_ph.end(), ku);
+    if (it1 != m_intClass->sortVec_hp.end() && it2 != m_intClass->sortVec_ph.end()){   // && it2 != sortVec2.end()){
         std::cout << "hey" << std::endl;
-        Eigen::MatrixXd mat1 = m_ampClass->make2x2Block(ku,0,1,0,1, m_ampClass->T_elements);
-        Eigen::MatrixXd mat2 = m_intClass->make2x2Block(ku,0,1,0,1);
-        Eigen::MatrixXd mat3 = m_ampClass->make2x2Block(ku,0,1,0,1, m_ampClass->T_elements);
+        Eigen::MatrixXd mat1 = m_ampClass->make2x2Block(ku,0,1,1,0, m_ampClass->T_elements);
+        Eigen::MatrixXd mat2 = m_intClass->make2x2Block(ku,0,1,1,0);
+        Eigen::MatrixXd mat3 = m_ampClass->make2x2Block(ku,0,1,1,0, m_ampClass->T_elements);
         Eigen::MatrixXd product= 0.5*mat1*mat2*mat3;
-        m_ampClass->make2x2Block_inverse(product, ku, 0,1,0,1, m_ampClass->T_elements_new, true);
+        m_ampClass->make2x2Block_inverse(product, ku, 0,1,1,0, m_ampClass->T_elements_new, true);
     }
     //return 0.5*product;
 }

@@ -258,11 +258,11 @@ class CCD():
         Vklcd = self.V([0,0,1,1]) #compute this once
 
         dtemp = np.einsum("klcd,cdij->klij", Vklcd, self.T2) #Qa
-        #T2new +=.25*np.einsum("klij,abkl->abij", dtemp, self.T2)
+        T2new +=.25*np.einsum("klij,abkl->abij", dtemp, self.T2)
         
         dtemp = np.einsum("klcd,acik->adil", Vklcd, self.T2) #Qb
         dtemp = np.einsum("adil,dblj->abij", dtemp, self.T2) #Qb
-        T2new += (dtemp - np.einsum("abij->baij", dtemp)) #Qb
+        #T2new += (dtemp )#- np.einsum("abij->baij", dtemp)) #Qb
         
         #optional, but highly inefficient: dtemp = np.einsum("klcd,cdik,abjl", self.V([0,0,1,1]), self.T2, self.T2) #Qc
         dtemp = np.einsum("klcd,cdki->il", Vklcd, self.T2) #Qc
