@@ -29,6 +29,7 @@ double Master::Iterator(double eps, double conFac){
     //would be better to simply let "Amplituder" and "diagrams" inherit master?
     diagrams->setAmpClass(Amplituder);
     diagrams->setIntClass(Interaction);
+    diagrams->setSystem(m_system);
     Amplituder->setIntClass(Interaction);
     Amplituder->setSystem(m_system);
     Amplituder->setElements();
@@ -41,6 +42,7 @@ double Master::Iterator(double eps, double conFac){
     for (int h = 0; h<Interaction->numOfKu; h++){
         //Using array<->matrix conversion costs no cpu time in Eigen, so this is fine
         Eigen::MatrixXd Vhhpp = Interaction->make2x2Block(Interaction->Vhhpp_i[h],0,0,1,1);
+        //Eigen::MatrixXd Vhhpp = Interaction->make2x2Block_alt(h);
         Eigen::MatrixXd temp = Vhhpp.array()*Amplituder->denomMat[h].array();
         ECCD_old += ((Vhhpp.transpose())*(temp)).trace();
     }
@@ -64,6 +66,7 @@ double Master::Iterator(double eps, double conFac){
         ECCD = 0;
         //Amplituder->T_elements = Amplituder->T_elements_new;    //could make an Amplituder::updateT or something
         Amplituder->T_elements_new.clear();
+        diagrams->Qb();
         for (int hh = 0; hh<Interaction->numOfKu; hh++){
 
             /*Notes:
@@ -92,7 +95,7 @@ double Master::Iterator(double eps, double conFac){
 
             int ku = Interaction->Vhhpp_i[hh];
             //std::cout << "diagrams start" << std::endl;
-            diagrams->Qb(ku);
+            //diagrams->Qa(ku);
             //std::cout << "diagrams end" << std::endl;
 
             Eigen::MatrixXd Vhhpp           = Interaction->make2x2Block(ku,0,0,1,1); //works

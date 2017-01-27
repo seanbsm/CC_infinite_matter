@@ -96,6 +96,22 @@ int main()
     //places1[9999] += 2;
     cout << places1[9999] << endl;
 
+
+    std::vector<int> v3_temp;
+    for (int i=0; i<1e3; i++){
+        v3_temp.push_back(i);
+    }
+    cout << v3_temp[0] << endl;
+
+    //VectorXf::Map(pointer, size)
+      //  double* ptr = &v[0];
+    //Eigen::VectorXi v3;
+
+    int* ptr = &v3_temp[0];
+    Eigen::Map<Eigen::VectorXi> v3(ptr, v3_temp.size());
+    //cout << v3 << endl;
+
+
     /*Eigen::VectorXi vec1;
     vec1 << 1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,4,4,4,4,5,5,5,5,5,5,5,5,6,6,6,6;
     Eigen::VectorXi vec2;

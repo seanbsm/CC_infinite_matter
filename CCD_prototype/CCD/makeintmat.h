@@ -24,7 +24,7 @@ private:
 
     //bool contractor(int i, int j){ return i==j; } //contracts repeated elements to a single edit
 public:
-    //blockArrays hold quantum numbers, sortVec holds distinct kUnique
+    //blockArrays hold quantum numbers
     Eigen::MatrixXi blockArrays_h;
     Eigen::MatrixXi blockArrays_p;
     Eigen::MatrixXi blockArrays_hh;
@@ -54,8 +54,16 @@ public:
     Eigen::MatrixXi indexHolder_hhp;
     Eigen::MatrixXi indexHolder_pph;
 
+    // these additional boundsHolders are possibly not necessary after the implementation of make3x1- and make2x2Block
+    //these are needed for Qa
     Eigen::MatrixXi boundsHolder_hhpp_hh;
     Eigen::MatrixXi boundsHolder_hhpp_pp;
+
+    //these are needed for Qc and Qd
+    Eigen::MatrixXi indexHolder_h_pph_hpp;
+    Eigen::MatrixXi indexHolder_h_pph_h;
+    Eigen::MatrixXi indexHolder_hhp_p_hhp;
+    Eigen::MatrixXi indexHolder_hhp_p_p;
 
     //Eigen::MatrixXi indexHolder_hp;
     //Eigen::MatrixXi indexHolder_ph;
@@ -73,16 +81,27 @@ public:
 
     Eigen::MatrixXd                 make3x1Block(int ku, int i1, int i2, int i3, int i4);
     Eigen::MatrixXd                 make2x2Block(int ku, int i1, int i2, int i3, int i4);
+    Eigen::MatrixXd                 make2x2Block_alt(int channel);
 
     void                            makeMatMap(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
+    void                            makeMatVec(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
     int                             Identity(int h1, int h2, int p1, int p2);
     std::map<int, double>           Vhhpp_elements;
 
+    //Eigen::VectorXd                 Vhhpp_vector;
+    std::vector<double>             Vhhpp_vector;
+    int                             Vhhpp_counter = 0;
+
     //interaction matrices for CCD
-    std::vector<Eigen::MatrixXd>   Vhhhh;
     std::vector<Eigen::MatrixXd>   Vhphp;
     std::vector<Eigen::MatrixXd>   Vhhpp;
+
+    //these are special
+    std::vector<Eigen::MatrixXd>   Vhhhh;
     std::vector<Eigen::MatrixXd>   Vpppp;
+
+    std::vector<Eigen::MatrixXi>   V_hp_hp;
+    std::vector<Eigen::MatrixXi>   V_hh_pp;
 
     //vectors with kUnique for each matrix, indices match ( that is, Vhhhh_i[h] <-> Vhhhh[h] )
     std::vector<int>               Vhhhh_i;

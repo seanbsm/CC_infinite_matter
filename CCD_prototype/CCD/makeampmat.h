@@ -21,10 +21,13 @@ public:
     std::map<int, double>           T_elements;
     std::map<int, double>           T_elements_new;
 
+    std::vector<double>             T_elements_alt;
+    std::vector<double>             T_elements_alt_new;
+
     Eigen::MatrixXd                 make3x1Block(int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list);
     Eigen::MatrixXd                 make2x2Block(int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list);
 
-    void                            make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list);
+    void                            make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list, bool add);
     void                            make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list, bool add);
 
     void setIntClass(class MakeIntMat* intClass);

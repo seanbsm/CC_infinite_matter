@@ -24,6 +24,17 @@ vector<size_t> sort_indexes(const vector<T> &v) {
     return idx;
 }
 
+
+
+
+
+
+
+
+
+
+
+
 //0 means hole, 1 means particle
 void MakeIntMat::mapper_1(int i1){
     Eigen::MatrixXi   blockArrays_temp;
@@ -120,6 +131,7 @@ void  MakeIntMat::mapper_2(int i1, int i2){
             }
         }
     }
+    // 1 0
     else if (cond_ph){
         colSize = (m_Ns-m_Nh)*m_Nh;
         blockArrays_temp.conservativeResize(3, colSize);
@@ -245,6 +257,18 @@ void MakeIntMat::mapper_3(int i1, int i2, int i3){
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 //returns a block matrix of dimensions 3x1, currently only made for Vhhpp
 // i1,i2,i3,i4 specify whether there is a hole or particle (by a 0 or 1)  index at index ij, for j=1-4
 Eigen::MatrixXd MakeIntMat::make3x1Block(int ku, int i1, int i2, int i3, int i4){
@@ -327,13 +351,61 @@ Eigen::MatrixXd MakeIntMat::make3x1Block(int ku, int i1, int i2, int i3, int i4)
     int dim2 = range_upper2 - range_lower2;
 
     returnMat.conservativeResize(dim1, dim2);
-    for (int i = range_lower1; i<range_upper1; i++){
-        for (int j = range_lower2; j<range_upper2; j++){
-            returnMat(i-range_lower1, j-range_lower2) = Vhhpp_elements[Identity((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j))];
+    int id;
+    if (cond_hhp && cond_p){
+        for (int i = range_lower1; i<range_upper1; i++){
+            for (int j = range_lower2; j<range_upper2; j++){
+                id = Identity((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j));
+                returnMat(i-range_lower1, j-range_lower2) = Vhhpp_elements[id];
+            }
+        }
+    }
+    else if (cond_pph && cond_h){
+        for (int i = range_lower1; i<range_upper1; i++){
+            for (int j = range_lower2; j<range_upper2; j++){
+                id = Identity((blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i));
+                returnMat(i-range_lower1, j-range_lower2) = Vhhpp_elements[id];
+            }
         }
     }
     return returnMat;
 }
+
+
+
+
+
+
+
+
+
+
+Eigen::MatrixXd MakeIntMat::make2x2Block_alt(int channel){
+    int dim1 = V_hh_pp[channel].rows();
+    int dim2 = V_hh_pp[channel].cols();
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(dim1, dim2);
+    for (int i = 0; i<dim1; i++){
+        for (int j = 0; j<dim2; j++){
+            //returnMat(i-range_lower1, j-range_lower2) = m_system->assym((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j));
+            returnMat(i, j) = Vhhpp_vector[V_hh_pp[channel](i, j)];
+        }
+    }
+    return returnMat;
+
+}
+
+
+
+
+
+
+
+
+
+
+
 
 //returns a block matrix of dimensions 2x2, currently only made for Vhhpp
 // i1,i2,i3,i4 specify whether there is a hole or particle (by a 0 or 1) index at index ij, for j=1-4
@@ -466,6 +538,16 @@ Eigen::MatrixXd MakeIntMat::make2x2Block(int ku, int i1, int i2, int i3, int i4)
     return returnMat;
 }
 
+
+
+
+
+
+
+
+
+
+
 void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
 
     m_system = system;
@@ -479,6 +561,8 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     mapper_1(1);        //p
 
     mapper_2(0,0);      //hh
+    mapper_2(0,1);      //hp
+    mapper_2(1,0);      //ph
     mapper_2(1,1);      //pp
 
     mapper_3(0,0,1);    //hhp
@@ -716,7 +800,10 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         range_lower_pp = boundsHolder_hhpp_pp(0,h);
         range_upper_pp = boundsHolder_hhpp_pp(1,h);
         makeMatMap(blockArrays_hh, blockArrays_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp);
+        makeMatVec(blockArrays_hh, blockArrays_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp);
     }
+
+
 
     cout << "made Vhhpp" << endl;
 
@@ -775,6 +862,16 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
 }
 
 
+
+
+
+
+
+
+
+
+
+
 //I get the same result using this as I get using Rektblock
 Eigen::MatrixXd MakeIntMat::makeSquareBlock(Eigen::MatrixXi& array, int range_lower, int range_upper){
     int dim = range_upper - range_lower;
@@ -804,6 +901,18 @@ Eigen::MatrixXd MakeIntMat::makeRektBlock(Eigen::MatrixXi& array1, Eigen::Matrix
     return returnMat;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 void MakeIntMat::makeMatMap(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2){
     for (int i = range_lower1; i<range_upper1; i++){
         for (int j = range_lower2; j<range_upper2; j++){
@@ -814,6 +923,38 @@ void MakeIntMat::makeMatMap(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, in
 
         }
     }
+}
+
+void MakeIntMat::makeMatVec(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2){
+    //std::vector<double> tempVec;
+
+    int dim1 = range_upper1 - range_lower1;
+    int dim2 = range_upper2 - range_lower2;
+    Eigen::MatrixXi insertMat;
+
+    insertMat.conservativeResize(dim1, dim2);
+    for (int i = range_lower1; i<range_upper1; i++){
+        for (int j = range_lower2; j<range_upper2; j++){
+            double val = m_system->assym((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j));
+            if (val != 0){
+                //tempVec.push_back(val);
+                Vhhpp_vector.push_back(val);
+                insertMat(i-range_lower1, j-range_lower2) = Vhhpp_counter;
+                Vhhpp_counter += 1; //class counter, keeps value across function calls
+            }
+            else{
+                insertMat(i-range_lower1, j-range_lower2) = -1;
+            }
+        }
+    }
+
+   // These lines are required (elsewhere than this function, I jsut haven't moved them) to have an Eigen vector
+   // rather than an std vector
+   // double* ptr = &tempVec[0];
+   // Eigen::Map<Eigen::VectorXd> tempVec2(ptr, tempVec.size());
+   // Vhhpp_vector = tempVec2;
+
+    V_hh_pp.push_back(insertMat);
 }
 
 int MakeIntMat::Identity(int h1, int h2, int p1, int p2){
