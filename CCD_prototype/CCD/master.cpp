@@ -66,7 +66,7 @@ double Master::Iterator(double eps, double conFac){
         ECCD = 0;
         //Amplituder->T_elements = Amplituder->T_elements_new;    //could make an Amplituder::updateT or something
         Amplituder->T_elements_new.clear();
-        diagrams->Qb();
+        diagrams->Lb();
         for (int hh = 0; hh<Interaction->numOfKu; hh++){
 
             /*Notes:

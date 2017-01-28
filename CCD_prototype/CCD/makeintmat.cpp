@@ -522,11 +522,36 @@ Eigen::MatrixXd MakeIntMat::make2x2Block(int ku, int i1, int i2, int i3, int i4)
 
     returnMat.conservativeResize(dim1, dim2);
     if (cond_hp1 && cond_ph2){
+        int count1 = 0;
+        int count2 = 0;
         for (int i = range_lower1; i<range_upper1; i++){
             for (int j = range_lower2; j<range_upper2; j++){
+                count1 ++;
                 returnMat(i-range_lower1, j-range_lower2) = Vhhpp_elements[Identity((blockArrays1_pointer)(1,i), (blockArrays2_pointer)(2,j), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j))];
+                int ii = (blockArrays1_pointer)(1,i);
+                int jj = (blockArrays2_pointer)(2,j);
+                int aa = (blockArrays1_pointer)(2,i);
+                int bb = (blockArrays2_pointer)(1,j);
+                if (m_system->kUnique2(ii,jj,1,1) == m_system->kUnique2(aa,bb,1,1) ){
+                    count2 ++;
+                }
+                /*if (ii>=m_Nh){
+                    std::cout << "problem ii" << std::endl;
+                }
+                if (jj>=m_Nh){
+                    std::cout << "problem jj" << std::endl;
+                }
+                if (aa<m_Nh){
+                    std::cout << "problem aa" << std::endl;
+                }
+                if (bb<m_Nh){
+                    std::cout << "problem bb" << std::endl;
+                }*/
             }
         }
+        /*if (count1 != count2){
+            std::cout << count1 << " " << count2 << std::endl;
+        }*/
     }
     else if (cond_hh1 && cond_pp2){
         for (int i = range_lower1; i<range_upper1; i++){
@@ -577,6 +602,9 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
 
     int range_lower_hh  = 0;
     int range_upper_hh  = 0;
+
+    int range_lower_hp  = 0;
+    int range_upper_hp  = 0;
 
     int range_lower_pp  = 0;
     int range_upper_pp  = 0;
@@ -825,6 +853,12 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
 
     int prev = 0;
     int length = boundsHolder_hhpp_hh.cols();
+
+    for (int hp=0; hp<indexHolder_hp.cols(); hp++){
+        range_lower_hp = indexHolder_hp(0,hp);
+        range_upper_hp = indexHolder_hp(1,hp);
+        Vhphp.push_back( makeSquareBlock(blockArrays_hp, range_lower_hp, range_upper_hp) );
+    }
 
     for (int p=0; p<boundsHolder_hhpp_hh.cols(); p++){
         range_lower_pp = boundsHolder_hhpp_pp(0,p);

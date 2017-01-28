@@ -24,17 +24,29 @@ void Diagrams::setAmpClass(class MakeAmpMat* ampClass){
     m_ampClass = ampClass;
 }
 
-void Diagrams::La(int ku){
-    //Eigen::MatrixXd product = m_ampClass->Amplitudes[index]*m_intClass->Vpppp[index];
-    //return 0.5*product;
+void Diagrams::La(){
+    for (int n=0; n<m_intClass->Vhhpp_i.size(); n++){
+        int ku = m_intClass->Vhhpp_i[n];
+        Eigen::MatrixXd mat1 = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T_elements);    // t_ij^cd
+        Eigen::MatrixXd mat2 = m_intClass->Vpppp[n];                            // v_ab^cd
+        Eigen::MatrixXd product = 0.5*mat1*mat2;                  // (t_ij^cd)(t_cd^ab)
+
+        m_ampClass->make2x2Block_inverse(product,ku,0,0,1,1, m_ampClass->T_elements_new, true);
+    }
 }
 
-void Diagrams::Lb(int ku){
-    //Eigen::MatrixXd product = m_intClass->Vhhhh[index]*m_ampClass->Amplitudes[index];
-    //return 0.5*product;
+void Diagrams::Lb(){
+    for (int n=0; n<m_intClass->Vhhpp_i.size(); n++){
+        int ku = m_intClass->Vhhpp_i[n];
+        Eigen::MatrixXd mat1 = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T_elements);    // t_kl^ab
+        Eigen::MatrixXd mat2 = m_intClass->Vhhhh[n];                            // v_ij^kl
+        Eigen::MatrixXd product = 0.5*mat2*mat1;                  // (v_ij^kl)(t_kl^ab)
+
+        m_ampClass->make2x2Block_inverse(product,ku,0,0,1,1, m_ampClass->T_elements_new, true);
+    }
 }
 
-void Diagrams::Lc(int ku, int index){
+void Diagrams::Lc(){
 
     //I made the script below to try and fix alignment
     //but after a meeting i've realised i may have gone about this the wrong way
@@ -82,16 +94,30 @@ void Diagrams::Lc(int ku, int index){
         }
     }*/
 
-    //return -product;
+    for (int i1=0; i1<m_intClass->sortVec_hp.size(); i1++){
+        for (int i2=0; i2<m_intClass->sortVec_ph.size(); i2++){
+            if ( m_intClass->sortVec_hp[i1] == m_intClass->sortVec_ph[i2] ){   // && it2 != sortVec2.end()){
+                int ku = m_intClass->sortVec_hp[i1];
+                Eigen::MatrixXd mat1 = m_ampClass->make2x2Block(ku,0,1,1,0, m_ampClass->T_elements);
+                Eigen::MatrixXd mat2 = m_intClass->Vhphp[i1];
+                //std::cout << mat1 << std::endl;
+                Eigen::MatrixXd product= -mat1*mat2;
+                m_ampClass->make2x2Block_inverse(product, ku, 0,1,1,0, m_ampClass->T_elements_new, true);
+            }
+        }
+    }
 }
 
-void Diagrams::Qa(int ku){
-    Eigen::MatrixXd mat1 = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T_elements);    // t_ij^ab
-    Eigen::MatrixXd mat2 = m_intClass->make2x2Block(ku,0,0,1,1);    // v_ij^ab
-    Eigen::MatrixXd mat3 = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T_elements);    // t_ij^ab
-    Eigen::MatrixXd product = 0.25*mat1*mat2.transpose()*mat3;                  // (t_ij^cd)(v_cd^kl)(t_kl^ab)
+void Diagrams::Qa(){
+    for (int n=0; n<m_intClass->numOfKu; n++){
+        int ku = m_intClass->Vhhpp_i[n];
+        Eigen::MatrixXd mat1 = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T_elements);    // t_ij^ab
+        Eigen::MatrixXd mat2 = m_intClass->make2x2Block(ku,0,0,1,1);    // v_ij^ab
+        Eigen::MatrixXd mat3 = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T_elements);    // t_ij^ab
+        Eigen::MatrixXd product = 0.25*mat1*mat2.transpose()*mat3;                  // (t_ij^cd)(v_cd^kl)(t_kl^ab)
 
-    m_ampClass->make2x2Block_inverse(product,ku,0,0,1,1, m_ampClass->T_elements_new, true);
+        m_ampClass->make2x2Block_inverse(product,ku,0,0,1,1, m_ampClass->T_elements_new, true);
+    }
     //return 0.25*product;
 }
 
@@ -102,8 +128,8 @@ void Diagrams::Qb(){
                 int ku = m_intClass->sortVec_hp[i1];
                 Eigen::MatrixXd mat1 = m_ampClass->make2x2Block(ku,0,1,1,0, m_ampClass->T_elements);
                 Eigen::MatrixXd mat2 = m_intClass->make2x2Block(ku,0,1,1,0);
-                Eigen::MatrixXd mat3 = m_ampClass->make2x2Block(ku,0,1,1,0, m_ampClass->T_elements);
-                //std::cout << mat2 << std::endl;
+                Eigen::MatrixXd mat3 = mat1;
+                //std::cout << mat1 << std::endl;
                 Eigen::MatrixXd product= 0.5*mat1*mat2*mat3.transpose();
                 m_ampClass->make2x2Block_inverse(product, ku, 0,1,1,0, m_ampClass->T_elements_new, true);
             }

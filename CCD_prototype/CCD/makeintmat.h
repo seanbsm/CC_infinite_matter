@@ -93,12 +93,12 @@ public:
     int                             Vhhpp_counter = 0;
 
     //interaction matrices for CCD
-    std::vector<Eigen::MatrixXd>   Vhphp;
     std::vector<Eigen::MatrixXd>   Vhhpp;
 
     //these are special
-    std::vector<Eigen::MatrixXd>   Vhhhh;
-    std::vector<Eigen::MatrixXd>   Vpppp;
+    std::vector<Eigen::MatrixXd>   Vpppp; //for La
+    std::vector<Eigen::MatrixXd>   Vhhhh; //for Lb
+    std::vector<Eigen::MatrixXd>   Vhphp; //for Lc
 
     std::vector<Eigen::MatrixXi>   V_hp_hp;
     std::vector<Eigen::MatrixXi>   V_hh_pp;

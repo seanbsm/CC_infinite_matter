@@ -40,7 +40,7 @@ void HEG::makeStateSpace(){
 
 int HEG::kUnique1(int k, int s1){
     Eigen::Vector4i kk( m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k) );
-    Eigen::VectorXi mom = kk;
+    Eigen::VectorXi mom = s1*kk;
 
     int val = 0;
     for (int i = 0; i<mom.rows();i++){
@@ -58,7 +58,7 @@ int HEG::kUnique1(int k, int s1){
 int HEG::kUnique2(int k, int p, int s1, int s2){
     Eigen::Vector4i kk( m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k) );
     Eigen::Vector4i kp( m_states(1,p), m_states(2,p), m_states(3,p), m_states(4,p) );
-    Eigen::VectorXi mom = kk+kp;
+    Eigen::VectorXi mom = s1*kk+s2*kp;
 
     int val = 0;
     for (int i = 0; i<mom.rows();i++){
@@ -77,19 +77,6 @@ int HEG::kUnique3(int k, int p, int q, int s1, int s2, int s3){
     Eigen::Vector4i kp( m_states(1,p), m_states(2,p), m_states(3,p), m_states(4,p) );
     Eigen::Vector4i kq( m_states(1,q), m_states(2,q), m_states(3,q), m_states(4,q) );
     Eigen::VectorXi mom = s1*kk+s2*kp+s3*kq;
-
-    /*Eigen::VectorXi mom;
-    if (k<m_Nh && p<m_Nh && q>=m_Nh){
-        mom = kk+kp-kq;
-    }
-    else if (k<m_Nh && p>=m_Nh && q>=m_Nh){
-        mom = kk+kp+kq;
-    }
-    else if (k<m_Nh && p<m_Nh && q>=m_Nh){
-        mom = kk+kp+kq;
-    }*/
-
-    //Eigen::VectorXi mom = kk+kp+kq;
 
     int val = 0;
     for (int i = 0; i<mom.rows();i++){
@@ -146,7 +133,7 @@ double HEG::assym(int p, int q, int r, int s){
     }
 }
 
-//can do a test by copying assym, and set int s = p, int r = q
+//can test this func by copying assym, and set int s = p, int r = q
 double HEG::assym_single(int p, int q){
 
     Eigen::Vector3i kp( m_states(1,p), m_states(2,p), m_states(3,p) );

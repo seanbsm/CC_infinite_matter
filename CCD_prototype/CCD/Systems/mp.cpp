@@ -48,7 +48,7 @@ void MP::makeStateSpace(){
 int MP::kUnique1(int k, int s1){
     Eigen::Matrix<int, 5, 1> kk;
     kk << m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k), m_states(5,k);
-    Eigen::VectorXi mom = kk;
+    Eigen::VectorXi mom = s1*kk;
 
     int val = 0;
     for (int i = 0; i<mom.rows();i++){
@@ -67,7 +67,7 @@ int MP::kUnique2(int k, int p, int s1, int s2){
     Eigen::Matrix<int, 5, 1> kp;
     kk << m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k), m_states(5,k);
     kp << m_states(1,p), m_states(2,p), m_states(3,p), m_states(4,p), m_states(5,p);
-    Eigen::VectorXi mom = kk+kp;
+    Eigen::VectorXi mom = s1*kk+s2*kp;
 
     int val = 0;
     for (int i = 0; i<mom.rows();i++){
@@ -88,7 +88,7 @@ int MP::kUnique3(int k, int p, int q, int s1, int s2, int s3){
     kk << m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k), m_states(5,k);
     kp << m_states(1,p), m_states(2,p), m_states(3,p), m_states(4,p), m_states(5,p);
     kq << m_states(1,q), m_states(2,q), m_states(3,q), m_states(4,q), m_states(5,q);
-    Eigen::VectorXi mom = kk+kp+kq;
+    Eigen::VectorXi mom = s1*kk+s2*kp+s3*kq;
 
     int val = 0;
     for (int i = 0; i<mom.rows();i++){

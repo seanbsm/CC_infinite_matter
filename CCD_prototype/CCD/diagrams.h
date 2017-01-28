@@ -20,10 +20,10 @@ public:
     void setIntClass(class MakeIntMat* intClass);
     void setAmpClass(class MakeAmpMat* ampClass);
     void setSystem(class System* system);
-    void La(int ku); //I made this only with the ladder diagram in mind
-    void Lb(int ku);
-    void Lc(int ku, int index); //index is a temp variable i need to check something
-    void Qa(int ku);
+    void La(); //I made this only with the ladder diagram in mind
+    void Lb();
+    void Lc(); //index is a temp variable i need to check something
+    void Qa();
     void Qb();
     void Qc();
     void Qd();

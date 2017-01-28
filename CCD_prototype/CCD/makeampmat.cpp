@@ -555,7 +555,10 @@ Eigen::MatrixXd MakeAmpMat::make2x2Block(int ku, int i1, int i2, int i3, int i4,
                 int aa = (blockArrays1_pointer)(2,i);
                 int bb = (blockArrays2_pointer)(1,j);
                 if (m_system->kUnique2(ii,jj,1,1) == m_system->kUnique2(aa,bb,1,1) ){
-                    std::cout << returnMat(i-range_lower1, j-range_lower2) << std::endl;
+                    if ( T_list.find(m_system->kUnique2(ii,jj,1,1)) != T_list.end() ) {
+                      // not found
+                        std::cout << returnMat(i-range_lower1, j-range_lower2) << std::endl;
+                    }
                 }*/
                 //std::cout << (blockArrays1_pointer)(1,i)<<" "<< (blockArrays2_pointer)(2,j)<<" "<< (blockArrays1_pointer)(2,i) <<" "<< (blockArrays2_pointer)(1,j) << std::endl;
             }
