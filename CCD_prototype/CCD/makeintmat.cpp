@@ -94,6 +94,48 @@ void MakeIntMat::mapper_1(int i1){
     }
 }
 
+
+
+
+void  MakeIntMat::mapper_hp(){
+
+    int index       = 0;
+    int colSize     = m_Nh*(m_Ns-m_Nh);
+    int range_upper = 0;
+    int range_lower = 0;
+    Eigen::MatrixXi   blockArrays_temp(3, colSize);
+
+    for (int i=0; i<m_Nh; i++){
+        for (int a=m_Nh; a<m_Ns; a++){
+            blockArrays_temp.col(index) << m_system->kUnique2(i,a,1,1),i,a;
+            index += 1;
+        }
+    }
+
+    Eigen::MatrixXi blockArrays = blockArrays_temp;     //need this
+    Eigen::VectorXi veryTempVec = blockArrays_temp.row(0);
+    std::vector<int> sortVec(veryTempVec.data(), veryTempVec.row(0).data() + blockArrays_temp.cols());
+    std::vector<int> tempVec = sortVec;
+
+    index = 0;
+    for (auto i: sort_indexes(tempVec)){
+        blockArrays.col(index) = blockArrays_temp.col(i);
+        sortVec[index]         = tempVec[i];
+        index += 1;
+    }
+
+    sortVec.erase( unique( sortVec.begin(), sortVec.end() ), sortVec.end() ); //need this
+
+    blockArrays_hp_s = blockArrays;
+    sortVec_hp_s     = sortVec;
+}
+
+
+
+
+
+
+
 void  MakeIntMat::mapper_2(int i1, int i2){
 
     Eigen::MatrixXi   blockArrays_temp;
@@ -528,24 +570,31 @@ Eigen::MatrixXd MakeIntMat::make2x2Block(int ku, int i1, int i2, int i3, int i4)
             for (int j = range_lower2; j<range_upper2; j++){
                 count1 ++;
                 returnMat(i-range_lower1, j-range_lower2) = Vhhpp_elements[Identity((blockArrays1_pointer)(1,i), (blockArrays2_pointer)(2,j), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j))];
-                int ii = (blockArrays1_pointer)(1,i);
+                /*int ii = (blockArrays1_pointer)(1,i);
                 int jj = (blockArrays2_pointer)(2,j);
                 int aa = (blockArrays1_pointer)(2,i);
                 int bb = (blockArrays2_pointer)(1,j);
                 if (m_system->kUnique2(ii,jj,1,1) == m_system->kUnique2(aa,bb,1,1) ){
                     count2 ++;
-                }
-                /*if (ii>=m_Nh){
-                    std::cout << "problem ii" << std::endl;
-                }
-                if (jj>=m_Nh){
-                    std::cout << "problem jj" << std::endl;
-                }
-                if (aa<m_Nh){
-                    std::cout << "problem aa" << std::endl;
-                }
-                if (bb<m_Nh){
-                    std::cout << "problem bb" << std::endl;
+                }*/
+            }
+        }
+        /*if (count1 != count2){
+            std::cout << count1 << " " << count2 << std::endl;
+        }*/
+    }
+    if (cond_ph1 && cond_ph2){
+        int count1 = 0;
+        int count2 = 0;
+        for (int i = range_lower1; i<range_upper1; i++){
+            for (int j = range_lower2; j<range_upper2; j++){
+                returnMat(i-range_lower1, j-range_lower2) = Vhhpp_elements[Identity((blockArrays1_pointer)(2,i), (blockArrays2_pointer)(2,j), (blockArrays1_pointer)(1,i), (blockArrays2_pointer)(1,j))];
+                /*int ii = (blockArrays1_pointer)(2,i);
+                int jj = (blockArrays2_pointer)(2,j);
+                int aa = (blockArrays1_pointer)(1,i);
+                int bb = (blockArrays2_pointer)(1,j);
+                if (m_system->kUnique2(ii,jj,1,1) == m_system->kUnique2(aa,bb,1,1) ){
+                    count2 ++;
                 }*/
             }
         }
@@ -589,6 +638,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     mapper_2(0,1);      //hp
     mapper_2(1,0);      //ph
     mapper_2(1,1);      //pp
+    mapper_hp();        //hp for Vhphp
 
     mapper_3(0,0,1);    //hhp
     mapper_3(1,1,0);    //pph
@@ -631,7 +681,6 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     counter     = 0;
     range_lower = 0;
     range_upper = 0;
-
     indexHolder_p.conservativeResize(2,sortVec_p.size());
     for (int p=0; p<sortVec_p.size(); p++){
         int val_p = sortVec_p[p];
@@ -649,7 +698,6 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     counter     = 0;
     range_lower = 0;
     range_upper = 0;
-
     indexHolder_hh.conservativeResize(2,sortVec_hh.size());
     for (int hh=0; hh<sortVec_hh.size(); hh++){
         int val_hh = sortVec_hh[hh];
@@ -667,7 +715,6 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     counter     = 0;
     range_lower = 0;
     range_upper = 0;
-
     indexHolder_hp.conservativeResize(2,sortVec_hp.size());
     for (int hp=0; hp<sortVec_hp.size(); hp++){
         int val_hp = sortVec_hp[hp];
@@ -685,7 +732,6 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     counter     = 0;
     range_lower = 0;
     range_upper = 0;
-
     indexHolder_ph.conservativeResize(2,sortVec_ph.size());
     for (int ph=0; ph<sortVec_ph.size(); ph++){
         int val_ph = sortVec_ph[ph];
@@ -703,7 +749,23 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     counter     = 0;
     range_lower = 0;
     range_upper = 0;
+    indexHolder_hp_s.conservativeResize(2,sortVec_hp_s.size());
+    for (int hp=0; hp<sortVec_hp_s.size(); hp++){
+        int val_hp = sortVec_hp_s[hp];
+        for (int bA_hp=0; bA_hp<m_Nh*(m_Ns-m_Nh); bA_hp++){
+            if (val_hp == blockArrays_hp_s(0,bA_hp)){
+                range_upper = bA_hp+1;
+                counter += 1;
+            }
+        }
+        range_lower = range_upper - counter;
+        counter = 0;
+        indexHolder_hp_s.col(hp) << range_lower, range_upper; //this now has same indices as sortVec
+    }
 
+    counter     = 0;
+    range_lower = 0;
+    range_upper = 0;
     indexHolder_pp.conservativeResize(2,sortVec_pp.size());
     for (int pp=0; pp<sortVec_pp.size(); pp++){
         int val_pp = sortVec_pp[pp];
@@ -721,7 +783,6 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     counter     = 0;
     range_lower = 0;
     range_upper = 0;
-
     indexHolder_hhp.conservativeResize(2,sortVec_hhp.size());
     for (int hhp=0; hhp<sortVec_hhp.size(); hhp++){
         int val_hhp = sortVec_hhp[hhp];
@@ -739,7 +800,6 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     counter     = 0;
     range_lower = 0;
     range_upper = 0;
-
     indexHolder_pph.conservativeResize(2,sortVec_pph.size());
     for (int pph=0; pph<sortVec_pph.size(); pph++){
         int val_pph = sortVec_pph[pph];
@@ -844,7 +904,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
 
 
 
-    //Below we make Vpppp and Vhhhh, which are distinct from Vhhpp --> don't need any remapping of elements
+    //Below we make Vpppp, Vhhhh, and Vhphp, which are distinct from Vhhpp --> don't need any remapping of elements
     for (int h=0; h<boundsHolder_hhpp_hh.cols(); h++){
         range_lower_hh = boundsHolder_hhpp_hh(0,h);
         range_upper_hh = boundsHolder_hhpp_hh(1,h);
@@ -857,7 +917,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     for (int hp=0; hp<indexHolder_hp.cols(); hp++){
         range_lower_hp = indexHolder_hp(0,hp);
         range_upper_hp = indexHolder_hp(1,hp);
-        Vhphp.push_back( makeSquareBlock(blockArrays_hp, range_lower_hp, range_upper_hp) );
+        Vhphp.push_back( makeSquareBlock_s(blockArrays_hp, range_lower_hp, range_upper_hp) );
     }
 
     for (int p=0; p<boundsHolder_hhpp_hh.cols(); p++){
@@ -918,6 +978,20 @@ Eigen::MatrixXd MakeIntMat::makeSquareBlock(Eigen::MatrixXi& array, int range_lo
         }
     }
     returnMat = returnMat.selfadjointView<Eigen::Upper>();  //Since Vpppp is symmetric, we reflect the upper half onto the lower half
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeIntMat::makeSquareBlock_s(Eigen::MatrixXi& array, int range_lower, int range_upper){
+    int dim = range_upper - range_lower;
+    //cout << dim << endl;
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(dim, dim);
+    for (int i = range_lower; i<range_upper; i++){
+        for (int j = range_lower; j<range_upper; j++){
+            returnMat(i-range_lower,j-range_lower) = m_system->assym((array)(1,j), (array)(2,i), (array)(1,i), (array)(2,j));
+        }
+    }
+    //returnMat = returnMat.selfadjointView<Eigen::Upper>();  //Since Vpppp is symmetric, we reflect the upper half onto the lower half
     return returnMat;
 }
 

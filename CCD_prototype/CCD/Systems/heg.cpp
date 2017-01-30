@@ -42,14 +42,15 @@ int HEG::kUnique1(int k, int s1){
     Eigen::Vector4i kk( m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k) );
     Eigen::VectorXi mom = s1*kk;
 
-    int val = 0;
+    /*int val = 0;
     for (int i = 0; i<mom.rows();i++){
         if (val < mom(i)){
             val = mom(i);
         }
     }
 
-    int dk = 2*val + 1;
+    int dk = 2*val + 1;*/
+    int dk = 2*m_Nb + 1;
     int kuni = mom(0) + mom(1)*dk + mom(2)*dk*dk + mom(3)*dk*dk*dk;
     return kuni;
 }
@@ -58,16 +59,17 @@ int HEG::kUnique1(int k, int s1){
 int HEG::kUnique2(int k, int p, int s1, int s2){
     Eigen::Vector4i kk( m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k) );
     Eigen::Vector4i kp( m_states(1,p), m_states(2,p), m_states(3,p), m_states(4,p) );
-    Eigen::VectorXi mom = s1*kk+s2*kp;
+    Eigen::VectorXi mom = s1*kk + s2*kp;
 
-    int val = 0;
+    /*int val = 0;
     for (int i = 0; i<mom.rows();i++){
         if (val < mom(i)){
             val = mom(i);
         }
     }
 
-    int dk = 2*val + 1;
+    int dk = 2*val + 1;*/
+    int dk = 2*m_Nb + 1;
     int kuni = mom(0) + mom(1)*dk + mom(2)*dk*dk + mom(3)*dk*dk*dk;
     return kuni;
 }
@@ -76,16 +78,17 @@ int HEG::kUnique3(int k, int p, int q, int s1, int s2, int s3){
     Eigen::Vector4i kk( m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k) );
     Eigen::Vector4i kp( m_states(1,p), m_states(2,p), m_states(3,p), m_states(4,p) );
     Eigen::Vector4i kq( m_states(1,q), m_states(2,q), m_states(3,q), m_states(4,q) );
-    Eigen::VectorXi mom = s1*kk+s2*kp+s3*kq;
+    Eigen::VectorXi mom = s1*kk + s2*kp + s3*kq;
 
-    int val = 0;
+    /*int val = 0;
     for (int i = 0; i<mom.rows();i++){
         if (val < mom(i)){
             val = mom(i);
         }
     }
 
-    int dk = 2*val + 1;
+    int dk = 2*val + 1;*/
+    int dk = 2*m_Nb + 1;
     int kuni = mom(0) + mom(1)*dk + mom(2)*dk*dk + mom(3)*dk*dk*dk;
     return kuni;
 }

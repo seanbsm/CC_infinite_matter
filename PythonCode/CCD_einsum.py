@@ -248,10 +248,10 @@ class CCD():
         
         #T2new += .5*np.einsum("abcd,cdij->abij", self.V([1,1,1,1]), self.T2) #La (ladder)
         
-        T2new += .5*np.einsum("klij,abkl->abij", self.V([0,0,0,0]), self.T2) #Lb 
+        #T2new += .5*np.einsum("klij,abkl->abij", self.V([0,0,0,0]), self.T2) #Lb 
 
         dtemp = np.einsum("kbcj,acik->abij", self.V([0,1,1,0]), self.T2) 
-        #T2new += dtemp #- np.einsum("abij->baij", dtemp) - np.einsum("abij->abji", dtemp) + np.einsum("abij->baji", dtemp) #Lc
+        T2new += dtemp #- np.einsum("abij->baij", dtemp) - np.einsum("abij->abji", dtemp) + np.einsum("abij->baji", dtemp) #Lc
         
         #Terms quadratic in T2
         

@@ -64,55 +64,29 @@ double Master::Iterator(double eps, double conFac){
 
     while (/*conFac > eps &&*/ counter < 2e1){
         ECCD = 0;
-        //Amplituder->T_elements = Amplituder->T_elements_new;    //could make an Amplituder::updateT or something
+        //could make an Amplituder::updateT or something
         Amplituder->T_elements_new.clear();
-        diagrams->Lb();
+        diagrams->Lc();
         for (int hh = 0; hh<Interaction->numOfKu; hh++){
 
-            /*Notes:
-             * I've been testing this program with CCD_newVmat.py, as it handles all diagrams
-             * My python script also gives the exact same results as Audun's code, for all diagrams
-             *
-             * Vhhpp and denomMat works for all Nh and Nb
-             *
-             * La gives wrong results --> probably Vpppp that is wrong
-             *
-             * Vhhhh (i.e. diagrams Lb) works for Nh=2, not for Nh=14 (regardless of Nb)... weird
-             *
-             * makeSquareBlock works same as makeRektBlock, as I've tried using both for Vpppp -> same results
-             *
-             * thoughts: i think there's something wrong with making the blocks, but i can't figure out what
-             *
-             * Qa, which only uses Vhhpp, doesn't work either -> something iffy about my iteration?
-             */
-
-            /*Amplituder->Amplitudes[hh] = ( Interaction->Vhhpp[hh] + diagrams->La(hh)
-                                                                  + diagrams->Lb(hh)
-                                                                  + diagrams->Qa(hh)
-                                         ).array()
-                                        *Amplituder->denomMat[hh].array();*/
-            //Amplituder->T_elements[];
-
             int ku = Interaction->Vhhpp_i[hh];
-            //std::cout << "diagrams start" << std::endl;
-            //diagrams->Qa(ku);
-            //std::cout << "diagrams end" << std::endl;
 
-            Eigen::MatrixXd Vhhpp           = Interaction->make2x2Block(ku,0,0,1,1); //works
-            Eigen::MatrixXd D_contributions = Amplituder->make2x2Block(ku,0,0,1,1, Amplituder->T_elements_new); //this contains the diagram contributions
-            Eigen::MatrixXd temp = (Vhhpp + D_contributions).array()*Amplituder->denomMat[hh].array(); //works
-            Amplituder->make2x2Block_inverse(temp, ku, 0,0,1,1, Amplituder->T_elements_new, false); //can't do the addition in inverse due to this line, get stacking of elements
+            Eigen::MatrixXd Vhhpp           = Interaction->make2x2Block(ku,0,0,1,1);
+            Eigen::MatrixXd D_contributions = Amplituder->make2x2Block(ku,0,0,1,1, Amplituder->T_elements_new);
+            Eigen::MatrixXd temp = (Vhhpp + D_contributions).array()*Amplituder->denomMat[hh].array();
+
+            Amplituder->make2x2Block_inverse(temp, ku, 0,0,1,1, Amplituder->T_elements_new, false);
 
             Eigen::MatrixXd Thhpp = Amplituder->make2x2Block(ku,0,0,1,1, Amplituder->T_elements_new);
             ECCD += 0.25*((Vhhpp.transpose())*(Thhpp)).trace();
-            //ECCD += 0.25*((Interaction->Vhhpp[hh].transpose())*(Amplituder->Amplitudes[hh])).trace();
         }
         cout << std::setprecision (12) << ECCD << endl;
         conFac = abs(ECCD - ECCD_old);
         ECCD_old = ECCD;
         counter += 1;
         Amplituder->T_elements = Amplituder->T_elements_new;
-        //ECCD = 0; too good to delete; you don't want to know how long i used on this
+
+        //ECCD = 0; too good to delete; you don't want to know how long i used to find this
     }
     return ECCD;
 

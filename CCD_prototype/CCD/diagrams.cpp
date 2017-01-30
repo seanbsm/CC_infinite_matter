@@ -47,61 +47,14 @@ void Diagrams::Lb(){
 }
 
 void Diagrams::Lc(){
-
-    //I made the script below to try and fix alignment
-    //but after a meeting i've realised i may have gone about this the wrong way
-    //which means i musn't use std::map, rather a vector
-
-    /*int range_lower_hh = m_intClass->boundsHolder_hhpp_hh(0,index);
-    int range_upper_hh = m_intClass->boundsHolder_hhpp_hh(1,index);
-    int range_lower_pp = m_intClass->boundsHolder_hhpp_pp(0,index);
-    int range_upper_pp = m_intClass->boundsHolder_hhpp_pp(1,index);
-
-    int dim_hh = range_upper_hh - range_lower_hh;
-    int dim_pp = range_upper_pp - range_lower_pp;
-
-    Eigen::MatrixXd insertMat;
-    insertMat.conservativeResize(dim_hh, dim_pp);
-
-    int ku1; //a-j
-    int ku2; //i-b
-    int ku3; //c-k
-
-    for (int h = range_lower_hh; h<range_upper_hh; h++){
-        int i = m_intClass->blockArrays_hh(0,h);
-        int j = m_intClass->blockArrays_hh(1,h);
-        for (int g = range_lower_pp; g<range_upper_pp; g++){
-            int a = m_intClass->blockArrays_pp(0,h);
-            int b = m_intClass->blockArrays_pp(1,h);
-            ku1 = m_system->kUnique2(a,j,1,-1);
-            ku2 = m_system->kUnique2(i,b,1,-1);
-
-            if (ku1 == ku2){ //if these are the same, we can start searching for c-k terms
-                auto it = std::find(m_intClass->sortVec_ph.begin(), m_intClass->sortVec_ph.end(), ku1);
-                if (it != m_intClass->sortVec_ph.end()){
-                    int range_lower = m_intClass->indexHolder_ph(0,it);
-                    int range_upper = m_intClass->indexHolder_ph(1,it);
-                    for (int f = range_lower; f<range_upper; f++){
-                        int c = m_intClass->indexHolder_ph(0,f);
-                        int k = m_intClass->indexHolder_ph(1,f);
-                        ku3 = m_system->kUnique2(c,k,1,-1);
-                        if (ku1 == ku3){
-
-                        }
-                    }
-                }
-            }
-        }
-    }*/
-
     for (int i1=0; i1<m_intClass->sortVec_hp.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ph.size(); i2++){
-            if ( m_intClass->sortVec_hp[i1] == m_intClass->sortVec_ph[i2] ){   // && it2 != sortVec2.end()){
-                int ku = m_intClass->sortVec_hp[i1];
-                Eigen::MatrixXd mat1 = m_ampClass->make2x2Block(ku,0,1,1,0, m_ampClass->T_elements);
-                Eigen::MatrixXd mat2 = m_intClass->Vhphp[i1];
-                //std::cout << mat1 << std::endl;
+            if ( m_intClass->sortVec_hp[i1] == m_intClass->sortVec_ph[i2] ){
+                int ku = m_intClass->sortVec_ph[i2];
+                Eigen::MatrixXd mat1 = m_intClass->Vhphp[i1];
+                Eigen::MatrixXd mat2 = m_ampClass->make2x2Block(ku,0,1,1,0, m_ampClass->T_elements);
                 Eigen::MatrixXd product= -mat1*mat2;
+
                 m_ampClass->make2x2Block_inverse(product, ku, 0,1,1,0, m_ampClass->T_elements_new, true);
             }
         }
@@ -118,7 +71,6 @@ void Diagrams::Qa(){
 
         m_ampClass->make2x2Block_inverse(product,ku,0,0,1,1, m_ampClass->T_elements_new, true);
     }
-    //return 0.25*product;
 }
 
 void Diagrams::Qb(){
@@ -129,8 +81,7 @@ void Diagrams::Qb(){
                 Eigen::MatrixXd mat1 = m_ampClass->make2x2Block(ku,0,1,1,0, m_ampClass->T_elements);
                 Eigen::MatrixXd mat2 = m_intClass->make2x2Block(ku,0,1,1,0);
                 Eigen::MatrixXd mat3 = mat1;
-                //std::cout << mat1 << std::endl;
-                Eigen::MatrixXd product= 0.5*mat1*mat2*mat3.transpose();
+                Eigen::MatrixXd product= 0.5*mat1*mat2.transpose()*mat3;
                 m_ampClass->make2x2Block_inverse(product, ku, 0,1,1,0, m_ampClass->T_elements_new, true);
             }
         }
