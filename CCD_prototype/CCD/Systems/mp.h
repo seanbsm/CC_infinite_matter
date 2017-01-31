@@ -33,6 +33,7 @@ public:
     int             m_Nh   = 0;
     int             m_Nb   = 0;
     int             m_Ns   = 0;
+    int             m_dk   = 0;
 
     Eigen::VectorXi below_fermi;
     Eigen::VectorXi above_fermi;

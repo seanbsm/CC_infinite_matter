@@ -280,7 +280,7 @@ class CCD():
             
             
 #Initialize basis for 4 shells, rs = 1.0, 14 occupied states
-bs = electronbasis(2,1.0,14)
+bs = electronbasis(3,1.0,14)
 print "Number of states:", bs.nstates
 
 CC = CCD(bs) #initialize CCD solver for basis bs

@@ -380,6 +380,8 @@ void MakeAmpMat::addElements(bool Pij, bool Pab){
         int ii; int jj;
         int aa; int bb;
 
+        double val;
+
         for (int hh = range_lower1; hh<range_upper1; hh++){
             for (int pp = range_lower2; pp<range_upper2; pp++){
                 ii = (m_intClass->blockArrays_hh)(1,hh);
@@ -389,20 +391,23 @@ void MakeAmpMat::addElements(bool Pij, bool Pab){
 
                 id = m_intClass->Identity(ii,jj,aa,bb);
 
-                T_elements_new[id]     += T_temp[id];
+                val = 0;
+                val += T_temp[id];
 
                 if (Pab){
                     id_Pab = m_intClass->Identity(ii,jj,bb,aa);
-                    T_elements_new[id] -= T_temp[id_Pab];
+                    val -= T_temp[id_Pab];
                 }
                 if (Pij){
                     id_Pij = m_intClass->Identity(jj,ii,aa,bb);
-                    T_elements_new[id] -= T_temp[id_Pij];
+                    val -= T_temp[id_Pij];
                 }
                 if (Pij && Pab){
                     id_Pijab = m_intClass->Identity(jj,ii,bb,aa);
-                    T_elements_new[id] += T_temp[id_Pijab];
+                    val += T_temp[id_Pijab];
                 }
+
+                T_elements_new[id] += val;
             }
         }
     }

@@ -10,7 +10,7 @@ void Diagrams::setSystem(class System* system){
     m_system = system;
 }
 
-/*The makeIxJBlock(ku,i1,i2,i3,i4) functions work as follows:
+/*The make2x2Block(ku,i1,i2,i3,i4) functions work as follows:
  * ku:      this is the channel with which we need to perform the diagram product
  * i1, i2:  these are the indices of the rows
  * i3, i4:  these are the indices of the columns

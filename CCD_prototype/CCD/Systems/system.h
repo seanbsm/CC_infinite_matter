@@ -11,6 +11,7 @@ public:
     int             m_Nh;        //number of particles
     int             m_Nb;        //number of closed-shells
     int             m_Ns;
+    int             m_dk;
     Eigen::VectorXi below_fermi;
     Eigen::VectorXi above_fermi;
     Eigen::MatrixXi m_states;                         //each column is a state where the rows are quantum numbers of that states

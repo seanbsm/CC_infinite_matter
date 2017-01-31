@@ -7,6 +7,7 @@ HEG::HEG(Master* master, double m, double L3, double L2, double L1) : System(mas
 {
     m_Nh = master->m_Nh;
     m_Nb = master->m_Nb;
+    m_dk = 2*m_Nb + 1;
     m_master = master;
 
     m_m  = m;
@@ -50,8 +51,8 @@ int HEG::kUnique1(int k, int s1){
     }
 
     int dk = 2*val + 1;*/
-    int dk = 2*m_Nb + 1;
-    int kuni = mom(0) + mom(1)*dk + mom(2)*dk*dk + mom(3)*dk*dk*dk;
+
+    int kuni = mom(0) + mom(1)*m_dk + mom(2)*m_dk*m_dk + mom(3)*m_dk*m_dk*m_dk;
     return kuni;
 }
 
@@ -61,16 +62,7 @@ int HEG::kUnique2(int k, int p, int s1, int s2){
     Eigen::Vector4i kp( m_states(1,p), m_states(2,p), m_states(3,p), m_states(4,p) );
     Eigen::VectorXi mom = s1*kk + s2*kp;
 
-    /*int val = 0;
-    for (int i = 0; i<mom.rows();i++){
-        if (val < mom(i)){
-            val = mom(i);
-        }
-    }
-
-    int dk = 2*val + 1;*/
-    int dk = 2*m_Nb + 1;
-    int kuni = mom(0) + mom(1)*dk + mom(2)*dk*dk + mom(3)*dk*dk*dk;
+    int kuni = mom(0) + mom(1)*m_dk + mom(2)*m_dk*m_dk + mom(3)*m_dk*m_dk*m_dk;
     return kuni;
 }
 
@@ -80,16 +72,7 @@ int HEG::kUnique3(int k, int p, int q, int s1, int s2, int s3){
     Eigen::Vector4i kq( m_states(1,q), m_states(2,q), m_states(3,q), m_states(4,q) );
     Eigen::VectorXi mom = s1*kk + s2*kp + s3*kq;
 
-    /*int val = 0;
-    for (int i = 0; i<mom.rows();i++){
-        if (val < mom(i)){
-            val = mom(i);
-        }
-    }
-
-    int dk = 2*val + 1;*/
-    int dk = 2*m_Nb + 1;
-    int kuni = mom(0) + mom(1)*dk + mom(2)*dk*dk + mom(3)*dk*dk*dk;
+    int kuni = mom(0) + mom(1)*m_dk + mom(2)*m_dk*m_dk + mom(3)*m_dk*m_dk*m_dk;
     return kuni;
 }
 
@@ -118,16 +101,13 @@ double HEG::assym(int p, int q, int r, int s){
     int ss = m_states(4,s);
 
     if ( vecDelta(kp+kq, kr+ks) ){
+
         double returnVal = 0;
-        //double var1 = 0;
-        //double var2 = 0;
         if ( vecDelta( kp, kr) == 0 ){
             returnVal += (sp==sr)*(sq==ss)/( (double)(kr-kp).squaredNorm() );
-            //var1 = (sp==sr)*(sq==ss)/( (double)(kr-kp).squaredNorm() );
         }
         if ( vecDelta( kp, ks) == 0){
             returnVal -= (sp==ss)*(sq==sr)/( (double)(ks-kp).squaredNorm() );
-            //var2 = (sp==ss)*(sq==sr)/( (double)(ks-kp).squaredNorm() );
         }
         return returnVal/(m_L1*pi);
     }
@@ -143,13 +123,10 @@ double HEG::assym_single(int p, int q){
     Eigen::Vector3i kq( m_states(1,q), m_states(2,q), m_states(3,q) );
     int sp = m_states(4,p);
     int sq = m_states(4,q);
-   // int sr = m_states(4,r);//= sp
-   // int ss = m_states(4,s);//= sq
 
     double returnVal = 0;
     if ( vecDelta( kp, kq) == 0){
         returnVal -= (sp==sq)/( (double)(kq-kp).squaredNorm() );
-        //var2 = (sp==ss)*(sq==sr)/( (double)(ks-kp).squaredNorm() );
     }
     return returnVal/(m_L1*pi);
 }
@@ -157,6 +134,7 @@ double HEG::assym_single(int p, int q){
 bool HEG::vecDelta(Eigen::VectorXi v1, Eigen::VectorXi v2){
     int dim1 = v1.rows();
     int dim2 = v2.rows();
+
     if (dim1 != dim2){
         cout << "dimensional error" << endl;
         return 0;

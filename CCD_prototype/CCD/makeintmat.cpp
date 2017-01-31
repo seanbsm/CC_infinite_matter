@@ -695,6 +695,8 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         indexHolder_p.col(p) << range_lower, range_upper; //this now has same indices as sortVec
     }
 
+    cout << "made one-particle indexHolders" << endl;
+
     counter     = 0;
     range_lower = 0;
     range_upper = 0;
@@ -780,6 +782,8 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         indexHolder_pp.col(pp) << range_lower, range_upper; //this now has same indices as sortVec
     }
 
+    cout << "made two-particle indexHolders" << endl;
+
     counter     = 0;
     range_lower = 0;
     range_upper = 0;
@@ -813,6 +817,8 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         counter = 0;
         indexHolder_pph.col(pph) << range_lower, range_upper; //this now has same indices as sortVec
     }
+
+    cout << "made three-particle indexHolders" << endl;
 
     counter     = 0;
     range_lower = 0;
