@@ -146,20 +146,35 @@ void MakeAmpMat::make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
     int dim2 = range_upper2 - range_lower2;
 
     int id;
+    int ii; int jj;
+    int aa; int bb;
+
     if (add == true){
         if (cond_hhp && cond_p){
             for (int i = range_lower1; i<range_upper1; i++){
                 for (int j = range_lower2; j<range_upper2; j++){
-                    id = m_intClass->Identity((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j));
-                    T_list[id] += inMat(i-range_lower1,j-range_lower2);
+                    ii = (blockArrays1_pointer)(1,i);
+                    jj = (blockArrays1_pointer)(2,i);
+                    aa = (blockArrays1_pointer)(3,i);
+                    bb = (blockArrays2_pointer)(1,j);
+                    //id = m_intClass->Identity((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j));
+                    //T_list[id] += inMat(i-range_lower1,j-range_lower2);
+                    id = m_intClass->Identity(ii,jj,aa,bb);
+                    T_temp[id] =  inMat(i-range_lower1,j-range_lower2);
                 }
             }
         }
         else if (cond_pph && cond_h){
             for (int i = range_lower1; i<range_upper1; i++){
                 for (int j = range_lower2; j<range_upper2; j++){
-                    id = m_intClass->Identity((blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i));
-                    T_list[id] += inMat(i-range_lower1,j-range_lower2);
+                    ii = (blockArrays1_pointer)(3,i);
+                    jj = (blockArrays2_pointer)(1,j);
+                    aa = (blockArrays1_pointer)(1,i);
+                    bb = (blockArrays1_pointer)(2,i);
+                    //id = m_intClass->Identity((blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i));
+                    //T_list[id] += inMat(i-range_lower1,j-range_lower2);
+                    id = m_intClass->Identity(ii,jj,aa,bb);
+                    T_temp[id] =  inMat(i-range_lower1,j-range_lower2);
                 }
             }
         }
@@ -288,20 +303,36 @@ void MakeAmpMat::make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
 
 
     int id;
+    int ii; int jj;
+    int aa; int bb;
+    //std::map<int, double> T_temp;
+
     if (add == true){
         if (cond_hp1 && cond_ph2){
             for (int i = range_lower1; i<range_upper1; i++){
                 for (int j = range_lower2; j<range_upper2; j++){
-                    id = m_intClass->Identity((blockArrays1_pointer)(1,i), (blockArrays2_pointer)(2,j), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j));
-                    T_list[id] += inMat(i-range_lower1,j-range_lower2);
+                    ii = (blockArrays1_pointer)(1,i);
+                    jj = (blockArrays2_pointer)(2,j);
+                    aa = (blockArrays1_pointer)(2,i);
+                    bb = (blockArrays2_pointer)(1,j);
+                    //id = m_intClass->Identity((blockArrays1_pointer)(1,i), (blockArrays2_pointer)(2,j), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j));
+                    id = m_intClass->Identity(ii,jj,aa,bb);
+                    T_temp[id] =  inMat(i-range_lower1,j-range_lower2);
+                    //T_list[id] += inMat(i-range_lower1,j-range_lower2);//bad, T_list is MUCH bigger than T_temp
                 }
             }
         }
         else if (cond_hh1 && cond_pp2){
             for (int i = range_lower1; i<range_upper1; i++){
                 for (int j = range_lower2; j<range_upper2; j++){
-                    id = m_intClass->Identity((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j));
-                    T_list[id] += inMat(i-range_lower1,j-range_lower2);
+                    ii = (blockArrays1_pointer)(1,i);
+                    jj = (blockArrays1_pointer)(2,i);
+                    aa = (blockArrays2_pointer)(1,j);
+                    bb = (blockArrays2_pointer)(2,j);
+                    //id = m_intClass->Identity((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j));
+                    id = m_intClass->Identity(ii,jj,aa,bb);
+                    T_temp[id] =  inMat(i-range_lower1,j-range_lower2);
+                    //T_list[id] += inMat(i-range_lower1,j-range_lower2);
                 }
             }
         }
@@ -310,7 +341,12 @@ void MakeAmpMat::make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
         if (cond_hp1 && cond_ph2){
             for (int i = range_lower1; i<range_upper1; i++){
                 for (int j = range_lower2; j<range_upper2; j++){
-                    id = m_intClass->Identity((blockArrays1_pointer)(1,i), (blockArrays2_pointer)(2,j), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j));
+                    ii = (blockArrays1_pointer)(1,i);
+                    jj = (blockArrays2_pointer)(2,j);
+                    aa = (blockArrays1_pointer)(2,i);
+                    bb = (blockArrays2_pointer)(1,j);
+                    //id = m_intClass->Identity((blockArrays1_pointer)(1,i), (blockArrays2_pointer)(2,j), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j));
+                    id = m_intClass->Identity(ii,jj,aa,bb);
                     T_list[id] = inMat(i-range_lower1,j-range_lower2);
                 }
             }
@@ -318,14 +354,60 @@ void MakeAmpMat::make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
         else if (cond_hh1 && cond_pp2){
             for (int i = range_lower1; i<range_upper1; i++){
                 for (int j = range_lower2; j<range_upper2; j++){
-                    id = m_intClass->Identity((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j));
+                    ii = (blockArrays1_pointer)(1,i);
+                    jj = (blockArrays1_pointer)(2,i);
+                    aa = (blockArrays2_pointer)(1,j);
+                    bb = (blockArrays2_pointer)(2,j);
+                    //id = m_intClass->Identity((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j));
+                    id = m_intClass->Identity(ii,jj,aa,bb);
                     T_list[id] = inMat(i-range_lower1,j-range_lower2);
                 }
             }
         }
     }
-
 }
+
+
+void MakeAmpMat::addElements(bool Pij, bool Pab){
+    for (int channel = 0; channel<m_intClass->numOfKu; channel++){
+        int range_lower1 = m_intClass->boundsHolder_hhpp_hh(0,channel);
+        int range_upper1 = m_intClass->boundsHolder_hhpp_hh(1,channel);
+        int range_lower2 = m_intClass->boundsHolder_hhpp_pp(0,channel);
+        int range_upper2 = m_intClass->boundsHolder_hhpp_pp(1,channel);
+
+        int id; int id_Pij; int id_Pab; int id_Pijab;
+
+        int ii; int jj;
+        int aa; int bb;
+
+        for (int hh = range_lower1; hh<range_upper1; hh++){
+            for (int pp = range_lower2; pp<range_upper2; pp++){
+                ii = (m_intClass->blockArrays_hh)(1,hh);
+                jj = (m_intClass->blockArrays_hh)(2,hh);
+                aa = (m_intClass->blockArrays_pp)(1,pp);
+                bb = (m_intClass->blockArrays_pp)(2,pp);
+
+                id = m_intClass->Identity(ii,jj,aa,bb);
+
+                T_elements_new[id]     += T_temp[id];
+
+                if (Pab){
+                    id_Pab = m_intClass->Identity(ii,jj,bb,aa);
+                    T_elements_new[id] -= T_temp[id_Pab];
+                }
+                if (Pij){
+                    id_Pij = m_intClass->Identity(jj,ii,aa,bb);
+                    T_elements_new[id] -= T_temp[id_Pij];
+                }
+                if (Pij && Pab){
+                    id_Pijab = m_intClass->Identity(jj,ii,bb,aa);
+                    T_elements_new[id] += T_temp[id_Pijab];
+                }
+            }
+        }
+    }
+}
+
 
 //returns a block matrix of dimensions 3x1, currently only made for Vhhpp
 // i1,i2,i3,i4 specify whether there is a hole or particle (by a 0 or 1)  index at index ij, for j=1-4

@@ -819,8 +819,6 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     range_upper = 0;
 
 
-
-
     for (int h=0; h<sortVec_hh.size(); h++){
         for (int p=0; p<sortVec_pp.size(); p++){
             int val_hh = sortVec_hh[h];

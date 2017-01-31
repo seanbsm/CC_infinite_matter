@@ -18,6 +18,10 @@ void Master::setSystem(class System* system){
     m_system = system;
 }
 
+void Master::setTriples(bool argument){
+    m_triplesOn = argument;
+}
+
 double Master::Iterator(double eps, double conFac){
 
     MakeIntMat* Interaction = new MakeIntMat;
@@ -62,13 +66,23 @@ double Master::Iterator(double eps, double conFac){
     cout << temp1 << endl;
     */
 
-    while (/*conFac > eps &&*/ counter < 2e1){
+    while (conFac > eps && counter < 5e1){
         ECCD = 0;
         //could make an Amplituder::updateT or something
         Amplituder->T_elements_new.clear();
-        diagrams->Lc();
-        for (int hh = 0; hh<Interaction->numOfKu; hh++){
+        //Amplituder->T_temp.clear();
 
+        //CCD diagrams
+        diagrams->La();
+        diagrams->Lb();
+        diagrams->Lc();
+        diagrams->Qa();
+        diagrams->Qb();
+        diagrams->Qc();
+        diagrams->Qd();
+        //diagrams->Qd();
+
+        for (int hh = 0; hh<Interaction->numOfKu; hh++){
             int ku = Interaction->Vhhpp_i[hh];
 
             Eigen::MatrixXd Vhhpp           = Interaction->make2x2Block(ku,0,0,1,1);
@@ -80,7 +94,9 @@ double Master::Iterator(double eps, double conFac){
             Eigen::MatrixXd Thhpp = Amplituder->make2x2Block(ku,0,0,1,1, Amplituder->T_elements_new);
             ECCD += 0.25*((Vhhpp.transpose())*(Thhpp)).trace();
         }
+
         cout << std::setprecision (12) << ECCD << endl;
+
         conFac = abs(ECCD - ECCD_old);
         ECCD_old = ECCD;
         counter += 1;

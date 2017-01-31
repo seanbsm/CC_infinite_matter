@@ -19,6 +19,7 @@ public:
     std::vector<Eigen::MatrixXd>  Amplitudes;
 
     std::map<int, double>           T_elements;
+    std::map<int, double>           T_temp;
     std::map<int, double>           T_elements_new;
 
     std::vector<double>             T_elements_alt;
@@ -29,6 +30,7 @@ public:
 
     void                            make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list, bool add);
     void                            make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list, bool add);
+    void                            addElements(bool Pij, bool Pab);
 
     void setIntClass(class MakeIntMat* intClass);
     void setSystem(class System* system);
