@@ -3,6 +3,9 @@
 #include <iostream>
 #include <math.h>
 #include <eigen3/Eigen/Dense>
+#include <chrono>
+
+typedef std::chrono::high_resolution_clock Clock;   //needed for timing
 
 //author made files
 #include "makestatespace.h"
@@ -21,7 +24,7 @@ int main()
 //we use natural units
     double  pi      =   M_PI;
     int     Nh      =   14;							//number of particles
-    int     Nb      =   7;							//number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 can at max have N=14)
+    int     Nb      =   15;							//number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 can at max have N=14)
     double  rs      =   1;                          //Wigner Seitz radius
     double  rb      =   1;                          //Bohr radius [MeV^-1]
     double  m       =   1;                          //electron mass [MeV]
@@ -32,16 +35,20 @@ int main()
     double  eps     =   1e-12;
     double  conFac  =   1;                          //convergence factor
 
-    bool    CCDT =   false;                      //turn on/off CCDT-1
+    bool    intermediates = true;                   //turn on/off intermediates in CCD eqs
+    bool    CCDT          = false;                  //turn on/off CCDT-1
 
     Master* master = new Master;
     master->setSize(Nh, Nb);
 
-    master->setSystem(new MP(master, m, L3, L2, L1));
+    master->setSystem(new HEG(master, m, L3, L2, L1));
 
     master->setTriples(CCDT);
+    master->setIntermediates(intermediates);
 
     cout << "C++ code" << endl;
+
+    auto t1 = Clock::now();
 
     if (CCDT){
         double ECCDT = master->Iterator(eps, conFac);
@@ -50,6 +57,19 @@ int main()
     else{
         double ECCD = master->Iterator(eps, conFac);
         cout << "Delta ECCD: "<< ECCD << endl;
+    }
+
+    auto t2 = Clock::now();
+
+    if (intermediates){
+        std::cout << "Time used: "
+                  << std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count()
+                  << " seconds, with intermediates ON" << std::endl;
+    }
+    else{
+        std::cout << "Time used: "
+                  << std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count()
+                  << " seconds, with intermediates OFF" << std::endl;
     }
 
     return 0;

@@ -141,32 +141,91 @@ void Diagrams::Qd(){
     m_ampClass->T_temp.clear();
 }
 
-Eigen::MatrixXd Pab(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4){
-    int rowDim = inMat.rows();
-    int colDim = inMat.cols();
+void Diagrams::I1_term(){
+    for (int n=0; n<m_intClass->Vhhpp_i.size(); n++){
+        int ku = m_intClass->Vhhpp_i[n];
 
-    Eigen::MatrixXd outMat;
-    outMat.conservativeResize(rowDim, colDim);
+        Eigen::MatrixXd mat1 = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T_elements);
+        Eigen::MatrixXd mat2 = m_intClass->make2x2Block(ku,0,0,1,1);
 
-    bool Mat3x1 = ( rowDim == 3 && colDim==1 );
-    bool Mat2x2 = ( rowDim == 2 && colDim==2 );
+        Eigen::MatrixXd I1   = 0.5*mat1*mat2.transpose();
 
-    if ( Mat3x1 ){
-        bool cond_hhp = (i1 == 0 && i2 == 0 && i3==1);
-        bool cond_pph = (i1 == 1 && i2 == 1 && i3==0);
-        bool cond_h   = (i4 == 0);
-        bool cond_p   = (i4 == 1);
+        Eigen::MatrixXd mat3 = m_intClass->Vhhhh[n].transpose();
 
+        I1 += mat3;
+
+        Eigen::MatrixXd product = 0.5*I1*mat1;
+
+        m_ampClass->make2x2Block_inverse(product,ku,0,0,1,1, m_ampClass->T_elements_new, true);
     }
-    else{
-        bool cond_hh1 = (i1 == 0 && i2 == 0);
-        bool cond_hp1 = (i1 == 0 && i2 == 1);
-        bool cond_ph1 = (i1 == 1 && i2 == 0);
-        bool cond_pp1 = (i1 == 1 && i2 == 1);
+    m_ampClass->addElements(0,0);
+    m_ampClass->T_temp.clear();
+}
 
-        bool cond_hh2 = (i3 == 0 && i4 == 0);
-        bool cond_hp2 = (i3 == 0 && i4 == 1);
-        bool cond_ph2 = (i3 == 1 && i4 == 0);
-        bool cond_pp2 = (i3 == 1 && i4 == 1);
+void Diagrams::I2_term(){
+    for (int i1=0; i1<m_intClass->sortVec_hp.size(); i1++){
+        for (int i2=0; i2<m_intClass->sortVec_ph.size(); i2++){
+            if ( m_intClass->sortVec_hp[i1] == m_intClass->sortVec_ph[i2] ){
+                int ku = m_intClass->sortVec_ph[i2];
+
+
+                Eigen::MatrixXd mat1 = m_ampClass->make2x2Block(ku,0,1,1,0, m_ampClass->T_elements);
+                Eigen::MatrixXd mat2 = m_intClass->make2x2Block(ku,0,1,1,0);
+
+                Eigen::MatrixXd I2   = 0.5*mat2*mat1.transpose();
+
+                Eigen::MatrixXd mat3 = m_intClass->Vhphp[i1];
+
+                I2 -= mat3;
+
+                Eigen::MatrixXd product = I2.transpose()*mat1;
+
+                m_ampClass->make2x2Block_inverse(product, ku, 0,1,1,0, m_ampClass->T_elements_new, true);
+            }
+        }
     }
+    m_ampClass->addElements(1,1);
+    m_ampClass->T_temp.clear();
+}
+
+void Diagrams::I3_term(){
+    for (int i1=0; i1<m_intClass->sortVec_h.size(); i1++){
+        for (int i2=0; i2<m_intClass->sortVec_pph.size(); i2++){
+            if ( m_intClass->sortVec_h[i1] == m_intClass->sortVec_pph[i2] ){
+                int ku = m_intClass->sortVec_h[i1];
+
+                Eigen::MatrixXd mat1 = m_ampClass->make3x1Block(ku,1,1,0,0, m_ampClass->T_elements);
+                Eigen::MatrixXd mat2 = m_intClass->make3x1Block(ku,1,1,0,0);
+
+                Eigen::MatrixXd I3   = mat2.transpose()*mat1;
+
+                Eigen::MatrixXd product = -0.5*mat1*I3;
+
+                m_ampClass->make3x1Block_inverse(product, ku, 1,1,0,0, m_ampClass->T_elements_new, true);
+            }
+        }
+    }
+    m_ampClass->addElements(1,0);
+    m_ampClass->T_temp.clear();
+}
+
+void Diagrams::I4_term(){
+    for (int i1=0; i1<m_intClass->sortVec_p.size(); i1++){
+        for (int i2=0; i2<m_intClass->sortVec_hhp.size(); i2++){
+            if ( m_intClass->sortVec_p[i1] == m_intClass->sortVec_hhp[i2] ){
+                int ku = m_intClass->sortVec_p[i1];
+
+                Eigen::MatrixXd mat1 = m_ampClass->make3x1Block(ku,0,0,1,1, m_ampClass->T_elements);
+                Eigen::MatrixXd mat2 = m_intClass->make3x1Block(ku,0,0,1,1);
+
+                Eigen::MatrixXd I3   = mat2.transpose()*mat1;
+
+                Eigen::MatrixXd product = -0.5*mat1*I3;
+
+                m_ampClass->make3x1Block_inverse(product, ku, 0,0,1,1, m_ampClass->T_elements_new, true);
+            }
+        }
+    }
+    m_ampClass->addElements(0,1);
+    m_ampClass->T_temp.clear();
 }

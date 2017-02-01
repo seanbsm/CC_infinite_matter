@@ -22,6 +22,10 @@ void Master::setTriples(bool argument){
     m_triplesOn = argument;
 }
 
+void Master::setIntermediates(bool argument){
+    m_intermediatesOn = argument;
+}
+
 double Master::Iterator(double eps, double conFac){
 
     MakeIntMat* Interaction = new MakeIntMat;
@@ -72,15 +76,23 @@ double Master::Iterator(double eps, double conFac){
         Amplituder->T_elements_new.clear();
         //Amplituder->T_temp.clear();
 
-        //CCD diagrams
-        diagrams->La();
-        diagrams->Lb();
-        diagrams->Lc();
-        diagrams->Qa();
-        diagrams->Qb();
-        diagrams->Qc();
-        diagrams->Qd();
-        //diagrams->Qd();
+        if (m_intermediatesOn){
+            diagrams->La();
+            diagrams->I1_term();  // Lb, Qa
+            diagrams->I2_term();    // Lc, Qb, due to structure of blockarrays, this is no faster than calling Lc and Qb seperatly
+            diagrams->I3_term();  // Qd
+            diagrams->I4_term();  // Qc
+        }
+        else{
+            //CCD diagrams
+            diagrams->La();
+            diagrams->Lb();
+            diagrams->Lc();
+            diagrams->Qa();
+            diagrams->Qb();
+            diagrams->Qc();
+            diagrams->Qd();
+        }
 
         for (int hh = 0; hh<Interaction->numOfKu; hh++){
             int ku = Interaction->Vhhpp_i[hh];

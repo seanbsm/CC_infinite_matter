@@ -28,8 +28,16 @@ public:
     void Qc();
     void Qd();
 
-    Eigen::MatrixXd Pab(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4);
-    Eigen::MatrixXd Pij();
+    /*
+     * Below are the intermediates.
+     * I've called them "_terms" since they aren't actually the Ii matrices themselves,
+     * but rather the terms in which they appear, eq 6.58-6.62 in Audun's thesis
+    */
+    void I1_term();
+    void I2_term();
+    void I3_term();
+    void I4_term();
+
 };
 
 #endif // DIAGRAMS_H
