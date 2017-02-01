@@ -4,6 +4,7 @@
 #include <eigen3/Eigen/Dense>
 #include <Systems/system.h>
 #include <Systems/heg.h>
+#include <Systems/mp.h>
 #include <iostream>
 #include <map>
 
@@ -12,6 +13,7 @@ class MakeIntMat
 private:
     int m_Nh = 0;
     int m_Ns = 0;
+
     //index-keepers
     Eigen::VectorXi identify_pppp;
     Eigen::VectorXi identify_hhpp;

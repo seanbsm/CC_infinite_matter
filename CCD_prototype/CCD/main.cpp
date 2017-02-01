@@ -2,8 +2,8 @@
 //other libraries
 #include <iostream>
 #include <math.h>
-#include <eigen3/Eigen/Dense>
 #include <chrono>
+#include <eigen3/Eigen/Dense>
 
 typedef std::chrono::high_resolution_clock Clock;   //needed for timing
 
@@ -24,7 +24,7 @@ int main()
 //we use natural units
     double  pi      =   M_PI;
     int     Nh      =   14;							//number of particles
-    int     Nb      =   15;							//number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 can at max have N=14)
+    int     Nb      =   12;							//number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 can at max have N=14)
     double  rs      =   1;                          //Wigner Seitz radius
     double  rb      =   1;                          //Bohr radius [MeV^-1]
     double  m       =   1;                          //electron mass [MeV]
@@ -37,6 +37,7 @@ int main()
 
     bool    intermediates = true;                   //turn on/off intermediates in CCD eqs
     bool    CCDT          = false;                  //turn on/off CCDT-1
+    bool    timer         = true;                  //turn on/off timer
 
     Master* master = new Master;
     master->setSize(Nh, Nb);
@@ -45,29 +46,31 @@ int main()
 
     master->setTriples(CCDT);
     master->setIntermediates(intermediates);
+    master->setTimer(timer);
+
 
     cout << "C++ code" << endl;
 
     auto t1 = Clock::now();
 
     if (CCDT){
-        double ECCDT = master->Iterator(eps, conFac);
+        double ECCDT = master->CC_master(eps, conFac);
         cout << "Delta ECCDT-1: "<< ECCDT << endl;
     }
     else{
-        double ECCD = master->Iterator(eps, conFac);
+        double ECCD = master->CC_master(eps, conFac);
         cout << "Delta ECCD: "<< ECCD << endl;
     }
 
     auto t2 = Clock::now();
 
     if (intermediates){
-        std::cout << "Time used: "
+        std::cout << "Total time used: "
                   << std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count()
                   << " seconds, with intermediates ON" << std::endl;
     }
     else{
-        std::cout << "Time used: "
+        std::cout << "Total time used: "
                   << std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count()
                   << " seconds, with intermediates OFF" << std::endl;
     }

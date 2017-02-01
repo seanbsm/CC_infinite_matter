@@ -1,11 +1,10 @@
 #include "master.h"
-#include "Systems/heg.h"
-#include "makeampmat.h"
-#include "makeintmat.h"
-#include "diagrams.h"
 
 #include <iostream>
- #include <iomanip> //needed for std::setprecision
+#include <chrono>
+#include <iomanip> //needed for std::setprecision
+
+typedef std::chrono::high_resolution_clock Clock;   //needed for timing
 
 using namespace std;
 
@@ -26,84 +25,109 @@ void Master::setIntermediates(bool argument){
     m_intermediatesOn = argument;
 }
 
-double Master::Iterator(double eps, double conFac){
+void Master::setTimer(bool argument){
 
-    MakeIntMat* Interaction = new MakeIntMat;
-    MakeAmpMat* Amplituder  = new MakeAmpMat;
-    Diagrams*   diagrams    = new Diagrams;
+}
+
+void Master::setClasses(){
+    MakeIntMat* m_intClass = new MakeIntMat;
+    MakeAmpMat* m_ampClass  = new MakeAmpMat;
+    Diagrams*   m_diagrams    = new Diagrams;
     cout << m_Ns << endl;
-    Interaction->makeBlockMat(m_system, m_Nh, m_Ns);
+    m_intClass->makeBlockMat(m_system, m_Nh, m_Ns);
 
-    //would be better to simply let "Amplituder" and "diagrams" inherit master?
-    diagrams->setAmpClass(Amplituder);
-    diagrams->setIntClass(Interaction);
-    diagrams->setSystem(m_system);
-    Amplituder->setIntClass(Interaction);
-    Amplituder->setSystem(m_system);
-    Amplituder->setElements();
-    Amplituder->makeDenomMat();
+    m_diagrams->setAmpClass(m_ampClass);
+    m_diagrams->setIntClass(m_intClass);
+    m_diagrams->setSystem(m_system);
+    m_ampClass->setIntClass(m_intClass);
+    m_ampClass->setSystem(m_system);
+    m_ampClass->setElements();
+    m_ampClass->makeDenomMat();
+}
 
-    double ECCD     = 0;
-    double ECCD_old = 0;
-    //for (int h = 0; h<Interaction->sortVec_hh.size(); h++){
-    //std::cout << Interaction->Vhhpp_i.size() << " " << Interaction->numOfKu << std::endl;
-    for (int h = 0; h<Interaction->numOfKu; h++){
-        //Using array<->matrix conversion costs no cpu time in Eigen, so this is fine
-        Eigen::MatrixXd Vhhpp = Interaction->make2x2Block(Interaction->Vhhpp_i[h],0,0,1,1);
-        //Eigen::MatrixXd Vhhpp = Interaction->make2x2Block_alt(h);
-        Eigen::MatrixXd temp = Vhhpp.array()*Amplituder->denomMat[h].array();
-        ECCD_old += ((Vhhpp.transpose())*(temp)).trace();
+double Master::CC_master(double eps, double conFac){
+
+    //would be better to simply let "m_ampClass" and "m_diagrams" inherit master?
+    if (m_timerOn){
+
+        auto t1 = Clock::now();
+        setClasses();
+        auto t2 = Clock::now();
+
+        std::cout << "Time used: "
+                  << std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count()
+                  << " seconds on making indexHolders" << std::endl;
+    }
+    else{
+        setClasses();
     }
 
+    double ECCD_old = 0;
+    for (int h = 0; h<m_intClass->numOfKu; h++){
+        Eigen::MatrixXd Vhhpp = m_intClass->make2x2Block(m_intClass->Vhhpp_i[h],0,0,1,1);
+        //Eigen::MatrixXd Vhhpp = m_intClass->make2x2Block_alt(h);
+        Eigen::MatrixXd temp = Vhhpp.array()*m_ampClass->denomMat[h].array();
+        ECCD_old += ((Vhhpp.transpose())*(temp)).trace();
+    }
     //check whether or not to multiply by 0.25 for MBPT2
     std::cout << "MBPT2: " << std::setprecision (12) << 0.25*ECCD_old << std::endl;
 
-    int counter = 0;
-    //std::cout << Interaction->numOfKu << " " << Interaction->Vhhpp_i.size() << std::endl;
+    double ECC;
+    if (m_timerOn){
 
-    /*
-    //test to check inverse block function
-    Eigen::MatrixXd temp1 = Amplituder->make2x2Block(Interaction->Vhhpp_i[3],0,0,1,1, Amplituder->T_elements);
-    cout << temp1 << endl;
-    Amplituder->make2x2Block_inverse(temp1, Interaction->Vhhpp_i[3], 0,0,1,1, Amplituder->T_elements);
-    temp1 = Amplituder->make2x2Block(Interaction->Vhhpp_i[3],0,0,1,1, Amplituder->T_elements);
-    cout << temp1 << endl;
-    */
+        auto t1 = Clock::now();
+        ECC = Iterator(eps, conFac, ECCD_old);
+        auto t2 = Clock::now();
+
+        std::cout << "Time used: "
+                  << std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count()
+                  << " seconds on solving CC" << std::endl;
+    }
+    else{
+        ECC = Iterator(eps, conFac, ECCD_old);
+    }
+
+    return ECC;
+}
+
+double Master::Iterator(double eps, double conFac, double E_MBPT2){
+    int counter = 0;
+    double ECCD_old = E_MBPT2;
+    double ECCD     = 0;
 
     while (conFac > eps && counter < 5e1){
         ECCD = 0;
-        //could make an Amplituder::updateT or something
-        Amplituder->T_elements_new.clear();
-        //Amplituder->T_temp.clear();
+        //could make an m_ampClass::updateT or something
+        m_ampClass->T_elements_new.clear();
 
         if (m_intermediatesOn){
-            diagrams->La();
-            diagrams->I1_term();  // Lb, Qa
-            diagrams->I2_term();    // Lc, Qb, due to structure of blockarrays, this is no faster than calling Lc and Qb seperatly
-            diagrams->I3_term();  // Qd
-            diagrams->I4_term();  // Qc
+            m_diagrams->La();
+            m_diagrams->I1_term();  // Lb, Qa
+            m_diagrams->I2_term();  // Lc, Qb, due to structure of blockarrays, this is no faster than calling Lc and Qb seperatly
+            m_diagrams->I3_term();  // Qd
+            m_diagrams->I4_term();  // Qc
         }
         else{
             //CCD diagrams
-            diagrams->La();
-            diagrams->Lb();
-            diagrams->Lc();
-            diagrams->Qa();
-            diagrams->Qb();
-            diagrams->Qc();
-            diagrams->Qd();
+            m_diagrams->La();
+            m_diagrams->Lb();
+            m_diagrams->Lc();
+            m_diagrams->Qa();
+            m_diagrams->Qb();
+            m_diagrams->Qc();
+            m_diagrams->Qd();
         }
 
-        for (int hh = 0; hh<Interaction->numOfKu; hh++){
-            int ku = Interaction->Vhhpp_i[hh];
+        for (int hh = 0; hh<m_intClass->numOfKu; hh++){
+            int ku = m_intClass->Vhhpp_i[hh];
 
-            Eigen::MatrixXd Vhhpp           = Interaction->make2x2Block(ku,0,0,1,1);
-            Eigen::MatrixXd D_contributions = Amplituder->make2x2Block(ku,0,0,1,1, Amplituder->T_elements_new);
-            Eigen::MatrixXd temp = (Vhhpp + D_contributions).array()*Amplituder->denomMat[hh].array();
+            Eigen::MatrixXd Vhhpp           = m_intClass->make2x2Block(ku,0,0,1,1);
+            Eigen::MatrixXd D_contributions = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T_elements_new);
+            Eigen::MatrixXd temp = (Vhhpp + D_contributions).array()*m_ampClass->denomMat[hh].array();
 
-            Amplituder->make2x2Block_inverse(temp, ku, 0,0,1,1, Amplituder->T_elements_new, false);
+            m_ampClass->make2x2Block_inverse(temp, ku, 0,0,1,1, m_ampClass->T_elements_new, false);
 
-            Eigen::MatrixXd Thhpp = Amplituder->make2x2Block(ku,0,0,1,1, Amplituder->T_elements_new);
+            Eigen::MatrixXd Thhpp = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T_elements_new);
             ECCD += 0.25*((Vhhpp.transpose())*(Thhpp)).trace();
         }
 
@@ -112,10 +136,9 @@ double Master::Iterator(double eps, double conFac){
         conFac = abs(ECCD - ECCD_old);
         ECCD_old = ECCD;
         counter += 1;
-        Amplituder->T_elements = Amplituder->T_elements_new;
+        m_ampClass->T_elements = m_ampClass->T_elements_new;
 
         //ECCD = 0; too good to delete; you don't want to know how long i used to find this
     }
     return ECCD;
-
 }
