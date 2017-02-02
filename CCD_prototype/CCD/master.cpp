@@ -1,4 +1,9 @@
 #include "master.h"
+#include "Systems/heg.h"
+#include "Systems/mp.h"
+#include "makeampmat.h"
+#include "makeintmat.h"
+#include "diagrams.h"
 
 #include <iostream>
 #include <chrono>
@@ -26,13 +31,13 @@ void Master::setIntermediates(bool argument){
 }
 
 void Master::setTimer(bool argument){
-
+    m_timerOn = argument;
 }
 
 void Master::setClasses(){
-    MakeIntMat* m_intClass = new MakeIntMat;
-    MakeAmpMat* m_ampClass  = new MakeAmpMat;
-    Diagrams*   m_diagrams    = new Diagrams;
+    m_ampClass = new MakeAmpMat;
+    m_intClass = new MakeIntMat;
+    m_diagrams = new Diagrams;
     cout << m_Ns << endl;
     m_intClass->makeBlockMat(m_system, m_Nh, m_Ns);
 
@@ -68,6 +73,7 @@ double Master::CC_master(double eps, double conFac){
         //Eigen::MatrixXd Vhhpp = m_intClass->make2x2Block_alt(h);
         Eigen::MatrixXd temp = Vhhpp.array()*m_ampClass->denomMat[h].array();
         ECCD_old += ((Vhhpp.transpose())*(temp)).trace();
+
     }
     //check whether or not to multiply by 0.25 for MBPT2
     std::cout << "MBPT2: " << std::setprecision (12) << 0.25*ECCD_old << std::endl;

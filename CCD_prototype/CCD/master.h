@@ -2,11 +2,7 @@
 #define MASTER_H
 
 #include <Systems/system.h>
-#include <Systems/heg.h>
-#include <Systems/mp.h>
-#include <makeampmat.h>
-#include <makeintmat.h>
-#include <diagrams.h>
+
 
 class Master
 {
