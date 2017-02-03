@@ -78,6 +78,7 @@ public:
     System* m_system = nullptr;
     void                            mapper_1(int i1);
     void                            mapper_2(int i1, int i2);
+    void                            mapper_2_alt();
     void                            mapper_3(int i1, int i2, int i3);
     void                            mapper_hp();        //special func made for Lc diagram, not necessary IF I fix sign convention for ph and hp
 

@@ -12,7 +12,7 @@ class MP : public System
 private:
     bool vecDelta(Eigen::VectorXi v1, Eigen::VectorXi v2);
 
-    double          pi     = M_PI;  //this HAS to be before V_0... values
+    const double pi      = M_PI;     //this HAS to be before V_0... values
     const double kappa_R = 1.487;    //fm^-2
     const double kappa_T = 0.639;    //fm^-2
     const double kappa_S = 0.465;    //fm^-2

@@ -130,11 +130,72 @@ void  MakeIntMat::mapper_hp(){
     sortVec_hp_s     = sortVec;
 }
 
+/*void  MakeIntMat::mapper_2_alt(){
+    Eigen::MatrixXi   blockArrays_temp;
+    int index       = 0;
+    int colSize_hh  = 0;
+    int colSize_pp  = 0;
+    int range_upper = 0;
+    int range_lower = 0;
+
+    // 0 0
+    colSize = m_Nh*m_Nh;
+    blockArrays_hh.conservativeResize(3, colSize);
+
+    for (int i=0; i<m_Nh; i++){
+        for (int j=0; j<m_Nh; j++){
+            blockArrays_temp.col(index) << m_system->kUnique2(i,j,1,1),i,j;
+            index += 1;
+        }
+    }
+
+    // 1 1
+    colSize = (m_Ns-m_Nh)*(m_Ns-m_Nh);
+    blockArrays_pp.conservativeResize(3, colSize);
+    for (int a=m_Nh; a<m_Ns; a++){
+        for (int b=m_Nh; b<m_Ns; b++){
+            blockArrays_temp.col(index) << m_system->kUnique2(a,b,1,1),a,b;
+            index += 1;
+        }
+    }
 
 
 
+    // 0 1
+    colSize = (m_Ns-m_Nh)*m_Nh;
+    blockArrays_temp.conservativeResize(3, colSize);
 
+    for (int i=0; i<m_Nh; i++){
+        for (int a=m_Nh; a<m_Ns; a++){
+            blockArrays_temp.col(index) << m_system->kUnique2(i,a,1,-1),i,a;
+            index += 1;
+        }
+    }
+    // 1 0
+    colSize = (m_Ns-m_Nh)*m_Nh;
+    blockArrays_temp.conservativeResize(3, colSize);
 
+    for (int a=m_Nh; a<m_Ns; a++){
+        for (int i=0; i<m_Nh; i++){
+            blockArrays_temp.col(index) << m_system->kUnique2(a,i,1,-1),a,i;
+            index += 1;
+        }
+    }
+
+    Eigen::MatrixXi blockArrays = blockArrays_temp;     //need this
+    Eigen::VectorXi veryTempVec = blockArrays_temp.row(0);
+    std::vector<int> sortVec(veryTempVec.data(), veryTempVec.row(0).data() + blockArrays_temp.cols());
+    std::vector<int> tempVec = sortVec;
+
+    index = 0;
+    for (auto i: sort_indexes(tempVec)){
+        blockArrays.col(index) = blockArrays_temp.col(i);
+        sortVec[index]         = tempVec[i];
+        index += 1;
+    }
+
+    sortVec.erase( unique( sortVec.begin(), sortVec.end() ), sortVec.end() ); //need this
+}*/
 
 void  MakeIntMat::mapper_2(int i1, int i2){
 
@@ -299,18 +360,6 @@ void MakeIntMat::mapper_3(int i1, int i2, int i3){
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 //returns a block matrix of dimensions 3x1, currently only made for Vhhpp
 // i1,i2,i3,i4 specify whether there is a hole or particle (by a 0 or 1)  index at index ij, for j=1-4
 Eigen::MatrixXd MakeIntMat::make3x1Block(int ku, int i1, int i2, int i3, int i4){
@@ -412,15 +461,6 @@ Eigen::MatrixXd MakeIntMat::make3x1Block(int ku, int i1, int i2, int i3, int i4)
     }
     return returnMat;
 }
-
-
-
-
-
-
-
-
-
 
 Eigen::MatrixXd MakeIntMat::make2x2Block_alt(int channel){
     int dim1 = V_hh_pp[channel].rows();
@@ -720,10 +760,13 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     indexHolder_hp.conservativeResize(2,sortVec_hp.size());
     for (int hp=0; hp<sortVec_hp.size(); hp++){
         int val_hp = sortVec_hp[hp];
-        for (int bA_hp=0; bA_hp<m_Nh*(m_Ns-m_Nh); bA_hp++){
-            if (val_hp == blockArrays_hp(0,bA_hp)){
-                range_upper = bA_hp+1;
-                counter += 1;
+        auto it = std::find(sortVec_ph.begin(), sortVec_ph.end(), val_hp);
+        if (it != sortVec_ph.end()){
+            for (int bA_hp=0; bA_hp<m_Nh*(m_Ns-m_Nh); bA_hp++){
+                if (val_hp == blockArrays_hp(0,bA_hp)){
+                    range_upper = bA_hp+1;
+                    counter += 1;
+                }
             }
         }
         range_lower = range_upper - counter;
@@ -737,10 +780,13 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     indexHolder_ph.conservativeResize(2,sortVec_ph.size());
     for (int ph=0; ph<sortVec_ph.size(); ph++){
         int val_ph = sortVec_ph[ph];
-        for (int bA_ph=0; bA_ph<m_Nh*(m_Ns-m_Nh); bA_ph++){
-            if (val_ph == blockArrays_ph(0,bA_ph)){
-                range_upper = bA_ph+1;
-                counter += 1;
+        auto it = std::find(sortVec_hp.begin(), sortVec_hp.end(), val_ph);
+        if (it != sortVec_hp.end()){
+            for (int bA_ph=0; bA_ph<m_Nh*(m_Ns-m_Nh); bA_ph++){
+                if (val_ph == blockArrays_ph(0,bA_ph)){
+                    range_upper = bA_ph+1;
+                    counter += 1;
+                }
             }
         }
         range_lower = range_upper - counter;
@@ -771,10 +817,13 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     indexHolder_pp.conservativeResize(2,sortVec_pp.size());
     for (int pp=0; pp<sortVec_pp.size(); pp++){
         int val_pp = sortVec_pp[pp];
-        for (int bA_pp=0; bA_pp<(m_Ns-m_Nh)*(m_Ns-m_Nh); bA_pp++){
-            if (val_pp == blockArrays_pp(0,bA_pp)){
-                range_upper = bA_pp+1;
-                counter += 1;
+        auto it = std::find(sortVec_hh.begin(), sortVec_hh.end(), val_pp);
+        if (it != sortVec_hh.end()){
+            for (int bA_pp=0; bA_pp<(m_Ns-m_Nh)*(m_Ns-m_Nh); bA_pp++){
+                if (val_pp == blockArrays_pp(0,bA_pp)){
+                    range_upper = bA_pp+1;
+                    counter += 1;
+                }
             }
         }
         range_lower = range_upper - counter;
@@ -790,10 +839,13 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     indexHolder_hhp.conservativeResize(2,sortVec_hhp.size());
     for (int hhp=0; hhp<sortVec_hhp.size(); hhp++){
         int val_hhp = sortVec_hhp[hhp];
-        for (int bA_hhp=0; bA_hhp<m_Nh*m_Nh*(m_Ns-m_Nh); bA_hhp++){
-            if (val_hhp == blockArrays_hhp(0,bA_hhp)){
-                range_upper = bA_hhp+1;
-                counter += 1;
+        auto it = std::find(sortVec_p.begin(), sortVec_p.end(), val_hhp);
+        if (it != sortVec_p.end()){
+            for (int bA_hhp=0; bA_hhp<m_Nh*m_Nh*(m_Ns-m_Nh); bA_hhp++){
+                if (val_hhp == blockArrays_hhp(0,bA_hhp)){
+                    range_upper = bA_hhp+1;
+                    counter += 1;
+                }
             }
         }
         range_lower = range_upper - counter;
@@ -807,10 +859,13 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     indexHolder_pph.conservativeResize(2,sortVec_pph.size());
     for (int pph=0; pph<sortVec_pph.size(); pph++){
         int val_pph = sortVec_pph[pph];
-        for (int bA_pph=0; bA_pph<m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh); bA_pph++){
-            if (val_pph == blockArrays_pph(0,bA_pph)){
-                range_upper = bA_pph+1;
-                counter += 1;
+        auto it = std::find(sortVec_h.begin(), sortVec_h.end(), val_pph);
+        if (it != sortVec_h.end()){
+            for (int bA_pph=0; bA_pph<m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh); bA_pph++){
+                if (val_pph == blockArrays_pph(0,bA_pph)){
+                    range_upper = bA_pph+1;
+                    counter += 1;
+                }
             }
         }
         range_lower = range_upper - counter;

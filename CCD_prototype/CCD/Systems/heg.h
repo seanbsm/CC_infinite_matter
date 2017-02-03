@@ -12,7 +12,7 @@ class HEG : public System
 private:
     bool vecDelta(Eigen::VectorXi v1, Eigen::VectorXi v2);
 public:
-    double          pi     = M_PI;
+    const double    pi     = M_PI;
     double          m_m    = 0;
     double          m_L3   = 0;
     double          m_L2   = 0;
