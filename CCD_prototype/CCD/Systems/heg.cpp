@@ -116,7 +116,7 @@ double HEG::assym(int p, int q, int r, int s){
     }
 }
 
-//can test this func by copying assym, and set int s = p, int r = q
+//can test this func by copying assym, and set int r = p, int s = q
 double HEG::assym_single(int p, int q){
 
     Eigen::Vector3i kp( m_states(1,p), m_states(2,p), m_states(3,p) );

@@ -89,9 +89,10 @@ double MP::f(int p){
 
 double MP::h0(int p){
     double energy = m_states(0,p);
-    return energy*2*pi*pi/(m_m*m_L2);
+    return energy*2*pi*pi*m_hbarc*m_hbarc/(m_m*m_L2);
 }
 
+/*
 double MP::assym(int p, int q, int r, int s){
     Eigen::Vector3i kp( m_states(1,p), m_states(2,p), m_states(3,p) );
     Eigen::Vector3i kq( m_states(1,q), m_states(2,q), m_states(3,q) );
@@ -135,11 +136,65 @@ double MP::assym(int p, int q, int r, int s){
     returnVal -= V_2R*(beta3-beta5) + 0.5*V_2T*(beta3+beta4-beta5-beta6) + 0.5*V_2S*(beta3-beta4-beta5+beta6);
 
     return 0.5*returnVal;
+}*/
+
+double MP::assym(int p, int q, int r, int s){
+    Eigen::Vector3i kp( m_states(1,p), m_states(2,p), m_states(3,p) );
+    Eigen::Vector3i kq( m_states(1,q), m_states(2,q), m_states(3,q) );
+    Eigen::Vector3i kr( m_states(1,r), m_states(2,r), m_states(3,r) );
+    Eigen::Vector3i ks( m_states(1,s), m_states(2,s), m_states(3,s) );
+    int sp = m_states(4,p); int tp = m_states(5,p);
+    int sq = m_states(4,q); int tq = m_states(5,q);
+    int sr = m_states(4,r); int tr = m_states(5,r);
+    int ss = m_states(4,s); int ts = m_states(5,s);
+
+    //these tests should be already performed through k_unique
+    //if ( vecDelta(kp+kq, kr+ks) == 0){ return 0;}   //momentum conservation
+    //if ( sp+sq != sr+ss){ return 0; }               //spin conservation
+    //if ( tp+tq != tr+ts){ return 0; }               //isospin conservation
+
+    double q2_dir = piOverL*piOverL*(kp-kq-kr+ks).squaredNorm();
+    double q2_ex = piOverL*piOverL*(kp-kq+kr-ks).squaredNorm();
+
+    double VR_dir = V_0R_fac*exp(-q2_dir/(4*kappa_R));
+    double VT_dir = V_0T_fac*exp(-q2_dir/(4*kappa_T));
+    double VS_dir = V_0S_fac*exp(-q2_dir/(4*kappa_S));
+
+    double VR_ex = V_0R_fac*exp(-q2_ex/(4*kappa_R));
+    double VT_ex = V_0T_fac*exp(-q2_ex/(4*kappa_T));
+    double VS_ex = V_0S_fac*exp(-q2_ex/(4*kappa_S));
+
+
+    bool Ps_dir = (sp==ss)*(sq==sr);    //exchange spins
+    bool Cs_dir = (sp==sr)*(sq==ss);    //conserve spins
+    bool Pt_dir = (tp==ts)*(tq==tr);    //exchange isospins
+    bool Ct_dir = (tp==tr)*(tq==ts);    //conserve isospins
+
+    bool Ps_ex = (sp==sr)*(sq==ss);    //exchange spins
+    bool Cs_ex = (sp==ss)*(sq==sr);    //conserve spins
+    bool Pt_ex = (tp==tr)*(tq==ts);    //exchange isospins
+    bool Ct_ex = (tp==ts)*(tq==tr);    //conserve isospins
+
+    double returnVal = (VR_dir + 0.5*VT_dir + 0.5*VS_dir)*Cs_dir*Ct_dir
+                     + 0.5*(VR_dir - VS_dir)*Ps_dir*Ct_dir
+                     - (VR_dir + 0.5*VT_dir + 0.5*VS_dir)*Ps_dir*Pt_dir
+                     - 0.5*(VT_dir - VS_dir)*Cs_dir*Pt_dir;
+
+          returnVal -= (VR_ex + 0.5*VT_ex + 0.5*VS_ex)*Cs_ex*Ct_ex
+                     + 0.5*(VR_ex - VS_ex)*Ps_ex*Ct_ex
+                     - (VR_ex + 0.5*VT_ex + 0.5*VS_ex)*Ps_ex*Pt_ex
+                     - 0.5*(VT_ex - VS_ex)*Cs_ex*Pt_ex;
+
+    return 0.5*returnVal;
+}
+
+double MP::assym_single(int p, int q){
+    return assym(p,q,p,q);
 }
 
 //can do a test by copying assym, and set int s = p, int r = q
 //worked for Nh=Nb=2 and Nh=14, Nb=3
-double MP::assym_single(int p, int q){
+/*double MP::assym_single(int p, int q){
     Eigen::Vector3i kp( m_states(1,p), m_states(2,p), m_states(3,p) ); //r = p
     Eigen::Vector3i kq( m_states(1,q), m_states(2,q), m_states(3,q) ); //s = q
     int sp = m_states(4,p); int tp = m_states(5,p);
@@ -173,7 +228,7 @@ double MP::assym_single(int p, int q){
     returnVal -= V_2R*(beta3-beta5) + 0.5*V_2T*(beta3+beta4-beta5-beta6) + 0.5*V_2S*(beta3-beta4-beta5+beta6);
 
     return 0.5*returnVal;
-}
+}*/
 
 bool MP::vecDelta(Eigen::VectorXi v1, Eigen::VectorXi v2){
     int dim1 = v1.rows();
