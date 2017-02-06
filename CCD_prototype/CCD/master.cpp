@@ -142,7 +142,18 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
         conFac = abs(ECCD - ECCD_old);
         ECCD_old = ECCD;
         counter += 1;
-        m_ampClass->T_elements = m_ampClass->T_elements_new;
+
+        if (1){
+            double alpha = 0.2;
+            std::map<int, double> T_temp = m_ampClass->T_elements;
+            m_ampClass->T_elements.clear();
+            for(auto const& it : m_ampClass->T_elements_new) {
+                m_ampClass->T_elements[it.first] = alpha*it.second + (1-alpha)*T_temp[it.first];
+            }
+        }
+        else{
+            m_ampClass->T_elements = m_ampClass->T_elements_new;
+        }
 
         //ECCD = 0; too good to delete; you don't want to know how long i used to find this
     }

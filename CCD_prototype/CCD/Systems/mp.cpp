@@ -149,12 +149,14 @@ double MP::assym(int p, int q, int r, int s){
     int ss = m_states(4,s); int ts = m_states(5,s);
 
     //these tests should be already performed through k_unique
-    //if ( vecDelta(kp+kq, kr+ks) == 0){ return 0;}   //momentum conservation
-    //if ( sp+sq != sr+ss){ return 0; }               //spin conservation
-    //if ( tp+tq != tr+ts){ return 0; }               //isospin conservation
+    if ( vecDelta(kp+kq, kr+ks) == 0){ return 0;}   //momentum conservation
+    if ( sp+sq != sr+ss){ return 0; }               //spin conservation
+    if ( tp+tq != tr+ts){ return 0; }               //isospin conservation
 
-    double q2_dir = piOverL*piOverL*(kp-kq-kr+ks).squaredNorm();
-    double q2_ex = piOverL*piOverL*(kp-kq+kr-ks).squaredNorm();
+    double q2_dir = 0.25*piOverL*piOverL*(kp-kq-kr+ks).squaredNorm();   // <pq||rs> (direct)
+    double q2_ex = 0.25*piOverL*piOverL*(kp-kq+kr-ks).squaredNorm();    // <pq||sr> (exchange)
+
+   // cout << q2_ex << endl;
 
     double VR_dir = V_0R_fac*exp(-q2_dir/(4*kappa_R));
     double VT_dir = V_0T_fac*exp(-q2_dir/(4*kappa_T));
@@ -166,24 +168,26 @@ double MP::assym(int p, int q, int r, int s){
 
 
     bool Ps_dir = (sp==ss)*(sq==sr);    //exchange spins
-    bool Cs_dir = (sp==sr)*(sq==ss);    //conserve spins
+    bool Cs_dir = (sp==sr)*(sq==ss);    //direct spins
     bool Pt_dir = (tp==ts)*(tq==tr);    //exchange isospins
-    bool Ct_dir = (tp==tr)*(tq==ts);    //conserve isospins
+    bool Ct_dir = (tp==tr)*(tq==ts);    //direct isospins
 
     bool Ps_ex = (sp==sr)*(sq==ss);    //exchange spins
-    bool Cs_ex = (sp==ss)*(sq==sr);    //conserve spins
+    bool Cs_ex = (sp==ss)*(sq==sr);    //direct spins
     bool Pt_ex = (tp==tr)*(tq==ts);    //exchange isospins
-    bool Ct_ex = (tp==ts)*(tq==tr);    //conserve isospins
+    bool Ct_ex = (tp==ts)*(tq==tr);    //direct isospins
 
-    double returnVal = (VR_dir + 0.5*VT_dir + 0.5*VS_dir)*Cs_dir*Ct_dir
-                     + 0.5*(VR_dir - VS_dir)*Ps_dir*Ct_dir
-                     - (VR_dir + 0.5*VT_dir + 0.5*VS_dir)*Ps_dir*Pt_dir
-                     - 0.5*(VT_dir - VS_dir)*Cs_dir*Pt_dir;
+    double returnVal = 0;
 
-          returnVal -= (VR_ex + 0.5*VT_ex + 0.5*VS_ex)*Cs_ex*Ct_ex
-                     + 0.5*(VR_ex - VS_ex)*Ps_ex*Ct_ex
-                     - (VR_ex + 0.5*VT_ex + 0.5*VS_ex)*Ps_ex*Pt_ex
-                     - 0.5*(VT_ex - VS_ex)*Cs_ex*Pt_ex;
+    returnVal += (VR_dir + 0.5*VT_dir + 0.5*VS_dir)*Cs_dir*Ct_dir
+               + 0.5*(VT_dir - VS_dir)*Ps_dir*Ct_dir
+               - (VR_dir + 0.5*VT_dir + 0.5*VS_dir)*Ps_dir*Pt_dir
+               - 0.5*(VT_dir - VS_dir)*Cs_dir*Pt_dir;
+
+    returnVal -= (VR_ex + 0.5*VT_ex + 0.5*VS_ex)*Cs_ex*Ct_ex
+               + 0.5*(VT_ex - VS_ex)*Ps_ex*Ct_ex
+               - (VR_ex + 0.5*VT_ex + 0.5*VS_ex)*Ps_ex*Pt_ex
+               - 0.5*(VT_ex - VS_ex)*Cs_ex*Pt_ex;
 
     return 0.5*returnVal;
 }
