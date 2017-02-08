@@ -36,7 +36,7 @@ vector<size_t> sort_indexes(const vector<T> &v) {
 
 
 //0 means hole, 1 means particle
-void MakeIntMat::mapper_1(int i1){
+void MakeIntMat::mapper_1(int i1, int s1){
     Eigen::MatrixXi   blockArrays_temp;
     int index       = 0;
     int colSize     = 0;
@@ -52,7 +52,7 @@ void MakeIntMat::mapper_1(int i1){
         blockArrays_temp.conservativeResize(2, colSize);
 
         for (int i=0; i<m_Nh; i++){
-            blockArrays_temp.col(index) << m_system->kUnique1(i, 1),i;
+            blockArrays_temp.col(index) << m_system->kUnique1(i, s1),i;
             index += 1;
 
         }
@@ -62,7 +62,7 @@ void MakeIntMat::mapper_1(int i1){
         colSize = (m_Ns-m_Nh);
         blockArrays_temp.conservativeResize(2, colSize);
         for (int a=m_Nh; a<m_Ns; a++){
-            blockArrays_temp.col(index) << m_system->kUnique1(a, 1),a;
+            blockArrays_temp.col(index) << m_system->kUnique1(a, s1),a;
             index += 1;
 
         }
@@ -83,12 +83,12 @@ void MakeIntMat::mapper_1(int i1){
     sortVec.erase( unique( sortVec.begin(), sortVec.end() ), sortVec.end() ); //need this
 
     // 0
-    if (cond_h){
+    if (cond_h && s1==1){
         blockArrays_h = blockArrays;
         sortVec_h     = sortVec;
     }
     // 1
-    else if (cond_p){
+    else if (cond_p && s1==1){
         blockArrays_p = blockArrays;
         sortVec_p     = sortVec;
     }
@@ -197,7 +197,7 @@ void  MakeIntMat::mapper_hp(){
     sortVec.erase( unique( sortVec.begin(), sortVec.end() ), sortVec.end() ); //need this
 }*/
 
-void  MakeIntMat::mapper_2(int i1, int i2){
+void  MakeIntMat::mapper_2(int i1, int i2, int s1, int s2){
 
     Eigen::MatrixXi   blockArrays_temp;
     int index       = 0;
@@ -217,7 +217,7 @@ void  MakeIntMat::mapper_2(int i1, int i2){
 
         for (int i=0; i<m_Nh; i++){
             for (int j=0; j<m_Nh; j++){
-                blockArrays_temp.col(index) << m_system->kUnique2(i,j,1,1),i,j;
+                blockArrays_temp.col(index) << m_system->kUnique2(i,j,s1,s2),i,j;
                 index += 1;
             }
         }
@@ -229,7 +229,7 @@ void  MakeIntMat::mapper_2(int i1, int i2){
 
         for (int i=0; i<m_Nh; i++){
             for (int a=m_Nh; a<m_Ns; a++){
-                blockArrays_temp.col(index) << m_system->kUnique2(i,a,1,-1),i,a;
+                blockArrays_temp.col(index) << m_system->kUnique2(i,a,s1,s2),i,a;
                 index += 1;
             }
         }
@@ -241,7 +241,7 @@ void  MakeIntMat::mapper_2(int i1, int i2){
 
         for (int a=m_Nh; a<m_Ns; a++){
             for (int i=0; i<m_Nh; i++){
-                blockArrays_temp.col(index) << m_system->kUnique2(a,i,1,-1),a,i;
+                blockArrays_temp.col(index) << m_system->kUnique2(a,i,s1,s2),a,i;
                 index += 1;
             }
         }
@@ -252,7 +252,7 @@ void  MakeIntMat::mapper_2(int i1, int i2){
         blockArrays_temp.conservativeResize(3, colSize);
         for (int a=m_Nh; a<m_Ns; a++){
             for (int b=m_Nh; b<m_Ns; b++){
-                blockArrays_temp.col(index) << m_system->kUnique2(a,b,1,1),a,b;
+                blockArrays_temp.col(index) << m_system->kUnique2(a,b,s1,s2),a,b;
                 index += 1;
             }
         }
@@ -273,17 +273,17 @@ void  MakeIntMat::mapper_2(int i1, int i2){
     sortVec.erase( unique( sortVec.begin(), sortVec.end() ), sortVec.end() ); //need this
 
     // 0 0
-    if (cond_hh){
+    if (cond_hh && s1==1 && s2==1){
         blockArrays_hh = blockArrays;
         sortVec_hh     = sortVec;
     }
     // 0 1
-    else if (cond_hp){
+    else if (cond_hp && s1==1 && s2==-1){
         blockArrays_hp = blockArrays;
         sortVec_hp     = sortVec;
     }
     // 1 0
-    else if (cond_ph){
+    else if (cond_ph && s1==1 && s2==-1){
         blockArrays_ph = blockArrays;
         sortVec_ph     = sortVec;
     }
@@ -294,7 +294,7 @@ void  MakeIntMat::mapper_2(int i1, int i2){
     }
 }
 
-void MakeIntMat::mapper_3(int i1, int i2, int i3){
+void MakeIntMat::mapper_3(int i1, int i2, int i3, int s1, int s2, int s3){
 
     Eigen::MatrixXi   blockArrays_temp;
     int index       = 0;
@@ -313,7 +313,7 @@ void MakeIntMat::mapper_3(int i1, int i2, int i3){
         for (int i=0; i<m_Nh; i++){
             for (int j=0; j<m_Nh; j++){
                 for (int a=m_Nh; a<m_Ns; a++){
-                    blockArrays_temp.col(index) << m_system->kUnique3(i,j,a,1,1,-1),i,j,a;
+                    blockArrays_temp.col(index) << m_system->kUnique3(i,j,a,s1,s2,s3),i,j,a;
                     index += 1;
                 }
             }
@@ -327,7 +327,7 @@ void MakeIntMat::mapper_3(int i1, int i2, int i3){
         for (int a=m_Nh; a<m_Ns; a++){
             for (int b=m_Nh; b<m_Ns; b++){
                 for (int i=0; i<m_Nh; i++){
-                    blockArrays_temp.col(index) << m_system->kUnique3(a,b,i,1,1,-1),a,b,i;
+                    blockArrays_temp.col(index) << m_system->kUnique3(a,b,i,s1,s2,s3),a,b,i;
                     index += 1;
                 }
             }
@@ -349,12 +349,12 @@ void MakeIntMat::mapper_3(int i1, int i2, int i3){
     sortVec.erase( unique( sortVec.begin(), sortVec.end() ), sortVec.end() ); //need this
 
     // 0 0 1
-    if (cond_hhp){
+    if (cond_hhp && s1==1 && s2==1 && s3==-1){
         blockArrays_hhp = blockArrays;
         sortVec_hhp     = sortVec;
     }
     // 1 1 0
-    else if (cond_pph){
+    else if (cond_pph && s1==1 && s2==1 && s3==-1){
         blockArrays_pph = blockArrays;
         sortVec_pph     = sortVec;
     }
@@ -671,17 +671,17 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     //The mapper functions take ascending values, i.e. they won't accept (1,0,1) as argument, but (0,1,1) works
     //I did this for several reasons, none of which I see the point in jotting down here
 
-    mapper_1(0);        //h
-    mapper_1(1);        //p
+    mapper_1(0,1);        //h
+    mapper_1(1,1);        //p
 
-    mapper_2(0,0);      //hh
-    mapper_2(0,1);      //hp
-    mapper_2(1,0);      //ph
-    mapper_2(1,1);      //pp
+    mapper_2(0,0,1,1);      //hh
+    mapper_2(0,1,1,-1);      //hp
+    mapper_2(1,0,1,-1);      //ph
+    mapper_2(1,1,1,1);      //pp
     mapper_hp();        //hp for Vhphp
 
-    mapper_3(0,0,1);    //hhp
-    mapper_3(1,1,0);    //pph
+    mapper_3(0,0,1,1,1,-1);    //hhp
+    mapper_3(1,1,0,1,1,-1);    //pph
 
     cout << "made all blockArrays" << endl;
 

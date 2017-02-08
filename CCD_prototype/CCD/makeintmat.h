@@ -76,10 +76,10 @@ public:
 
     MakeIntMat();
     System* m_system = nullptr;
-    void                            mapper_1(int i1);
-    void                            mapper_2(int i1, int i2);
+    void                            mapper_1(int i1, int s1);
+    void                            mapper_2(int i1, int i2, int s1, int s2);
     void                            mapper_2_alt();
-    void                            mapper_3(int i1, int i2, int i3);
+    void                            mapper_3(int i1, int i2, int i3, int s1, int s2, int s3);
     void                            mapper_hp();        //special func made for Lc diagram, not necessary IF I fix sign convention for ph and hp
 
     void                            makeBlockMat(System* system, int Nh, int Ns);

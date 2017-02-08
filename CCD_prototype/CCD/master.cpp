@@ -143,7 +143,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
         ECCD_old = ECCD;
         counter += 1;
 
-        if (1){
+        if (0){
             double alpha = 0.2;
             std::map<int, double> T_temp = m_ampClass->T_elements;
             m_ampClass->T_elements.clear();
