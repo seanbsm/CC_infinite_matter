@@ -17,6 +17,8 @@ public:
     System*      m_system   = nullptr;
 
     Diagrams();
+
+    //T2 diagrams
     void setIntClass(class MakeIntMat* intClass);
     void setAmpClass(class MakeAmpMat* ampClass);
     void setSystem(class System* system);
@@ -27,6 +29,11 @@ public:
     void Qb();
     void Qc();
     void Qd();
+
+    //T3 diagrams
+    void T1a();
+    void T2a();
+
 
     /*
      * Below are the intermediates.

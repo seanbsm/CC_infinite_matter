@@ -46,7 +46,7 @@ void Master::setClasses(){
     m_diagrams->setSystem(m_system);
     m_ampClass->setIntClass(m_intClass);
     m_ampClass->setSystem(m_system);
-    m_ampClass->setElements();
+    m_ampClass->setElements_T2();
     m_ampClass->makeDenomMat();
 }
 
@@ -77,6 +77,8 @@ double Master::CC_master(double eps, double conFac){
     }
     //check whether or not to multiply by 0.25 for MBPT2
     std::cout << "MBPT2: " << std::setprecision (12) << 0.25*ECCD_old << std::endl;
+
+
 
     double ECC;
     if (m_timerOn){

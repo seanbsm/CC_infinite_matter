@@ -24,6 +24,13 @@ void Diagrams::setAmpClass(class MakeAmpMat* ampClass){
     m_ampClass = ampClass;
 }
 
+
+// ##################################################
+// ##                                              ##
+// ## DOUBLES DIAGRAMS                             ##
+// ##                                              ##
+// ##################################################
+
 void Diagrams::La(){
     for (int n=0; n<m_intClass->Vhhpp_i.size(); n++){
         int ku = m_intClass->Vhhpp_i[n];
@@ -140,6 +147,26 @@ void Diagrams::Qd(){
     m_ampClass->addElements(1,0);
     m_ampClass->T_temp.clear();
 }
+
+// ##################################################
+// ##                                              ##
+// ## TRIPLES DIAGRAMS                             ##
+// ##                                              ##
+// ##################################################
+
+void Diagrams::T1a(){
+
+}
+
+void Diagrams::T2a(){
+
+}
+
+// ##################################################
+// ##                                              ##
+// ## INTERMEDIATES                                ##
+// ##                                              ##
+// ##################################################
 
 void Diagrams::I1_term(){
     for (int n=0; n<m_intClass->Vhhpp_i.size(); n++){

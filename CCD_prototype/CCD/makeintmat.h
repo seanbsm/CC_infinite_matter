@@ -34,8 +34,10 @@ public:
     Eigen::MatrixXi blockArrays_hp_s;   //for Vhphp
     Eigen::MatrixXi blockArrays_ph;
     Eigen::MatrixXi blockArrays_pp;
+    Eigen::MatrixXi blockArrays_hhh;
     Eigen::MatrixXi blockArrays_hhp;
     Eigen::MatrixXi blockArrays_pph;
+    Eigen::MatrixXi blockArrays_ppp;
 
     //sortVec holds all distinct kUnique for each index series
     std::vector<int> sortVec_h;
@@ -45,8 +47,10 @@ public:
     std::vector<int> sortVec_hp_s;      //for Vhphp
     std::vector<int> sortVec_ph;
     std::vector<int> sortVec_pp;
+    std::vector<int> sortVec_hhh;
     std::vector<int> sortVec_hhp;
     std::vector<int> sortVec_pph;
+    std::vector<int> sortVec_ppp;
 
     //indexHolder holds upper and lower bound of indices for a certain kUnique, same indexing as the corresponding matrices
     Eigen::MatrixXi indexHolder_h;
@@ -56,8 +60,10 @@ public:
     Eigen::MatrixXi indexHolder_hp_s;   //for Vhphp
     Eigen::MatrixXi indexHolder_ph;
     Eigen::MatrixXi indexHolder_pp;
+    Eigen::MatrixXi indexHolder_hhh;
     Eigen::MatrixXi indexHolder_hhp;
     Eigen::MatrixXi indexHolder_pph;
+    Eigen::MatrixXi indexHolder_ppp;
 
     // these additional boundsHolders are possibly not necessary after the implementation of make3x1- and make2x2Block
     //these are needed for Qa
@@ -76,10 +82,10 @@ public:
 
     MakeIntMat();
     System* m_system = nullptr;
-    void                            mapper_1(int i1, int s1);
-    void                            mapper_2(int i1, int i2, int s1, int s2);
+    void                            mapper_1(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArraysIn, int i1, int s1);
+    void                            mapper_2(std::vector<int> &sortVecIn, Eigen::MatrixXi &blockArraysIn, int i1, int i2, int s1, int s2);
     void                            mapper_2_alt();
-    void                            mapper_3(int i1, int i2, int i3, int s1, int s2, int s3);
+    void                            mapper_3(std::vector<int> &sortVecIn, Eigen::MatrixXi &blockArraysIn, int i1, int i2, int i3, int s1, int s2, int s3);
     void                            mapper_hp();        //special func made for Lc diagram, not necessary IF I fix sign convention for ph and hp
 
     void                            makeBlockMat(System* system, int Nh, int Ns);
@@ -92,10 +98,17 @@ public:
     Eigen::MatrixXd                 make2x2Block(int ku, int i1, int i2, int i3, int i4);
     Eigen::MatrixXd                 make2x2Block_alt(int channel);
 
-    void                            makeMatMap(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
+    void                            makeMatMap_hhhp(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
+    void                            makeMatMap_hhpp(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
+    void                            makeMatMap_hppp(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
+
     void                            makeMatVec(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
-    int                             Identity(int h1, int h2, int p1, int p2);
+    int                             Identity_hhhp(int h1, int h2, int h3, int p1);
+    int                             Identity_hhpp(int h1, int h2, int p1, int p2);
+    int                             Identity_hppp(int h1, int p1, int p2, int p3);
+    std::map<int, double>           Vhhhp_elements; //needed for T3
     std::map<int, double>           Vhhpp_elements;
+    std::map<int, double>           Vhppp_elements; //needed for T3
 
     //Eigen::VectorXd                 Vhhpp_vector;
     std::vector<double>             Vhhpp_vector;

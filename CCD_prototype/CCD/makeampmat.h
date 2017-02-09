@@ -22,6 +22,10 @@ public:
     std::map<int, double>           T_temp;
     std::map<int, double>           T_elements_new;
 
+    std::map<int, double>           T3_elements;
+    std::map<int, double>           T3_temp;
+    std::map<int, double>           T3_elements_new;
+
     std::vector<double>             T_elements_alt;
     std::vector<double>             T_elements_alt_new;
 
@@ -34,7 +38,8 @@ public:
 
     void setIntClass(class MakeIntMat* intClass);
     void setSystem(class System* system);
-    void setElements();
+    void setElements_T2();
+    void setElements_T3();
     Eigen::MatrixXd makeBlockMat(int index);
     void makeDenomMat();
 };
