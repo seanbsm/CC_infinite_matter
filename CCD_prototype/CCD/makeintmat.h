@@ -26,44 +26,58 @@ private:
 
     //bool contractor(int i, int j){ return i==j; } //contracts repeated elements to a single edit
 public:
+
+    /* Due to the momentum-conservation relation (kp+kq = kr+ks for <pq||rs>),
+     * and due to alignment of matrices, we need several blockArrays, and corresponding
+     * sortVecs and indexHolders. We'd like the blockArray generation to be pretty general,
+     * otherwise the generation of blockArrays would require a nightmare of if-tests and whatnot.
+     * So, since the CC diagrams require many different alignments, giving various rewritings of
+     * the momentum relation, I've used the convention _p/m_p/h, where in the first, p/m stands for
+     * plus or minus between p/h in the next part. I.e. _ppm_hpp means total momentum kh+kp-kp.
+     * Probably there's a better way, but I can't muck about with a little problem for long.
+     */
+
     //blockArrays hold quantum numbers
-    Eigen::MatrixXi blockArrays_h;
-    Eigen::MatrixXi blockArrays_p;
-    Eigen::MatrixXi blockArrays_hh;
-    Eigen::MatrixXi blockArrays_hp;
+    Eigen::MatrixXi blockArrays_p_h;
+    Eigen::MatrixXi blockArrays_p_p;
+    Eigen::MatrixXi blockArrays_pp_hh;
+    Eigen::MatrixXi blockArrays_pm_hp;
     Eigen::MatrixXi blockArrays_hp_s;   //for Vhphp
-    Eigen::MatrixXi blockArrays_ph;
-    Eigen::MatrixXi blockArrays_pp;
-    Eigen::MatrixXi blockArrays_hhh;
-    Eigen::MatrixXi blockArrays_hhp;
-    Eigen::MatrixXi blockArrays_pph;
-    Eigen::MatrixXi blockArrays_ppp;
+    Eigen::MatrixXi blockArrays_pm_ph;
+    Eigen::MatrixXi blockArrays_pp_ph;
+    Eigen::MatrixXi blockArrays_pp_pp;
+    Eigen::MatrixXi blockArrays_ppp_hhh;
+    Eigen::MatrixXi blockArrays_ppm_hhp;
+    Eigen::MatrixXi blockArrays_ppm_pph;
+    Eigen::MatrixXi blockArrays_ppp_ppp;
 
     //sortVec holds all distinct kUnique for each index series
-    std::vector<int> sortVec_h;
-    std::vector<int> sortVec_p;
-    std::vector<int> sortVec_hh;
-    std::vector<int> sortVec_hp;
+    std::vector<int> sortVec_p_h;
+    std::vector<int> sortVec_p_p;
+    std::vector<int> sortVec_pp_hh;
+    std::vector<int> sortVec_pm_hp;
     std::vector<int> sortVec_hp_s;      //for Vhphp
-    std::vector<int> sortVec_ph;
-    std::vector<int> sortVec_pp;
-    std::vector<int> sortVec_hhh;
-    std::vector<int> sortVec_hhp;
-    std::vector<int> sortVec_pph;
-    std::vector<int> sortVec_ppp;
+    std::vector<int> sortVec_pm_ph;
+    std::vector<int> sortVec_pp_ph;
+    std::vector<int> sortVec_pp_pp;
+    std::vector<int> sortVec_ppp_hhh;
+    std::vector<int> sortVec_ppm_hhp;
+    std::vector<int> sortVec_ppm_pph;
+    std::vector<int> sortVec_ppp_ppp;
 
     //indexHolder holds upper and lower bound of indices for a certain kUnique, same indexing as the corresponding matrices
-    Eigen::MatrixXi indexHolder_h;
-    Eigen::MatrixXi indexHolder_p;
-    Eigen::MatrixXi indexHolder_hh;
-    Eigen::MatrixXi indexHolder_hp;
+    Eigen::MatrixXi indexHolder_p_h;
+    Eigen::MatrixXi indexHolder_p_p;
+    Eigen::MatrixXi indexHolder_pp_hh;
+    Eigen::MatrixXi indexHolder_pm_hp;
     Eigen::MatrixXi indexHolder_hp_s;   //for Vhphp
-    Eigen::MatrixXi indexHolder_ph;
-    Eigen::MatrixXi indexHolder_pp;
-    Eigen::MatrixXi indexHolder_hhh;
-    Eigen::MatrixXi indexHolder_hhp;
-    Eigen::MatrixXi indexHolder_pph;
-    Eigen::MatrixXi indexHolder_ppp;
+    Eigen::MatrixXi indexHolder_pm_ph;
+    Eigen::MatrixXi indexHolder_pp_ph;
+    Eigen::MatrixXi indexHolder_pp_pp;
+    Eigen::MatrixXi indexHolder_ppp_hhh;
+    Eigen::MatrixXi indexHolder_ppm_hhp;
+    Eigen::MatrixXi indexHolder_ppm_pph;
+    Eigen::MatrixXi indexHolder_ppp_ppp;
 
     // these additional boundsHolders are possibly not necessary after the implementation of make3x1- and make2x2Block
     //these are needed for Qa
@@ -100,15 +114,16 @@ public:
 
     void                            makeMatMap_hhhp(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
     void                            makeMatMap_hhpp(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
-    void                            makeMatMap_hppp(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
+    void                            makeMatMap_ppph(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
 
     void                            makeMatVec(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
     int                             Identity_hhhp(int h1, int h2, int h3, int p1);
     int                             Identity_hhpp(int h1, int h2, int p1, int p2);
     int                             Identity_hppp(int h1, int p1, int p2, int p3);
+    int                             Identity_hhhppp(int h1, int h2, int h3, int p1, int p2, int p3);
     std::map<int, double>           Vhhhp_elements; //needed for T3
     std::map<int, double>           Vhhpp_elements;
-    std::map<int, double>           Vhppp_elements; //needed for T3
+    std::map<int, double>           Vppph_elements; //needed for T3
 
     //Eigen::VectorXd                 Vhhpp_vector;
     std::vector<double>             Vhhpp_vector;

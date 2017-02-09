@@ -106,7 +106,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
     while (conFac > eps && counter < 5e1){
         ECCD = 0;
         //could make an m_ampClass::updateT or something
-        m_ampClass->T_elements_new.clear();
+        m_ampClass->T2_elements_new.clear();
 
         if (m_intermediatesOn){
             m_diagrams->La();
@@ -130,12 +130,12 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             int ku = m_intClass->Vhhpp_i[hh];
 
             Eigen::MatrixXd Vhhpp           = m_intClass->make2x2Block(ku,0,0,1,1);
-            Eigen::MatrixXd D_contributions = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T_elements_new);
+            Eigen::MatrixXd D_contributions = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements_new);
             Eigen::MatrixXd temp = (Vhhpp + D_contributions).array()*m_ampClass->denomMat[hh].array();
 
-            m_ampClass->make2x2Block_inverse(temp, ku, 0,0,1,1, m_ampClass->T_elements_new, false);
+            m_ampClass->make2x2Block_inverse(temp, ku, 0,0,1,1, m_ampClass->T2_elements_new, false);
 
-            Eigen::MatrixXd Thhpp = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T_elements_new);
+            Eigen::MatrixXd Thhpp = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements_new);
             ECCD += 0.25*((Vhhpp.transpose())*(Thhpp)).trace();
         }
 
@@ -147,14 +147,14 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
 
         if (0){
             double alpha = 0.2;
-            std::map<int, double> T_temp = m_ampClass->T_elements;
-            m_ampClass->T_elements.clear();
-            for(auto const& it : m_ampClass->T_elements_new) {
-                m_ampClass->T_elements[it.first] = alpha*it.second + (1-alpha)*T_temp[it.first];
+            std::map<int, double> T2_temp = m_ampClass->T2_elements;
+            m_ampClass->T2_elements.clear();
+            for(auto const& it : m_ampClass->T2_elements_new) {
+                m_ampClass->T2_elements[it.first] = alpha*it.second + (1-alpha)*T2_temp[it.first];
             }
         }
         else{
-            m_ampClass->T_elements = m_ampClass->T_elements_new;
+            m_ampClass->T2_elements = m_ampClass->T2_elements_new;
         }
 
         //ECCD = 0; too good to delete; you don't want to know how long i used to find this

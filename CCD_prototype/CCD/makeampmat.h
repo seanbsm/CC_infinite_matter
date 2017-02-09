@@ -18,23 +18,27 @@ public:
     System*      m_system   = nullptr;
     std::vector<Eigen::MatrixXd>  Amplitudes;
 
-    std::map<int, double>           T_elements;
-    std::map<int, double>           T_temp;
-    std::map<int, double>           T_elements_new;
+    std::map<int, double>           T2_elements;
+    std::map<int, double>           T2_temp;
+    std::map<int, double>           T2_elements_new;
 
     std::map<int, double>           T3_elements;
     std::map<int, double>           T3_temp;
     std::map<int, double>           T3_elements_new;
 
-    std::vector<double>             T_elements_alt;
-    std::vector<double>             T_elements_alt_new;
+    std::vector<double>             T2_elements_alt;
+    std::vector<double>             T2_elements_alt_new;
 
     Eigen::MatrixXd                 make3x1Block(int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list);
     Eigen::MatrixXd                 make2x2Block(int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list);
 
     void                            make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list, bool add);
     void                            make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list, bool add);
-    void                            addElements(bool Pij, bool Pab);
+
+    void                            make3x3Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::map<int, double>& T_list, bool add);
+
+    void                            addElementsT2(bool Pij, bool Pab);
+    void                            addElementsT3(bool Pij, bool Pik, bool Pjk, bool Pab, bool Pac, bool Pbc);
 
     void setIntClass(class MakeIntMat* intClass);
     void setSystem(class System* system);
