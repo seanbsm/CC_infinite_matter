@@ -42,6 +42,7 @@ public:
     Eigen::MatrixXi blockArrays_p_p;
     Eigen::MatrixXi blockArrays_pp_hh;
     Eigen::MatrixXi blockArrays_pm_hp;
+    Eigen::MatrixXi blockArrays_pp_hp;
     Eigen::MatrixXi blockArrays_hp_s;   //for Vhphp
     Eigen::MatrixXi blockArrays_pm_ph;
     Eigen::MatrixXi blockArrays_pp_ph;
@@ -56,6 +57,7 @@ public:
     std::vector<int> sortVec_p_p;
     std::vector<int> sortVec_pp_hh;
     std::vector<int> sortVec_pm_hp;
+    std::vector<int> sortVec_pp_hp;
     std::vector<int> sortVec_hp_s;      //for Vhphp
     std::vector<int> sortVec_pm_ph;
     std::vector<int> sortVec_pp_ph;
@@ -70,6 +72,7 @@ public:
     Eigen::MatrixXi indexHolder_p_p;
     Eigen::MatrixXi indexHolder_pp_hh;
     Eigen::MatrixXi indexHolder_pm_hp;
+    Eigen::MatrixXi indexHolder_pp_hp;
     Eigen::MatrixXi indexHolder_hp_s;   //for Vhphp
     Eigen::MatrixXi indexHolder_pm_ph;
     Eigen::MatrixXi indexHolder_pp_ph;
@@ -119,7 +122,7 @@ public:
     void                            makeMatVec(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
     int                             Identity_hhhp(int h1, int h2, int h3, int p1);
     int                             Identity_hhpp(int h1, int h2, int p1, int p2);
-    int                             Identity_hppp(int h1, int p1, int p2, int p3);
+    int                             Identity_ppph(int p1, int p2, int p3, int h1);
     int                             Identity_hhhppp(int h1, int h2, int h3, int p1, int p2, int p3);
     std::map<int, double>           Vhhhp_elements; //needed for T3
     std::map<int, double>           Vhhpp_elements;

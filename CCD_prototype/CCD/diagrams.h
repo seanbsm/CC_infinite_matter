@@ -29,6 +29,8 @@ public:
     void Qb();
     void Qc();
     void Qd();
+    void D10b();
+    void D10c();
 
     //T3 diagrams
     void T1a();

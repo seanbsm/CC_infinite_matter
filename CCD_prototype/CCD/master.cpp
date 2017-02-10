@@ -126,6 +126,12 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             m_diagrams->Qd();
         }
 
+        if(m_triplesOn){
+            m_diagrams->T2a();
+            m_diagrams->D10b();
+            m_diagrams->D10c();
+        }
+
         for (int hh = 0; hh<m_intClass->numOfKu; hh++){
             int ku = m_intClass->Vhhpp_i[hh];
 

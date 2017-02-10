@@ -32,6 +32,8 @@ public:
     Eigen::MatrixXd                 make3x1Block(int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list);
     Eigen::MatrixXd                 make2x2Block(int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list);
 
+    Eigen::MatrixXd                 make3x3Block(int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::map<int, double>& T_list);
+
     void                            make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list, bool add);
     void                            make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list, bool add);
 

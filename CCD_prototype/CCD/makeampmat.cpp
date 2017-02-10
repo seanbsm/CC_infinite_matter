@@ -621,6 +621,137 @@ void MakeAmpMat::addElementsT3(bool Pij, bool Pik, bool Pjk, bool Pab, bool Pac,
 
 //returns a block matrix of dimensions 3x1, currently only made for Vhhpp
 // i1,i2,i3,i4 specify whether there is a hole or particle (by a 0 or 1)  index at index ij, for j=1-4
+Eigen::MatrixXd MakeAmpMat::make3x3Block(int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::map<int, double>& T_list){
+
+    bool cond_hhh1 = (i1 == 0 && i2 == 0 && i3==0);
+    bool cond_pph1 = (i1 == 1 && i2 == 1 && i3==0);
+    bool cond_hhp1 = (i1 == 0 && i2 == 0 && i3==1);
+    bool cond_ppp1 = (i1 == 1 && i2 == 1 && i3==1);
+
+    bool cond_hhh2 = (i4 == 0 && i5 == 0 && i6==0);
+    bool cond_pph2 = (i4 == 1 && i5 == 1 && i6==0);
+    bool cond_hhp2 = (i4 == 0 && i5 == 0 && i6==1);
+    bool cond_ppp2 = (i4 == 1 && i5 == 1 && i6==1);
+
+
+    Eigen::MatrixXi blockArrays1_pointer;
+    Eigen::MatrixXi blockArrays2_pointer;
+
+    std::vector<int> sortVec1;
+    std::vector<int> sortVec2;
+
+    Eigen::MatrixXi indexHolder1_pointer;
+    Eigen::MatrixXi indexHolder2_pointer;
+
+
+    // 0 0 0
+    if (cond_hhh1){
+        blockArrays1_pointer = m_intClass->blockArrays_ppp_hhh;
+        sortVec1             = m_intClass->sortVec_ppp_hhh;
+        indexHolder1_pointer = m_intClass->indexHolder_ppp_hhh;
+    }
+    // 0 0 1
+    else if (cond_hhp1){
+        blockArrays1_pointer = m_intClass->blockArrays_ppm_hhp;
+        sortVec1             = m_intClass->sortVec_ppm_hhp;
+        indexHolder1_pointer = m_intClass->indexHolder_ppm_hhp;
+    }
+    // 1 1 0
+    else if (cond_pph1){
+        blockArrays1_pointer = m_intClass->blockArrays_ppm_pph;
+        sortVec1             = m_intClass->sortVec_ppm_pph;
+        indexHolder1_pointer = m_intClass->indexHolder_ppm_pph;
+    }
+    // 1 1 1
+    else {
+        blockArrays1_pointer = m_intClass->blockArrays_ppp_ppp;
+        sortVec1             = m_intClass->sortVec_ppp_ppp;
+        indexHolder1_pointer = m_intClass->indexHolder_ppp_ppp;
+    }
+
+    // 0 0 0
+    if (cond_hhh2){
+        blockArrays2_pointer = m_intClass->blockArrays_ppp_hhh;
+        sortVec2             = m_intClass->sortVec_ppp_hhh;
+        indexHolder2_pointer = m_intClass->indexHolder_ppp_hhh;
+    }
+    // 0 0 1
+    else if (cond_hhp2){
+        blockArrays2_pointer = m_intClass->blockArrays_ppm_hhp;
+        sortVec2             = m_intClass->sortVec_ppm_hhp;
+        indexHolder2_pointer = m_intClass->indexHolder_ppm_hhp;
+    }
+    // 1 1 0
+    else if (cond_pph2){
+        blockArrays2_pointer = m_intClass->blockArrays_ppm_pph;
+        sortVec2             = m_intClass->sortVec_ppm_pph;
+        indexHolder2_pointer = m_intClass->indexHolder_ppm_pph;
+    }
+    // 1 1 1
+    else {
+        blockArrays2_pointer = m_intClass->blockArrays_ppp_ppp;
+        sortVec2             = m_intClass->sortVec_ppp_ppp;
+        indexHolder2_pointer = m_intClass->indexHolder_ppp_ppp;
+    }
+
+    int length1 = indexHolder1_pointer.cols();
+    int length2 = indexHolder2_pointer.cols();
+
+    int index1; int index2;
+
+    Eigen::MatrixXd returnMat;
+
+    auto it1 = std::find(sortVec1.begin(), sortVec1.end(), ku);
+    if (it1 == sortVec1.end()){
+        returnMat.conservativeResize(1,1);
+        returnMat(0,0) = 0;
+        std::cout << "make3x1Block in MakeAmpMat, kUnique not found for rows" << std::endl;
+      return returnMat;
+    }
+    else{
+      index1 = distance(sortVec1.begin(), it1);
+    }
+
+    auto it2 = std::find(sortVec2.begin(), sortVec2.end(), ku);
+    if (it2 == sortVec2.end()){
+        returnMat.conservativeResize(1,1);
+        returnMat(0,0) = 0;
+        std::cout << "make3x1Block in MakeAmpMat, kUnique not found for columns" << std::endl;
+      return returnMat;
+    }
+    else{
+      index2 = distance(sortVec2.begin(), it2);
+    }
+
+    int range_lower1 = indexHolder1_pointer(0,index1);
+    int range_upper1 = indexHolder1_pointer(1,index1);
+    int range_lower2 = indexHolder2_pointer(0,index2);
+    int range_upper2 = indexHolder2_pointer(1,index2);
+
+    int dim1 = range_upper1 - range_lower1;
+    int dim2 = range_upper2 - range_lower2;
+
+    returnMat.conservativeResize(dim1, dim2);
+    int id;
+    if (cond_hhp1 && cond_pph2){
+        for (int i = range_lower1; i<range_upper1; i++){
+            for (int j = range_lower2; j<range_upper2; j++){
+                id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(3,j), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j), (blockArrays1_pointer)(3,i));
+                returnMat(i-range_lower1, j-range_lower2) = T_list[id];
+            }
+        }
+    }
+    else if (cond_hhh1 && cond_ppp2){
+        for (int i = range_lower1; i<range_upper1; i++){
+            for (int j = range_lower2; j<range_upper2; j++){
+                id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j), (blockArrays2_pointer)(3,j));
+                returnMat(i-range_lower1, j-range_lower2) = T_list[id];
+            }
+        }
+    }
+    return returnMat;
+}
+
 Eigen::MatrixXd MakeAmpMat::make3x1Block(int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list){
 
     bool cond_hhp = (i1 == 0 && i2 == 0 && i3==1);
@@ -723,6 +854,7 @@ Eigen::MatrixXd MakeAmpMat::make3x1Block(int ku, int i1, int i2, int i3, int i4,
     }
     return returnMat;
 }
+
 
 //returns a block matrix of dimensions 2x2, currently only made for Vhhpp
 // i1,i2,i3,i4 specify whether there is a hole or particle (by a 0 or 1) index at index ij, for j=1-4
