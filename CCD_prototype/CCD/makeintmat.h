@@ -86,6 +86,8 @@ public:
     //these are needed for Qa
     Eigen::MatrixXi boundsHolder_hhpp_hh;
     Eigen::MatrixXi boundsHolder_hhpp_pp;
+    Eigen::MatrixXi boundsHolder_hhhppp_hhh;
+    Eigen::MatrixXi boundsHolder_hhhppp_ppp;
 
     //these are needed for Qc and Qd
     Eigen::MatrixXi indexHolder_h_pph_hpp;
@@ -107,6 +109,7 @@ public:
 
     void                            makeBlockMat(System* system, int Nh, int Ns);
     int                             numOfKu;        //number of blocks in V_hh_pp
+    int                             numOfKu3;       //number of blocks in V_hhh_ppp
     Eigen::MatrixXd                 makeSquareBlock(Eigen::MatrixXi& array, int range_lower, int range_upper);
     Eigen::MatrixXd                 makeSquareBlock_s(Eigen::MatrixXi& array, int range_lower, int range_upper);
     Eigen::MatrixXd                 makeRektBlock(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
@@ -148,6 +151,7 @@ public:
     std::vector<int>               Vhphp_i;
     std::vector<int>               Vhhpp_i;
     std::vector<int>               Vpppp_i;
+    std::vector<int>               Vhhhppp_i;
 };
 
 #endif // MAKEINTMAT_H

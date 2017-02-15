@@ -127,9 +127,13 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
         }
 
         if(m_triplesOn){
-            m_diagrams->T2a();
+            m_ampClass->T3_elements_new.clear();
+
             m_diagrams->D10b();
             m_diagrams->D10c();
+
+            //m_diagrams->T1a();
+            m_diagrams->T2a();
         }
 
         for (int hh = 0; hh<m_intClass->numOfKu; hh++){
@@ -161,6 +165,22 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
         }
         else{
             m_ampClass->T2_elements = m_ampClass->T2_elements_new;
+        }
+
+        if(m_triplesOn){
+
+            //this prints how many zeroes there are in T3.
+            /*int count = 0;
+            for(auto it = m_ampClass->T3_elements_new.cbegin(); it != m_ampClass->T3_elements_new.cend(); ++it)
+            {
+                if (it->second == 0){
+                    count ++;
+                    //std::cout << it->second << "\n";
+                }
+            }
+            std::cout << count << std::endl;*/
+
+            m_ampClass->T3_elements = m_ampClass->T3_elements_new;
         }
 
         //ECCD = 0; too good to delete; you don't want to know how long i used to find this

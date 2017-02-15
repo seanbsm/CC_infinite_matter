@@ -173,7 +173,7 @@ void Diagrams::D10c(){
                 Eigen::MatrixXd mat1 = m_ampClass->make3x3Block(ku,0,0,1,1,1,0, m_ampClass->T3_elements);    // t_ijb^d
                 Eigen::MatrixXd mat2 = m_intClass->make3x1Block(ku,0,0,1,0);                            // v_klc^d
                 Eigen::MatrixXd product = 0.5*mat1.transpose()*mat2;                              // (t_ijb^d)(v_d^klc)(t_klc^a)
-
+                //std::cout << mat1 << std::endl;
                 m_ampClass->make3x1Block_inverse(product, ku, 1,1,0,0, m_ampClass->T2_elements_new, true);
             }
         }
@@ -191,7 +191,22 @@ void Diagrams::D10c(){
 // ##################################################
 
 void Diagrams::T1a(){
+    for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
+        for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
+            if ( m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_hhp[i2] ){
+                int ku = m_intClass->sortVec_p_h[i1];
 
+                Eigen::MatrixXd mat1 = m_intClass->make3x1Block(ku,0,0,1,0);
+                Eigen::MatrixXd mat2 = m_ampClass->make3x1Block(ku,1,1,0,0, m_ampClass->T2_elements);
+
+                Eigen::MatrixXd product = -mat1*mat2.transpose();
+                //std::cout << product << std::endl;
+                m_ampClass->make3x3Block_inverse(product, ku, 0,0,1,1,1,0, m_ampClass->T3_elements_new, true);
+            }
+        }
+    }
+    m_ampClass->addElementsT3(0,0,0,0,0,0); // 0,1,1,0,1,1
+    m_ampClass->T3_temp.clear();
 }
 
 void Diagrams::T2a(){
@@ -204,8 +219,8 @@ void Diagrams::T2a(){
                 Eigen::MatrixXd mat2 = m_ampClass->make3x1Block(ku,0,0,1,1, m_ampClass->T2_elements);
 
                 Eigen::MatrixXd product = -mat2*mat1.transpose();
-                //std::cout << mat2 << std::endl;
-                m_ampClass->make3x3Block_inverse(product, ku, 0,0,1,1,1,0, m_ampClass->T2_elements_new, true);
+                //std::cout << product << std::endl;
+                m_ampClass->make3x3Block_inverse(product, ku, 0,0,1,1,1,0, m_ampClass->T3_elements_new, true);
             }
         }
     }

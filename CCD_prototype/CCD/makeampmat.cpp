@@ -479,6 +479,7 @@ void MakeAmpMat::make3x3Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
     int ii; int jj; int kk;
     int aa; int bb; int cc;
 
+    //std::cout << inMat << std::endl;
     if (add == true){
         if (cond_hhp1 && cond_pph2){
             for (int i = range_lower1; i<range_upper1; i++){
@@ -491,6 +492,7 @@ void MakeAmpMat::make3x3Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
                     cc = (blockArrays1_pointer)(3,i);
                     id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
                     T3_temp[id] =  inMat(i-range_lower1,j-range_lower2);
+                    //std::cout << T3_temp[id] << std::endl;
                 }
             }
         }
@@ -575,45 +577,49 @@ void MakeAmpMat::addElementsT2(bool Pij, bool Pab){
 }
 
 void MakeAmpMat::addElementsT3(bool Pij, bool Pik, bool Pjk, bool Pab, bool Pac, bool Pbc){
-    for (int channel = 0; channel<m_intClass->numOfKu; channel++){
-        int range_lower1 = m_intClass->boundsHolder_hhpp_hh(0,channel);
-        int range_upper1 = m_intClass->boundsHolder_hhpp_hh(1,channel);
-        int range_lower2 = m_intClass->boundsHolder_hhpp_pp(0,channel);
-        int range_upper2 = m_intClass->boundsHolder_hhpp_pp(1,channel);
+    for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
+        int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
+        int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
+        int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
+        int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
 
-        int id; int id_Pij; int id_Pab; int id_Pijab;
-
-        int ii; int jj;
-        int aa; int bb;
+        int id;
+        int ii; int jj; int kk;
+        int aa; int bb; int cc;
 
         double val;
 
-        for (int hh = range_lower1; hh<range_upper1; hh++){
-            for (int pp = range_lower2; pp<range_upper2; pp++){
-                ii = (m_intClass->blockArrays_pp_hh)(1,hh);
-                jj = (m_intClass->blockArrays_pp_hh)(2,hh);
-                aa = (m_intClass->blockArrays_pp_pp)(1,pp);
-                bb = (m_intClass->blockArrays_pp_pp)(2,pp);
+        for (int hhh = range_lower1; hhh<range_upper1; hhh++){
+            for (int ppp = range_lower2; ppp<range_upper2; ppp++){
+                ii = (m_intClass->blockArrays_ppp_hhh)(1,hhh);
+                jj = (m_intClass->blockArrays_ppp_hhh)(2,hhh);
+                kk = (m_intClass->blockArrays_ppp_hhh)(3,hhh);
+                aa = (m_intClass->blockArrays_ppp_ppp)(1,ppp);
+                bb = (m_intClass->blockArrays_ppp_ppp)(2,ppp);
+                cc = (m_intClass->blockArrays_ppp_ppp)(3,ppp);
 
-                id = m_intClass->Identity_hhpp(ii,jj,aa,bb);
+                id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
+
+                //std::cout << T3_temp[id] << std::endl;
 
                 val = 0;
-                val += T2_temp[id];
+                val += T3_temp[id];
 
-                if (Pab){
-                    id_Pab = m_intClass->Identity_hhpp(ii,jj,bb,aa);
-                    val -= T2_temp[id_Pab];
-                }
                 if (Pij){
-                    id_Pij = m_intClass->Identity_hhpp(jj,ii,aa,bb);
-                    val -= T2_temp[id_Pij];
+                    id = m_intClass->Identity_hhhppp(jj,ii,kk,aa,bb,cc);
+                    val -= T3_temp[id];
+                }
+                if (Pab){
+                    id = m_intClass->Identity_hhhppp(ii,jj,kk,bb,aa,cc);
+                    val -= T3_temp[id];
                 }
                 if (Pij && Pab){
-                    id_Pijab = m_intClass->Identity_hhpp(jj,ii,bb,aa);
-                    val += T2_temp[id_Pijab];
+                    id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                    val += T3_temp[id];
                 }
 
-                T2_elements_new[id] += val;
+                T3_elements_new[id] += val;
+                //std::cout << T3_elements_new[id] << std::endl;
             }
         }
     }
@@ -737,7 +743,13 @@ Eigen::MatrixXd MakeAmpMat::make3x3Block(int ku, int i1, int i2, int i3, int i4,
         for (int i = range_lower1; i<range_upper1; i++){
             for (int j = range_lower2; j<range_upper2; j++){
                 id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(3,j), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j), (blockArrays1_pointer)(3,i));
+                //std::cout << id << std::endl;
                 returnMat(i-range_lower1, j-range_lower2) = T_list[id];
+
+                /*for(auto it = T_list.cbegin(); it != T_list.cend(); ++it)
+                {
+                    std::cout << it->second << "\n";
+                }*/
             }
         }
     }
