@@ -42,6 +42,8 @@ public:
     void                            addElementsT2(bool Pij, bool Pab);
     void                            addElementsT3(bool Pij, bool Pik, bool Pjk, bool Pab, bool Pac, bool Pbc);
 
+    std::vector<int>                permuteT3(int index, std::vector<int> indices);
+
     void setIntClass(class MakeIntMat* intClass);
     void setSystem(class System* system);
     void setElements_T2();
