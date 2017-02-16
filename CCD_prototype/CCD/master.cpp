@@ -48,6 +48,10 @@ void Master::setClasses(){
     m_ampClass->setSystem(m_system);
     m_ampClass->setElements_T2();
     m_ampClass->makeDenomMat();
+
+    if (m_triplesOn){
+        m_ampClass->makeDenomMat3();
+    }
 }
 
 double Master::CC_master(double eps, double conFac){
@@ -132,9 +136,11 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             m_diagrams->D10b();
             m_diagrams->D10c();
 
-            //m_diagrams->T1a();
-            m_diagrams->T2a();
+            m_diagrams->T1a();
+            m_diagrams->T1b();
         }
+
+        //cout << m_intClass->indexHolder_ppp_hhh << " " << m_intClass->indexHolder_ppp_ppp << endl;
 
         for (int hh = 0; hh<m_intClass->numOfKu; hh++){
             int ku = m_intClass->Vhhpp_i[hh];
@@ -147,6 +153,17 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
 
             Eigen::MatrixXd Thhpp = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements_new);
             ECCD += 0.25*((Vhhpp.transpose())*(Thhpp)).trace();
+        }
+
+        if(m_triplesOn){
+            for (int hhh = 0; hhh<m_intClass->numOfKu3; hhh++){
+                int ku = m_intClass->Vhhhppp_i[hhh];
+
+                Eigen::MatrixXd D_contributions = m_ampClass->make3x3Block(ku,0,0,0,1,1,1, m_ampClass->T3_elements_new);
+                Eigen::MatrixXd temp = (D_contributions).array()*m_ampClass->denomMat3[hhh].array();
+
+                m_ampClass->make3x3Block_inverse(temp, ku, 0,0,0,1,1,1, m_ampClass->T3_elements_new, false);
+            }
         }
 
         cout << std::setprecision (12) << ECCD << endl;

@@ -13,6 +13,7 @@ class MakeAmpMat
 public:
     MakeAmpMat();
     std::vector<Eigen::MatrixXd> denomMat;
+    std::vector<Eigen::MatrixXd> denomMat3;
 
     MakeIntMat*  m_intClass = nullptr;
     System*      m_system   = nullptr;
@@ -40,9 +41,11 @@ public:
     void                            make3x3Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::map<int, double>& T_list, bool add);
 
     void                            addElementsT2(bool Pij, bool Pab);
+    void                            addElementsT3_T1a();
+    void                            addElementsT3_T1b();
     void                            addElementsT3(bool Pij, bool Pik, bool Pjk, bool Pab, bool Pac, bool Pbc);
 
-    std::vector<int>                permuteT3(int index, std::vector<int> indices);
+    std::map<int, int> permuteT3(int index, std::map<int, int> indices);
 
     void setIntClass(class MakeIntMat* intClass);
     void setSystem(class System* system);
@@ -50,6 +53,7 @@ public:
     void setElements_T3();
     Eigen::MatrixXd makeBlockMat(int index);
     void makeDenomMat();
+    void makeDenomMat3();
 };
 
 #endif // MAKEAMPMAT_H

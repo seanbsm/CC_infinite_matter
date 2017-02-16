@@ -973,7 +973,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         int val_ppp = sortVec_ppp_ppp[ppp];
         auto it = std::find(sortVec_ppp_hhh.begin(), sortVec_ppp_hhh.end(), val_ppp);
         if (it != sortVec_ppp_hhh.end()){
-            for (int bA_ppp=0; bA_ppp<m_Nh*m_Nh*m_Nh; bA_ppp++){
+            for (int bA_ppp=0; bA_ppp<(m_Ns-m_Nh)*(m_Ns-m_Nh)*(m_Ns-m_Nh); bA_ppp++){
                 if (val_ppp == blockArrays_ppp_ppp(0,bA_ppp)){
                     range_upper = bA_ppp+1;
                     counter += 1;
@@ -1029,7 +1029,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         for (int ppp=0; ppp<sortVec_ppp_ppp.size(); ppp++){
             int val_hhh = sortVec_ppp_hhh[hhh];
             int val_ppp = sortVec_ppp_ppp[ppp];
-            if (val_hhh == val_ppp){      //ensures I only work on cases where hh and pp have equal kunique
+            if (val_hhh == val_ppp){      //ensures I only work on cases where hhh and ppp have equal kunique
                 for (int hhh2=0; hhh2<m_Nh*m_Nh*m_Nh; hhh2++){
                     if ( val_hhh == blockArrays_ppp_hhh(0,hhh2) ){
                         range_upper_hhh = hhh2+1;

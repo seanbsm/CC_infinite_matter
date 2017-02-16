@@ -73,6 +73,34 @@ void MakeAmpMat::makeDenomMat(){
     }
 }
 
+void MakeAmpMat::makeDenomMat3(){
+    //for (int i=0; i<m_intClass->sortVec_hh.size(); i++){   //remember, Vhhpp_i holds all kUnique for Vhhpp
+    for (int i=0; i<m_intClass->numOfKu3; i++){
+        int lowBound_hhh  = m_intClass->boundsHolder_hhhppp_hhh(0,i);
+        int highBound_hhh = m_intClass->boundsHolder_hhhppp_hhh(1,i);
+        int lowBound_ppp  = m_intClass->boundsHolder_hhhppp_ppp(0,i);
+        int highBound_ppp = m_intClass->boundsHolder_hhhppp_ppp(1,i);
+
+        int dim_hhh = highBound_hhh - lowBound_hhh;
+        int dim_ppp = highBound_ppp - lowBound_ppp;
+        Eigen::MatrixXd newMat;
+        newMat.conservativeResize(dim_hhh, dim_ppp);
+
+        for (int hhh=lowBound_hhh; hhh<highBound_hhh; hhh++){
+            for (int ppp=lowBound_ppp; ppp<highBound_ppp; ppp++){
+                int ii = m_intClass->blockArrays_ppp_hhh(1,hhh);
+                int jj = m_intClass->blockArrays_ppp_hhh(2,hhh);
+                int kk = m_intClass->blockArrays_ppp_hhh(3,hhh);
+                int aa = m_intClass->blockArrays_ppp_ppp(1,ppp);
+                int bb = m_intClass->blockArrays_ppp_ppp(2,ppp);
+                int cc = m_intClass->blockArrays_ppp_ppp(3,ppp);
+                newMat(hhh-lowBound_hhh, ppp-lowBound_ppp) = 1/( (double)(m_system->f(ii) + m_system->f(jj) + m_system->f(kk) - m_system->f(aa) - m_system->f(bb) - m_system->f(cc)) );
+            }
+        }
+        denomMat3.push_back( newMat );
+    }
+}
+
 void MakeAmpMat::make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list, bool add){
 
     bool cond_hhp = (i1 == 0 && i2 == 0 && i3==1);
@@ -515,7 +543,7 @@ void MakeAmpMat::make3x3Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
         if (cond_hhp1 && cond_pph2){
             for (int i = range_lower1; i<range_upper1; i++){
                 for (int j = range_lower2; j<range_upper2; j++){
-                    id = m_intClass->Identity_hhpp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j));
+                    id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(3,j), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j),  (blockArrays1_pointer)(3,i));
                     T_list[id] = inMat(i-range_lower1,j-range_lower2);
                 }
             }
@@ -523,7 +551,7 @@ void MakeAmpMat::make3x3Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
         else if (cond_hhh1 && cond_ppp2){
             for (int i = range_lower1; i<range_upper1; i++){
                 for (int j = range_lower2; j<range_upper2; j++){
-                    id = m_intClass->Identity_hhpp((blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i));
+                    id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j), (blockArrays2_pointer)(3,j));
                     T_list[id] = inMat(i-range_lower1,j-range_lower2);
                 }
             }
@@ -576,50 +604,25 @@ void MakeAmpMat::addElementsT2(bool Pij, bool Pab){
     }
 }
 
-std::vector<int> MakeAmpMat::permuteT3(int index, std::vector<int> indices){
-    std::vector<int> outIndices(6);
-    if (index==0){
-        outIndices = {indices[1], indices[0], indices[2], indices[3], indices[4], indices[5]};
-    }
-    else if (index==1){
-        outIndices = {indices[2], indices[1], indices[0], indices[3], indices[4], indices[5]};
-    }
-    else if (index==2){
-        outIndices = {indices[0], indices[2], indices[1], indices[3], indices[4], indices[5]};
-    }
-    else if (index==3){
-        outIndices = {indices[0], indices[1], indices[2], indices[4], indices[3], indices[5]};
-    }
-    else if (index==4){
-        outIndices = {indices[0], indices[1], indices[2], indices[5], indices[4], indices[3]};
-    }
-    else if (index==5){
-        outIndices = {indices[0], indices[1], indices[2], indices[3], indices[5], indices[4]};
-    }
 
-    return outIndices;
-}
+void MakeAmpMat::addElementsT3_T1a(){
 
-//there are 2^6=720 possible combinations here, need automatisation
-void MakeAmpMat::addElementsT3(bool Pij, bool Pik, bool Pjk, bool Pab, bool Pac, bool Pbc){
+    int id;
+    int ii; int jj; int kk;
+    int aa; int bb; int cc;
 
-    std::vector<bool> permutations = {Pij, Pik, Pjk, Pab, Pac, Pbc};
+    double val;
+
+    std::map<int, int> indexMap;
+    for (int it=0; it<6; it++){
+        indexMap[it] = it;
+    }
 
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
         int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
         int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
         int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
-
-
-        int id;
-        int ii; int jj; int kk;
-        int aa; int bb; int cc;
-
-        int i; int j; int k;
-        int a; int b; int c;
-
-        double val;
 
         for (int hhh = range_lower1; hhh<range_upper1; hhh++){
             for (int ppp = range_lower2; ppp<range_upper2; ppp++){
@@ -631,57 +634,359 @@ void MakeAmpMat::addElementsT3(bool Pij, bool Pik, bool Pjk, bool Pab, bool Pac,
                 bb = (m_intClass->blockArrays_ppp_ppp)(2,ppp);
                 cc = (m_intClass->blockArrays_ppp_ppp)(3,ppp);
 
-                std::vector<int> indices = {ii,jj,kk,aa,bb,cc}
+                val = 0;
+
+                id = m_intClass->Identity_hhhppp(ii,jj,kk,bb,aa,cc);
+                val -= T3_temp[id];
+
+                id = m_intClass->Identity_hhhppp(ii,jj,kk,cc,bb,aa);
+                val -= T3_temp[id];
+
+                id = m_intClass->Identity_hhhppp(kk,jj,ii,aa,bb,cc);
+                val -= T3_temp[id];
+
+                id = m_intClass->Identity_hhhppp(ii,kk,jj,aa,bb,cc);
+                val -= T3_temp[id];
+
+                id = m_intClass->Identity_hhhppp(kk,jj,ii,bb,aa,cc);
+                val += T3_temp[id];
+
+                id = m_intClass->Identity_hhhppp(ii,kk,jj,bb,aa,cc);
+                val += T3_temp[id];
+
+                id = m_intClass->Identity_hhhppp(kk,jj,ii,cc,bb,aa);
+                val += T3_temp[id];
+
+                id = m_intClass->Identity_hhhppp(ii,kk,jj,cc,bb,aa);
+                val += T3_temp[id];
+
+                id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc); //unperturbed
+                val += T3_temp[id];
+
+                T3_elements_new[id] += val;
+            }
+        }
+    }
+}
+
+void MakeAmpMat::addElementsT3_T1b(){
+
+    int id;
+    int ii; int jj; int kk;
+    int aa; int bb; int cc;
+
+    double val;
+
+    std::map<int, int> indexMap;
+    for (int it=0; it<6; it++){
+        indexMap[it] = it;
+    }
+
+    for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
+        int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
+        int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
+        int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
+        int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
+
+        for (int hhh = range_lower1; hhh<range_upper1; hhh++){
+            for (int ppp = range_lower2; ppp<range_upper2; ppp++){
+
+                ii = (m_intClass->blockArrays_ppp_hhh)(1,hhh);
+                jj = (m_intClass->blockArrays_ppp_hhh)(2,hhh);
+                kk = (m_intClass->blockArrays_ppp_hhh)(3,hhh);
+                aa = (m_intClass->blockArrays_ppp_ppp)(1,ppp);
+                bb = (m_intClass->blockArrays_ppp_ppp)(2,ppp);
+                cc = (m_intClass->blockArrays_ppp_ppp)(3,ppp);
+
+                val = 0;
+
+                id = m_intClass->Identity_hhhppp(ii,jj,kk,cc,bb,aa);
+                val -= T3_temp[id];
+
+                id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,cc,bb);
+                val -= T3_temp[id];
+
+                id = m_intClass->Identity_hhhppp(jj,ii,kk,aa,bb,cc);
+                val -= T3_temp[id];
+
+                id = m_intClass->Identity_hhhppp(kk,jj,ii,aa,bb,cc);
+                val -= T3_temp[id];
+
+                id = m_intClass->Identity_hhhppp(jj,ii,kk,cc,bb,aa);
+                val += T3_temp[id];
+
+                id = m_intClass->Identity_hhhppp(kk,jj,ii,cc,bb,aa);
+                val += T3_temp[id];
+
+                id = m_intClass->Identity_hhhppp(jj,ii,kk,aa,cc,bb);
+                val += T3_temp[id];
+
+                id = m_intClass->Identity_hhhppp(kk,jj,ii,aa,cc,bb);
+                val += T3_temp[id];
+
+                id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc); //unperturbed
+                val += T3_temp[id];
+
+                T3_elements_new[id] += val;
+            }
+        }
+    }
+}
+
+std::map<int, int> MakeAmpMat::permuteT3(int index, std::map<int, int> indices){
+    //indices has key as ii,jj,kk,aa,bb,cc, while value says to which position it's been permuted
+
+    std::map<int, int> outIndices = indices;
+
+    if (index==0){      //ij
+        outIndices[0] = indices[1];
+        outIndices[1] = indices[0];
+    }
+    else if (index==1){ //ik
+        outIndices[0] = indices[2];
+        outIndices[2] = indices[0];
+    }
+    else if (index==2){ //jk
+        outIndices[1] = indices[2];
+        outIndices[2] = indices[1];
+    }
+    else if (index==3){ //ab
+        outIndices[3] = indices[4];
+        outIndices[4] = indices[3];
+    }
+    else if (index==4){ //ac
+        outIndices[3] = indices[5];
+        outIndices[5] = indices[3];
+    }
+    else if (index==5){ //bc
+        outIndices[4] = indices[5];
+        outIndices[5] = indices[4];
+    }
+
+    return outIndices;
+}
+
+//there are 2^6=720 possible combinations here, need automatisation
+void MakeAmpMat::addElementsT3(bool Pij, bool Pik, bool Pjk, bool Pab, bool Pac, bool Pbc){
+
+    std::vector<bool> permutations = {Pij, Pik, Pjk, Pab, Pac, Pbc};
+
+    int id;
+    int ii; int jj; int kk;
+    int aa; int bb; int cc;
+
+    double val;
+
+    bool P1; std::vector<int> P1_indices(6);
+    bool P2; std::vector<int> P2_indices(6);
+    bool P3; std::vector<int> P3_indices(6);
+    bool P4; std::vector<int> P4_indices(6);
+    bool P5; std::vector<int> P5_indices(6);
+    bool P6; std::vector<int> P6_indices(6);
+
+
+    int total_P = std::accumulate(permutations.begin(),permutations.end(),0);
+
+    std::map<int, int> indexMap;
+    for (int it=0; it<6; it++){
+        indexMap[it] = it;
+    }
+
+    for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
+        int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
+        int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
+        int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
+        int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
+
+
+
+        for (int hhh = range_lower1; hhh<range_upper1; hhh++){
+            for (int ppp = range_lower2; ppp<range_upper2; ppp++){
+
+                ii = (m_intClass->blockArrays_ppp_hhh)(1,hhh);
+                jj = (m_intClass->blockArrays_ppp_hhh)(2,hhh);
+                kk = (m_intClass->blockArrays_ppp_hhh)(3,hhh);
+                aa = (m_intClass->blockArrays_ppp_ppp)(1,ppp);
+                bb = (m_intClass->blockArrays_ppp_ppp)(2,ppp);
+                cc = (m_intClass->blockArrays_ppp_ppp)(3,ppp);
+
+                std::vector<int> indices = {ii,jj,kk,aa,bb,cc};
+                std::map<int, int> indexMapP;
 
                 id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
                 val = 0;
                 val += T3_temp[id];
 
-                for (int i1=0; i1<6; i1++){
+                /*for (int i1=0; i1<6; i1++){
+
                     P1 = permutations[i1];
                     if (P1){
-                        i,j,k,
-                        id =
+                        indexMapP = permuteT3(i1,indexMap);
+                        for (auto const &it : indexMapP){
+                            P1_indices[it.first] = it.second;
+                        }
+                        id = m_intClass->Identity_hhhppp( indices[P1_indices[0]],indices[P1_indices[1]],indices[P1_indices[2]],indices[P1_indices[3]],indices[P1_indices[4]],indices[P1_indices[5]] );
+                        val -= T3_temp[id];
+
+
+                        if (total_P > 1){
+                        }
                     }
-                }
+                }*/
 
                 /*if (Pij){
                     id = m_intClass->Identity_hhhppp(jj,ii,kk,aa,bb,cc);
-                    val -= T3_temp[id];
-                }
-                if (Pik){
-                    id = m_intClass->Identity_hhhppp(kk,jj,ii,aa,bb,cc);
-                    val -= T3_temp[id];
-                }
-                if (Pjk){
-                    id = m_intClass->Identity_hhhppp(ii,kk,jj,aa,bb,cc);
                     val -= T3_temp[id];
                 }
                 if (Pab){
                     id = m_intClass->Identity_hhhppp(ii,jj,kk,bb,aa,cc);
                     val -= T3_temp[id];
                 }
-                if (Pac){
-                    id = m_intClass->Identity_hhhppp(ii,jj,kk,cc,bb,aa);
-                    val -= T3_temp[id];
-                }
-                if (Pbc){
-                    id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,cc,bb);
-                    val -= T3_temp[id];
-                }
-
-                if (Pij && Pab){
-                    id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
-                    val += T3_temp[id];
-                }
-                if (Pij && Pab){
-                    id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
-                    val += T3_temp[id];
-                }
                 if (Pij && Pab){
                     id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
                     val += T3_temp[id];
                 }*/
+
+                if (total_P > 0){
+                    if (Pij){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,aa,bb,cc);
+                        val -= T3_temp[id];
+                    }
+                    if (Pik){
+                        id = m_intClass->Identity_hhhppp(kk,jj,ii,aa,bb,cc);
+                        val -= T3_temp[id];
+                    }
+                    if (Pjk){
+                        id = m_intClass->Identity_hhhppp(ii,kk,jj,aa,bb,cc);
+                        val -= T3_temp[id];
+                    }
+                    if (Pab){
+                        id = m_intClass->Identity_hhhppp(ii,jj,kk,bb,aa,cc);
+                        val -= T3_temp[id];
+                    }
+                    if (Pac){
+                        id = m_intClass->Identity_hhhppp(ii,jj,kk,cc,bb,aa);
+                        val -= T3_temp[id];
+                    }
+                    if (Pbc){
+                        id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,cc,bb);
+                        val -= T3_temp[id];
+                    }
+                }
+
+                if (total_P > 1){
+                    if (Pij && Pik){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pij && Pjk){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pij && Pab){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pij && Pac){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pij && Pbc){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pik && Pjk){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pik && Pab){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pik && Pac){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pik && Pbc){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pjk && Pab){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pjk && Pac){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pjk && Pbc){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pab && Pac){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pab && Pbc){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pac && Pbc){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                }
+                if (total_P > 2){
+                    if (Pij && Pik && Pjk){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pij && Pik && Pab){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pij && Pik && Pac){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pij && Pik && Pbc){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pij && Pjk && Pab){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pij && Pjk && Pac){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pij && Pjk && Pbc){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pik && Pjk && Pab){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pik && Pjk && Pac){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pik && Pjk && Pbc){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pik && Pab && Pac){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+                    if (Pik && Pab && Pbc){
+                        id = m_intClass->Identity_hhhppp(jj,ii,kk,bb,aa,cc);
+                        val += T3_temp[id];
+                    }
+
+                }
 
                 T3_elements_new[id] += val;
                 //std::cout << T3_elements_new[id] << std::endl;

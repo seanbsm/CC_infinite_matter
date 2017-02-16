@@ -34,7 +34,7 @@ public:
 
     //T3 diagrams
     void T1a();
-    void T2a();
+    void T1b();
 
 
     /*
