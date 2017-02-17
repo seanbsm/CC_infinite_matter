@@ -38,7 +38,10 @@ void Master::setClasses(){
     m_ampClass = new MakeAmpMat;
     m_intClass = new MakeIntMat;
     m_diagrams = new Diagrams;
+
     cout << m_Ns << endl;
+
+    m_intClass->setTriples(m_triplesOn);
     m_intClass->makeBlockMat(m_system, m_Nh, m_Ns);
 
     m_diagrams->setAmpClass(m_ampClass);
@@ -49,8 +52,10 @@ void Master::setClasses(){
     m_ampClass->setElements_T2();
     m_ampClass->makeDenomMat();
 
+
     if (m_triplesOn){
         m_ampClass->makeDenomMat3();
+        //std::cout << "hey" << std::endl;
     }
 }
 

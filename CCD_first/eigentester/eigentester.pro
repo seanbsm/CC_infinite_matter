@@ -5,5 +5,9 @@ CONFIG -= qt
 
 QMAKE_CXXFLAGS += -std=c++11
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    testclass.cpp
+
+HEADERS += \
+    testclass.h
 

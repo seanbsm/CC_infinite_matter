@@ -108,6 +108,9 @@ public:
     void                            mapper_hp();        //special func made for Lc diagram, not necessary IF I fix sign convention for ph and hp
 
     void                            makeBlockMat(System* system, int Nh, int Ns);
+    void                            setTriples(bool argument);
+    bool                            m_triplesOn;
+
     int                             numOfKu;        //number of blocks in V_hh_pp
     int                             numOfKu3;       //number of blocks in V_hhh_ppp
     Eigen::MatrixXd                 makeSquareBlock(Eigen::MatrixXi& array, int range_lower, int range_upper);

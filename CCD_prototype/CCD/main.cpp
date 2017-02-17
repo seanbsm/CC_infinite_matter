@@ -38,7 +38,7 @@ int main()
     double  conFac  =   1;                          //convergence factor
 
     bool    intermediates = true;                   //turn on/off intermediates in CCD eqs
-    bool    CCDT          = true;                  //turn on/off CCDT-1
+    bool    CCDT          = false;                  //turn on/off CCDT-1
     bool    timer         = true;                   //turn on/off timer
 
 
