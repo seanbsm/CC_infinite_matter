@@ -29,11 +29,9 @@ void MP::makeStateSpace(){
             for (int ny=-n2; ny<n2+1; ny++){
                 for (int nz=-n2; nz<n2+1; nz++){
                     if (nx*nx + ny*ny + nz*nz == n2){
-                        m_states.conservativeResize(Eigen::NoChange, m_states.cols()+4);
-                        m_states.col(m_states.cols()-4) << n2,nx,ny,nz, 1, 1;
-                        m_states.col(m_states.cols()-3) << n2,nx,ny,nz, 1,-1;
-                        m_states.col(m_states.cols()-2) << n2,nx,ny,nz,-1, 1;
-                        m_states.col(m_states.cols()-1) << n2,nx,ny,nz,-1,-1;
+                        m_states.conservativeResize(Eigen::NoChange, m_states.cols()+2);
+                        m_states.col(m_states.cols()-2) << n2,nx,ny,nz, 1, 1;
+                        m_states.col(m_states.cols()-1) << n2,nx,ny,nz,-1, 1;
                     } //end of nx^2 + ny^2 + nz^2 == n^2
                 }//end of nz-loop
             }//end of ny-loop
@@ -184,10 +182,10 @@ double MP::assym(int p, int q, int r, int s){
                - (VR_dir + 0.5*VT_dir + 0.5*VS_dir)*Ps_dir*Pt_dir
                - 0.5*(VT_dir - VS_dir)*Cs_dir*Pt_dir;
 
-    returnVal -= (VR_ex + 0.5*VT_ex + 0.5*VS_ex)*Cs_ex*Ct_ex
-               + 0.5*(VT_ex - VS_ex)*Ps_ex*Ct_ex
-               - (VR_ex + 0.5*VT_ex + 0.5*VS_ex)*Ps_ex*Pt_ex
-               - 0.5*(VT_ex - VS_ex)*Cs_ex*Pt_ex;
+    returnVal += -(VR_ex + 0.5*VT_ex + 0.5*VS_ex)*Cs_ex*Ct_ex
+               - 0.5*(VT_ex - VS_ex)*Ps_ex*Ct_ex
+               + (VR_ex + 0.5*VT_ex + 0.5*VS_ex)*Ps_ex*Pt_ex
+               + 0.5*(VT_ex - VS_ex)*Cs_ex*Pt_ex;
 
     return 0.5*returnVal;
 }

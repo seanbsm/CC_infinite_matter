@@ -24,15 +24,16 @@ int main()
 //we use natural units
     const double  pi      =   M_PI;
     int     Nh      =   14;							//number of particles
-    int     Nb      =   3;							//number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 can at max have N=14)
+    int     Nb      =   4;							//number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 can at max have N=14)
     double  rs      =   1;                          //Wigner Seitz radius
     double  rb      =   1;                          //Bohr radius [MeV^-1]
-    double  m       =   1;//939.565;                    //electron mass [MeV] (1 for HEG, 939.565 for MP)
-    //double  rho     =   0.0001;
-    double  L3      =   4*pi*Nh*rs/3;               //box volume
-    //double  L3      =   Nh/rho;
-    double  L2      =   pow(L3, 2./3);
-    double  L1      =   pow(L3, 1./3);
+    //double  m       =   1;//                //electron mass [MeV] (1 for HEG, 939.565 for MP)
+    double  m       =   939.565;
+    double  rho     =   0.2;
+    //double  L3      =   4*pi*Nh*rs/3;               //box volume
+    double  L3      =   Nh/rho;
+    double  L2      =   pow(L3, 2./3.);
+    double  L1      =   pow(L3, 1./3.);
 
     double  eps     =   1e-12;
     double  conFac  =   1;                          //convergence factor
@@ -46,7 +47,7 @@ int main()
     Master* master = new Master;
     master->setSize(Nh, Nb);
 
-    master->setSystem(new HEG(master, m, L3, L2, L1));
+    master->setSystem(new MP(master, m, L3, L2, L1));
 
     master->setTriples(CCDT);
     master->setIntermediates(intermediates);
