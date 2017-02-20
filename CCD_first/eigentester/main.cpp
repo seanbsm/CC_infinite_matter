@@ -4,10 +4,8 @@
 #include <eigen3/Eigen/Dense>
 #include <map>
 
-#include <mpi/mpi.h>
-#include <stdio.h>
-
-#include <testclass.h>
+#include <mpi.h>
+//#include <stdio.h>
 
 using namespace std;
 
@@ -50,37 +48,24 @@ bool vecDelta(Eigen::VectorXi v1, Eigen::VectorXi v2){
     }
 }
 
-int main()
+
+
+int main(int argc, char** argv)
 {
-    // Initialize the MPI environment
-    MPI_Init(NULL, NULL);
+    cout << "sup" << endl;
 
-    // Get the number of processes
-    int world_size;
-    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+    MPI_Init (&argc, &argv);	/* starts MPI */
+    int rank, size;
+    MPI_Comm_rank (MPI_COMM_WORLD, &rank);	/* get current process id */
+    MPI_Comm_size (MPI_COMM_WORLD, &size);	/* get number of processes */
 
-    // Get the rank of the process
-    int world_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
-
-    // Get the name of the processor
-    char processor_name[MPI_MAX_PROCESSOR_NAME];
-    int name_len;
-    MPI_Get_processor_name(processor_name, &name_len);
-
-    testClass* test = new testClass;
-
-    test->testFunc();
-
-    cout << test->places[4] << endl;
-
+    cout << size << endl;
     MPI_Finalize();
-
     /*Eigen::MatrixXi states;
     Eigen::Matrix<int, 3, 10> m1;
     Eigen::Matrix<int, 3, 4> m2;*/
 
-    /*Eigen::Vector4i v1(1,2,3,4);
+    Eigen::Vector4i v1(1,2,3,4);
     Eigen::Vector4i v2(1,2,3,4);
 
     //Eigen::VectorXi v = Eigen::VectorXi(1,2,3);
@@ -142,7 +127,7 @@ int main()
 
     std::vector<int> array2 = { 9, 7, 5, 3, 1 };
 
-    */
+
 
     /*Eigen::VectorXi vec1;
     vec1 << 1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,4,4,4,4,5,5,5,5,5,5,5,5,6,6,6,6;

@@ -49,8 +49,8 @@ void Master::setClasses(){
     m_diagrams->setSystem(m_system);
     m_ampClass->setIntClass(m_intClass);
     m_ampClass->setSystem(m_system);
-    m_ampClass->setElements_T2();
     m_ampClass->makeDenomMat();
+    m_ampClass->setElements_T2();
 
 
     if (m_triplesOn){
@@ -84,6 +84,7 @@ double Master::CC_master(double eps, double conFac){
         ECCD_old += ((Vhhpp.transpose())*(temp)).trace();
 
     }
+    m_ampClass->T2_elements = m_ampClass->T2_elements_new;
     //check whether or not to multiply by 0.25 for MBPT2
     std::cout << "MBPT2: " << std::setprecision (12) << 0.25*ECCD_old << std::endl;
 
@@ -171,13 +172,13 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             }
         }
 
-        cout << std::setprecision (12) << ECCD << endl;
+        cout << std::setprecision (14) << ECCD << endl;
 
         conFac = abs(ECCD - ECCD_old);
         ECCD_old = ECCD;
         counter += 1;
 
-        if (1){
+        if (0){
             double alpha = 0.3;
             std::map<int, double> T2_temp = m_ampClass->T2_elements;
             m_ampClass->T2_elements.clear();

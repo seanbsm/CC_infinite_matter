@@ -16,6 +16,16 @@ void MakeAmpMat::setSystem(class System* system){
 void MakeAmpMat::setElements_T2(){
     Amplitudes = m_intClass->Vhhpp;
     T2_elements = m_intClass->Vhhpp_elements;
+
+    for (int hh = 0; hh<m_intClass->numOfKu; hh++){
+        int ku = m_intClass->Vhhpp_i[hh];
+
+        Eigen::MatrixXd Vhhpp           = m_intClass->make2x2Block(ku,0,0,1,1);
+        Eigen::MatrixXd temp = (Vhhpp).array()*denomMat[hh].array();
+
+        make2x2Block_inverse(temp, ku, 0,0,1,1, T2_elements_new, false);
+    }
+    T2_elements = T2_elements_new;
 }
 
 void MakeAmpMat::setElements_T3(){
