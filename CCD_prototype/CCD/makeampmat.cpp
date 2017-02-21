@@ -91,14 +91,22 @@ void MakeAmpMat::makeDenomMat3(){
         int lowBound_ppp  = m_intClass->boundsHolder_hhhppp_ppp(0,i);
         int highBound_ppp = m_intClass->boundsHolder_hhhppp_ppp(1,i);
 
+        /*std::cout << m_intClass->blockArrays_ppp_hhh.cols() << std::endl;
+        std::cout << m_intClass->blockArrays_ppp_hhh.rows() << std::endl;
+        std::cout << m_intClass->blockArrays_ppp_ppp.cols() << std::endl;
+        std::cout << m_intClass->blockArrays_ppp_ppp.rows() << std::endl;*/
+
         int dim_hhh = highBound_hhh - lowBound_hhh;
         int dim_ppp = highBound_ppp - lowBound_ppp;
         //std::cout << i << " " <<dim_hhh << " " << dim_ppp << std::endl;
         Eigen::MatrixXd newMat;
         newMat.conservativeResize(dim_hhh, dim_ppp);
 
+        //std::cout <<  m_intClass->boundsHolder_hhhppp_hhh << std::endl;
+
         for (int hhh=lowBound_hhh; hhh<highBound_hhh; hhh++){
             for (int ppp=lowBound_ppp; ppp<highBound_ppp; ppp++){
+                //std::cout << i << " " <<hhh-lowBound_hhh<< " " << ppp-lowBound_ppp << std::endl;
                 int ii = m_intClass->blockArrays_ppp_hhh(1,hhh);
                 int jj = m_intClass->blockArrays_ppp_hhh(2,hhh);
                 int kk = m_intClass->blockArrays_ppp_hhh(3,hhh);
@@ -112,7 +120,7 @@ void MakeAmpMat::makeDenomMat3(){
     }
 }
 
-void MakeAmpMat::make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list, bool add){
+void MakeAmpMat::make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::unordered_map<int, double> &T_list, bool add){
 
     bool cond_hhp = (i1 == 0 && i2 == 0 && i3==1);
     bool cond_pph = (i1 == 1 && i2 == 1 && i3==0);
@@ -242,7 +250,7 @@ void MakeAmpMat::make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
     }
 }
 
-void MakeAmpMat::make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list, bool add){
+void MakeAmpMat::make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::unordered_map<int, double> &T_list, bool add){
 
     //std::cout << "hey" << std::endl;
     bool cond_hh1 = (i1 == 0 && i2 == 0);
@@ -348,7 +356,7 @@ void MakeAmpMat::make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
     int id;
     int ii; int jj;
     int aa; int bb;
-    //std::map<int, double> T2_temp;
+    //std::unordered_map<int, double> T2_temp;
 
     if (add == true){
         if (cond_hp1 && cond_ph2){
@@ -410,7 +418,7 @@ void MakeAmpMat::make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
     }
 }
 
-void MakeAmpMat::make3x3Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::map<int, double>& T_list, bool add){
+void MakeAmpMat::make3x3Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::unordered_map<int, double> &T_list, bool add){
 
     bool cond_hhh1 = (i1 == 0 && i2 == 0 && i3==0);
     bool cond_pph1 = (i1 == 1 && i2 == 1 && i3==0);
@@ -748,10 +756,10 @@ void MakeAmpMat::addElementsT3_T1b(){
     }
 }
 
-std::map<int, int> MakeAmpMat::permuteT3(int index, std::map<int, int> indices){
+std::unordered_map<int, int> MakeAmpMat::permuteT3(int index, std::unordered_map<int, int> indices){
     //indices has key as ii,jj,kk,aa,bb,cc, while value says to which position it's been permuted
 
-    std::map<int, int> outIndices = indices;
+    std::unordered_map<int, int> outIndices = indices;
 
     if (index==0){      //ij
         outIndices[0] = indices[1];
@@ -802,7 +810,7 @@ void MakeAmpMat::addElementsT3(bool Pij, bool Pik, bool Pjk, bool Pab, bool Pac,
 
     int total_P = std::accumulate(permutations.begin(),permutations.end(),0);
 
-    std::map<int, int> indexMap;
+    std::unordered_map<int, int> indexMap;
     for (int it=0; it<6; it++){
         indexMap[it] = it;
     }
@@ -826,7 +834,7 @@ void MakeAmpMat::addElementsT3(bool Pij, bool Pik, bool Pjk, bool Pab, bool Pac,
                 cc = (m_intClass->blockArrays_ppp_ppp)(3,ppp);
 
                 std::vector<int> indices = {ii,jj,kk,aa,bb,cc};
-                std::map<int, int> indexMapP;
+                std::unordered_map<int, int> indexMapP;
 
                 id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
                 val = 0;
@@ -1012,7 +1020,7 @@ void MakeAmpMat::addElementsT3(bool Pij, bool Pik, bool Pjk, bool Pab, bool Pac,
 
 //returns a block matrix of dimensions 3x1, currently only made for Vhhpp
 // i1,i2,i3,i4 specify whether there is a hole or particle (by a 0 or 1)  index at index ij, for j=1-4
-Eigen::MatrixXd MakeAmpMat::make3x3Block(int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::map<int, double>& T_list){
+Eigen::MatrixXd MakeAmpMat::make3x3Block(int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::unordered_map<int, double> &T_list){
 
     bool cond_hhh1 = (i1 == 0 && i2 == 0 && i3==0);
     bool cond_pph1 = (i1 == 1 && i2 == 1 && i3==0);
@@ -1149,7 +1157,7 @@ Eigen::MatrixXd MakeAmpMat::make3x3Block(int ku, int i1, int i2, int i3, int i4,
     return returnMat;
 }
 
-Eigen::MatrixXd MakeAmpMat::make3x1Block(int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list){
+Eigen::MatrixXd MakeAmpMat::make3x1Block(int ku, int i1, int i2, int i3, int i4, std::unordered_map<int, double> &T_list){
 
     bool cond_hhp = (i1 == 0 && i2 == 0 && i3==1);
     bool cond_pph = (i1 == 1 && i2 == 1 && i3==0);
@@ -1255,7 +1263,7 @@ Eigen::MatrixXd MakeAmpMat::make3x1Block(int ku, int i1, int i2, int i3, int i4,
 
 //returns a block matrix of dimensions 2x2, currently only made for Vhhpp
 // i1,i2,i3,i4 specify whether there is a hole or particle (by a 0 or 1) index at index ij, for j=1-4
-Eigen::MatrixXd MakeAmpMat::make2x2Block(int ku, int i1, int i2, int i3, int i4, std::map<int, double>& T_list){
+Eigen::MatrixXd MakeAmpMat::make2x2Block(int ku, int i1, int i2, int i3, int i4, std::unordered_map<int, double> &T_list){
 
     //std::cout << "hey" << std::endl;
     bool cond_hh1 = (i1 == 0 && i2 == 0);

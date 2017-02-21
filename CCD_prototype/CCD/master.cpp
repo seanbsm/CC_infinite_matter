@@ -113,7 +113,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
     double ECCD_old = E_MBPT2;
     double ECCD     = 0;
 
-    while (conFac > eps && counter < 5e1){
+    while (/*conFac > eps &&*/ counter < 2e1){
         ECCD = 0;
         //could make an m_ampClass::updateT or something
         m_ampClass->T2_elements_new.clear();
@@ -138,12 +138,11 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
 
         if(m_triplesOn){
             m_ampClass->T3_elements_new.clear();
-
-            m_diagrams->D10b();
-            m_diagrams->D10c();
+            //m_diagrams->D10b();
+            //m_diagrams->D10c();
 
             m_diagrams->T1a();
-            m_diagrams->T1b();
+            //m_diagrams->T1b();
         }
 
         //cout << m_intClass->indexHolder_ppp_hhh << " " << m_intClass->indexHolder_ppp_ppp << endl;
@@ -180,7 +179,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
 
         if (0){
             double alpha = 0.3;
-            std::map<int, double> T2_temp = m_ampClass->T2_elements;
+            std::unordered_map<int, double> T2_temp = m_ampClass->T2_elements;
             m_ampClass->T2_elements.clear();
             for(auto const& it : m_ampClass->T2_elements_new) {
                 m_ampClass->T2_elements[it.first] = alpha*it.second + (1-alpha)*T2_temp[it.first];

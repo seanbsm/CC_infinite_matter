@@ -190,21 +190,47 @@ void Diagrams::D10c(){
 // ##                                              ##
 // ##################################################
 
+void Diagrams::setFirstIt(bool argument){
+    m_firstIt = argument;
+}
+
 void Diagrams::T1a(){
-    for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
-        for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
-            if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_pph[i2] ){
-                int ku = m_intClass->sortVec_p_p[i1];
+    /*if (m_firstIt == true){
+        for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
+            for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
+                if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_pph[i2] ){
+                    int ku = m_intClass->sortVec_p_p[i1];
 
-                Eigen::MatrixXd mat1 = m_intClass->make3x1Block(ku,1,1,0,1);
-                Eigen::MatrixXd mat2 = m_ampClass->make3x1Block(ku,0,0,1,1, m_ampClass->T2_elements);
+                    T1a_V.push_back( m_intClass->make3x1Block(ku,1,1,0,1) );
+                    //Eigen::MatrixXd mat1 = m_intClass->make3x1Block(ku,1,1,0,1);
 
-                Eigen::MatrixXd product = mat2*mat1.transpose();
-                //std::cout << product << std::endl;
-                m_ampClass->make3x3Block_inverse(product, ku, 0,0,1,1,1,0, m_ampClass->T3_elements_new, true);
+                    T1a_T2.push_back( m_ampClass->make3x1Block(ku,0,0,1,1, m_ampClass->T2_elements) );
+                    //Eigen::MatrixXd mat2 = m_ampClass->make3x1Block(ku,0,0,1,1, m_ampClass->T2_elements);
+
+                    Eigen::MatrixXd product = T1a_T2.back()*( T1a_V.back() ).transpose();
+                    //std::cout << product << std::endl;
+                    m_ampClass->make3x3Block_inverse(product, ku, 0,0,1,1,1,0, m_ampClass->T3_elements_new, true);
+                }
             }
         }
-    }
+    }*/
+    //else{
+        for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
+            for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
+                if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_pph[i2] ){
+                    int ku = m_intClass->sortVec_p_p[i1];
+
+                    Eigen::MatrixXd mat1 = m_intClass->make3x1Block(ku,1,1,0,1);
+                    Eigen::MatrixXd mat2 = m_ampClass->make3x1Block(ku,0,0,1,1, m_ampClass->T2_elements);
+
+                    Eigen::MatrixXd product = mat2*mat1.transpose();
+                    //std::cout << product << std::endl;
+                    m_ampClass->make3x3Block_inverse(product, ku, 0,0,1,1,1,0, m_ampClass->T3_elements_new, true);
+                }
+            }
+        }
+    //}
+
     //m_ampClass->addElementsT3(1,0,0,1,0,0); // 0,1,1,1,1,0
     m_ampClass->addElementsT3_T1a();
     m_ampClass->T3_temp.clear();

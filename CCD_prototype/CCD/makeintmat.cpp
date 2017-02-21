@@ -283,7 +283,7 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
 
     // 0 0 0
     if (cond_hhh){
-        colSize = (m_Ns-m_Nh)*m_Nh*m_Nh;
+        colSize = m_Nh*m_Nh*m_Nh;
         blockArrays_temp.conservativeResize(4, colSize);
 
         for (int i=0; i<m_Nh; i++){
@@ -702,7 +702,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     if (m_triplesOn){
         mapper_2(sortVec_pp_ph, blockArrays_pp_ph, 1,0, 1,1);             //ph
         mapper_2(sortVec_pp_hp, blockArrays_pp_hp, 0,1, 1,1);             //hp
-        mapper_3(sortVec_ppp_hhh, blockArrays_ppp_hhh, 0,0,0, 1,1,1);     //hhp
+        mapper_3(sortVec_ppp_hhh, blockArrays_ppp_hhh, 0,0,0, 1,1,1);     //hhh
         mapper_3(sortVec_ppp_ppp, blockArrays_ppp_ppp, 1,1,1, 1,1,1);     //ppp
     }
 

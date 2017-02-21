@@ -2,10 +2,14 @@
 #include <math.h>
 #include <cmath>
 #include <eigen3/Eigen/Dense>
+#include <eigen3/Eigen/Core>
 #include <map>
+#include <chrono>
 
 #include <mpi.h>
 //#include <stdio.h>
+
+typedef std::chrono::high_resolution_clock Clock;   //needed for timing
 
 using namespace std;
 
@@ -52,18 +56,21 @@ bool vecDelta(Eigen::VectorXi v1, Eigen::VectorXi v2){
 
 int main(int argc, char** argv)
 {
-    cout << "sup" << endl;
-
     MPI_Init (&argc, &argv);	/* starts MPI */
     int rank, size;
     MPI_Comm_rank (MPI_COMM_WORLD, &rank);	/* get current process id */
     MPI_Comm_size (MPI_COMM_WORLD, &size);	/* get number of processes */
 
-    cout << size << endl;
-    MPI_Finalize();
-    /*Eigen::MatrixXi states;
+    //cout << size << endl;
+    //MPI_Finalize();
+    /*Eigen::initParallel();
+    Eigen::setNbThreads(4);
+
+    int nthreads = Eigen::nbThreads( );
+    std::cout << "THREADS = " << nthreads << std::endl; // returns '1'
+
     Eigen::Matrix<int, 3, 10> m1;
-    Eigen::Matrix<int, 3, 4> m2;*/
+    Eigen::Matrix<int, 3, 4> m2;
 
     Eigen::Vector4i v1(1,2,3,4);
     Eigen::Vector4i v2(1,2,3,4);
@@ -72,11 +79,36 @@ int main(int argc, char** argv)
 
     Eigen::Matrix<int, 5, 1> vec;
     vec << 1,2,3,4,5;
-    //cout << vec.adjoint()*vec << endl;
 
-    std::vector<int> Vec;
 
-    for (int i=0; i<1e3; i++){
+    m1 << 1,2,3,3,4,5,2,3,1,4,
+                4,5,6,2,4,6,1,3,6,3,
+                7,8,9,4,5,2,6,3,2,4;*/
+
+    int xLim = 1e4;
+    int yLim = 1e4;
+    Eigen::MatrixXi M;
+    M.conservativeResize(xLim,yLim);
+
+
+    auto t1 = Clock::now();
+
+    #pragma ompi for
+    for (int x=0; x<xLim; x++){
+        for (int y=0; y<yLim; y++){
+            M(x,y) = x+y;
+        }
+    }
+
+    auto t2 = Clock::now();
+
+    std::cout << "Total time used: "
+              << std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count()
+              << " " << std::endl;
+
+    MPI_Finalize();
+
+    /*for (int i=0; i<1e3; i++){
         Vec.push_back(i+1);
     }
     int val = 9;
@@ -95,16 +127,19 @@ int main(int argc, char** argv)
 
     cout << Vec[index] << endl;
 
+*/
 
-
-    map<int, double> places1;
+    /*map<int, double> places1;
     map<int, double> places2;
 
-    for (int i=0; i<1e3; i++){
+    for (int i=0; i<1e7; i++){
         places1[i] = (double) i;
         places2[i] = (double) 1e3-i;
     }
 
+    cout << "done" << endl;
+    cout << places1[1e6] << endl;*/
+/*
     places1 = places2;
     //places1[9999] += 2;
     cout << places1[9999] << endl;
@@ -125,7 +160,7 @@ int main(int argc, char** argv)
     //cout << v3 << endl;
 
 
-    std::vector<int> array2 = { 9, 7, 5, 3, 1 };
+    std::vector<int> array2 = { 9, 7, 5, 3, 1 };*/
 
 
 

@@ -34,6 +34,12 @@ public:
 
     //T3 diagrams
     void T1a();
+    void setFirstIt(bool argument);
+    bool m_firstIt;
+    std::vector<Eigen::MatrixXi> T1a_V;
+    std::vector<Eigen::MatrixXi> T1a_T2;
+    std::vector<Eigen::MatrixXi> T1a_T3;
+
     void T1b();
 
 

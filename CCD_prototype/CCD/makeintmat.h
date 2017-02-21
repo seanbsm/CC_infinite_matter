@@ -7,6 +7,7 @@
 #include <Systems/mp.h>
 #include <iostream>
 #include <map>
+#include <unordered_map>
 
 class MakeIntMat
 {
@@ -130,9 +131,9 @@ public:
     int                             Identity_hhpp(int h1, int h2, int p1, int p2);
     int                             Identity_ppph(int p1, int p2, int p3, int h1);
     int                             Identity_hhhppp(int h1, int h2, int h3, int p1, int p2, int p3);
-    std::map<int, double>           Vhhhp_elements; //needed for T3
-    std::map<int, double>           Vhhpp_elements;
-    std::map<int, double>           Vppph_elements; //needed for T3
+    std::unordered_map<int, double>           Vhhhp_elements; //needed for T3
+    std::unordered_map<int, double>           Vhhpp_elements;
+    std::unordered_map<int, double>           Vppph_elements; //needed for T3
 
     //Eigen::VectorXd                 Vhhpp_vector;
     std::vector<double>             Vhhpp_vector;
