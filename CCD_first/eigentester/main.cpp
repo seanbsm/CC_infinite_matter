@@ -6,7 +6,8 @@
 #include <map>
 #include <chrono>
 
-#include <mpi.h>
+//#include <mpi.h>
+#include <omp.h>
 //#include <stdio.h>
 
 typedef std::chrono::high_resolution_clock Clock;   //needed for timing
@@ -56,10 +57,10 @@ bool vecDelta(Eigen::VectorXi v1, Eigen::VectorXi v2){
 
 int main(int argc, char** argv)
 {
-    MPI_Init (&argc, &argv);	/* starts MPI */
-    int rank, size;
-    MPI_Comm_rank (MPI_COMM_WORLD, &rank);	/* get current process id */
-    MPI_Comm_size (MPI_COMM_WORLD, &size);	/* get number of processes */
+    //MPI_Init (&argc, &argv);	/* starts MPI */
+    //int rank, size;
+    //MPI_Comm_rank (MPI_COMM_WORLD, &rank);	/* get current process id */
+    //MPI_Comm_size (MPI_COMM_WORLD, &size);	/* get number of processes */
 
     //cout << size << endl;
     //MPI_Finalize();
@@ -85,18 +86,31 @@ int main(int argc, char** argv)
                 4,5,6,2,4,6,1,3,6,3,
                 7,8,9,4,5,2,6,3,2,4;*/
 
-    int xLim = 1e4;
-    int yLim = 1e4;
+
+
+    int xLim = 2e3;
+    int yLim = 2e3;
     Eigen::MatrixXi M;
+    std::vector<int> V;
+    map<int, int> Map;
     M.conservativeResize(xLim,yLim);
 
+    //#pragma omp parallel for
+    for (int x=0; x<xLim; x++){
+        for (int y=0; y<yLim; y++){
+            //V.push_back( x+y );
+            Map[x+y] = x+y;
+        }
+    }
 
     auto t1 = Clock::now();
 
-    #pragma ompi for
+    //#pragma omp parallel for
+    //int omp_get_num_threads( );
+    //cout << omp_get_num_threads() << endl;
     for (int x=0; x<xLim; x++){
         for (int y=0; y<yLim; y++){
-            M(x,y) = x+y;
+            M(x,y) = Map[x+y];
         }
     }
 
@@ -106,7 +120,7 @@ int main(int argc, char** argv)
               << std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count()
               << " " << std::endl;
 
-    MPI_Finalize();
+    //MPI_Finalize();
 
     /*for (int i=0; i<1e3; i++){
         Vec.push_back(i+1);

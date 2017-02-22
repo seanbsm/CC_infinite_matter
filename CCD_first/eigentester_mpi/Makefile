@@ -10,12 +10,12 @@ MAKEFILE      = Makefile
 
 ####### Compiler, tools and options
 
-CC            = /usr/local/bin/mpicc
-CXX           = /usr/local/bin/mpicxx
+CC            = gcc
+CXX           = g++
 DEFINES       = 
-CFLAGS        = -m64 -pipe -I/usr/local/include -pthread -g -Wall -W -fPIE $(DEFINES)
-CXXFLAGS      = -m64 -pipe -std=c++11 -I/usr/local/include -pthread -DMPICH_IGNORE_CXX_SEEK -g -std=c++0x -Wall -W -fPIE $(DEFINES)
-INCPATH       = -I../eigentester -I. -isystem /usr/local/include/openmpi -I/usr/local/lib -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64
+CFLAGS        = -m64 -pipe -g -Wall -W -fPIE $(DEFINES)
+CXXFLAGS      = -m64 -pipe -std=c++11 -fopenmp -g -std=c++0x -Wall -W -fPIE $(DEFINES)
+INCPATH       = -I../eigentester -I. -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64
 QMAKE         = /usr/lib/x86_64-linux-gnu/qt5/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -34,8 +34,8 @@ TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = eigentester1.0.0
 DISTDIR = /home/sean/Projects/Project_Genesis/CCD_first/eigentester/.tmp/eigentester1.0.0
-LINK          = /usr/local/bin/mpicxx
-LFLAGS        = -m64 -pthread -Wl,-rpath -Wl,/usr/local/lib -Wl,--enable-new-dtags -L/usr/local/lib -lmpi
+LINK          = g++
+LFLAGS        = -m64 -fopenmp
 LIBS          = $(SUBLIBS)  
 AR            = ar cqs
 RANLIB        = 

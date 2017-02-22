@@ -1,6 +1,8 @@
 #include "diagrams.h"
 
 #include <eigen3/Eigen/Dense>
+#include <eigen3/Eigen/Core>
+#include <omp.h>
 
 Diagrams::Diagrams()
 {
@@ -215,6 +217,7 @@ void Diagrams::T1a(){
         }
     }*/
     //else{
+        //#pragma omp parallel for
         for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
             for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
                 if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_pph[i2] ){
@@ -263,6 +266,7 @@ void Diagrams::T1b(){
 // ##################################################
 
 void Diagrams::I1_term(){
+    //#pragma omp parallel for
     for (int n=0; n<m_intClass->Vhhpp_i.size(); n++){
         int ku = m_intClass->Vhhpp_i[n];
 

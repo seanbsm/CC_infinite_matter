@@ -12,8 +12,6 @@
 class MakeIntMat
 {
 private:
-    int m_Nh = 0;
-    int m_Ns = 0;
 
     //index-keepers
     Eigen::VectorXi identify_pppp;
@@ -27,6 +25,8 @@ private:
 
     //bool contractor(int i, int j){ return i==j; } //contracts repeated elements to a single edit
 public:
+    int m_Nh = 0;
+    int m_Ns = 0;
 
     /* Due to the momentum-conservation relation (kp+kq = kr+ks for <pq||rs>),
      * and due to alignment of matrices, we need several blockArrays, and corresponding

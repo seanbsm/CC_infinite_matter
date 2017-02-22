@@ -1,6 +1,8 @@
 #include "makeampmat.h"
 #include <iostream>
 
+#include <omp.h>
+
 MakeAmpMat::MakeAmpMat()
 {
 }
@@ -55,10 +57,26 @@ Eigen::MatrixXd MakeAmpMat::makeBlockMat(int index){
     return returnMat;
 }
 
+void MakeAmpMat::makeFockMaps(){
+    for (int h=0; h<m_intClass->m_Nh; h++){
+        FockMap_h[h] = m_system->f(h);
+    }
+
+    for (int p=m_intClass->m_Nh; p<m_intClass->m_Ns; p++){
+        FockMap_p[p] = m_system->f(p);
+    }
+}
+
+void MakeAmpMat::emptyFockMaps(){
+    FockMap_h.clear();
+    FockMap_p.clear();
+}
+
 //for now we store the Fock matrix, but perhaps later it would be better to calculate it "on the fly"
 //I deliberately declared a lot of ints here, but merely for easier debugging and readability
 void MakeAmpMat::makeDenomMat(){
     //for (int i=0; i<m_intClass->sortVec_hh.size(); i++){   //remember, Vhhpp_i holds all kUnique for Vhhpp
+
     for (int i=0; i<m_intClass->numOfKu; i++){
         int lowBound_hh  = m_intClass->boundsHolder_hhpp_hh(0,i);
         int highBound_hh = m_intClass->boundsHolder_hhpp_hh(1,i);
@@ -76,7 +94,7 @@ void MakeAmpMat::makeDenomMat(){
                 int jj = m_intClass->blockArrays_pp_hh(2,hh);
                 int aa = m_intClass->blockArrays_pp_pp(1,pp);
                 int bb = m_intClass->blockArrays_pp_pp(2,pp);
-                newMat(hh-lowBound_hh, pp-lowBound_pp) = 1/( (double)(m_system->f(ii) + m_system->f(jj) - m_system->f(aa) - m_system->f(bb)) );
+                newMat(hh-lowBound_hh, pp-lowBound_pp) = 1/( (double)(FockMap_h[ii] + FockMap_h[jj] - FockMap_p[aa] - FockMap_p[bb] ) );
             }
         }
         denomMat.push_back( newMat );
@@ -85,6 +103,8 @@ void MakeAmpMat::makeDenomMat(){
 
 void MakeAmpMat::makeDenomMat3(){
     //for (int i=0; i<m_intClass->sortVec_hh.size(); i++){   //remember, Vhhpp_i holds all kUnique for Vhhpp
+
+    //#pragma omp parallel for
     for (int i=0; i<m_intClass->numOfKu3; i++){
         int lowBound_hhh  = m_intClass->boundsHolder_hhhppp_hhh(0,i);
         int highBound_hhh = m_intClass->boundsHolder_hhhppp_hhh(1,i);
@@ -104,6 +124,7 @@ void MakeAmpMat::makeDenomMat3(){
 
         //std::cout <<  m_intClass->boundsHolder_hhhppp_hhh << std::endl;
 
+        #pragma omp parallel for
         for (int hhh=lowBound_hhh; hhh<highBound_hhh; hhh++){
             for (int ppp=lowBound_ppp; ppp<highBound_ppp; ppp++){
                 //std::cout << i << " " <<hhh-lowBound_hhh<< " " << ppp-lowBound_ppp << std::endl;
@@ -113,7 +134,8 @@ void MakeAmpMat::makeDenomMat3(){
                 int aa = m_intClass->blockArrays_ppp_ppp(1,ppp);
                 int bb = m_intClass->blockArrays_ppp_ppp(2,ppp);
                 int cc = m_intClass->blockArrays_ppp_ppp(3,ppp);
-                newMat(hhh-lowBound_hhh, ppp-lowBound_ppp) = 1/( (double)(m_system->f(ii) + m_system->f(jj) + m_system->f(kk) - m_system->f(aa) - m_system->f(bb) - m_system->f(cc)) );
+                //newMat(hhh-lowBound_hhh, ppp-lowBound_ppp) = 1/( (double)(m_system->f(ii) + m_system->f(jj) + m_system->f(kk) - m_system->f(aa) - m_system->f(bb) - m_system->f(cc)) );
+                newMat(hhh-lowBound_hhh, ppp-lowBound_ppp) = 1/( (double)(FockMap_h[ii] + FockMap_h[jj] + FockMap_h[kk] - FockMap_p[aa] - FockMap_p[bb] - FockMap_p[cc] ) );
             }
         }
         denomMat3.push_back( newMat );
@@ -399,6 +421,9 @@ void MakeAmpMat::make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
                     //id = m_intClass->Identity_hhpp((blockArrays1_pointer)(1,i), (blockArrays2_pointer)(2,j), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j));
                     id = m_intClass->Identity_hhpp(ii,jj,aa,bb);
                     T_list[id] = inMat(i-range_lower1,j-range_lower2);
+
+                    //T2_elements_A.push_back( inMat(i-range_lower1,j-range_lower2) );
+                    //T2_elements_I[id] = T2_elements_A.size()-1;
                 }
             }
         }
@@ -412,6 +437,9 @@ void MakeAmpMat::make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
                     //id = m_intClass->Identity_hhpp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j));
                     id = m_intClass->Identity_hhpp(ii,jj,aa,bb);
                     T_list[id] = inMat(i-range_lower1,j-range_lower2);
+
+                    //T2_elements_A.push_back( inMat(i-range_lower1,j-range_lower2) );
+                    //T2_elements_I[id] = T2_elements_A.size()-1;
                 }
             }
         }
@@ -652,6 +680,13 @@ void MakeAmpMat::addElementsT3_T1a(){
         int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
         int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
 
+        int size = (range_upper1-range_lower1)*(range_upper2-range_lower2);
+        std::vector<int>    vec_ID(size);
+        std::vector<double> vec_VAL(size);
+
+
+        //std::cout << "sup1" << std::endl;
+        #pragma omp parallel for
         for (int hhh = range_lower1; hhh<range_upper1; hhh++){
             for (int ppp = range_lower2; ppp<range_upper2; ppp++){
 
@@ -691,9 +726,18 @@ void MakeAmpMat::addElementsT3_T1a(){
                 id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc); //unperturbed
                 val += T3_temp[id];
 
-                T3_elements_new[id] += val;
+                vec_ID[(hhh-range_lower1)*(ppp-range_lower2)]  = id;
+                vec_VAL[(hhh-range_lower1)*(ppp-range_lower2)] = val;
+
+                //T3_elements_new[id] += val;
             }
         }
+        //std::cout << "sup2" << std::endl;
+
+        for (int it=0; it<vec_ID.size(); it++){
+            T3_elements_new[vec_ID[it]] += vec_VAL[it];
+        }
+
     }
 }
 
@@ -1018,6 +1062,143 @@ void MakeAmpMat::addElementsT3(bool Pij, bool Pik, bool Pjk, bool Pab, bool Pac,
     }
 }
 
+Eigen::MatrixXi MakeAmpMat::make3x3Block_I(int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::unordered_map<int, int> &T_map){
+
+    bool cond_hhh1 = (i1 == 0 && i2 == 0 && i3==0);
+    bool cond_pph1 = (i1 == 1 && i2 == 1 && i3==0);
+    bool cond_hhp1 = (i1 == 0 && i2 == 0 && i3==1);
+    bool cond_ppp1 = (i1 == 1 && i2 == 1 && i3==1);
+
+    bool cond_hhh2 = (i4 == 0 && i5 == 0 && i6==0);
+    bool cond_pph2 = (i4 == 1 && i5 == 1 && i6==0);
+    bool cond_hhp2 = (i4 == 0 && i5 == 0 && i6==1);
+    bool cond_ppp2 = (i4 == 1 && i5 == 1 && i6==1);
+
+
+    Eigen::MatrixXi blockArrays1_pointer;
+    Eigen::MatrixXi blockArrays2_pointer;
+
+    std::vector<int> sortVec1;
+    std::vector<int> sortVec2;
+
+    Eigen::MatrixXi indexHolder1_pointer;
+    Eigen::MatrixXi indexHolder2_pointer;
+
+
+    // 0 0 0
+    if (cond_hhh1){
+        blockArrays1_pointer = m_intClass->blockArrays_ppp_hhh;
+        sortVec1             = m_intClass->sortVec_ppp_hhh;
+        indexHolder1_pointer = m_intClass->indexHolder_ppp_hhh;
+    }
+    // 0 0 1
+    else if (cond_hhp1){
+        blockArrays1_pointer = m_intClass->blockArrays_ppm_hhp;
+        sortVec1             = m_intClass->sortVec_ppm_hhp;
+        indexHolder1_pointer = m_intClass->indexHolder_ppm_hhp;
+    }
+    // 1 1 0
+    else if (cond_pph1){
+        blockArrays1_pointer = m_intClass->blockArrays_ppm_pph;
+        sortVec1             = m_intClass->sortVec_ppm_pph;
+        indexHolder1_pointer = m_intClass->indexHolder_ppm_pph;
+    }
+    // 1 1 1
+    else {
+        blockArrays1_pointer = m_intClass->blockArrays_ppp_ppp;
+        sortVec1             = m_intClass->sortVec_ppp_ppp;
+        indexHolder1_pointer = m_intClass->indexHolder_ppp_ppp;
+    }
+
+    // 0 0 0
+    if (cond_hhh2){
+        blockArrays2_pointer = m_intClass->blockArrays_ppp_hhh;
+        sortVec2             = m_intClass->sortVec_ppp_hhh;
+        indexHolder2_pointer = m_intClass->indexHolder_ppp_hhh;
+    }
+    // 0 0 1
+    else if (cond_hhp2){
+        blockArrays2_pointer = m_intClass->blockArrays_ppm_hhp;
+        sortVec2             = m_intClass->sortVec_ppm_hhp;
+        indexHolder2_pointer = m_intClass->indexHolder_ppm_hhp;
+    }
+    // 1 1 0
+    else if (cond_pph2){
+        blockArrays2_pointer = m_intClass->blockArrays_ppm_pph;
+        sortVec2             = m_intClass->sortVec_ppm_pph;
+        indexHolder2_pointer = m_intClass->indexHolder_ppm_pph;
+    }
+    // 1 1 1
+    else {
+        blockArrays2_pointer = m_intClass->blockArrays_ppp_ppp;
+        sortVec2             = m_intClass->sortVec_ppp_ppp;
+        indexHolder2_pointer = m_intClass->indexHolder_ppp_ppp;
+    }
+
+    int length1 = indexHolder1_pointer.cols();
+    int length2 = indexHolder2_pointer.cols();
+
+    int index1; int index2;
+
+    Eigen::MatrixXi returnMat;
+
+    auto it1 = std::find(sortVec1.begin(), sortVec1.end(), ku);
+    if (it1 == sortVec1.end()){
+        returnMat.conservativeResize(1,1);
+        returnMat(0,0) = 0;
+        std::cout << "make3x1Block in MakeAmpMat, kUnique not found for rows" << std::endl;
+      return returnMat;
+    }
+    else{
+      index1 = distance(sortVec1.begin(), it1);
+    }
+
+    auto it2 = std::find(sortVec2.begin(), sortVec2.end(), ku);
+    if (it2 == sortVec2.end()){
+        returnMat.conservativeResize(1,1);
+        returnMat(0,0) = 0;
+        std::cout << "make3x1Block in MakeAmpMat, kUnique not found for columns" << std::endl;
+      return returnMat;
+    }
+    else{
+      index2 = distance(sortVec2.begin(), it2);
+    }
+
+    int range_lower1 = indexHolder1_pointer(0,index1);
+    int range_upper1 = indexHolder1_pointer(1,index1);
+    int range_lower2 = indexHolder2_pointer(0,index2);
+    int range_upper2 = indexHolder2_pointer(1,index2);
+
+    int dim1 = range_upper1 - range_lower1;
+    int dim2 = range_upper2 - range_lower2;
+
+    returnMat.conservativeResize(dim1, dim2);
+    int id;
+    if (cond_hhp1 && cond_pph2){
+        for (int i = range_lower1; i<range_upper1; i++){
+            for (int j = range_lower2; j<range_upper2; j++){
+                id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(3,j), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j), (blockArrays1_pointer)(3,i));
+                //std::cout << id << std::endl;
+                returnMat(i-range_lower1, j-range_lower2) = T_map[id];
+
+                /*for(auto it = T_list.cbegin(); it != T_list.cend(); ++it)
+                {
+                    std::cout << it->second << "\n";
+                }*/
+            }
+        }
+    }
+    else if (cond_hhh1 && cond_ppp2){
+        for (int i = range_lower1; i<range_upper1; i++){
+            for (int j = range_lower2; j<range_upper2; j++){
+                id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j), (blockArrays2_pointer)(3,j));
+                returnMat(i-range_lower1, j-range_lower2) = T_map[id];
+            }
+        }
+    }
+    return returnMat;
+}
+
 //returns a block matrix of dimensions 3x1, currently only made for Vhhpp
 // i1,i2,i3,i4 specify whether there is a hole or particle (by a 0 or 1)  index at index ij, for j=1-4
 Eigen::MatrixXd MakeAmpMat::make3x3Block(int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::unordered_map<int, double> &T_list){
@@ -1133,6 +1314,7 @@ Eigen::MatrixXd MakeAmpMat::make3x3Block(int ku, int i1, int i2, int i3, int i4,
     returnMat.conservativeResize(dim1, dim2);
     int id;
     if (cond_hhp1 && cond_pph2){
+        //#pragma omp parallel for
         for (int i = range_lower1; i<range_upper1; i++){
             for (int j = range_lower2; j<range_upper2; j++){
                 id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(3,j), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j), (blockArrays1_pointer)(3,i));
@@ -1147,13 +1329,17 @@ Eigen::MatrixXd MakeAmpMat::make3x3Block(int ku, int i1, int i2, int i3, int i4,
         }
     }
     else if (cond_hhh1 && cond_ppp2){
+        //std::cout << "sup1" << std::endl;
+        //#pragma omp parallel for
         for (int i = range_lower1; i<range_upper1; i++){
             for (int j = range_lower2; j<range_upper2; j++){
                 id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j), (blockArrays2_pointer)(3,j));
                 returnMat(i-range_lower1, j-range_lower2) = T_list[id];
             }
         }
+        //std::cout << "sup2" << std::endl;
     }
+    //std::cout << "sup2" << std::endl;
     return returnMat;
 }
 
@@ -1240,23 +1426,27 @@ Eigen::MatrixXd MakeAmpMat::make3x1Block(int ku, int i1, int i2, int i3, int i4,
     int dim2 = range_upper2 - range_lower2;
 
     returnMat.conservativeResize(dim1, dim2);
-    int id;
+    //int id;
+    //std::cout << "sup1" << std::endl;
     if (cond_hhp && cond_p){
+        //#pragma omp parallel for
         for (int i = range_lower1; i<range_upper1; i++){
             for (int j = range_lower2; j<range_upper2; j++){
-                id = m_intClass->Identity_hhpp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j));
+                int id = m_intClass->Identity_hhpp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j));
                 returnMat(i-range_lower1, j-range_lower2) = T_list[id];
             }
         }
     }
     else if (cond_pph && cond_h){
+        //#pragma omp parallel for
         for (int i = range_lower1; i<range_upper1; i++){
             for (int j = range_lower2; j<range_upper2; j++){
-                id = m_intClass->Identity_hhpp((blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i));
+                int id = m_intClass->Identity_hhpp((blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i));
                 returnMat(i-range_lower1, j-range_lower2) = T_list[id];
             }
         }
     }
+    //std::cout << "sup2" << std::endl;
     return returnMat;
 }
 

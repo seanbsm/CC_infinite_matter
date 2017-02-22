@@ -5,6 +5,7 @@
 #include <math.h>
 #include <chrono>
 #include <eigen3/Eigen/Dense>
+//#include <eigen3/Eigen/Core>
 
 typedef std::chrono::high_resolution_clock Clock;   //needed for timing
 
@@ -44,6 +45,7 @@ int main()
     bool    timer         = true;                   //turn on/off timer
 
 
+    Eigen::initParallel();
 
     Master* master = new Master;
     master->setSize(Nh, Nb);

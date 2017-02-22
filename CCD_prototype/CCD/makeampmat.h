@@ -12,6 +12,11 @@ class MakeAmpMat
 {
 public:
     MakeAmpMat();
+
+    void makeFockMaps();
+    void emptyFockMaps();
+    std::unordered_map<int, double> FockMap_h;
+    std::unordered_map<int, double> FockMap_p;
     std::vector<Eigen::MatrixXd> denomMat;
     std::vector<Eigen::MatrixXd> denomMat3;
 
@@ -27,6 +32,11 @@ public:
     std::unordered_map<int, double>           T3_temp;
     std::unordered_map<int, double>           T3_elements_new;
 
+    std::unordered_map<int, int>              T2_elements_I;
+    std::vector<double>                       T2_elements_A;
+    std::unordered_map<int, int>              T3_elements_I;
+    std::vector<double>                       T3_elements_A;
+
     std::vector<double>             T2_elements_alt;
     std::vector<double>             T2_elements_alt_new;
 
@@ -34,6 +44,7 @@ public:
     Eigen::MatrixXd                 make2x2Block(int ku, int i1, int i2, int i3, int i4, std::unordered_map<int, double>& T_list);
 
     Eigen::MatrixXd                 make3x3Block(int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::unordered_map<int, double>& T_list);
+    Eigen::MatrixXi                 make3x3Block_I(int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::unordered_map<int, int>& T_map);
 
     void                            make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::unordered_map<int, double>& T_list, bool add);
     void                            make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::unordered_map<int, double>& T_list, bool add);

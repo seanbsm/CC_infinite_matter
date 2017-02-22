@@ -49,6 +49,8 @@ void Master::setClasses(){
     m_diagrams->setSystem(m_system);
     m_ampClass->setIntClass(m_intClass);
     m_ampClass->setSystem(m_system);
+
+    m_ampClass->makeFockMaps();
     m_ampClass->makeDenomMat();
     m_ampClass->setElements_T2();
 
@@ -57,6 +59,7 @@ void Master::setClasses(){
         m_ampClass->makeDenomMat3();
         //std::cout << "hey" << std::endl;
     }
+    m_ampClass->emptyFockMaps();
 }
 
 double Master::CC_master(double eps, double conFac){
@@ -113,7 +116,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
     double ECCD_old = E_MBPT2;
     double ECCD     = 0;
 
-    while (/*conFac > eps &&*/ counter < 2e1){
+    while (/*conFac > eps &&*/ counter < 1e1){
         ECCD = 0;
         //could make an m_ampClass::updateT or something
         m_ampClass->T2_elements_new.clear();
@@ -138,11 +141,11 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
 
         if(m_triplesOn){
             m_ampClass->T3_elements_new.clear();
-            //m_diagrams->D10b();
-            //m_diagrams->D10c();
+            m_diagrams->D10b();
+            m_diagrams->D10c();
 
             m_diagrams->T1a();
-            //m_diagrams->T1b();
+            m_diagrams->T1b();
         }
 
         //cout << m_intClass->indexHolder_ppp_hhh << " " << m_intClass->indexHolder_ppp_ppp << endl;
