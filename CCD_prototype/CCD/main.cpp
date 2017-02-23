@@ -45,7 +45,7 @@ int main()
     bool    timer         = true;                   //turn on/off timer
 
 
-    Eigen::initParallel();
+    //Eigen::initParallel();
 
     Master* master = new Master;
     master->setSize(Nh, Nb);
@@ -89,13 +89,13 @@ int main()
     return 0;
 
 
-    int lower_bound = 2;
+    /*int lower_bound = 2;
     int upper_bound = 41;
     double ECC;
 
     ofstream myfile;
 
-    /*myfile.open("Nh_14_HEG.txt");
+    myfile.open("Nh_14_HEG.txt");
     for (int Nb=lower_bound; Nb<upper_bound; Nb++){
         Master* master = new Master;
         master->setSize(Nh, Nb);
@@ -136,8 +136,8 @@ int main()
         myfile << Nb << " " << master->m_Ns << " " << ECC << "\n";
 
     }
-    myfile.close();*/
+    myfile.close();
 
-    return 0;
+    return 0;*/
 
 }

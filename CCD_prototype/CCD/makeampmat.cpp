@@ -668,12 +668,6 @@ void MakeAmpMat::addElementsT2(bool Pij, bool Pab){
 
 void MakeAmpMat::addElementsT3_T1a(){
 
-    int id;
-    int ii; int jj; int kk;
-    int aa; int bb; int cc;
-
-    double val;
-
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
         int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
@@ -681,14 +675,29 @@ void MakeAmpMat::addElementsT3_T1a(){
         int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
 
         int size = (range_upper1-range_lower1)*(range_upper2-range_lower2);
-        std::vector<int>    vec_ID(size);
-        std::vector<double> vec_VAL(size);
+        std::vector<int>    vec_ID;
+        std::vector<double> vec_VAL;
+
+        vec_ID.reserve(size);
+        vec_VAL.reserve(size);
 
 
+        int index = -1;
+        int hhh;
+        int ppp;
         //std::cout << "sup1" << std::endl;
-        #pragma omp parallel for
-        for (int hhh = range_lower1; hhh<range_upper1; hhh++){
-            for (int ppp = range_lower2; ppp<range_upper2; ppp++){
+        #pragma omp parallel for private(hhh, ppp) shared(index)
+        for (ppp = range_lower2; ppp<range_upper2; ppp++){
+            for (hhh = range_lower1; hhh<range_upper1; hhh++){
+
+                #pragma omp atomic
+                index ++;
+
+                int id;
+                int ii; int jj; int kk;
+                int aa; int bb; int cc;
+
+                double val = 0;
 
                 ii = (m_intClass->blockArrays_ppp_hhh)(1,hhh);
                 jj = (m_intClass->blockArrays_ppp_hhh)(2,hhh);
@@ -696,8 +705,6 @@ void MakeAmpMat::addElementsT3_T1a(){
                 aa = (m_intClass->blockArrays_ppp_ppp)(1,ppp);
                 bb = (m_intClass->blockArrays_ppp_ppp)(2,ppp);
                 cc = (m_intClass->blockArrays_ppp_ppp)(3,ppp);
-
-                val = 0;
 
                 id = m_intClass->Identity_hhhppp(ii,jj,kk,bb,aa,cc);
                 val -= T3_temp[id];
@@ -726,13 +733,18 @@ void MakeAmpMat::addElementsT3_T1a(){
                 id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc); //unperturbed
                 val += T3_temp[id];
 
-                vec_ID[(hhh-range_lower1)*(ppp-range_lower2)]  = id;
-                vec_VAL[(hhh-range_lower1)*(ppp-range_lower2)] = val;
+                //std::cout << index << std::endl;
+
+                //std::cout << "start" << std::endl;
+                vec_ID[index]  = id;
+                //std::cout << "end" << std::endl;
+                vec_VAL[index] = val;
+                //std::cout << index << std::endl;
 
                 //T3_elements_new[id] += val;
             }
         }
-        //std::cout << "sup2" << std::endl;
+        std::cout << index << " " << size << std::endl;
 
         for (int it=0; it<vec_ID.size(); it++){
             T3_elements_new[vec_ID[it]] += vec_VAL[it];
