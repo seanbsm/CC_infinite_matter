@@ -87,7 +87,6 @@ int main(int argc, char** argv)
                 7,8,9,4,5,2,6,3,2,4;*/
 
 
-
     int xLim = 2e3;
     int yLim = 2e3;
     Eigen::MatrixXi M;
@@ -105,12 +104,13 @@ int main(int argc, char** argv)
 
     auto t1 = Clock::now();
 
-    //#pragma omp parallel for
     //int omp_get_num_threads( );
     //cout << omp_get_num_threads() << endl;
+    #pragma omp parallel for
     for (int x=0; x<xLim; x++){
         for (int y=0; y<yLim; y++){
-            M(x,y) = Map[x+y];
+            M(x,y) = Map[y*x];
+            M(x,y) += Map[x+y];
         }
     }
 

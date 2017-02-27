@@ -116,7 +116,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
     double ECCD_old = E_MBPT2;
     double ECCD     = 0;
 
-    while (conFac > eps /*&& counter < 1e1*/){
+    while (conFac > eps && counter < 5e2){
         ECCD = 0;
         //could make an m_ampClass::updateT or something
         m_ampClass->T2_elements_new.clear();
@@ -145,7 +145,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             m_diagrams->D10c();
 
             m_diagrams->T1a();
-            m_diagrams->T1b();
+            //m_diagrams->T1b();
         }
 
         //cout << m_intClass->indexHolder_ppp_hhh << " " << m_intClass->indexHolder_ppp_ppp << endl;
@@ -174,7 +174,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             }
         }
 
-        cout << std::setprecision (14) << ECCD << endl;
+        cout << std::fixed << std::setprecision (15) << ECCD << endl;
 
         conFac = abs(ECCD - ECCD_old);
         ECCD_old = ECCD;

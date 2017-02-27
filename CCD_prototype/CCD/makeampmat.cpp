@@ -668,88 +668,107 @@ void MakeAmpMat::addElementsT2(bool Pij, bool Pab){
 
 void MakeAmpMat::addElementsT3_T1a(){
 
+    Eigen::MatrixXi mat_ID;
+    Eigen::MatrixXd mat_VAL;
+    Eigen::VectorXi vec_END;
+
+    int size = m_intClass->blockArrays_ppp_hhh.cols()*m_intClass->blockArrays_ppp_ppp.cols();
+    int index = 0;
+
+    int Np = m_intClass->m_Ns-m_intClass->m_Nh;
+    int Nh = m_intClass->m_Nh;
+    int N1 = Nh;
+    int N2 = Nh*Nh; //Nh*Nh;
+    int N3 = N2*Np; //Nh*Nh*Np;
+    int N4 = N3*Np; //Nh*Nh*Np*Np;
+    int N5 = N4*Np; //Nh*Nh*Np*Np*Np;
+    int id;
+
+    int n = 1;//omp_get_max_threads();
+    mat_ID.conservativeResize(n,size); mat_ID.setZero(n,size);
+    mat_VAL.conservativeResize(n,size); mat_VAL.setZero(n,size);
+    vec_END.conservativeResize(n); vec_END.setZero(n);
+
+    #pragma omp parallel for num_threads(n) private(N1,N2,N3,N4,N5, id) firstprivate(index) //shared(index)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
         int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
         int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
         int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
 
-        int size = (range_upper1-range_lower1)*(range_upper2-range_lower2);
-        std::vector<int>    vec_ID;
-        std::vector<double> vec_VAL;
+        //int size = (range_upper1-range_lower1)*(range_upper2-range_lower2);
 
-        vec_ID.reserve(size);
-        vec_VAL.reserve(size);
+        //int index = 0; //-1
+        //#pragma omp parallel for num_threads(n) private(N1,N2,N3,N4,N5, id) firstprivate(index) //shared(index)
+        for (int ppp = range_lower2; ppp<range_upper2; ppp++){
+            int aa = (m_intClass->blockArrays_ppp_ppp)(1,ppp);
+            int bb = (m_intClass->blockArrays_ppp_ppp)(2,ppp);
+            int cc = (m_intClass->blockArrays_ppp_ppp)(3,ppp);
 
+            int th = omp_get_thread_num();
 
-        int index = -1;
-        int hhh;
-        int ppp;
-        //std::cout << "sup1" << std::endl;
-        #pragma omp parallel for private(hhh, ppp) shared(index)
-        for (ppp = range_lower2; ppp<range_upper2; ppp++){
-            for (hhh = range_lower1; hhh<range_upper1; hhh++){
+            for (int hhh = range_lower1; hhh<range_upper1; hhh++){
 
-                #pragma omp atomic
-                index ++;
-
-                int id;
-                int ii; int jj; int kk;
-                int aa; int bb; int cc;
-
+                //int id = 6015861;
                 double val = 0;
 
-                ii = (m_intClass->blockArrays_ppp_hhh)(1,hhh);
-                jj = (m_intClass->blockArrays_ppp_hhh)(2,hhh);
-                kk = (m_intClass->blockArrays_ppp_hhh)(3,hhh);
-                aa = (m_intClass->blockArrays_ppp_ppp)(1,ppp);
-                bb = (m_intClass->blockArrays_ppp_ppp)(2,ppp);
-                cc = (m_intClass->blockArrays_ppp_ppp)(3,ppp);
+                int ii = (m_intClass->blockArrays_ppp_hhh)(1,hhh);
+                int jj = (m_intClass->blockArrays_ppp_hhh)(2,hhh);
+                int kk = (m_intClass->blockArrays_ppp_hhh)(3,hhh);
 
-                id = m_intClass->Identity_hhhppp(ii,jj,kk,bb,aa,cc);
+                //id = m_intClass->Identity_hhhppp(ii,jj,kk,bb,aa,cc);
+                id = ii + jj*N1 + kk*N2 + bb*N3 + aa*N4 + cc*N5;
                 val -= T3_temp[id];
 
-                id = m_intClass->Identity_hhhppp(ii,jj,kk,cc,bb,aa);
+                //id = m_intClass->Identity_hhhppp(ii,jj,kk,cc,bb,aa);
+                id = ii + jj*N1 + kk*N2 + cc*N3 + bb*N4 + aa*N5;
                 val -= T3_temp[id];
 
-                id = m_intClass->Identity_hhhppp(kk,jj,ii,aa,bb,cc);
+                //id = m_intClass->Identity_hhhppp(kk,jj,ii,aa,bb,cc);
+                id = kk + jj*N1 + ii*N2 + aa*N3 + bb*N4 + cc*N5;
                 val -= T3_temp[id];
 
-                id = m_intClass->Identity_hhhppp(ii,kk,jj,aa,bb,cc);
+                //id = m_intClass->Identity_hhhppp(ii,kk,jj,aa,bb,cc);
+                id = ii + kk*N1 + jj*N2 + aa*N3 + bb*N4 + cc*N5;
                 val -= T3_temp[id];
 
-                id = m_intClass->Identity_hhhppp(kk,jj,ii,bb,aa,cc);
+                //id = m_intClass->Identity_hhhppp(kk,jj,ii,bb,aa,cc);
+                id = kk + jj*N1 + ii*N2 + bb*N3 + aa*N4 + cc*N5;
                 val += T3_temp[id];
 
-                id = m_intClass->Identity_hhhppp(ii,kk,jj,bb,aa,cc);
+                //id = m_intClass->Identity_hhhppp(ii,kk,jj,bb,aa,cc);
+                id = ii + kk*N1 + jj*N2 + bb*N3 + aa*N4 + cc*N5;
                 val += T3_temp[id];
 
-                id = m_intClass->Identity_hhhppp(kk,jj,ii,cc,bb,aa);
+                //id = m_intClass->Identity_hhhppp(kk,jj,ii,cc,bb,aa);
+                id = kk + jj*N1 + ii*N2 + cc*N3 + bb*N4 + aa*N5;
                 val += T3_temp[id];
 
-                id = m_intClass->Identity_hhhppp(ii,kk,jj,cc,bb,aa);
+                //id = m_intClass->Identity_hhhppp(ii,kk,jj,cc,bb,aa);
+                id = ii + kk*N1 + jj*N2 + cc*N3 + bb*N4 + aa*N5;
                 val += T3_temp[id];
 
-                id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc); //unperturbed
+                //id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc); //unperturbed
+                id = ii + jj*N1 + kk*N2 + aa*N3 + bb*N4 + cc*N5;
                 val += T3_temp[id];
 
-                //std::cout << index << std::endl;
-
-                //std::cout << "start" << std::endl;
-                vec_ID[index]  = id;
-                //std::cout << "end" << std::endl;
-                vec_VAL[index] = val;
-                //std::cout << index << std::endl;
-
-                //T3_elements_new[id] += val;
+                if (val != 0){
+                    mat_ID(th, index) = id;
+                    mat_VAL(th, index) = val;
+                    vec_END(th) = index+1;
+                    index ++;
+                }
             }
         }
-        std::cout << index << " " << size << std::endl;
+    }
 
-        for (int it=0; it<vec_ID.size(); it++){
-            T3_elements_new[vec_ID[it]] += vec_VAL[it];
+    for (int th=0; th<n; th++){
+        for (int index = 0; index<vec_END(th); index++){
+            //std::cout << th << " " << index << std::endl;
+            double val = mat_VAL(th,index);
+            int id  = mat_ID(th,index);
+            T3_elements_new[id] += val;
         }
-
     }
 }
 
