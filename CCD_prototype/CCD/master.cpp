@@ -57,6 +57,7 @@ void Master::setClasses(){
 
     if (m_triplesOn){
         m_ampClass->makeDenomMat3();
+        m_intClass->makePermutations();
         //std::cout << "hey" << std::endl;
     }
     m_ampClass->emptyFockMaps();
@@ -116,6 +117,33 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
     double ECCD_old = E_MBPT2;
     double ECCD     = 0;
 
+
+    if (m_triplesOn){   //first iteration in the case of T3
+        if (m_intermediatesOn){
+            m_diagrams->La();
+            m_diagrams->I1_term();  // Lb, Qa
+            m_diagrams->I2_term();  // Lc, Qb, due to structure of blockarrays, this is no faster than calling Lc and Qb seperatly
+            m_diagrams->I3_term();  // Qd
+            m_diagrams->I4_term();  // Qc
+        }
+        else{
+            //CCD diagrams
+            m_diagrams->La();
+            m_diagrams->Lb();
+            m_diagrams->Lc();
+            m_diagrams->Qa();
+            m_diagrams->Qb();
+            m_diagrams->Qc();
+            m_diagrams->Qd();
+        }
+
+        if(m_triplesOn){
+            //m_ampClass->T3_elements_new.clear();
+            m_diagrams->makeT3();
+        }
+    }
+
+
     while (conFac > eps && counter < 5e2){
         ECCD = 0;
         //could make an m_ampClass::updateT or something
@@ -140,10 +168,13 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
         }
 
         if(m_triplesOn){
-            m_ampClass->T3_elements_new.clear();
+            //m_ampClass->T3_elements_new.clear();
+            std::fill(m_ampClass->T3_elements_A_new.begin(), m_ampClass->T3_elements_A_new.end(), 0); //reset T3 new
             m_diagrams->D10b();
             m_diagrams->D10c();
 
+
+            //std::cout << "sup" << std::endl;
             m_diagrams->T1a();
             //m_diagrams->T1b();
         }
@@ -167,10 +198,10 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             for (int hhh = 0; hhh<m_intClass->numOfKu3; hhh++){
                 int ku = m_intClass->Vhhhppp_i[hhh];
 
-                Eigen::MatrixXd D_contributions = m_ampClass->make3x3Block(ku,0,0,0,1,1,1, m_ampClass->T3_elements_new);
+                Eigen::MatrixXd D_contributions = m_ampClass->make3x3Block_I(ku,0,0,0,1,1,1, m_ampClass->T3_elements_A_new);
                 Eigen::MatrixXd temp = (D_contributions).array()*m_ampClass->denomMat3[hhh].array();
 
-                m_ampClass->make3x3Block_inverse(temp, ku, 0,0,0,1,1,1, m_ampClass->T3_elements_new, false);
+                m_ampClass->make3x3Block_inverse_I(temp, ku, 0,0,0,1,1,1, m_ampClass->T3_elements_A_new, false);
             }
         }
 
@@ -205,7 +236,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             }
             std::cout << count << std::endl;*/
 
-            m_ampClass->T3_elements = m_ampClass->T3_elements_new;
+            m_ampClass->T3_elements_A = m_ampClass->T3_elements_A_new;
         }
 
         //ECCD = 0; too good to delete; you don't want to know how long i used to find this

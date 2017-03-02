@@ -33,13 +33,8 @@ public:
     void D10c();
 
     //T3 diagrams
+    void makeT3(); //performs first CCDT iteration by making T3 amplitude objects
     void T1a();
-    void setFirstIt(bool argument);
-    bool m_firstIt;
-    std::vector<Eigen::MatrixXi> T1a_V;
-    std::vector<Eigen::MatrixXi> T1a_T2;
-    std::vector<Eigen::MatrixXi> T1a_T3;
-
     void T1b();
 
 

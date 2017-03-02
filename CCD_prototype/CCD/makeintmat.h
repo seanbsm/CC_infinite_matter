@@ -53,6 +53,20 @@ public:
     Eigen::MatrixXi blockArrays_ppm_pph;
     Eigen::MatrixXi blockArrays_ppp_ppp;
 
+    //T3 permutations, needed to restack t_ijk^abc matrices
+    //same shape as corresponding blockArrays
+    Eigen::MatrixXi blockArrays_ppp_hhh_Pij;
+    Eigen::MatrixXi blockArrays_ppp_hhh_Pik;
+    Eigen::MatrixXi blockArrays_ppp_hhh_Pjk;
+    Eigen::MatrixXi blockArrays_ppp_hhh_Pijk;
+
+    Eigen::MatrixXi blockArrays_ppp_ppp_Pab;
+    Eigen::MatrixXi blockArrays_ppp_ppp_Pac;
+    Eigen::MatrixXi blockArrays_ppp_ppp_Pbc;
+    Eigen::MatrixXi blockArrays_ppp_ppp_Pabc;
+
+    void makePermutations(); //fills all permutaion matrices
+
     //sortVec holds all distinct kUnique for each index series
     std::vector<int> sortVec_p_h;
     std::vector<int> sortVec_p_p;

@@ -32,10 +32,15 @@ public:
     std::unordered_map<int, double>           T3_temp;
     std::unordered_map<int, double>           T3_elements_new;
 
-    std::unordered_map<int, int>              T2_elements_I;
-    std::vector<double>                       T2_elements_A;
-    std::unordered_map<int, int>              T3_elements_I;
-    std::vector<double>                       T3_elements_A;
+    //std::unordered_map<int, int>              T2_elements_I;
+    //std::vector<double>                       T2_elements_A;
+    std::unordered_map<int, int>              T3_elements_I;        //holds indices to T3_elements_A, same for _new and _temp
+    std::vector<double>                       T3_elements_A;        //holds T3 amplitudes
+    std::vector<double>                       T3_elements_A_new;    //holds new T3 amplitudes
+    std::vector<double>                       T3_elements_A_temp;   //holds temporary diagram contributions
+    void                                      T3_makeMap(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6);
+    void                                      T3_makeDirectMat();
+    std::vector<Eigen::MatrixXi>              T3_directMat;     //holds indices for T3_elements_A to make t_ijk^abc
 
     std::vector<double>             T2_elements_alt;
     std::vector<double>             T2_elements_alt_new;
@@ -44,12 +49,13 @@ public:
     Eigen::MatrixXd                 make2x2Block(int ku, int i1, int i2, int i3, int i4, std::unordered_map<int, double>& T_list);
 
     Eigen::MatrixXd                 make3x3Block(int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::unordered_map<int, double>& T_list);
-    Eigen::MatrixXi                 make3x3Block_I(int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::unordered_map<int, int>& T_map);
+    Eigen::MatrixXd                 make3x3Block_I(int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<double>& T_vec);
 
     void                            make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::unordered_map<int, double>& T_list, bool add);
     void                            make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::unordered_map<int, double>& T_list, bool add);
 
     void                            make3x3Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::unordered_map<int, double>& T_list, bool add);
+    void                            make3x3Block_inverse_I(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<double>& T_vec, bool add);
 
     void                            addElementsT2(bool Pij, bool Pab);
     void                            addElementsT3_T1a();

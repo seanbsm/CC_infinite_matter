@@ -99,7 +99,7 @@ int main()
         double  rb      =   1;                          //Bohr radius [MeV^-1]
         //double  m       =   1;//                //electron mass [MeV] (1 for HEG, 939.565 for MP)
         double  m       =   939.565;
-        double  rho     =   0.2;
+        double  rho     =   0.5;
         //double  L3      =   4*pi*Nh*rs/3;               //box volume
         double  L3      =   Nh/rho;
         double  L2      =   pow(L3, 2./3.);
@@ -108,7 +108,7 @@ int main()
         double ECC;
         ofstream myfile;
 
-        myfile.open("Nh_14_MP_rho02.txt");
+        myfile.open("Nh_14_MP_rho05.txt");
         for (int Nb=lower_bound; Nb<upper_bound; Nb++){
             Master* master = new Master;
             master->setSize(Nh, Nb);
