@@ -582,11 +582,11 @@ void MakeAmpMat::make3x3Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
                     val = inMat(i-range_lower1,j-range_lower2);
                     if (val != 0){
                         ii = (blockArrays1_pointer)(1,i);
-                        jj = (blockArrays1_pointer)(2,j);
-                        kk = (blockArrays1_pointer)(3,j);
-                        aa = (blockArrays2_pointer)(1,i);
-                        bb = (blockArrays2_pointer)(2,i);
-                        cc = (blockArrays2_pointer)(3,i);
+                        jj = (blockArrays1_pointer)(2,i);
+                        kk = (blockArrays1_pointer)(3,i);
+                        aa = (blockArrays2_pointer)(1,j);
+                        bb = (blockArrays2_pointer)(2,j);
+                        cc = (blockArrays2_pointer)(3,j);
                         id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
                         T3_temp[id] = val;
                     }
@@ -636,7 +636,7 @@ void MakeAmpMat::T3_makeDirectMat(){
             int bb = (m_intClass->blockArrays_ppp_ppp)(2,ppp);
             int cc = (m_intClass->blockArrays_ppp_ppp)(3,ppp);
 
-            int th = omp_get_thread_num();
+            //int th = omp_get_thread_num();
 
             for (int hhh = range_lower1; hhh<range_upper1; hhh++){
 
@@ -644,7 +644,7 @@ void MakeAmpMat::T3_makeDirectMat(){
                 int jj = (m_intClass->blockArrays_ppp_hhh)(2,hhh);
                 int kk = (m_intClass->blockArrays_ppp_hhh)(3,hhh);
 
-                id = m_intClass->Identity_hhhppp(ii,jj,kk,bb,aa,cc);
+                id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
                 //id = ii + jj*N1 + kk*N2 + bb*N3 + aa*N4 + cc*N5;
 
                 index = T3_elements_I[id];
@@ -790,11 +790,11 @@ void MakeAmpMat::T3_makeMap(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i
                 val = inMat(i-range_lower1,j-range_lower2);
                 if (val != 0){
                     ii = (blockArrays1_pointer)(1,i);
-                    jj = (blockArrays1_pointer)(2,j);
-                    kk = (blockArrays1_pointer)(3,j);
-                    aa = (blockArrays2_pointer)(1,i);
-                    bb = (blockArrays2_pointer)(2,i);
-                    cc = (blockArrays2_pointer)(3,i);
+                    jj = (blockArrays1_pointer)(2,i);
+                    kk = (blockArrays1_pointer)(3,i);
+                    aa = (blockArrays2_pointer)(1,j);
+                    bb = (blockArrays2_pointer)(2,j);
+                    cc = (blockArrays2_pointer)(3,j);
                     id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
 
                     T3_elements_I[id] = index;
@@ -932,7 +932,7 @@ void MakeAmpMat::make3x3Block_inverse_I(Eigen::MatrixXd inMat, int ku, int i1, i
                         id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
 
                         index = T3_elements_I[id];
-                        T3_elements_A_temp[index] += val;
+                        T_vec[index] += val;
                     }
                     //std::cout << T3_temp[id] << std::endl;
                 }
@@ -944,15 +944,15 @@ void MakeAmpMat::make3x3Block_inverse_I(Eigen::MatrixXd inMat, int ku, int i1, i
                     val = inMat(i-range_lower1,j-range_lower2);
                     if (val != 0){
                         ii = (blockArrays1_pointer)(1,i);
-                        jj = (blockArrays1_pointer)(2,j);
-                        kk = (blockArrays1_pointer)(3,j);
-                        aa = (blockArrays2_pointer)(1,i);
-                        bb = (blockArrays2_pointer)(2,i);
-                        cc = (blockArrays2_pointer)(3,i);
+                        jj = (blockArrays1_pointer)(2,i);
+                        kk = (blockArrays1_pointer)(3,i);
+                        aa = (blockArrays2_pointer)(1,j);
+                        bb = (blockArrays2_pointer)(2,j);
+                        cc = (blockArrays2_pointer)(3,j);
                         id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
 
                         index = T3_elements_I[id];
-                        T3_elements_A_temp[index] += val;
+                        T_vec[index] += val;
                     }
                 }
             }
@@ -963,12 +963,10 @@ void MakeAmpMat::make3x3Block_inverse_I(Eigen::MatrixXd inMat, int ku, int i1, i
             for (int i = range_lower1; i<range_upper1; i++){
                 for (int j = range_lower2; j<range_upper2; j++){
                     val = inMat(i-range_lower1,j-range_lower2);
-                    if (val != 0){
-                        id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(3,j), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j),  (blockArrays1_pointer)(3,i));
+                    id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(3,j), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j),  (blockArrays1_pointer)(3,i));
 
-                        index = T3_elements_I[id];
-                        T_vec[index] = val;
-                    }
+                    index = T3_elements_I[id];
+                    T_vec[index] = val;
                 }
             }
         }
@@ -976,12 +974,10 @@ void MakeAmpMat::make3x3Block_inverse_I(Eigen::MatrixXd inMat, int ku, int i1, i
             for (int i = range_lower1; i<range_upper1; i++){
                 for (int j = range_lower2; j<range_upper2; j++){
                     val = inMat(i-range_lower1,j-range_lower2);
-                    if (val != 0){
-                        id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j), (blockArrays2_pointer)(3,j));
+                    id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j), (blockArrays2_pointer)(3,j));
 
-                        index = T3_elements_I[id];
-                        T_vec[index] = val;
-                    }
+                    index = T3_elements_I[id];
+                    T_vec[index] = val;
                 }
             }
         }
@@ -1036,12 +1032,6 @@ void MakeAmpMat::addElementsT2(bool Pij, bool Pab){
 
 void MakeAmpMat::addElementsT3_T1a(){
 
-    Eigen::MatrixXi mat_ID;
-    Eigen::MatrixXd mat_VAL;
-    Eigen::VectorXi vec_END;
-
-    int size = m_intClass->blockArrays_ppp_hhh.cols()*m_intClass->blockArrays_ppp_ppp.cols();
-    int index = 0;
 
     int Np = m_intClass->m_Ns-m_intClass->m_Nh;
     int Nh = m_intClass->m_Nh;
@@ -1081,16 +1071,10 @@ void MakeAmpMat::addElementsT3_T1a(){
         Eigen::MatrixXd Pac(rows,cols);
         Eigen::MatrixXd Pabc(rows,cols);
 
-        //std::cout << rows <<" "<< cols << std::endl;
-        //std::cout << range_upper1-range_lower1 << " "<< range_upper2-range_lower2 << std::endl;
-
-        //std::cout << m_intClass->blockArrays_ppp_ppp_Pab << std::endl;
-
-        for (int i=range_lower1; i<range_upper1; i++){
-            Pab.col( i-range_lower1 )  = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pab(1,i)-range_lower1 ); //may have forgotten columns without permutation
-            //std::cout << "sup" << std::endl;
-            Pac.col( i-range_lower1 )  = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pac(1,i)-range_lower1 );
-            Pabc.col( i-range_lower1 ) = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pabc(1,i)-range_lower1 );
+        for (int i=range_lower2; i<range_upper2; i++){
+            Pab.col( i-range_lower2 )  = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pab(1,i)-range_lower2 ); //may have forgotten columns without permutation
+            Pac.col( i-range_lower2 )  = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pac(1,i)-range_lower2 );
+            Pabc.col( i-range_lower2 ) = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pabc(1,i)-range_lower2 );
         }
 
         tempAMat1 = tempAMat - Pab - Pac + Pabc;
@@ -1103,18 +1087,26 @@ void MakeAmpMat::addElementsT3_T1a(){
         Eigen::MatrixXd Pijk(rows,cols);
 
         for (int i=range_lower1; i<range_upper1; i++){
-            Pik.row( i )  = tempAMat.row( m_intClass->blockArrays_ppp_hhh_Pik(1,i) ); //may have forgotten columns without permutation
-            Pjk.row( i )  = tempAMat.row( m_intClass->blockArrays_ppp_hhh_Pjk(1,i) );
-            Pijk.row( i ) = tempAMat.row( m_intClass->blockArrays_ppp_hhh_Pijk(1,i) );
+            Pik.row( i - range_lower1)  = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pik(1,i) - range_lower1 ); //may have forgotten columns without permutation
+            Pjk.row( i - range_lower1 )  = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pjk(1,i) - range_lower1 );
+            Pijk.row( i - range_lower1 ) = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pijk(1,i) - range_lower1 );
         }
 
         tempAMat2 = tempAMat1 -Pik - Pjk + Pijk;
 
+        //std::cout << tempAMat2 << std::endl;
+
         make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 
+    /*Eigen::MatrixXi mat_ID;
+    Eigen::MatrixXd mat_VAL;
+    Eigen::VectorXi vec_END;
 
-    /*int n = 1;//omp_get_max_threads();
+    int size = m_intClass->blockArrays_ppp_hhh.cols()*m_intClass->blockArrays_ppp_ppp.cols();
+    int index = 0;
+
+    int n = 1;//omp_get_max_threads();
     mat_ID.conservativeResize(n,size); mat_ID.setZero(n,size);
     mat_VAL.conservativeResize(n,size); mat_VAL.setZero(n,size);
     vec_END.conservativeResize(n); vec_END.setZero(n);
@@ -1225,7 +1217,72 @@ void MakeAmpMat::addElementsT3_T1a(){
 
 void MakeAmpMat::addElementsT3_T1b(){
 
-    int id;
+    int Np = m_intClass->m_Ns-m_intClass->m_Nh;
+    int Nh = m_intClass->m_Nh;
+    int N1 = Nh;
+    int N2 = Nh*Nh; //Nh*Nh;
+    int N3 = N2*Np; //Nh*Nh*Np;
+    int N4 = N3*Np; //Nh*Nh*Np*Np;
+    int N5 = N4*Np; //Nh*Nh*Np*Np*Np;
+    int id; double val; int th; int index2; int ku;
+
+    for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
+        ku = m_intClass->Vhhhppp_i[channel];
+
+        int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
+        int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
+        int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
+        int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
+
+        Eigen::MatrixXi tempIMat = T3_directMat[channel]; //this holds indices for T3_elements_A (as well as _new and _temp)
+        int rows = tempIMat.rows();
+        int cols = tempIMat.cols();
+
+        Eigen::MatrixXd tempAMat;
+        tempAMat.conservativeResize( rows, cols );
+
+        Eigen::MatrixXd tempAMat1;
+        tempAMat1.conservativeResize( rows, cols );
+
+        //should be easily parallizable?
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                tempAMat(row, col) = T3_elements_A_temp[ tempIMat(row, col) ];
+            }
+        }
+
+        Eigen::MatrixXd Pbc(rows,cols);
+        Eigen::MatrixXd Pac(rows,cols);
+        Eigen::MatrixXd Pabc(rows,cols);
+
+        for (int i=range_lower2; i<range_upper2; i++){
+            Pbc.col( i-range_lower2 )  = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pbc(1,i)-range_lower2 ); //may have forgotten columns without permutation
+            Pac.col( i-range_lower2 )  = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pac(1,i)-range_lower2 );
+            Pabc.col( i-range_lower2 ) = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pabc(1,i)-range_lower2 );
+        }
+
+        tempAMat1 = tempAMat - Pbc - Pac + Pabc;
+
+        Eigen::MatrixXd tempAMat2;
+        tempAMat2.conservativeResize( rows, cols );
+
+        Eigen::MatrixXd Pik(rows,cols);
+        Eigen::MatrixXd Pij(rows,cols);
+        Eigen::MatrixXd Pijk(rows,cols);
+
+        for (int i=range_lower1; i<range_upper1; i++){
+            Pik.row( i - range_lower1)  = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pik(1,i) - range_lower1 ); //may have forgotten columns without permutation
+            Pij.row( i - range_lower1 )  = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pij(1,i) - range_lower1 );
+            Pijk.row( i - range_lower1 ) = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pijk(1,i) - range_lower1 );
+        }
+
+        tempAMat2 = tempAMat1 -Pik - Pij + Pijk;
+
+        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+    }
+
+
+    /*int id;
     int ii; int jj; int kk;
     int aa; int bb; int cc;
 
@@ -1279,7 +1336,7 @@ void MakeAmpMat::addElementsT3_T1b(){
                 T3_elements_new[id] += val;
             }
         }
-    }
+    }*/
 }
 
 Eigen::MatrixXd MakeAmpMat::make3x3Block_I(int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<double> &T_vec){

@@ -14,9 +14,11 @@ public:
     int               m_Nh                 = 0;        //number of particles
     int               m_Nb                 = 0;
     int               m_Ns                 = 0;
-    bool              m_triplesOn;
-    bool              m_intermediatesOn;
-    bool              m_timerOn;
+    bool              m_triplesOn          = false;
+    bool              m_intermediatesOn    = false;
+    bool              m_timerOn            = false;
+    bool              m_relaxation         = false;
+    double            m_alpha              = 1;
 
 
 
@@ -26,6 +28,7 @@ public:
     void setIntermediates(bool argument);
     void setTriples(bool argument);
     void setTimer(bool argument);
+    void setRelaxation(bool argument, double alpha);
     void setClasses();
 
     double CC_master(double eps, double conFac);

@@ -34,6 +34,11 @@ void Master::setTimer(bool argument){
     m_timerOn = argument;
 }
 
+void Master::setRelaxation(bool argument, double alpha){
+    m_relaxation = argument;
+    m_alpha = alpha;
+}
+
 void Master::setClasses(){
     m_ampClass = new MakeAmpMat;
     m_intClass = new MakeIntMat;
@@ -118,7 +123,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
     double ECCD     = 0;
 
 
-    if (m_triplesOn){   //first iteration in the case of T3
+    /*if (m_triplesOn){   //first iteration in the case of T3
         if (m_intermediatesOn){
             m_diagrams->La();
             m_diagrams->I1_term();  // Lb, Qa
@@ -137,10 +142,12 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             m_diagrams->Qd();
         }
 
-        if(m_triplesOn){
-            //m_ampClass->T3_elements_new.clear();
-            m_diagrams->makeT3();
-        }
+        //m_ampClass->T3_elements_new.clear();
+        m_diagrams->makeT3();
+    }*/
+
+    if (m_triplesOn){
+        m_diagrams->makeT3();
     }
 
 
@@ -176,7 +183,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
 
             //std::cout << "sup" << std::endl;
             m_diagrams->T1a();
-            //m_diagrams->T1b();
+            m_diagrams->T1b();
         }
 
         //cout << m_intClass->indexHolder_ppp_hhh << " " << m_intClass->indexHolder_ppp_ppp << endl;
@@ -211,33 +218,30 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
         ECCD_old = ECCD;
         counter += 1;
 
-        if (0){
-            double alpha = 0.3;
+        if (m_relaxation){
             std::unordered_map<int, double> T2_temp = m_ampClass->T2_elements;
             m_ampClass->T2_elements.clear();
             for(auto const& it : m_ampClass->T2_elements_new) {
-                m_ampClass->T2_elements[it.first] = alpha*it.second + (1-alpha)*T2_temp[it.first];
+                m_ampClass->T2_elements[it.first] = m_alpha*it.second + (1-m_alpha)*T2_temp[it.first];
             }
+
+            if(m_triplesOn){
+                std::vector<double> T3_temp = m_ampClass->T3_elements_A;
+
+                for(int it=0; it<m_ampClass->T3_elements_A_new.size(); it++){
+                    m_ampClass->T3_elements_A[it] = m_alpha*m_ampClass->T3_elements_A_new[it] + (1-m_alpha)*T3_temp[it];
+                }
+            }
+
         }
         else{
             m_ampClass->T2_elements = m_ampClass->T2_elements_new;
-        }
 
-        if(m_triplesOn){
-
-            //this prints how many zeroes there are in T3.
-            /*int count = 0;
-            for(auto it = m_ampClass->T3_elements_new.cbegin(); it != m_ampClass->T3_elements_new.cend(); ++it)
-            {
-                if (it->second == 0){
-                    count ++;
-                    //std::cout << it->second << "\n";
-                }
+            if(m_triplesOn){
+                m_ampClass->T3_elements_A = m_ampClass->T3_elements_A_new;
             }
-            std::cout << count << std::endl;*/
-
-            m_ampClass->T3_elements_A = m_ampClass->T3_elements_A_new;
         }
+
 
         //ECCD = 0; too good to delete; you don't want to know how long i used to find this
     }

@@ -30,14 +30,14 @@ void MakeIntMat::makePermutations(){
 
     int Nh  = m_Nh;
     int Nh2 = Nh*Nh;
-    int Np  = m_Ns-m_Nh;
+    int Np  = m_Ns;//m_Ns-m_Nh;
     int Np2 = Np*Np;
 
     int cols_h = blockArrays_ppp_hhh.cols();
     int cols_p = blockArrays_ppp_ppp.cols();
 
-    //std::cout << blockArrays_ppp_ppp << std::endl;
-
+    //note some of these elements will be zero since they also hold channels not present in each other
+    //however these will never be called, and thus not cause problems (in theory -.-' )
     blockArrays_ppp_hhh_Pij.conservativeResize(2,cols_h);
     blockArrays_ppp_hhh_Pik.conservativeResize(2,cols_h);
     blockArrays_ppp_hhh_Pjk.conservativeResize(2,cols_h);
@@ -48,12 +48,27 @@ void MakeIntMat::makePermutations(){
     blockArrays_ppp_ppp_Pbc.conservativeResize(2,cols_p);
     blockArrays_ppp_ppp_Pabc.conservativeResize(2,cols_p);
 
+    int range_lower_h;
+    int range_upper_h;
+    int range_lower_p;
+    int range_upper_p;
+
+    int i1; int j1; int k1;
+    int i2; int j2; int k2;
+    int val_ij2; int val_ik2; int val_jk2; int val_ijk2;
+
+    int a1; int b1; int c1;
+    int a2; int b2; int c2;
+    int val_ab2; int val_ac2; int val_bc2; int val_abc2;
+
+    int val1;
+
     for (int channel = 0; channel<numOfKu3; channel++){
         //std::cout << "still running" << std::endl;
-        int range_lower_h = boundsHolder_hhhppp_hhh(0,channel);
-        int range_upper_h = boundsHolder_hhhppp_hhh(1,channel);
-        int range_lower_p = boundsHolder_hhhppp_ppp(0,channel);
-        int range_upper_p = boundsHolder_hhhppp_ppp(1,channel);
+        range_lower_h = boundsHolder_hhhppp_hhh(0,channel);
+        range_upper_h = boundsHolder_hhhppp_hhh(1,channel);
+        range_lower_p = boundsHolder_hhhppp_ppp(0,channel);
+        range_upper_p = boundsHolder_hhhppp_ppp(1,channel);
         //th = omp_get_thread_num();
 
         //int size = (range_upper1-range_lower1)*(range_upper2-range_lower2);
@@ -61,12 +76,6 @@ void MakeIntMat::makePermutations(){
         //int index = 0; //-1
         //#pragma omp parallel for num_threads(n) private(N1,N2,N3,N4,N5, id) firstprivate(index) //shared(index)
 
-        int i1; int j1; int k1;
-        int i2; int j2; int k2;
-
-        int val1;
-        int val_ij1; int val_ik1; int val_jk1; int val_ijk1;
-        int val_ij2; int val_ik2; int val_jk2; int val_ijk2;
 
         //hhh permutations
         for (int it1 = range_lower_h; it1<range_upper_h; it1++){
@@ -74,71 +83,28 @@ void MakeIntMat::makePermutations(){
             j1 = blockArrays_ppp_hhh(2,it1);
             k1 = blockArrays_ppp_hhh(3,it1);
 
-            //val_ij1  = i1 + j1*Nh;
-            //val_ik1  = i1 + k1*Nh;
-            //val_jk1  = j1 + k1*Nh;
-            //val_ijk1 = i1 + j1*Nh + k1*Nh*Nh;
-
-
             val1 = i1 + j1*Nh + k1*Nh2;
 
             int counter = 0;
 
             /*if (i1 == j1 && i1 == k1){
                 blockArrays_ppp_hhh_Pijk.col(it1) << it1, it1;
-            }
-            else if (i1 == j1){
-                blockArrays_ppp_hhh_Pij.col(it1) << it1, it1;
-            }
-            else if (i1 == k1){
                 counter ++;
-                blockArrays_ppp_hhh_Pik.col(it1) << it1, it1;
             }
-            else if (j1 == k1){
-                blockArrays_ppp_hhh_Pjk.col(it1) << it1, it1;
-            }
-            //else{
-                for (int it2 = it1+1; it2<range_upper_h; it2++){  //starting at it1+1 means I'll never do the same permutation twice
-                    i2 = blockArrays_ppp_hhh(1,it2);
-                    j2 = blockArrays_ppp_hhh(2,it2);
-                    k2 = blockArrays_ppp_hhh(3,it2);
-
-                    val_ij2  = j2 + i2*Nh;
-                    val_ik2  = k2 + i2*Nh;
-                    val_jk2  = k2 + j2*Nh;
-                    val_ijk2 = k2 + i2*Nh + j2*Nh*Nh; // P(ki)P(kj): (i,j,k) <-> (k,i,j)
-
-                    if (val_ij1 == val_ij2){
-                        blockArrays_ppp_hhh_Pij.col(it1) << it1, it2;
-                    }
-                    if (val_ik1 == val_ik2){
-                        blockArrays_ppp_hhh_Pik.col(it1) << it1, it2;
-                        //std::cout << counter << std::endl;
-                    }
-                    if (val_jk1 == val_jk2){
-                        blockArrays_ppp_hhh_Pjk.col(it1) << it1, it2;
-                    }
-                    if (val_ijk1 == val_ijk2){
-                        blockArrays_ppp_hhh_Pijk.col(it1) << it1, it2;
-                    }
-                }
-            //}*/
-
-            if (i1 == j1 && i1 == k1){
-                blockArrays_ppp_hhh_Pijk.col(it1) << it1, it1;
-            }
-            else if (i1 == j1){
+            if (i1 == j1){
                 blockArrays_ppp_hhh_Pij.col(it1) << it1, it1;
-            }
-            else if (i1 == k1){
                 counter ++;
+            }
+            if (i1 == k1){
                 blockArrays_ppp_hhh_Pik.col(it1) << it1, it1;
+                counter ++;
             }
-            else if (j1 == k1){
+            if (j1 == k1){
                 blockArrays_ppp_hhh_Pjk.col(it1) << it1, it1;
-            }
-            //else{
-            for (int it2 = it1+1; it2<range_upper_h; it2++){  //starting at it1+1 means I'll never do the same permutation twice
+                counter ++;
+            }*/
+
+            for (int it2 = range_lower_h; it2<range_upper_h; it2++){  //starting at it1+1 means I'll never do the same permutation twice
                 i2 = blockArrays_ppp_hhh(1,it2);
                 j2 = blockArrays_ppp_hhh(2,it2);
                 k2 = blockArrays_ppp_hhh(3,it2);
@@ -146,29 +112,33 @@ void MakeIntMat::makePermutations(){
                 val_ij2  = j2 + i2*Nh + k2*Nh2;
                 val_ik2  = k2 + j2*Nh + i2*Nh2;
                 val_jk2  = i2 + k2*Nh + j2*Nh2;
-                val_ijk2 = k2 + i2*Nh + j2*Nh2; // P(ki)P(kj): (i,j,k) <-> (k,i,j)
+                val_ijk2 = k2 + i2*Nh + j2*Nh2; // P(ki)P(kj): (i,j,k) -> (k,i,j)
 
+                //if(counter!=0){std::cout << counter << std::endl; std::cout << numOfKu3 << std::endl;}
                 if (val1 == val_ij2){
                     blockArrays_ppp_hhh_Pij.col(it1) << it1, it2;
+                    blockArrays_ppp_hhh_Pij.col(it2) << it2, it1;
+                    counter ++;
                 }
                 if (val1 == val_ik2){
                     blockArrays_ppp_hhh_Pik.col(it1) << it1, it2;
-                    //std::cout << counter << std::endl;
+                    blockArrays_ppp_hhh_Pik.col(it2) << it2, it1;
+                    counter ++;
                 }
                 if (val1 == val_jk2){
                     blockArrays_ppp_hhh_Pjk.col(it1) << it1, it2;
+                    blockArrays_ppp_hhh_Pjk.col(it2) << it2, it1;
+                    counter ++;
                 }
                 if (val1 == val_ijk2){
                     blockArrays_ppp_hhh_Pijk.col(it1) << it1, it2;
+                    blockArrays_ppp_hhh_Pijk.col(it2) << it2, it1;
+                    counter ++;
                 }
             }
+            //if (counter == 0){ std::cout << it1-range_lower_h << std::endl;}
         }
 
-        int a1; int b1; int c1;
-        int a2; int b2; int c2;
-
-        int val_ab1; int val_ac1; int val_bc1; int val_abc1;
-        int val_ab2; int val_ac2; int val_bc2; int val_abc2;
 
         //ppp permutations
         for (int it1 = range_lower_p; it1<range_upper_p; it1++){
@@ -178,21 +148,26 @@ void MakeIntMat::makePermutations(){
 
             val1 = a1 + b1*Np + c1*Np2;
 
+            int counter = 0;
             //if indices are the same in the case of permutation
-            if (a1 == b1 && a1 == c1){
+            /*if (a1 == b1 && a1 == c1){
                 blockArrays_ppp_ppp_Pabc.col(it1) << it1, it1;
+                counter ++;
             }
-            else if (a1 == b1){
+            if (a1 == b1){
                 blockArrays_ppp_ppp_Pab.col(it1) << it1, it1;
+                counter ++;
             }
-            else if (a1 == c1){
+            if (a1 == c1){
                 blockArrays_ppp_ppp_Pac.col(it1) << it1, it1;
+                counter ++;
             }
-            else if (b1 == c1){
+            if (b1 == c1){
                 blockArrays_ppp_ppp_Pbc.col(it1) << it1, it1;
-            }
-            //else{
-            for (int it2 = it1+1; it2<range_upper_p; it2++){  //starting at it1+1 means I'll never do the same permutation twice
+                counter ++;
+            }*/
+
+            for (int it2 = range_lower_p; it2<range_upper_p; it2++){  //starting at it1+1 means I'll never do the same permutation twice
                 a2 = blockArrays_ppp_ppp(1,it2);
                 b2 = blockArrays_ppp_ppp(2,it2);
                 c2 = blockArrays_ppp_ppp(3,it2);
@@ -200,84 +175,43 @@ void MakeIntMat::makePermutations(){
                 val_ab2  = b2 + a2*Np + c2*Np2;
                 val_ac2  = c2 + b2*Np + a2*Np2;
                 val_bc2  = a2 + c2*Np + b2*Np2;
-                val_abc2 = c2 + a2*Np + b2*Np2; // P(ab)P(ac): (a,b,c) <-> (c,a,b)
+                val_abc2 = c2 + a2*Np + b2*Np2; // P(ab)P(ac): (a,b,c) -> (c,a,b)
 
                 if (val1 == val_ab2){
                     blockArrays_ppp_ppp_Pab.col(it1) << it1, it2;
+                    blockArrays_ppp_ppp_Pab.col(it2) << it2, it1;
+                    //if (it2-range_lower_p < 0){std::cout << it2-range_lower_p << std::endl;}
+                    counter ++;
                 }
                 if (val1 == val_ac2){
                     blockArrays_ppp_ppp_Pac.col(it1) << it1, it2;
+                    blockArrays_ppp_ppp_Pac.col(it2) << it2, it1;
+                    counter ++;
                 }
                 if (val1 == val_bc2){
                     blockArrays_ppp_ppp_Pbc.col(it1) << it1, it2;
+                    blockArrays_ppp_ppp_Pbc.col(it2) << it2, it1;
+                    counter ++;
                 }
                 if (val1 == val_abc2){
                     blockArrays_ppp_ppp_Pabc.col(it1) << it1, it2;
+                    blockArrays_ppp_ppp_Pabc.col(it2) << it2, it1;
+                    counter ++;
                 }
             }
+            //if (counter == 0){ std::cout << it1-range_lower_h << std::endl;}
         }
-
-        //std::cout << blockArrays_ppp_hhh << std::endl;
-
-        /*int a1; int b1; int c1;
-        int a2; int b2; int c2;
-
-        int val_ab1; int val_ac1; int val_bc1; int val_abc1;
-        int val_ab2; int val_ac2; int val_bc2; int val_abc2;
-
-        //ppp permutations
-        for (int it1 = range_lower_p; it1<range_upper_p; it1++){
-            a1 = blockArrays_ppp_ppp(1,it1);
-            b1 = blockArrays_ppp_ppp(2,it1);
-            c1 = blockArrays_ppp_ppp(3,it1);
-
-            val_ab1  = a1 + b1*Np;
-            val_ac1  = a1 + c1*Np;
-            val_bc1  = b1 + c1*Np;
-            val_abc1 = a1 + b1*Np + c1*Np*Np;
-
-            //if indices are the same in the case of permutation
-            if (a1 == b1 && a1 == c1){
-                blockArrays_ppp_ppp_Pabc.col(it1) << it1, it1;
-            }
-            else if (a1 == b1){
-                blockArrays_ppp_ppp_Pab.col(it1) << it1, it1;
-            }
-            else if (a1 == c1){
-                blockArrays_ppp_ppp_Pac.col(it1) << it1, it1;
-            }
-            else if (b1 == c1){
-                blockArrays_ppp_ppp_Pbc.col(it1) << it1, it1;
-            }
-            //else{
-                for (int it2 = it1+1; it2<range_upper_p; it2++){  //starting at it1+1 means I'll never do the same permutation twice
-                    a2 = blockArrays_ppp_ppp(1,it2);
-                    b2 = blockArrays_ppp_ppp(2,it2);
-                    c2 = blockArrays_ppp_ppp(3,it2);
-
-                    val_ab2  = b2 + a2*Np;
-                    val_ac2  = c2 + a2*Np;
-                    val_bc2  = c2 + b2*Np;
-                    val_abc2 = c2 + a2*Np + b2*Np*Np; // P(ab)P(ac): (a,b,c) <-> (c,a,b)
-
-                    if (val_ab1 == val_ab2){
-                        blockArrays_ppp_ppp_Pab.col(it1) << it1, it2;
-                    }
-                    if (val_ac1 == val_ac2){
-                        blockArrays_ppp_ppp_Pac.col(it1) << it1, it2;
-                    }
-                    if (val_bc1 == val_bc2){
-                        blockArrays_ppp_ppp_Pbc.col(it1) << it1, it2;
-                    }
-                    if (val_abc1 == val_abc2){
-                        blockArrays_ppp_ppp_Pabc.col(it1) << it1, it2;
-                    }
-                }
-            //}
-        }*/
     }
 
-    std::cout << blockArrays_ppp_hhh_Pij << std::endl;
+    /*for (int channel = 0; channel<5; channel++){
+        range_lower_p = boundsHolder_hhhppp_ppp(0,channel);
+        range_upper_p = boundsHolder_hhhppp_ppp(1,channel);
+        for (int col=range_lower_p; col<range_upper_p; col++){
+            if (blockArrays_ppp_ppp_Pab(0,col)-range_lower_p < 0){std::cout << blockArrays_ppp_ppp_Pab(0,col)-range_lower_p << std::endl;}
+        }
+    }*/
+
+    //std::cout << blockArrays_ppp_ppp_Pab(1, 0) << std::endl;
 }
 
 
