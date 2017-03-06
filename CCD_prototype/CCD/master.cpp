@@ -61,9 +61,11 @@ void Master::setClasses(){
 
 
     if (m_triplesOn){
+        std::cout << "hey1" << std::endl;
         m_ampClass->makeDenomMat3();
+        std::cout << "hey2" << std::endl;
         m_intClass->makePermutations();
-        //std::cout << "hey" << std::endl;
+        std::cout << "hey3" << std::endl;
     }
     m_ampClass->emptyFockMaps();
 }
@@ -94,8 +96,12 @@ double Master::CC_master(double eps, double conFac){
 
     }
     m_ampClass->T2_elements = m_ampClass->T2_elements_new;
-    //check whether or not to multiply by 0.25 for MBPT2
+
+
+    std::cout << std::endl;
     std::cout << "MBPT2: " << std::setprecision (12) << 0.25*ECCD_old << std::endl;
+    std::cout << std::endl;
+    std::cout << "Start of CC iterations: " << std::endl;
 
 
 
@@ -156,6 +162,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
         //could make an m_ampClass::updateT or something
         m_ampClass->T2_elements_new.clear();
 
+        //calculate CCD T2 diagrams
         if (m_intermediatesOn){
             m_diagrams->La();
             m_diagrams->I1_term();  // Lb, Qa
@@ -174,20 +181,42 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             m_diagrams->Qd();
         }
 
+        //calculate T2 contributions to T3 using T2_prev
         if(m_triplesOn){
-            //m_ampClass->T3_elements_new.clear();
             std::fill(m_ampClass->T3_elements_A_new.begin(), m_ampClass->T3_elements_A_new.end(), 0); //reset T3 new
-            m_diagrams->D10b();
-            m_diagrams->D10c();
 
-
-            //std::cout << "sup" << std::endl;
             m_diagrams->T1a();
             m_diagrams->T1b();
+
+
+            //update T3 amplitudes
+            for (int hhh = 0; hhh<m_intClass->numOfKu3; hhh++){
+                int ku = m_intClass->Vhhhppp_i[hhh];
+
+                Eigen::MatrixXd D_contributions = m_ampClass->make3x3Block_I(ku,0,0,0,1,1,1, m_ampClass->T3_elements_A_new);
+                Eigen::MatrixXd temp = (D_contributions).array()*m_ampClass->denomMat3[hhh].array();
+
+                m_ampClass->make3x3Block_inverse_I(temp, ku, 0,0,0,1,1,1, m_ampClass->T3_elements_A_new, false);
+            }
+
+            if (m_relaxation){
+                std::vector<double> T3_temp = m_ampClass->T3_elements_A;
+
+                for(int it=0; it<m_ampClass->T3_elements_A_new.size(); it++){
+                    m_ampClass->T3_elements_A[it] = m_alpha*m_ampClass->T3_elements_A_new[it] + (1-m_alpha)*T3_temp[it];
+                }
+            }
+            else{
+                m_ampClass->T3_elements_A = m_ampClass->T3_elements_A_new;
+            }
+
+
+            //calculate T3 contributions to T2 using T3_current
+            m_diagrams->D10b();
+            m_diagrams->D10c();
         }
 
-        //cout << m_intClass->indexHolder_ppp_hhh << " " << m_intClass->indexHolder_ppp_ppp << endl;
-
+        //update T2 amplitudes
         for (int hh = 0; hh<m_intClass->numOfKu; hh++){
             int ku = m_intClass->Vhhpp_i[hh];
 
@@ -201,16 +230,6 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             ECCD += 0.25*((Vhhpp.transpose())*(Thhpp)).trace();
         }
 
-        if(m_triplesOn){
-            for (int hhh = 0; hhh<m_intClass->numOfKu3; hhh++){
-                int ku = m_intClass->Vhhhppp_i[hhh];
-
-                Eigen::MatrixXd D_contributions = m_ampClass->make3x3Block_I(ku,0,0,0,1,1,1, m_ampClass->T3_elements_A_new);
-                Eigen::MatrixXd temp = (D_contributions).array()*m_ampClass->denomMat3[hhh].array();
-
-                m_ampClass->make3x3Block_inverse_I(temp, ku, 0,0,0,1,1,1, m_ampClass->T3_elements_A_new, false);
-            }
-        }
 
         cout << std::fixed << std::setprecision (15) << ECCD << endl;
 
@@ -225,21 +244,21 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
                 m_ampClass->T2_elements[it.first] = m_alpha*it.second + (1-m_alpha)*T2_temp[it.first];
             }
 
-            if(m_triplesOn){
+            /*if(m_triplesOn){
                 std::vector<double> T3_temp = m_ampClass->T3_elements_A;
 
                 for(int it=0; it<m_ampClass->T3_elements_A_new.size(); it++){
                     m_ampClass->T3_elements_A[it] = m_alpha*m_ampClass->T3_elements_A_new[it] + (1-m_alpha)*T3_temp[it];
                 }
-            }
+            }*/
 
         }
         else{
             m_ampClass->T2_elements = m_ampClass->T2_elements_new;
 
-            if(m_triplesOn){
+            /*if(m_triplesOn){
                 m_ampClass->T3_elements_A = m_ampClass->T3_elements_A_new;
-            }
+            }*/
         }
 
 

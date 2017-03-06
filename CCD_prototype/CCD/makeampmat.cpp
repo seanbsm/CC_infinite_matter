@@ -124,7 +124,7 @@ void MakeAmpMat::makeDenomMat3(){
 
         //std::cout <<  m_intClass->boundsHolder_hhhppp_hhh << std::endl;
 
-        #pragma omp parallel for
+       // #pragma omp parallel for
         for (int hhh=lowBound_hhh; hhh<highBound_hhh; hhh++){
             for (int ppp=lowBound_ppp; ppp<highBound_ppp; ppp++){
                 //std::cout << i << " " <<hhh-lowBound_hhh<< " " << ppp-lowBound_ppp << std::endl;
@@ -1042,7 +1042,7 @@ void MakeAmpMat::addElementsT3_T1a(){
     int N5 = N4*Np; //Nh*Nh*Np*Np*Np;
     int id; double val; int th; int index2; int ku;
 
-    for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
+    /*for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
         int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
@@ -1060,7 +1060,7 @@ void MakeAmpMat::addElementsT3_T1a(){
         Eigen::MatrixXd tempAMat1;
         tempAMat1.conservativeResize( rows, cols );
 
-        //should be easily parallizable?
+        //should be easily parallelizable?
         for (int col=0; col<cols; col++){
             for (int row=0; row<rows; row++){
                 tempAMat(row, col) = T3_elements_A_temp[ tempIMat(row, col) ];
@@ -1097,9 +1097,9 @@ void MakeAmpMat::addElementsT3_T1a(){
         //std::cout << tempAMat2 << std::endl;
 
         make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
-    }
+    }*/
 
-    /*Eigen::MatrixXi mat_ID;
+    Eigen::MatrixXi mat_ID;
     Eigen::MatrixXd mat_VAL;
     Eigen::VectorXi vec_END;
 
@@ -1140,58 +1140,88 @@ void MakeAmpMat::addElementsT3_T1a(){
                 int kk = (m_intClass->blockArrays_ppp_hhh)(3,hhh);
 
                 //id = m_intClass->Identity_hhhppp(ii,jj,kk,bb,aa,cc);
-                id = ii + jj*N1 + kk*N2 + bb*N3 + aa*N4 + cc*N5;
+                id = ii + jj*N1 + kk*N2 + bb*N3 + aa*N4 + cc*N5; // Pab
                 //val -= T3_temp[id];
                 index2 = T3_elements_I[id];
                 val -= T3_elements_A_temp[index2];
 
                 //id = m_intClass->Identity_hhhppp(ii,jj,kk,cc,bb,aa);
-                id = ii + jj*N1 + kk*N2 + cc*N3 + bb*N4 + aa*N5;
+                id = ii + jj*N1 + kk*N2 + cc*N3 + bb*N4 + aa*N5; // Pac
                 //val -= T3_temp[id];
                 index2 = T3_elements_I[id];
                 val -= T3_elements_A_temp[index2];
 
                 //id = m_intClass->Identity_hhhppp(kk,jj,ii,aa,bb,cc);
-                id = kk + jj*N1 + ii*N2 + aa*N3 + bb*N4 + cc*N5;
+                id = kk + jj*N1 + ii*N2 + aa*N3 + bb*N4 + cc*N5; // Pki
                 //val -= T3_temp[id];
                 index2 = T3_elements_I[id];
                 val -= T3_elements_A_temp[index2];
 
                 //id = m_intClass->Identity_hhhppp(ii,kk,jj,aa,bb,cc);
-                id = ii + kk*N1 + jj*N2 + aa*N3 + bb*N4 + cc*N5;
+                id = ii + kk*N1 + jj*N2 + aa*N3 + bb*N4 + cc*N5; // Pkj
                 //val -= T3_temp[id];
                 index2 = T3_elements_I[id];
                 val -= T3_elements_A_temp[index2];
 
-                //id = m_intClass->Identity_hhhppp(kk,jj,ii,bb,aa,cc);
-                id = kk + jj*N1 + ii*N2 + bb*N3 + aa*N4 + cc*N5;
+                id = ii + jj*N1 + kk*N2 + bb*N3 + cc*N4 + aa*N5; // Pab Pac
+                //val += T3_temp[id];
+                index2 = T3_elements_I[id];
+                val += T3_elements_A_temp[index2];
+
+                id = kk + jj*N1 + ii*N2 + bb*N3 + aa*N4 + cc*N5; // Pab Pki
+                //val += T3_temp[id];
+                index2 = T3_elements_I[id];
+                val += T3_elements_A_temp[index2];
+
+                id = ii + kk*N1 + jj*N2 + bb*N3 + aa*N4 + cc*N5; // Pab Pkj
+                //val += T3_temp[id];
+                index2 = T3_elements_I[id];
+                val += T3_elements_A_temp[index2];
+
+                id = kk + jj*N1 + ii*N2 + cc*N3 + bb*N4 + aa*N5; // Pac Pki
+                //val += T3_temp[id];
+                index2 = T3_elements_I[id];
+                val += T3_elements_A_temp[index2];
+
+                id = ii + kk*N1 + jj*N2 + cc*N3 + bb*N4 + aa*N5; // Pac Pkj
+                //val += T3_temp[id];
+                index2 = T3_elements_I[id];
+                val += T3_elements_A_temp[index2];
+
+                id = jj + kk*N1 + ii*N2 + aa*N3 + bb*N4 + cc*N5; // Pki Pkj
+                //val += T3_temp[id];
+                index2 = T3_elements_I[id];
+                val += T3_elements_A_temp[index2];
+
+                id = kk + jj*N1 + ii*N2 + bb*N3 + cc*N4 + aa*N5; // Pab Pac Pki
                 //val += T3_temp[id];
                 index2 = T3_elements_I[id];
                 val -= T3_elements_A_temp[index2];
 
-                //id = m_intClass->Identity_hhhppp(ii,kk,jj,bb,aa,cc);
-                id = ii + kk*N1 + jj*N2 + bb*N3 + aa*N4 + cc*N5;
+                id = ii + kk*N1 + jj*N2 + bb*N3 + cc*N4 + aa*N5; // Pab Pac Pkj
                 //val += T3_temp[id];
                 index2 = T3_elements_I[id];
                 val -= T3_elements_A_temp[index2];
 
-                //id = m_intClass->Identity_hhhppp(kk,jj,ii,cc,bb,aa);
-                id = kk + jj*N1 + ii*N2 + cc*N3 + bb*N4 + aa*N5;
+                id = kk + ii*N1 + jj*N2 + bb*N3 + aa*N4 + cc*N5; // Pab Pki Pkj
                 //val += T3_temp[id];
                 index2 = T3_elements_I[id];
                 val -= T3_elements_A_temp[index2];
 
-                //id = m_intClass->Identity_hhhppp(ii,kk,jj,cc,bb,aa);
-                id = ii + kk*N1 + jj*N2 + cc*N3 + bb*N4 + aa*N5;
+                id = kk + ii*N1 + jj*N2 + cc*N3 + bb*N4 + aa*N5; // Pac Pki Pkj
                 //val += T3_temp[id];
                 index2 = T3_elements_I[id];
                 val -= T3_elements_A_temp[index2];
 
-                //id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc); //unperturbed
-                id = ii + jj*N1 + kk*N2 + aa*N3 + bb*N4 + cc*N5;
+                id = kk + ii*N1 + jj*N2 + cc*N3 + aa*N4 + bb*N5; // Pab Pac Pki Pkj
                 //val += T3_temp[id];
                 index2 = T3_elements_I[id];
-                val -= T3_elements_A_temp[index2];
+                val += T3_elements_A_temp[index2];
+
+                id = ii + jj*N1 + kk*N2 + aa*N3 + bb*N4 + cc*N5; // direct
+                //val += T3_temp[id];
+                index2 = T3_elements_I[id];
+                val += T3_elements_A_temp[index2];
 
                 if (val != 0){
                     mat_ID(th, index) = id;
@@ -1209,10 +1239,10 @@ void MakeAmpMat::addElementsT3_T1a(){
             double val = mat_VAL(th,index);
             int id  = mat_ID(th,index);
             index2 = T3_elements_I[id];
-            val -= T3_elements_A_temp[index2];
+            //val -= T3_elements_A_temp[index2];
             T3_elements_A_new[index2] += val;
         }
-    }*/
+    }
 }
 
 void MakeAmpMat::addElementsT3_T1b(){
@@ -1226,7 +1256,7 @@ void MakeAmpMat::addElementsT3_T1b(){
     int N5 = N4*Np; //Nh*Nh*Np*Np*Np;
     int id; double val; int th; int index2; int ku;
 
-    for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
+    /*for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
         int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
@@ -1279,15 +1309,27 @@ void MakeAmpMat::addElementsT3_T1b(){
         tempAMat2 = tempAMat1 -Pik - Pij + Pijk;
 
         make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
-    }
+    }*/
 
 
-    /*int id;
+    Eigen::MatrixXi mat_ID;
+    Eigen::MatrixXd mat_VAL;
+    Eigen::VectorXi vec_END;
+
+    int size = m_intClass->blockArrays_ppp_hhh.cols()*m_intClass->blockArrays_ppp_ppp.cols();
+    int index = 0;
+
+    int n = 1;//omp_get_max_threads();
+    mat_ID.conservativeResize(n,size); mat_ID.setZero(n,size);
+    mat_VAL.conservativeResize(n,size); mat_VAL.setZero(n,size);
+    vec_END.conservativeResize(n); vec_END.setZero(n);
+
+
     int ii; int jj; int kk;
     int aa; int bb; int cc;
 
-    double val;
-
+    //should use dynamic here
+    #pragma omp parallel for num_threads(n) private(N1,N2,N3,N4,N5, id, val, th, index2) firstprivate(index) //shared(index)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
         int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
@@ -1306,37 +1348,110 @@ void MakeAmpMat::addElementsT3_T1b(){
 
                 val = 0;
 
-                id = m_intClass->Identity_hhhppp(ii,jj,kk,cc,bb,aa);
-                val -= T3_temp[id];
+                //id = m_intClass->Identity_hhhppp(ii,jj,kk,bb,aa,cc);
+                id = ii + jj*N1 + kk*N2 + cc*N3 + bb*N4 + aa*N5; // Pca
+                //val -= T3_temp[id];
+                index2 = T3_elements_I[id];
+                val -= T3_elements_A_temp[index2];
 
-                id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,cc,bb);
-                val -= T3_temp[id];
+                //id = m_intClass->Identity_hhhppp(ii,jj,kk,cc,bb,aa);
+                id = ii + jj*N1 + kk*N2 + aa*N3 + cc*N4 + bb*N5; // Pcb
+                //val -= T3_temp[id];
+                index2 = T3_elements_I[id];
+                val -= T3_elements_A_temp[index2];
 
-                id = m_intClass->Identity_hhhppp(jj,ii,kk,aa,bb,cc);
-                val -= T3_temp[id];
+                //id = m_intClass->Identity_hhhppp(kk,jj,ii,aa,bb,cc);
+                id = jj + ii*N1 + kk*N2 + aa*N3 + bb*N4 + cc*N5; // Pij
+                //val -= T3_temp[id];
+                index2 = T3_elements_I[id];
+                val -= T3_elements_A_temp[index2];
 
-                id = m_intClass->Identity_hhhppp(kk,jj,ii,aa,bb,cc);
-                val -= T3_temp[id];
+                //id = m_intClass->Identity_hhhppp(ii,kk,jj,aa,bb,cc);
+                id = kk + jj*N1 + ii*N2 + aa*N3 + bb*N4 + cc*N5; // Pik
+                //val -= T3_temp[id];
+                index2 = T3_elements_I[id];
+                val -= T3_elements_A_temp[index2];
 
-                id = m_intClass->Identity_hhhppp(jj,ii,kk,cc,bb,aa);
-                val += T3_temp[id];
+                id = ii + jj*N1 + kk*N2 + bb*N3 + cc*N4 + aa*N5; // Pca cb
+                //val += T3_temp[id];
+                index2 = T3_elements_I[id];
+                val += T3_elements_A_temp[index2];
 
-                id = m_intClass->Identity_hhhppp(kk,jj,ii,cc,bb,aa);
-                val += T3_temp[id];
+                id = jj + ii*N1 + kk*N2 + cc*N3 + bb*N4 + aa*N5; // Pca Pij
+                //val += T3_temp[id];
+                index2 = T3_elements_I[id];
+                val += T3_elements_A_temp[index2];
 
-                id = m_intClass->Identity_hhhppp(jj,ii,kk,aa,cc,bb);
-                val += T3_temp[id];
+                id = kk + jj*N1 + ii*N2 + cc*N3 + bb*N4 + aa*N5; // Pca Pik
+                //val += T3_temp[id];
+                index2 = T3_elements_I[id];
+                val += T3_elements_A_temp[index2];
 
-                id = m_intClass->Identity_hhhppp(kk,jj,ii,aa,cc,bb);
-                val += T3_temp[id];
+                id = jj + ii*N1 + kk*N2 + aa*N3 + cc*N4 + bb*N5; // Pcb Pij
+                //val += T3_temp[id];
+                index2 = T3_elements_I[id];
+                val += T3_elements_A_temp[index2];
 
-                id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc); //unperturbed
-                val += T3_temp[id];
+                id = kk + jj*N1 + ii*N2 + aa*N3 + cc*N4 + bb*N5; // Pcb Pik
+                //val += T3_temp[id];
+                index2 = T3_elements_I[id];
+                val += T3_elements_A_temp[index2];
 
-                T3_elements_new[id] += val;
+                id = kk + ii*N1 + jj*N2 + aa*N3 + bb*N4 + cc*N5; // Pij Pik
+                //val += T3_temp[id];
+                index2 = T3_elements_I[id];
+                val += T3_elements_A_temp[index2];
+
+                id = jj + ii*N1 + kk*N2 + bb*N3 + cc*N4 + aa*N5; // Pca Pcb Pij
+                //val += T3_temp[id];
+                index2 = T3_elements_I[id];
+                val -= T3_elements_A_temp[index2];
+
+                id = kk + jj*N1 + ii*N2 + bb*N3 + cc*N4 + aa*N5; // Pca Pcb Pik
+                //val += T3_temp[id];
+                index2 = T3_elements_I[id];
+                val -= T3_elements_A_temp[index2];
+
+                id = kk + ii*N1 + jj*N2 + cc*N3 + bb*N4 + aa*N5; // Pca Pij Pik
+                //val += T3_temp[id];
+                index2 = T3_elements_I[id];
+                val -= T3_elements_A_temp[index2];
+
+                id = kk + ii*N1 + jj*N2 + aa*N3 + cc*N4 + bb*N5; // Pcb Pij Pik
+                //val += T3_temp[id];
+                index2 = T3_elements_I[id];
+                val -= T3_elements_A_temp[index2];
+
+                id = kk + ii*N1 + jj*N2 + aa*N3 + cc*N4 + bb*N5; // Pca Pcb Pij Pik
+                //val += T3_temp[id];
+                index2 = T3_elements_I[id];
+                val += T3_elements_A_temp[index2];
+
+                id = ii + jj*N1 + kk*N2 + aa*N3 + bb*N4 + cc*N5; // direct
+                //val += T3_temp[id];
+                index2 = T3_elements_I[id];
+                val += T3_elements_A_temp[index2];
+
+                if (val != 0){
+                    mat_ID(th, index) = id;
+                    mat_VAL(th, index) = val;
+                    vec_END(th) = index+1;
+                    index ++;
+                }
             }
         }
-    }*/
+    }
+
+    for (int th=0; th<n; th++){
+        for (int index = 0; index<vec_END(th); index++){
+            //std::cout << th << " " << index << std::endl;
+            double val = mat_VAL(th,index);
+            int id  = mat_ID(th,index);
+            index2 = T3_elements_I[id];
+            //val -= T3_elements_A_temp[index2];
+            T3_elements_A_new[index2] += val;
+        }
+    }
 }
 
 Eigen::MatrixXd MakeAmpMat::make3x3Block_I(int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<double> &T_vec){

@@ -177,7 +177,7 @@ void Diagrams::D10c(){
                 Eigen::MatrixXd mat1 = m_ampClass->make3x3Block_I(ku,0,0,1,1,1,0, m_ampClass->T3_elements_A);    // t_ijb^d
                 Eigen::MatrixXd mat2 = m_intClass->make3x1Block(ku,0,0,1,0);                            // v_klc^d
                 Eigen::MatrixXd product = 0.5*mat1.transpose()*mat2;                              // (t_ijb^d)(v_d^klc)(t_klc^a)
-                //std::cout << mat1 << std::endl;
+                std::cout << mat1 << std::endl;
                 m_ampClass->make3x1Block_inverse(product, ku, 1,1,0,0, m_ampClass->T2_elements_new, true);
             }
         }
@@ -219,11 +219,13 @@ void Diagrams::makeT3(){
                 Eigen::MatrixXd mat1 = m_intClass->make3x1Block(ku,0,0,1,0);
                 Eigen::MatrixXd mat2 = m_ampClass->make3x1Block(ku,1,1,0,0, m_ampClass->T2_elements);
 
-                Eigen::MatrixXd product = mat1*mat2.transpose();
+                Eigen::MatrixXd product = -mat1*mat2.transpose();
                 m_ampClass->T3_makeMap(product, ku, 0,0,1,1,1,0);
             }
         }
     }
+
+    m_ampClass->T3_elements_A_new  = m_ampClass->T3_elements_A;
 
     //divide by Fock elements
     for (int hhh = 0; hhh<m_intClass->numOfKu3; hhh++){
@@ -232,16 +234,18 @@ void Diagrams::makeT3(){
         Eigen::MatrixXd Thhhppp = m_ampClass->make3x3Block_I(ku,0,0,0,1,1,1, m_ampClass->T3_elements_A);
         Eigen::MatrixXd temp = (Thhhppp).array()*m_ampClass->denomMat3[hhh].array();
 
-        m_ampClass->make3x3Block_inverse_I(temp, ku, 0,0,0,1,1,1, m_ampClass->T3_elements_A, false);
+        m_ampClass->make3x3Block_inverse_I(temp, ku, 0,0,0,1,1,1, m_ampClass->T3_elements_A_new, false);
     }
 
 
-    m_ampClass->T3_elements_A_new  = m_ampClass->T3_elements_A;
+    m_ampClass->T3_elements_A  = m_ampClass->T3_elements_A;
     m_ampClass->T3_elements_A_temp = m_ampClass->T3_elements_A;
+
 
     std::fill(m_ampClass->T3_elements_A_new.begin(),  m_ampClass->T3_elements_A_new.end(),  0); //reset T3 new
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
 
+    //std::cout << m_ampClass->T3_elements_A_new.size() << std::endl;
     m_ampClass->T3_makeDirectMat();
 }
 
@@ -256,6 +260,8 @@ void Diagrams::T1a(){
                 Eigen::MatrixXd mat2 = m_ampClass->make3x1Block(ku,0,0,1,1, m_ampClass->T2_elements);
 
                 Eigen::MatrixXd product = mat2*mat1.transpose();
+
+                //std::cout << product << std::endl;
                 m_ampClass->make3x3Block_inverse_I(product, ku, 0,0,1,1,1,0, m_ampClass->T3_elements_A_temp, true);
             }
         }
@@ -277,7 +283,7 @@ void Diagrams::T1b(){
                 Eigen::MatrixXd mat1 = m_intClass->make3x1Block(ku,0,0,1,0);
                 Eigen::MatrixXd mat2 = m_ampClass->make3x1Block(ku,1,1,0,0, m_ampClass->T2_elements);
 
-                Eigen::MatrixXd product = mat1*mat2.transpose();
+                Eigen::MatrixXd product = -mat1*mat2.transpose();
                 m_ampClass->make3x3Block_inverse_I(product, ku, 0,0,1,1,1,0, m_ampClass->T3_elements_A_temp, true);
             }
         }
