@@ -196,8 +196,12 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
                 Eigen::MatrixXd D_contributions = m_ampClass->make3x3Block_I(ku,0,0,0,1,1,1, m_ampClass->T3_elements_A_new);
                 Eigen::MatrixXd temp = (D_contributions).array()*m_ampClass->denomMat3[hhh].array();
 
+                //std::cout << m_ampClass->denomMat3[hhh] << std::endl;
+
                 m_ampClass->make3x3Block_inverse_I(temp, ku, 0,0,0,1,1,1, m_ampClass->T3_elements_A_new, false);
             }
+
+            //std::cout << m_ampClass->m_Counter <<" "<< m_ampClass->T3_elements_A_new.size() << std::endl;
 
             if (m_relaxation){
                 std::vector<double> T3_temp = m_ampClass->T3_elements_A;
@@ -224,6 +228,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             Eigen::MatrixXd D_contributions = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements_new);
             Eigen::MatrixXd temp = (Vhhpp + D_contributions).array()*m_ampClass->denomMat[hh].array();
 
+            //std::cout << m_ampClass->denomMat[hh] << std::endl;
             m_ampClass->make2x2Block_inverse(temp, ku, 0,0,1,1, m_ampClass->T2_elements_new, false);
 
             Eigen::MatrixXd Thhpp = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements_new);

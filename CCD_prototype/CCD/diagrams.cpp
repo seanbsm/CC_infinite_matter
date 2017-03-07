@@ -159,6 +159,7 @@ void Diagrams::D10b(){
                 Eigen::MatrixXd mat1 = m_ampClass->make3x3Block_I(ku,0,0,1,1,1,0, m_ampClass->T3_elements_A);    // t_ijb^d
                 Eigen::MatrixXd mat2 = m_intClass->make3x1Block(ku,1,1,0,1);                            // v_klc^d
                 Eigen::MatrixXd product = -0.5*mat1*mat2;                              // (t_ijb^d)(v_d^klc)(t_klc^a)
+                //std::cout << mat2 << std::endl;
 
                 m_ampClass->make3x1Block_inverse(product, ku, 0,0,1,1, m_ampClass->T2_elements_new, true);
             }
@@ -177,7 +178,6 @@ void Diagrams::D10c(){
                 Eigen::MatrixXd mat1 = m_ampClass->make3x3Block_I(ku,0,0,1,1,1,0, m_ampClass->T3_elements_A);    // t_ijb^d
                 Eigen::MatrixXd mat2 = m_intClass->make3x1Block(ku,0,0,1,0);                            // v_klc^d
                 Eigen::MatrixXd product = 0.5*mat1.transpose()*mat2;                              // (t_ijb^d)(v_d^klc)(t_klc^a)
-                std::cout << mat1 << std::endl;
                 m_ampClass->make3x1Block_inverse(product, ku, 1,1,0,0, m_ampClass->T2_elements_new, true);
             }
         }
@@ -195,6 +195,39 @@ void Diagrams::D10c(){
 // ##################################################
 
 void Diagrams::makeT3(){
+
+    int index = 0; int ku; int id;
+    int i; int j; int k;
+    int a; int b; int c;
+    for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
+        ku = m_intClass->Vhhhppp_i[channel];
+
+        int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
+        int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
+        int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
+        int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
+
+        for (int hhh=range_lower1; hhh<range_upper1; hhh++){
+            for (int ppp=range_lower2; ppp<range_upper2; ppp++){
+
+                i = (m_intClass->blockArrays_ppp_hhh)(1,hhh);
+                j = (m_intClass->blockArrays_ppp_hhh)(2,hhh);
+                k = (m_intClass->blockArrays_ppp_hhh)(3,hhh);
+                a = (m_intClass->blockArrays_ppp_ppp)(1,ppp);
+                b = (m_intClass->blockArrays_ppp_ppp)(2,ppp);
+                c = (m_intClass->blockArrays_ppp_ppp)(3,ppp);
+                id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
+
+                m_ampClass->T3_elements_I[id] = index;
+                m_ampClass->T3_elements_A.push_back(0);
+                index ++;
+            }
+        }
+    }
+
+    m_ampClass->T3_elements_A_new = m_ampClass->T3_elements_A;
+    m_ampClass->T3_elements_A_temp = m_ampClass->T3_elements_A;
+
     //T1a contribution
     for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
@@ -225,7 +258,7 @@ void Diagrams::makeT3(){
         }
     }
 
-    m_ampClass->T3_elements_A_new  = m_ampClass->T3_elements_A;
+    m_ampClass->T3_elements_A_new = m_ampClass->T3_elements_A;
 
     //divide by Fock elements
     for (int hhh = 0; hhh<m_intClass->numOfKu3; hhh++){
@@ -238,12 +271,10 @@ void Diagrams::makeT3(){
     }
 
 
-    m_ampClass->T3_elements_A  = m_ampClass->T3_elements_A;
-    m_ampClass->T3_elements_A_temp = m_ampClass->T3_elements_A;
 
 
-    std::fill(m_ampClass->T3_elements_A_new.begin(),  m_ampClass->T3_elements_A_new.end(),  0); //reset T3 new
-    std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
+    //std::fill(m_ampClass->T3_elements_A_new.begin(),  m_ampClass->T3_elements_A_new.end(),  0); //reset T3 new
+    //std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
 
     //std::cout << m_ampClass->T3_elements_A_new.size() << std::endl;
     m_ampClass->T3_makeDirectMat();
@@ -253,6 +284,8 @@ void Diagrams::T1a(){
 
     for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
+            //for (int i3=0; i3<m_intClass->sortVec_ppm_hhp.size(); i3++){
+            //if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_pph[i2] && m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i3]){
             if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_pph[i2] ){
                 int ku = m_intClass->sortVec_p_p[i1];
 
@@ -263,6 +296,7 @@ void Diagrams::T1a(){
 
                 //std::cout << product << std::endl;
                 m_ampClass->make3x3Block_inverse_I(product, ku, 0,0,1,1,1,0, m_ampClass->T3_elements_A_temp, true);
+           //}
             }
         }
     }
@@ -271,6 +305,7 @@ void Diagrams::T1a(){
 
     m_ampClass->addElementsT3_T1a();
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
+
 }
 
 void Diagrams::T1b(){
@@ -332,6 +367,8 @@ void Diagrams::I1_term(){
         I1 += mat3;
 
         Eigen::MatrixXd product = 0.5*I1*mat1;
+
+        //std::cout << product << std::endl;
 
         m_ampClass->make2x2Block_inverse(product,ku,0,0,1,1, m_ampClass->T2_elements_new, true);
     }

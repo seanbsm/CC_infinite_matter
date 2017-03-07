@@ -20,6 +20,8 @@ public:
     std::vector<Eigen::MatrixXd> denomMat;
     std::vector<Eigen::MatrixXd> denomMat3;
 
+    int m_Counter = 0; //a test counter, used for debugging sessions
+
     MakeIntMat*  m_intClass = nullptr;
     System*      m_system   = nullptr;
     std::vector<Eigen::MatrixXd>  Amplitudes;

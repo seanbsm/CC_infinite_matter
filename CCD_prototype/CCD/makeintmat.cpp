@@ -1456,7 +1456,6 @@ void MakeIntMat::makeMatMap_hhhp(Eigen::MatrixXi& array1, Eigen::MatrixXi& array
             if (val != 0){
                 Vhhhp_elements[Identity_hhhp((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j))] = val;
             }
-
         }
     }
 }

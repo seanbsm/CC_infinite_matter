@@ -111,30 +111,20 @@ void MakeAmpMat::makeDenomMat3(){
         int lowBound_ppp  = m_intClass->boundsHolder_hhhppp_ppp(0,i);
         int highBound_ppp = m_intClass->boundsHolder_hhhppp_ppp(1,i);
 
-        /*std::cout << m_intClass->blockArrays_ppp_hhh.cols() << std::endl;
-        std::cout << m_intClass->blockArrays_ppp_hhh.rows() << std::endl;
-        std::cout << m_intClass->blockArrays_ppp_ppp.cols() << std::endl;
-        std::cout << m_intClass->blockArrays_ppp_ppp.rows() << std::endl;*/
-
         int dim_hhh = highBound_hhh - lowBound_hhh;
         int dim_ppp = highBound_ppp - lowBound_ppp;
-        //std::cout << i << " " <<dim_hhh << " " << dim_ppp << std::endl;
         Eigen::MatrixXd newMat;
         newMat.conservativeResize(dim_hhh, dim_ppp);
-
-        //std::cout <<  m_intClass->boundsHolder_hhhppp_hhh << std::endl;
 
        // #pragma omp parallel for
         for (int hhh=lowBound_hhh; hhh<highBound_hhh; hhh++){
             for (int ppp=lowBound_ppp; ppp<highBound_ppp; ppp++){
-                //std::cout << i << " " <<hhh-lowBound_hhh<< " " << ppp-lowBound_ppp << std::endl;
                 int ii = m_intClass->blockArrays_ppp_hhh(1,hhh);
                 int jj = m_intClass->blockArrays_ppp_hhh(2,hhh);
                 int kk = m_intClass->blockArrays_ppp_hhh(3,hhh);
                 int aa = m_intClass->blockArrays_ppp_ppp(1,ppp);
                 int bb = m_intClass->blockArrays_ppp_ppp(2,ppp);
                 int cc = m_intClass->blockArrays_ppp_ppp(3,ppp);
-                //newMat(hhh-lowBound_hhh, ppp-lowBound_ppp) = 1/( (double)(m_system->f(ii) + m_system->f(jj) + m_system->f(kk) - m_system->f(aa) - m_system->f(bb) - m_system->f(cc)) );
                 newMat(hhh-lowBound_hhh, ppp-lowBound_ppp) = 1/( (double)(FockMap_h[ii] + FockMap_h[jj] + FockMap_h[kk] - FockMap_p[aa] - FockMap_p[bb] - FockMap_p[cc] ) );
             }
         }
@@ -758,7 +748,7 @@ void MakeAmpMat::T3_makeMap(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i
     int dim1 = range_upper1 - range_lower1;
     int dim2 = range_upper2 - range_lower2;
 
-    int id; int index = 0;
+    int id; int index;
     int ii; int jj; int kk;
     int aa; int bb; int cc;
 
@@ -777,9 +767,14 @@ void MakeAmpMat::T3_makeMap(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i
                     cc = (blockArrays1_pointer)(3,i);
                     id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
 
-                    T3_elements_I[id] = index;
-                    T3_elements_A.push_back(val);
-                    index ++;
+                    //remember to remove first loops in make T3 in diagrams if you want to use this
+                    //T3_elements_I[id] = index;
+                    //T3_elements_A.push_back(val);
+
+                    if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                        index = T3_elements_I[id];
+                        T3_elements_A[index] += val;
+                    }
                 }
             }
         }
@@ -797,9 +792,10 @@ void MakeAmpMat::T3_makeMap(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i
                     cc = (blockArrays2_pointer)(3,j);
                     id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
 
-                    T3_elements_I[id] = index;
-                    T3_elements_A.push_back(val);
-                    index ++;
+                    if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                        index = T3_elements_I[id];
+                        T3_elements_A[index] += val;
+                    }
                 }
             }
         }
@@ -922,7 +918,7 @@ void MakeAmpMat::make3x3Block_inverse_I(Eigen::MatrixXd inMat, int ku, int i1, i
             for (int i = range_lower1; i<range_upper1; i++){
                 for (int j = range_lower2; j<range_upper2; j++){
                     val = inMat(i-range_lower1,j-range_lower2);
-                    if (val != 0){
+                    //if (val != 0){
                         ii = (blockArrays1_pointer)(1,i);
                         jj = (blockArrays1_pointer)(2,i);
                         kk = (blockArrays2_pointer)(3,j);
@@ -932,8 +928,12 @@ void MakeAmpMat::make3x3Block_inverse_I(Eigen::MatrixXd inMat, int ku, int i1, i
                         id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
 
                         index = T3_elements_I[id];
+
+                        //std::cout << T3_temp[id] << std::endl;
+
                         T_vec[index] += val;
-                    }
+                        //std::cout << T_vec[index] <<" " << val << std::endl;
+                    //}
                     //std::cout << T3_temp[id] << std::endl;
                 }
             }
@@ -942,7 +942,7 @@ void MakeAmpMat::make3x3Block_inverse_I(Eigen::MatrixXd inMat, int ku, int i1, i
             for (int i = range_lower1; i<range_upper1; i++){
                 for (int j = range_lower2; j<range_upper2; j++){
                     val = inMat(i-range_lower1,j-range_lower2);
-                    if (val != 0){
+                    //if (val != 0){
                         ii = (blockArrays1_pointer)(1,i);
                         jj = (blockArrays1_pointer)(2,i);
                         kk = (blockArrays1_pointer)(3,i);
@@ -953,7 +953,7 @@ void MakeAmpMat::make3x3Block_inverse_I(Eigen::MatrixXd inMat, int ku, int i1, i
 
                         index = T3_elements_I[id];
                         T_vec[index] += val;
-                    }
+                    //}
                 }
             }
         }
@@ -978,9 +978,11 @@ void MakeAmpMat::make3x3Block_inverse_I(Eigen::MatrixXd inMat, int ku, int i1, i
 
                     index = T3_elements_I[id];
                     T_vec[index] = val;
+                    //m_Counter ++;
                 }
             }
         }
+        //std::cout << counter << std::endl;
     }
 }
 
@@ -1036,7 +1038,7 @@ void MakeAmpMat::addElementsT3_T1a(){
     int Np = m_intClass->m_Ns-m_intClass->m_Nh;
     int Nh = m_intClass->m_Nh;
     int N1 = Nh;
-    int N2 = Nh*Nh; //Nh*Nh;
+    int N2 = N1*Nh; //Nh*Nh;
     int N3 = N2*Np; //Nh*Nh*Np;
     int N4 = N3*Np; //Nh*Nh*Np*Np;
     int N5 = N4*Np; //Nh*Nh*Np*Np*Np;
@@ -1112,13 +1114,13 @@ void MakeAmpMat::addElementsT3_T1a(){
     vec_END.conservativeResize(n); vec_END.setZero(n);
 
     //should use dynamic here
-    #pragma omp parallel for num_threads(n) private(N1,N2,N3,N4,N5, id, val, th, index2) firstprivate(index) //shared(index)
+    //#pragma omp parallel for num_threads(n) private(N1,N2,N3,N4,N5, id, val, th, index2) firstprivate(index) //shared(index)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
         int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
         int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
         int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
-        th = omp_get_thread_num();
+        th =0;// omp_get_thread_num();
 
         //int size = (range_upper1-range_lower1)*(range_upper2-range_lower2);
 
@@ -1142,88 +1144,122 @@ void MakeAmpMat::addElementsT3_T1a(){
                 //id = m_intClass->Identity_hhhppp(ii,jj,kk,bb,aa,cc);
                 id = ii + jj*N1 + kk*N2 + bb*N3 + aa*N4 + cc*N5; // Pab
                 //val -= T3_temp[id];
-                index2 = T3_elements_I[id];
-                val -= T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val -= T3_elements_A_temp[index2];
+                }
 
                 //id = m_intClass->Identity_hhhppp(ii,jj,kk,cc,bb,aa);
                 id = ii + jj*N1 + kk*N2 + cc*N3 + bb*N4 + aa*N5; // Pac
                 //val -= T3_temp[id];
-                index2 = T3_elements_I[id];
-                val -= T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val -= T3_elements_A_temp[index2];
+                }
 
                 //id = m_intClass->Identity_hhhppp(kk,jj,ii,aa,bb,cc);
                 id = kk + jj*N1 + ii*N2 + aa*N3 + bb*N4 + cc*N5; // Pki
                 //val -= T3_temp[id];
-                index2 = T3_elements_I[id];
-                val -= T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val -= T3_elements_A_temp[index2];
+                }
 
                 //id = m_intClass->Identity_hhhppp(ii,kk,jj,aa,bb,cc);
                 id = ii + kk*N1 + jj*N2 + aa*N3 + bb*N4 + cc*N5; // Pkj
                 //val -= T3_temp[id];
-                index2 = T3_elements_I[id];
-                val -= T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val -= T3_elements_A_temp[index2];
+                }
 
-                id = ii + jj*N1 + kk*N2 + bb*N3 + cc*N4 + aa*N5; // Pab Pac
+                id = ii + jj*N1 + kk*N2 + cc*N3 + aa*N4 + bb*N5; // Pab Pac
                 //val += T3_temp[id];
-                index2 = T3_elements_I[id];
-                val += T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val += T3_elements_A_temp[index2];
+                }
 
                 id = kk + jj*N1 + ii*N2 + bb*N3 + aa*N4 + cc*N5; // Pab Pki
                 //val += T3_temp[id];
-                index2 = T3_elements_I[id];
-                val += T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val += T3_elements_A_temp[index2];
+                }
 
                 id = ii + kk*N1 + jj*N2 + bb*N3 + aa*N4 + cc*N5; // Pab Pkj
                 //val += T3_temp[id];
-                index2 = T3_elements_I[id];
-                val += T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val += T3_elements_A_temp[index2];
+                }
 
                 id = kk + jj*N1 + ii*N2 + cc*N3 + bb*N4 + aa*N5; // Pac Pki
                 //val += T3_temp[id];
-                index2 = T3_elements_I[id];
-                val += T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val += T3_elements_A_temp[index2];
+                }
 
                 id = ii + kk*N1 + jj*N2 + cc*N3 + bb*N4 + aa*N5; // Pac Pkj
                 //val += T3_temp[id];
-                index2 = T3_elements_I[id];
-                val += T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val += T3_elements_A_temp[index2];
+                }
 
-                id = jj + kk*N1 + ii*N2 + aa*N3 + bb*N4 + cc*N5; // Pki Pkj
+                id = kk + ii*N1 + jj*N2 + aa*N3 + bb*N4 + cc*N5; // Pki Pkj
                 //val += T3_temp[id];
-                index2 = T3_elements_I[id];
-                val += T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val += T3_elements_A_temp[index2];
+                }
 
-                id = kk + jj*N1 + ii*N2 + bb*N3 + cc*N4 + aa*N5; // Pab Pac Pki
+                id = kk + jj*N1 + ii*N2 + cc*N3 + aa*N4 + bb*N5; // Pab Pac Pki
                 //val += T3_temp[id];
-                index2 = T3_elements_I[id];
-                val -= T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val -= T3_elements_A_temp[index2];
+                }
 
-                id = ii + kk*N1 + jj*N2 + bb*N3 + cc*N4 + aa*N5; // Pab Pac Pkj
+                id = ii + kk*N1 + jj*N2 + cc*N3 + aa*N4 + bb*N5; // Pab Pac Pkj
                 //val += T3_temp[id];
-                index2 = T3_elements_I[id];
-                val -= T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val -= T3_elements_A_temp[index2];
+                }
 
                 id = kk + ii*N1 + jj*N2 + bb*N3 + aa*N4 + cc*N5; // Pab Pki Pkj
                 //val += T3_temp[id];
-                index2 = T3_elements_I[id];
-                val -= T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val -= T3_elements_A_temp[index2];
+                }
 
                 id = kk + ii*N1 + jj*N2 + cc*N3 + bb*N4 + aa*N5; // Pac Pki Pkj
                 //val += T3_temp[id];
-                index2 = T3_elements_I[id];
-                val -= T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val -= T3_elements_A_temp[index2];
+                }
 
                 id = kk + ii*N1 + jj*N2 + cc*N3 + aa*N4 + bb*N5; // Pab Pac Pki Pkj
                 //val += T3_temp[id];
-                index2 = T3_elements_I[id];
-                val += T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val += T3_elements_A_temp[index2];
+                }
 
                 id = ii + jj*N1 + kk*N2 + aa*N3 + bb*N4 + cc*N5; // direct
                 //val += T3_temp[id];
-                index2 = T3_elements_I[id];
-                val += T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val += T3_elements_A_temp[index2];
+                }
+                //std::cout << T3_elements_I.size() << std::endl;
 
                 if (val != 0){
+                    //std::cout << val << std::endl;
                     mat_ID(th, index) = id;
                     mat_VAL(th, index) = val;
                     vec_END(th) = index+1;
@@ -1236,9 +1272,10 @@ void MakeAmpMat::addElementsT3_T1a(){
     for (int th=0; th<n; th++){
         for (int index = 0; index<vec_END(th); index++){
             //std::cout << th << " " << index << std::endl;
-            double val = mat_VAL(th,index);
-            int id  = mat_ID(th,index);
+            val = mat_VAL(th,index);
+            id  = mat_ID(th,index);
             index2 = T3_elements_I[id];
+            //std::cout << index2 << std::endl;
             //val -= T3_elements_A_temp[index2];
             T3_elements_A_new[index2] += val;
         }
@@ -1329,13 +1366,18 @@ void MakeAmpMat::addElementsT3_T1b(){
     int aa; int bb; int cc;
 
     //should use dynamic here
-    #pragma omp parallel for num_threads(n) private(N1,N2,N3,N4,N5, id, val, th, index2) firstprivate(index) //shared(index)
+    //#pragma omp parallel for num_threads(n) private(N1,N2,N3,N4,N5, id, val, th, index2) firstprivate(index) //shared(index)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
         int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
         int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
         int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
+        th =0;// omp_get_thread_num();
 
+        //int size = (range_upper1-range_lower1)*(range_upper2-range_lower2);
+
+        //int index = 0; //-1
+        //#pragma omp parallel for num_threads(n) private(N1,N2,N3,N4,N5, id) firstprivate(index) //shared(index)
         for (int hhh = range_lower1; hhh<range_upper1; hhh++){
             for (int ppp = range_lower2; ppp<range_upper2; ppp++){
 
@@ -1351,86 +1393,118 @@ void MakeAmpMat::addElementsT3_T1b(){
                 //id = m_intClass->Identity_hhhppp(ii,jj,kk,bb,aa,cc);
                 id = ii + jj*N1 + kk*N2 + cc*N3 + bb*N4 + aa*N5; // Pca
                 //val -= T3_temp[id];
-                index2 = T3_elements_I[id];
-                val -= T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val -= T3_elements_A_temp[index2];
+                }
 
                 //id = m_intClass->Identity_hhhppp(ii,jj,kk,cc,bb,aa);
                 id = ii + jj*N1 + kk*N2 + aa*N3 + cc*N4 + bb*N5; // Pcb
                 //val -= T3_temp[id];
-                index2 = T3_elements_I[id];
-                val -= T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val -= T3_elements_A_temp[index2];
+                }
 
                 //id = m_intClass->Identity_hhhppp(kk,jj,ii,aa,bb,cc);
                 id = jj + ii*N1 + kk*N2 + aa*N3 + bb*N4 + cc*N5; // Pij
                 //val -= T3_temp[id];
-                index2 = T3_elements_I[id];
-                val -= T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val -= T3_elements_A_temp[index2];
+                }
 
                 //id = m_intClass->Identity_hhhppp(ii,kk,jj,aa,bb,cc);
                 id = kk + jj*N1 + ii*N2 + aa*N3 + bb*N4 + cc*N5; // Pik
                 //val -= T3_temp[id];
-                index2 = T3_elements_I[id];
-                val -= T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val -= T3_elements_A_temp[index2];
+                }
 
-                id = ii + jj*N1 + kk*N2 + bb*N3 + cc*N4 + aa*N5; // Pca cb
+                id = ii + jj*N1 + kk*N2 + cc*N3 + aa*N4 + bb*N5; // Pca Pcb
                 //val += T3_temp[id];
-                index2 = T3_elements_I[id];
-                val += T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val += T3_elements_A_temp[index2];
+                }
 
                 id = jj + ii*N1 + kk*N2 + cc*N3 + bb*N4 + aa*N5; // Pca Pij
                 //val += T3_temp[id];
-                index2 = T3_elements_I[id];
-                val += T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val += T3_elements_A_temp[index2];
+                }
 
                 id = kk + jj*N1 + ii*N2 + cc*N3 + bb*N4 + aa*N5; // Pca Pik
                 //val += T3_temp[id];
-                index2 = T3_elements_I[id];
-                val += T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val += T3_elements_A_temp[index2];
+                }
 
                 id = jj + ii*N1 + kk*N2 + aa*N3 + cc*N4 + bb*N5; // Pcb Pij
                 //val += T3_temp[id];
-                index2 = T3_elements_I[id];
-                val += T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val += T3_elements_A_temp[index2];
+                }
 
                 id = kk + jj*N1 + ii*N2 + aa*N3 + cc*N4 + bb*N5; // Pcb Pik
                 //val += T3_temp[id];
-                index2 = T3_elements_I[id];
-                val += T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val += T3_elements_A_temp[index2];
+                }
 
                 id = kk + ii*N1 + jj*N2 + aa*N3 + bb*N4 + cc*N5; // Pij Pik
                 //val += T3_temp[id];
-                index2 = T3_elements_I[id];
-                val += T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val += T3_elements_A_temp[index2];
+                }
 
-                id = jj + ii*N1 + kk*N2 + bb*N3 + cc*N4 + aa*N5; // Pca Pcb Pij
+                id = jj + ii*N1 + kk*N2 + cc*N3 + aa*N4 + bb*N5; // Pca Pcb Pij
                 //val += T3_temp[id];
-                index2 = T3_elements_I[id];
-                val -= T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val -= T3_elements_A_temp[index2];
+                }
 
-                id = kk + jj*N1 + ii*N2 + bb*N3 + cc*N4 + aa*N5; // Pca Pcb Pik
+                id = kk + jj*N1 + ii*N2 + cc*N3 + aa*N4 + bb*N5; // Pca Pcb Pik
                 //val += T3_temp[id];
-                index2 = T3_elements_I[id];
-                val -= T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val -= T3_elements_A_temp[index2];
+                }
 
                 id = kk + ii*N1 + jj*N2 + cc*N3 + bb*N4 + aa*N5; // Pca Pij Pik
                 //val += T3_temp[id];
-                index2 = T3_elements_I[id];
-                val -= T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val -= T3_elements_A_temp[index2];
+                }
 
                 id = kk + ii*N1 + jj*N2 + aa*N3 + cc*N4 + bb*N5; // Pcb Pij Pik
                 //val += T3_temp[id];
-                index2 = T3_elements_I[id];
-                val -= T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val -= T3_elements_A_temp[index2];
+                }
 
-                id = kk + ii*N1 + jj*N2 + aa*N3 + cc*N4 + bb*N5; // Pca Pcb Pij Pik
+                id = kk + ii*N1 + jj*N2 + cc*N3 + aa*N4 + bb*N5; // Pca Pcb Pij Pik
                 //val += T3_temp[id];
-                index2 = T3_elements_I[id];
-                val += T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val += T3_elements_A_temp[index2];
+                }
 
                 id = ii + jj*N1 + kk*N2 + aa*N3 + bb*N4 + cc*N5; // direct
                 //val += T3_temp[id];
-                index2 = T3_elements_I[id];
-                val += T3_elements_A_temp[index2];
+                if (T3_elements_I.find(id) != T3_elements_I.end() ){
+                    index2 = T3_elements_I[id];
+                    val += T3_elements_A_temp[index2];
+                }
 
                 if (val != 0){
                     mat_ID(th, index) = id;
@@ -1445,9 +1519,10 @@ void MakeAmpMat::addElementsT3_T1b(){
     for (int th=0; th<n; th++){
         for (int index = 0; index<vec_END(th); index++){
             //std::cout << th << " " << index << std::endl;
-            double val = mat_VAL(th,index);
-            int id  = mat_ID(th,index);
+            val = mat_VAL(th,index);
+            id  = mat_ID(th,index);
             index2 = T3_elements_I[id];
+            //std::cout << index2 << std::endl;
             //val -= T3_elements_A_temp[index2];
             T3_elements_A_new[index2] += val;
         }
