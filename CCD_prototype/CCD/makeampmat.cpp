@@ -34,6 +34,23 @@ void MakeAmpMat::setElements_T3(){
 
 }
 
+Eigen::MatrixXd MakeAmpMat::T3_buildDirectMat(int channel, std::vector<double>& T_vec){
+    //int ku = m_intClass->Vhhhppp_i[channel];
+
+    //Eigen::MatrixXi tempIMat = (m_ampClass->T3_directMat[channel]);
+    Eigen::MatrixXd outMat;
+    outMat.conservativeResize( (T3_directMat[channel]).rows(), (T3_directMat[channel]).cols() );
+
+    //should be easily parallizable?
+    for (int col=0; col<(T3_directMat[channel]).cols(); col++){
+        for (int row=0; row<(T3_directMat[channel]).rows(); row++){
+            outMat(row, col) = T3_elements_A_new[ (T3_directMat[channel])(row, col) ];
+        }
+    }
+
+    return outMat;
+}
+
 // "index" is the index for kUnique of Vhhpp[index],
 // thus we use makeBlockMat to reconstruct block "index" for some kUnique from T2_elements
 Eigen::MatrixXd MakeAmpMat::makeBlockMat(int index){

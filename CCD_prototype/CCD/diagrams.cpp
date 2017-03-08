@@ -219,64 +219,15 @@ void Diagrams::makeT3(){
                 id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
 
                 m_ampClass->T3_elements_I[id] = index;
-                m_ampClass->T3_elements_A.push_back(0);
                 index ++;
             }
         }
     }
 
-    m_ampClass->T3_elements_A_new = m_ampClass->T3_elements_A;
-    m_ampClass->T3_elements_A_temp = m_ampClass->T3_elements_A;
+    m_ampClass->T3_elements_A.resize(m_ampClass->T3_elements_I.size(), 0);
+    m_ampClass->T3_elements_A_new.resize(m_ampClass->T3_elements_I.size(), 0);
+    m_ampClass->T3_elements_A_temp.resize(m_ampClass->T3_elements_I.size(), 0);
 
-    //T1a contribution
-    for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
-        for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
-            if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_pph[i2] ){
-                int ku = m_intClass->sortVec_p_p[i1];
-
-                Eigen::MatrixXd mat1 = m_intClass->make3x1Block(ku,1,1,0,1);
-                Eigen::MatrixXd mat2 = m_ampClass->make3x1Block(ku,0,0,1,1, m_ampClass->T2_elements);
-
-                Eigen::MatrixXd product = mat2*mat1.transpose();
-                //std::cout << "sup" << std::endl;
-                m_ampClass->T3_makeMap(product, ku, 0,0,1,1,1,0);
-            }
-        }
-    }
-    // T1b contribution
-    for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
-        for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
-            if ( m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_hhp[i2] ){
-                int ku = m_intClass->sortVec_p_h[i1];
-
-                Eigen::MatrixXd mat1 = m_intClass->make3x1Block(ku,0,0,1,0);
-                Eigen::MatrixXd mat2 = m_ampClass->make3x1Block(ku,1,1,0,0, m_ampClass->T2_elements);
-
-                Eigen::MatrixXd product = -mat1*mat2.transpose();
-                m_ampClass->T3_makeMap(product, ku, 0,0,1,1,1,0);
-            }
-        }
-    }
-
-    m_ampClass->T3_elements_A_new = m_ampClass->T3_elements_A;
-
-    //divide by Fock elements
-    for (int hhh = 0; hhh<m_intClass->numOfKu3; hhh++){
-        int ku = m_intClass->Vhhhppp_i[hhh];
-
-        Eigen::MatrixXd Thhhppp = m_ampClass->make3x3Block_I(ku,0,0,0,1,1,1, m_ampClass->T3_elements_A);
-        Eigen::MatrixXd temp = (Thhhppp).array()*m_ampClass->denomMat3[hhh].array();
-
-        m_ampClass->make3x3Block_inverse_I(temp, ku, 0,0,0,1,1,1, m_ampClass->T3_elements_A_new, false);
-    }
-
-
-
-
-    //std::fill(m_ampClass->T3_elements_A_new.begin(),  m_ampClass->T3_elements_A_new.end(),  0); //reset T3 new
-    //std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
-
-    //std::cout << m_ampClass->T3_elements_A_new.size() << std::endl;
     m_ampClass->T3_makeDirectMat();
 }
 

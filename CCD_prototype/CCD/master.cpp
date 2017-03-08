@@ -157,7 +157,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
     }
 
 
-    while (conFac > eps && counter < 5e2){
+    while (conFac > eps && counter < 1e1){
         ECCD = 0;
         //could make an m_ampClass::updateT or something
         m_ampClass->T2_elements_new.clear();
@@ -188,20 +188,15 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             m_diagrams->T1a();
             m_diagrams->T1b();
 
-
             //update T3 amplitudes
-            for (int hhh = 0; hhh<m_intClass->numOfKu3; hhh++){
-                int ku = m_intClass->Vhhhppp_i[hhh];
+            for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
+                int ku = m_intClass->Vhhhppp_i[channel];
 
-                Eigen::MatrixXd D_contributions = m_ampClass->make3x3Block_I(ku,0,0,0,1,1,1, m_ampClass->T3_elements_A_new);
-                Eigen::MatrixXd temp = (D_contributions).array()*m_ampClass->denomMat3[hhh].array();
-
-                //std::cout << m_ampClass->denomMat3[hhh] << std::endl;
+                Eigen::MatrixXd D_contributions = m_ampClass->T3_buildDirectMat(channel, m_ampClass->T3_elements_A_new);
+                Eigen::MatrixXd temp = (D_contributions).array()*m_ampClass->denomMat3[channel].array();
 
                 m_ampClass->make3x3Block_inverse_I(temp, ku, 0,0,0,1,1,1, m_ampClass->T3_elements_A_new, false);
             }
-
-            //std::cout << m_ampClass->m_Counter <<" "<< m_ampClass->T3_elements_A_new.size() << std::endl;
 
             if (m_relaxation){
                 std::vector<double> T3_temp = m_ampClass->T3_elements_A;

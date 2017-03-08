@@ -42,6 +42,7 @@ public:
     std::vector<double>                       T3_elements_A_temp;   //holds temporary diagram contributions
     void                                      T3_makeMap(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6);
     void                                      T3_makeDirectMat();
+    Eigen::MatrixXd                           T3_buildDirectMat(int channel, std::vector<double>& T_vec);
     std::vector<Eigen::MatrixXi>              T3_directMat;     //holds indices for T3_elements_A to make t_ijk^abc
 
     std::vector<double>             T2_elements_alt;
