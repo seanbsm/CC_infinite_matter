@@ -161,7 +161,7 @@ void Diagrams::D10b(){
                 Eigen::MatrixXd product = -0.5*mat1*mat2;                              // (t_ijb^d)(v_d^klc)(t_klc^a)
                 //std::cout << mat2 << std::endl;
 
-                m_ampClass->make3x1Block_inverse(product, ku, 0,0,1,1, m_ampClass->T2_elements_new, true);
+                m_ampClass->make3x1Block_inverse_D10b(product, ku, 0,0,1,1, m_ampClass->T2_elements_new, true);
             }
         }
     }
@@ -175,9 +175,9 @@ void Diagrams::D10c(){
             if ( m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_hhp[i2] ){
                 int ku = m_intClass->sortVec_p_h[i1];
                 //Eigen::MatrixXd mat1 = m_ampClass->make3x3Block(ku,0,0,1,1,1,0, m_ampClass->T3_elements);    // t_ijb^d
-                Eigen::MatrixXd mat1 = m_ampClass->make3x3Block_I(ku,0,0,1,1,1,0, m_ampClass->T3_elements_A);    // t_ijb^d
+                Eigen::MatrixXd mat1 = m_ampClass->make3x3Block_I_D10c(ku,0,0,1,1,1,0, m_ampClass->T3_elements_A);    // t_ijb^d
                 Eigen::MatrixXd mat2 = m_intClass->make3x1Block(ku,0,0,1,0);                            // v_klc^d
-                Eigen::MatrixXd product = 0.5*mat1.transpose()*mat2;                              // (t_ijb^d)(v_d^klc)(t_klc^a)
+                Eigen::MatrixXd product = -0.5*mat1.transpose()*mat2;                              // (t_ijb^d)(v_d^klc)(t_klc^a)
                 m_ampClass->make3x1Block_inverse(product, ku, 1,1,0,0, m_ampClass->T2_elements_new, true);
             }
         }
@@ -245,8 +245,8 @@ void Diagrams::T1a(){
 
                 Eigen::MatrixXd product = mat2*mat1.transpose();
 
-                //std::cout << product << std::endl;
-                m_ampClass->make3x3Block_inverse_I(product, ku, 0,0,1,1,1,0, m_ampClass->T3_elements_A_temp, true);
+                //std::cout << mat1 << std::endl;
+                m_ampClass->make3x3Block_inverse_I_T1a(product, ku, 0,0,1,1,1,0, m_ampClass->T3_elements_A_temp, true);
            //}
             }
         }
@@ -270,7 +270,7 @@ void Diagrams::T1b(){
                 Eigen::MatrixXd mat2 = m_ampClass->make3x1Block(ku,1,1,0,0, m_ampClass->T2_elements);
 
                 Eigen::MatrixXd product = -mat1*mat2.transpose();
-                m_ampClass->make3x3Block_inverse_I(product, ku, 0,0,1,1,1,0, m_ampClass->T3_elements_A_temp, true);
+                m_ampClass->make3x3Block_inverse_I_T1b(product, ku, 0,0,1,1,1,0, m_ampClass->T3_elements_A_temp, true);
             }
         }
     }

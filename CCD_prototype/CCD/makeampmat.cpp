@@ -22,7 +22,7 @@ void MakeAmpMat::setElements_T2(){
     for (int hh = 0; hh<m_intClass->numOfKu; hh++){
         int ku = m_intClass->Vhhpp_i[hh];
 
-        Eigen::MatrixXd Vhhpp           = m_intClass->make2x2Block(ku,0,0,1,1);
+        Eigen::MatrixXd Vhhpp = m_intClass->make2x2Block(ku,0,0,1,1);
         Eigen::MatrixXd temp = (Vhhpp).array()*denomMat[hh].array();
 
         make2x2Block_inverse(temp, ku, 0,0,1,1, T2_elements_new, false);
@@ -237,6 +237,136 @@ void MakeAmpMat::make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
                     jj = (blockArrays1_pointer)(2,i);
                     aa = (blockArrays1_pointer)(3,i);
                     bb = (blockArrays2_pointer)(1,j);
+                    //id = m_intClass->Identity_hhpp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j));
+                    //T_list[id] += inMat(i-range_lower1,j-range_lower2);
+                    id = m_intClass->Identity_hhpp(ii,jj,aa,bb);
+                    T2_temp[id] =  inMat(i-range_lower1,j-range_lower2);
+                }
+            }
+        }
+        else if (cond_pph && cond_h){
+            for (int i = range_lower1; i<range_upper1; i++){
+                for (int j = range_lower2; j<range_upper2; j++){
+                    ii = (blockArrays1_pointer)(3,i);
+                    jj = (blockArrays2_pointer)(1,j);
+                    aa = (blockArrays1_pointer)(1,i);
+                    bb = (blockArrays1_pointer)(2,i);
+                    //id = m_intClass->Identity_hhpp((blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i));
+                    //T_list[id] += inMat(i-range_lower1,j-range_lower2);
+                    id = m_intClass->Identity_hhpp(ii,jj,aa,bb);
+                    T2_temp[id] =  inMat(i-range_lower1,j-range_lower2);
+                }
+            }
+        }
+    }
+    else{
+        if (cond_hhp && cond_p){
+            for (int i = range_lower1; i<range_upper1; i++){
+                for (int j = range_lower2; j<range_upper2; j++){
+                    id = m_intClass->Identity_hhpp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j));
+                    T_list[id] = inMat(i-range_lower1,j-range_lower2);
+                }
+            }
+        }
+        else if (cond_pph && cond_h){
+            for (int i = range_lower1; i<range_upper1; i++){
+                for (int j = range_lower2; j<range_upper2; j++){
+                    id = m_intClass->Identity_hhpp((blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i));
+                    T_list[id] = inMat(i-range_lower1,j-range_lower2);
+                }
+            }
+        }
+    }
+}
+
+void MakeAmpMat::make3x1Block_inverse_D10b(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::unordered_map<int, double> &T_list, bool add){
+
+    bool cond_hhp = (i1 == 0 && i2 == 0 && i3==1);
+    bool cond_pph = (i1 == 1 && i2 == 1 && i3==0);
+
+    bool cond_h   = (i4 == 0);
+    bool cond_p   = (i4 == 1);
+
+
+    Eigen::MatrixXi blockArrays1_pointer;
+    Eigen::MatrixXi blockArrays2_pointer;
+
+    std::vector<int> sortVec1;
+    std::vector<int> sortVec2;
+
+    Eigen::MatrixXi indexHolder1_pointer;
+    Eigen::MatrixXi indexHolder2_pointer;
+
+
+    // 0 0 1
+    if (cond_hhp){
+        blockArrays1_pointer = m_intClass->blockArrays_ppm_hhp;
+        sortVec1             = m_intClass->sortVec_ppm_hhp;
+        indexHolder1_pointer = m_intClass->indexHolder_ppm_hhp;
+    }
+    // 0 1 1
+    else if (cond_pph){
+        blockArrays1_pointer = m_intClass->blockArrays_ppm_pph;
+        sortVec1             = m_intClass->sortVec_ppm_pph;
+        indexHolder1_pointer = m_intClass->indexHolder_ppm_pph;
+    }
+
+    // 0
+    if (cond_h){
+        blockArrays2_pointer = m_intClass->blockArrays_p_h;
+        sortVec2             = m_intClass->sortVec_p_h;
+        indexHolder2_pointer = m_intClass->indexHolder_p_h;
+    }
+    // 1
+    else if (cond_p){
+        blockArrays2_pointer = m_intClass->blockArrays_p_p;
+        sortVec2             = m_intClass->sortVec_p_p;
+        indexHolder2_pointer = m_intClass->indexHolder_p_p;
+    }
+
+    int length1 = indexHolder1_pointer.cols();
+    int length2 = indexHolder2_pointer.cols();
+
+    int index1; int index2;
+
+    auto it1 = std::find(sortVec1.begin(), sortVec1.end(), ku);
+    if (it1 == sortVec1.end()){
+        std::cout << "make3x1Block_inverse in MakeAmpMat, kUnique not found for rows" << std::endl;
+        std::exit;
+    }
+    else{
+      index1 = distance(sortVec1.begin(), it1);
+    }
+
+    auto it2 = std::find(sortVec2.begin(), sortVec2.end(), ku);
+    if (it2 == sortVec2.end()){
+        std::cout << "make3x1Block_inverse in MakeAmpMat, kUnique not found for columns" << std::endl;
+        std::exit;
+    }
+    else{
+      index2 = distance(sortVec2.begin(), it2);
+    }
+
+    int range_lower1 = indexHolder1_pointer(0,index1);
+    int range_upper1 = indexHolder1_pointer(1,index1);
+    int range_lower2 = indexHolder2_pointer(0,index2);
+    int range_upper2 = indexHolder2_pointer(1,index2);
+
+    int dim1 = range_upper1 - range_lower1;
+    int dim2 = range_upper2 - range_lower2;
+
+    int id;
+    int ii; int jj;
+    int aa; int bb;
+
+    if (add == true){
+        if (cond_hhp && cond_p){
+            for (int i = range_lower1; i<range_upper1; i++){
+                for (int j = range_lower2; j<range_upper2; j++){
+                    ii = (blockArrays1_pointer)(1,i);
+                    jj = (blockArrays1_pointer)(2,i);
+                    bb = (blockArrays1_pointer)(3,i);
+                    aa = (blockArrays2_pointer)(1,j);
                     //id = m_intClass->Identity_hhpp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j));
                     //T_list[id] += inMat(i-range_lower1,j-range_lower2);
                     id = m_intClass->Identity_hhpp(ii,jj,aa,bb);
@@ -1003,6 +1133,374 @@ void MakeAmpMat::make3x3Block_inverse_I(Eigen::MatrixXd inMat, int ku, int i1, i
     }
 }
 
+void MakeAmpMat::make3x3Block_inverse_I_T1a(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<double> &T_vec, bool add){
+
+    bool cond_hhh1 = (i1 == 0 && i2 == 0 && i3==0);
+    bool cond_pph1 = (i1 == 1 && i2 == 1 && i3==0);
+    bool cond_hhp1 = (i1 == 0 && i2 == 0 && i3==1);
+    bool cond_ppp1 = (i1 == 1 && i2 == 1 && i3==1);
+
+    bool cond_hhh2 = (i4 == 0 && i5 == 0 && i6==0);
+    bool cond_pph2 = (i4 == 1 && i5 == 1 && i6==0);
+    bool cond_hhp2 = (i4 == 0 && i5 == 0 && i6==1);
+    bool cond_ppp2 = (i4 == 1 && i5 == 1 && i6==1);
+
+
+    Eigen::MatrixXi blockArrays1_pointer;
+    Eigen::MatrixXi blockArrays2_pointer;
+
+    std::vector<int> sortVec1;
+    std::vector<int> sortVec2;
+
+    Eigen::MatrixXi indexHolder1_pointer;
+    Eigen::MatrixXi indexHolder2_pointer;
+
+
+    // 0 0 0
+    if (cond_hhh1){
+        blockArrays1_pointer = m_intClass->blockArrays_ppp_hhh;
+        sortVec1             = m_intClass->sortVec_ppp_hhh;
+        indexHolder1_pointer = m_intClass->indexHolder_ppp_hhh;
+    }
+    // 0 0 1
+    else if (cond_hhp1){
+        blockArrays1_pointer = m_intClass->blockArrays_ppm_hhp;
+        sortVec1             = m_intClass->sortVec_ppm_hhp;
+        indexHolder1_pointer = m_intClass->indexHolder_ppm_hhp;
+    }
+    // 1 1 0
+    else if (cond_pph1){
+        blockArrays1_pointer = m_intClass->blockArrays_ppm_pph;
+        sortVec1             = m_intClass->sortVec_ppm_pph;
+        indexHolder1_pointer = m_intClass->indexHolder_ppm_pph;
+    }
+    // 1 1 1
+    else {
+        blockArrays1_pointer = m_intClass->blockArrays_ppp_ppp;
+        sortVec1             = m_intClass->sortVec_ppp_ppp;
+        indexHolder1_pointer = m_intClass->indexHolder_ppp_ppp;
+    }
+
+    // 0 0 0
+    if (cond_hhh2){
+        blockArrays2_pointer = m_intClass->blockArrays_ppp_hhh;
+        sortVec2             = m_intClass->sortVec_ppp_hhh;
+        indexHolder2_pointer = m_intClass->indexHolder_ppp_hhh;
+    }
+    // 0 0 1
+    else if (cond_hhp2){
+        blockArrays2_pointer = m_intClass->blockArrays_ppm_hhp;
+        sortVec2             = m_intClass->sortVec_ppm_hhp;
+        indexHolder2_pointer = m_intClass->indexHolder_ppm_hhp;
+    }
+    // 1 1 0
+    else if (cond_pph2){
+        blockArrays2_pointer = m_intClass->blockArrays_ppm_pph;
+        sortVec2             = m_intClass->sortVec_ppm_pph;
+        indexHolder2_pointer = m_intClass->indexHolder_ppm_pph;
+    }
+    // 1 1 1
+    else {
+        blockArrays2_pointer = m_intClass->blockArrays_ppp_ppp;
+        sortVec2             = m_intClass->sortVec_ppp_ppp;
+        indexHolder2_pointer = m_intClass->indexHolder_ppp_ppp;
+    }
+
+    int length1 = indexHolder1_pointer.cols();
+    int length2 = indexHolder2_pointer.cols();
+
+    int index1; int index2;
+
+    auto it1 = std::find(sortVec1.begin(), sortVec1.end(), ku);
+    if (it1 == sortVec1.end()){
+        std::cout << "make3x1Block_inverse in MakeAmpMat, kUnique not found for rows" << std::endl;
+        std::exit;
+    }
+    else{
+      index1 = distance(sortVec1.begin(), it1);
+    }
+
+    auto it2 = std::find(sortVec2.begin(), sortVec2.end(), ku);
+    if (it2 == sortVec2.end()){
+        std::cout << "make3x1Block_inverse in MakeAmpMat, kUnique not found for columns" << std::endl;
+        std::exit;
+    }
+    else{
+      index2 = distance(sortVec2.begin(), it2);
+    }
+
+    int range_lower1 = indexHolder1_pointer(0,index1);
+    int range_upper1 = indexHolder1_pointer(1,index1);
+    int range_lower2 = indexHolder2_pointer(0,index2);
+    int range_upper2 = indexHolder2_pointer(1,index2);
+
+    int dim1 = range_upper1 - range_lower1;
+    int dim2 = range_upper2 - range_lower2;
+
+    int id; int index;
+    int ii; int jj; int kk;
+    int aa; int bb; int cc;
+
+    double val;
+
+    //std::cout << inMat << std::endl;
+    if (add == true){
+        if (cond_hhp1 && cond_pph2){
+            for (int i = range_lower1; i<range_upper1; i++){
+                for (int j = range_lower2; j<range_upper2; j++){
+                    val = inMat(i-range_lower1,j-range_lower2);
+                    //if (val != 0){
+                        ii = (blockArrays1_pointer)(1,i);
+                        jj = (blockArrays1_pointer)(2,i);
+                        aa = (blockArrays1_pointer)(3,i);
+                        bb = (blockArrays2_pointer)(1,j);
+                        cc = (blockArrays2_pointer)(2,j);
+                        kk = (blockArrays2_pointer)(3,j);
+                        id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
+
+                        index = T3_elements_I[id];
+
+                        //std::cout << T3_temp[id] << std::endl;
+
+                        T_vec[index] += val;
+                        //std::cout << T_vec[index] <<" " << val << std::endl;
+                    //}
+                    //std::cout << T3_temp[id] << std::endl;
+                }
+            }
+        }
+        else if (cond_hhh1 && cond_ppp2){
+            for (int i = range_lower1; i<range_upper1; i++){
+                for (int j = range_lower2; j<range_upper2; j++){
+                    val = inMat(i-range_lower1,j-range_lower2);
+                    //if (val != 0){
+                        ii = (blockArrays1_pointer)(1,i);
+                        jj = (blockArrays1_pointer)(2,i);
+                        kk = (blockArrays1_pointer)(3,i);
+                        aa = (blockArrays2_pointer)(1,j);
+                        bb = (blockArrays2_pointer)(2,j);
+                        cc = (blockArrays2_pointer)(3,j);
+                        id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
+
+                        index = T3_elements_I[id];
+                        T_vec[index] += val;
+                    //}
+                }
+            }
+        }
+    }
+    else{
+        if (cond_hhp1 && cond_pph2){
+            for (int i = range_lower1; i<range_upper1; i++){
+                for (int j = range_lower2; j<range_upper2; j++){
+                    val = inMat(i-range_lower1,j-range_lower2);
+                    id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(3,j), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j),  (blockArrays1_pointer)(3,i));
+
+                    index = T3_elements_I[id];
+                    T_vec[index] = val;
+                }
+            }
+        }
+        else if (cond_hhh1 && cond_ppp2){
+            for (int i = range_lower1; i<range_upper1; i++){
+                for (int j = range_lower2; j<range_upper2; j++){
+                    val = inMat(i-range_lower1,j-range_lower2);
+                    id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j), (blockArrays2_pointer)(3,j));
+
+                    index = T3_elements_I[id];
+                    T_vec[index] = val;
+                    //m_Counter ++;
+                }
+            }
+        }
+        //std::cout << counter << std::endl;
+    }
+}
+
+void MakeAmpMat::make3x3Block_inverse_I_T1b(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<double> &T_vec, bool add){
+
+    bool cond_hhh1 = (i1 == 0 && i2 == 0 && i3==0);
+    bool cond_pph1 = (i1 == 1 && i2 == 1 && i3==0);
+    bool cond_hhp1 = (i1 == 0 && i2 == 0 && i3==1);
+    bool cond_ppp1 = (i1 == 1 && i2 == 1 && i3==1);
+
+    bool cond_hhh2 = (i4 == 0 && i5 == 0 && i6==0);
+    bool cond_pph2 = (i4 == 1 && i5 == 1 && i6==0);
+    bool cond_hhp2 = (i4 == 0 && i5 == 0 && i6==1);
+    bool cond_ppp2 = (i4 == 1 && i5 == 1 && i6==1);
+
+
+    Eigen::MatrixXi blockArrays1_pointer;
+    Eigen::MatrixXi blockArrays2_pointer;
+
+    std::vector<int> sortVec1;
+    std::vector<int> sortVec2;
+
+    Eigen::MatrixXi indexHolder1_pointer;
+    Eigen::MatrixXi indexHolder2_pointer;
+
+
+    // 0 0 0
+    if (cond_hhh1){
+        blockArrays1_pointer = m_intClass->blockArrays_ppp_hhh;
+        sortVec1             = m_intClass->sortVec_ppp_hhh;
+        indexHolder1_pointer = m_intClass->indexHolder_ppp_hhh;
+    }
+    // 0 0 1
+    else if (cond_hhp1){
+        blockArrays1_pointer = m_intClass->blockArrays_ppm_hhp;
+        sortVec1             = m_intClass->sortVec_ppm_hhp;
+        indexHolder1_pointer = m_intClass->indexHolder_ppm_hhp;
+    }
+    // 1 1 0
+    else if (cond_pph1){
+        blockArrays1_pointer = m_intClass->blockArrays_ppm_pph;
+        sortVec1             = m_intClass->sortVec_ppm_pph;
+        indexHolder1_pointer = m_intClass->indexHolder_ppm_pph;
+    }
+    // 1 1 1
+    else {
+        blockArrays1_pointer = m_intClass->blockArrays_ppp_ppp;
+        sortVec1             = m_intClass->sortVec_ppp_ppp;
+        indexHolder1_pointer = m_intClass->indexHolder_ppp_ppp;
+    }
+
+    // 0 0 0
+    if (cond_hhh2){
+        blockArrays2_pointer = m_intClass->blockArrays_ppp_hhh;
+        sortVec2             = m_intClass->sortVec_ppp_hhh;
+        indexHolder2_pointer = m_intClass->indexHolder_ppp_hhh;
+    }
+    // 0 0 1
+    else if (cond_hhp2){
+        blockArrays2_pointer = m_intClass->blockArrays_ppm_hhp;
+        sortVec2             = m_intClass->sortVec_ppm_hhp;
+        indexHolder2_pointer = m_intClass->indexHolder_ppm_hhp;
+    }
+    // 1 1 0
+    else if (cond_pph2){
+        blockArrays2_pointer = m_intClass->blockArrays_ppm_pph;
+        sortVec2             = m_intClass->sortVec_ppm_pph;
+        indexHolder2_pointer = m_intClass->indexHolder_ppm_pph;
+    }
+    // 1 1 1
+    else {
+        blockArrays2_pointer = m_intClass->blockArrays_ppp_ppp;
+        sortVec2             = m_intClass->sortVec_ppp_ppp;
+        indexHolder2_pointer = m_intClass->indexHolder_ppp_ppp;
+    }
+
+    int length1 = indexHolder1_pointer.cols();
+    int length2 = indexHolder2_pointer.cols();
+
+    int index1; int index2;
+
+    auto it1 = std::find(sortVec1.begin(), sortVec1.end(), ku);
+    if (it1 == sortVec1.end()){
+        std::cout << "make3x1Block_inverse in MakeAmpMat, kUnique not found for rows" << std::endl;
+        std::exit;
+    }
+    else{
+      index1 = distance(sortVec1.begin(), it1);
+    }
+
+    auto it2 = std::find(sortVec2.begin(), sortVec2.end(), ku);
+    if (it2 == sortVec2.end()){
+        std::cout << "make3x1Block_inverse in MakeAmpMat, kUnique not found for columns" << std::endl;
+        std::exit;
+    }
+    else{
+      index2 = distance(sortVec2.begin(), it2);
+    }
+
+    int range_lower1 = indexHolder1_pointer(0,index1);
+    int range_upper1 = indexHolder1_pointer(1,index1);
+    int range_lower2 = indexHolder2_pointer(0,index2);
+    int range_upper2 = indexHolder2_pointer(1,index2);
+
+    int dim1 = range_upper1 - range_lower1;
+    int dim2 = range_upper2 - range_lower2;
+
+    int id; int index;
+    int ii; int jj; int kk;
+    int aa; int bb; int cc;
+
+    double val;
+
+    //std::cout << inMat << std::endl;
+    if (add == true){
+        if (cond_hhp1 && cond_pph2){
+            for (int i = range_lower1; i<range_upper1; i++){
+                for (int j = range_lower2; j<range_upper2; j++){
+                    val = inMat(i-range_lower1,j-range_lower2);
+                    //if (val != 0){
+                        jj = (blockArrays1_pointer)(1,i);
+                        kk = (blockArrays1_pointer)(2,i);
+                        cc = (blockArrays1_pointer)(3,i);
+                        aa = (blockArrays2_pointer)(1,j);
+                        bb = (blockArrays2_pointer)(2,j);
+                        ii = (blockArrays2_pointer)(3,j);
+                        id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
+
+                        index = T3_elements_I[id];
+
+                        //std::cout << T3_temp[id] << std::endl;
+
+                        T_vec[index] += val;
+                        //std::cout << T_vec[index] <<" " << val << std::endl;
+                    //}
+                    //std::cout << T3_temp[id] << std::endl;
+                }
+            }
+        }
+        else if (cond_hhh1 && cond_ppp2){
+            for (int i = range_lower1; i<range_upper1; i++){
+                for (int j = range_lower2; j<range_upper2; j++){
+                    val = inMat(i-range_lower1,j-range_lower2);
+                    //if (val != 0){
+                        ii = (blockArrays1_pointer)(1,i);
+                        jj = (blockArrays1_pointer)(2,i);
+                        kk = (blockArrays1_pointer)(3,i);
+                        aa = (blockArrays2_pointer)(1,j);
+                        bb = (blockArrays2_pointer)(2,j);
+                        cc = (blockArrays2_pointer)(3,j);
+                        id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
+
+                        index = T3_elements_I[id];
+                        T_vec[index] += val;
+                    //}
+                }
+            }
+        }
+    }
+    else{
+        if (cond_hhp1 && cond_pph2){
+            for (int i = range_lower1; i<range_upper1; i++){
+                for (int j = range_lower2; j<range_upper2; j++){
+                    val = inMat(i-range_lower1,j-range_lower2);
+                    id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(3,j), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j),  (blockArrays1_pointer)(3,i));
+
+                    index = T3_elements_I[id];
+                    T_vec[index] = val;
+                }
+            }
+        }
+        else if (cond_hhh1 && cond_ppp2){
+            for (int i = range_lower1; i<range_upper1; i++){
+                for (int j = range_lower2; j<range_upper2; j++){
+                    val = inMat(i-range_lower1,j-range_lower2);
+                    id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j), (blockArrays2_pointer)(3,j));
+
+                    index = T3_elements_I[id];
+                    T_vec[index] = val;
+                    //m_Counter ++;
+                }
+            }
+        }
+        //std::cout << counter << std::endl;
+    }
+}
+
 void MakeAmpMat::addElementsT2(bool Pij, bool Pab){
     for (int channel = 0; channel<m_intClass->numOfKu; channel++){
         int range_lower1 = m_intClass->boundsHolder_hhpp_hh(0,channel);
@@ -1056,9 +1554,9 @@ void MakeAmpMat::addElementsT3_T1a(){
     int Nh = m_intClass->m_Nh;
     int N1 = Nh;
     int N2 = N1*Nh; //Nh*Nh;
-    int N3 = N2*Np; //Nh*Nh*Np;
-    int N4 = N3*Np; //Nh*Nh*Np*Np;
-    int N5 = N4*Np; //Nh*Nh*Np*Np*Np;
+    int N3 = N2*Nh; //Nh*Nh*Nh;
+    int N4 = N3*Np; //Nh*Nh*Nh*Np;
+    int N5 = N4*Np; //Nh*Nh*Nh*Np*Np;
     int id; double val; int th; int index2; int ku;
 
     /*for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
@@ -1305,9 +1803,9 @@ void MakeAmpMat::addElementsT3_T1b(){
     int Nh = m_intClass->m_Nh;
     int N1 = Nh;
     int N2 = Nh*Nh; //Nh*Nh;
-    int N3 = N2*Np; //Nh*Nh*Np;
-    int N4 = N3*Np; //Nh*Nh*Np*Np;
-    int N5 = N4*Np; //Nh*Nh*Np*Np*Np;
+    int N3 = N2*Nh; //Nh*Nh*Nh;
+    int N4 = N3*Np; //Nh*Nh*Nh*Np;
+    int N5 = N4*Np; //Nh*Nh*Nh*Np*Np;
     int id; double val; int th; int index2; int ku;
 
     /*for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
@@ -1662,6 +2160,139 @@ Eigen::MatrixXd MakeAmpMat::make3x3Block_I(int ku, int i1, int i2, int i3, int i
         for (int i = range_lower1; i<range_upper1; i++){
             for (int j = range_lower2; j<range_upper2; j++){
                 id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(3,j), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j), (blockArrays1_pointer)(3,i));
+                index = T3_elements_I[id];
+                returnMat(i-range_lower1, j-range_lower2) = T_vec[index];
+            }
+        }
+    }
+    else if (cond_hhh1 && cond_ppp2){
+        for (int i = range_lower1; i<range_upper1; i++){
+            for (int j = range_lower2; j<range_upper2; j++){
+                id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j), (blockArrays2_pointer)(3,j));
+                index = T3_elements_I[id];
+                returnMat(i-range_lower1, j-range_lower2) = T_vec[index];
+            }
+        }
+    }
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeAmpMat::make3x3Block_I_D10c(int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<double> &T_vec){
+
+    bool cond_hhh1 = (i1 == 0 && i2 == 0 && i3==0);
+    bool cond_pph1 = (i1 == 1 && i2 == 1 && i3==0);
+    bool cond_hhp1 = (i1 == 0 && i2 == 0 && i3==1);
+    bool cond_ppp1 = (i1 == 1 && i2 == 1 && i3==1);
+
+    bool cond_hhh2 = (i4 == 0 && i5 == 0 && i6==0);
+    bool cond_pph2 = (i4 == 1 && i5 == 1 && i6==0);
+    bool cond_hhp2 = (i4 == 0 && i5 == 0 && i6==1);
+    bool cond_ppp2 = (i4 == 1 && i5 == 1 && i6==1);
+
+
+    Eigen::MatrixXi blockArrays1_pointer;
+    Eigen::MatrixXi blockArrays2_pointer;
+
+    std::vector<int> sortVec1;
+    std::vector<int> sortVec2;
+
+    Eigen::MatrixXi indexHolder1_pointer;
+    Eigen::MatrixXi indexHolder2_pointer;
+
+
+    // 0 0 0
+    if (cond_hhh1){
+        blockArrays1_pointer = m_intClass->blockArrays_ppp_hhh;
+        sortVec1             = m_intClass->sortVec_ppp_hhh;
+        indexHolder1_pointer = m_intClass->indexHolder_ppp_hhh;
+    }
+    // 0 0 1
+    else if (cond_hhp1){
+        blockArrays1_pointer = m_intClass->blockArrays_ppm_hhp;
+        sortVec1             = m_intClass->sortVec_ppm_hhp;
+        indexHolder1_pointer = m_intClass->indexHolder_ppm_hhp;
+    }
+    // 1 1 0
+    else if (cond_pph1){
+        blockArrays1_pointer = m_intClass->blockArrays_ppm_pph;
+        sortVec1             = m_intClass->sortVec_ppm_pph;
+        indexHolder1_pointer = m_intClass->indexHolder_ppm_pph;
+    }
+    // 1 1 1
+    else {
+        blockArrays1_pointer = m_intClass->blockArrays_ppp_ppp;
+        sortVec1             = m_intClass->sortVec_ppp_ppp;
+        indexHolder1_pointer = m_intClass->indexHolder_ppp_ppp;
+    }
+
+    // 0 0 0
+    if (cond_hhh2){
+        blockArrays2_pointer = m_intClass->blockArrays_ppp_hhh;
+        sortVec2             = m_intClass->sortVec_ppp_hhh;
+        indexHolder2_pointer = m_intClass->indexHolder_ppp_hhh;
+    }
+    // 0 0 1
+    else if (cond_hhp2){
+        blockArrays2_pointer = m_intClass->blockArrays_ppm_hhp;
+        sortVec2             = m_intClass->sortVec_ppm_hhp;
+        indexHolder2_pointer = m_intClass->indexHolder_ppm_hhp;
+    }
+    // 1 1 0
+    else if (cond_pph2){
+        blockArrays2_pointer = m_intClass->blockArrays_ppm_pph;
+        sortVec2             = m_intClass->sortVec_ppm_pph;
+        indexHolder2_pointer = m_intClass->indexHolder_ppm_pph;
+    }
+    // 1 1 1
+    else {
+        blockArrays2_pointer = m_intClass->blockArrays_ppp_ppp;
+        sortVec2             = m_intClass->sortVec_ppp_ppp;
+        indexHolder2_pointer = m_intClass->indexHolder_ppp_ppp;
+    }
+
+    int length1 = indexHolder1_pointer.cols();
+    int length2 = indexHolder2_pointer.cols();
+
+    int index1; int index2;
+
+    Eigen::MatrixXd returnMat;
+
+    auto it1 = std::find(sortVec1.begin(), sortVec1.end(), ku);
+    if (it1 == sortVec1.end()){
+        returnMat.conservativeResize(1,1);
+        returnMat(0,0) = 0;
+        std::cout << "make3x1Block in MakeAmpMat, kUnique not found for rows" << std::endl;
+      return returnMat;
+    }
+    else{
+      index1 = distance(sortVec1.begin(), it1);
+    }
+
+    auto it2 = std::find(sortVec2.begin(), sortVec2.end(), ku);
+    if (it2 == sortVec2.end()){
+        returnMat.conservativeResize(1,1);
+        returnMat(0,0) = 0;
+        std::cout << "make3x1Block in MakeAmpMat, kUnique not found for columns" << std::endl;
+      return returnMat;
+    }
+    else{
+      index2 = distance(sortVec2.begin(), it2);
+    }
+
+    int range_lower1 = indexHolder1_pointer(0,index1);
+    int range_upper1 = indexHolder1_pointer(1,index1);
+    int range_lower2 = indexHolder2_pointer(0,index2);
+    int range_upper2 = indexHolder2_pointer(1,index2);
+
+    int dim1 = range_upper1 - range_lower1;
+    int dim2 = range_upper2 - range_lower2;
+
+    returnMat.conservativeResize(dim1, dim2);
+    int id; int index;
+    if (cond_hhp1 && cond_pph2){
+        for (int i = range_lower1; i<range_upper1; i++){
+            for (int j = range_lower2; j<range_upper2; j++){
+                id = m_intClass->Identity_hhhppp((blockArrays2_pointer)(3,j), (blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j));
                 index = T3_elements_I[id];
                 returnMat(i-range_lower1, j-range_lower2) = T_vec[index];
             }

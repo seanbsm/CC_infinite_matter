@@ -53,12 +53,16 @@ public:
 
     Eigen::MatrixXd                 make3x3Block(int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::unordered_map<int, double>& T_list);
     Eigen::MatrixXd                 make3x3Block_I(int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<double>& T_vec);
+    Eigen::MatrixXd                 make3x3Block_I_D10c(int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<double>& T_vec);
 
     void                            make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::unordered_map<int, double>& T_list, bool add);
+    void                            make3x1Block_inverse_D10b(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::unordered_map<int, double>& T_list, bool add);
     void                            make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::unordered_map<int, double>& T_list, bool add);
 
     void                            make3x3Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::unordered_map<int, double>& T_list, bool add);
     void                            make3x3Block_inverse_I(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<double>& T_vec, bool add);
+    void                            make3x3Block_inverse_I_T1a(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<double>& T_vec, bool add);
+    void                            make3x3Block_inverse_I_T1b(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<double>& T_vec, bool add);
 
     void                            addElementsT2(bool Pij, bool Pab);
     void                            addElementsT3_T1a();

@@ -1523,17 +1523,17 @@ void MakeIntMat::makeMatVec(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, in
 // ##################################################
 
 int MakeIntMat::Identity_hhhp(int h1, int h2, int h3, int p1){
-    return h1 + h2*m_Nh + h3*m_Nh*m_Nh + p1*m_Nh*m_Nh*(m_Ns-m_Nh);
+    return h1 + h2*m_Nh + h3*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh;
 }
 
 int MakeIntMat::Identity_hhpp(int h1, int h2, int p1, int p2){
-    return h1 + h2*m_Nh + p1*m_Nh*(m_Ns-m_Nh) + p2*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
+    return h1 + h2*m_Nh + p1*m_Nh*m_Nh + p2*m_Nh*m_Nh*(m_Ns-m_Nh);
 }
 
 int MakeIntMat::Identity_ppph(int p1, int p2, int p3, int h1){
-    return h1 + p1*(m_Ns-m_Nh) + p2*(m_Ns-m_Nh)*(m_Ns-m_Nh) + p3*(m_Ns-m_Nh)*(m_Ns-m_Nh)*(m_Ns-m_Nh);
+    return h1 + p1*m_Nh + p2*m_Nh*(m_Ns-m_Nh) + p3*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
 }
 
 int MakeIntMat::Identity_hhhppp(int h1, int h2, int h3, int p1, int p2, int p3){
-    return h1 + h2*m_Nh + h3*m_Nh*m_Nh + p1*m_Nh*m_Nh*(m_Ns-m_Nh) + p2*m_Nh*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh) + p3*m_Nh*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh)*(m_Ns-m_Nh);
+    return h1 + h2*m_Nh + h3*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh + p2*m_Nh*m_Nh*m_Nh*(m_Ns-m_Nh) + p3*m_Nh*m_Nh*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
 }
