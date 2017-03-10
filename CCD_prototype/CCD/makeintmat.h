@@ -132,6 +132,11 @@ public:
     Eigen::MatrixXd                 makeSquareBlock_s(Eigen::MatrixXi& array, int range_lower, int range_upper);
     Eigen::MatrixXd                 makeRektBlock(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
 
+    Eigen::MatrixXd                 D10b_makemat(int channel1, int channel2);
+    Eigen::MatrixXd                 D10c_makemat(int channel1, int channel2);
+    Eigen::MatrixXd                 T1a_makemat(int channel1, int channel2);
+    Eigen::MatrixXd                 T1b_makemat(int channel1, int channel2);
+
     Eigen::MatrixXd                 make3x1Block(int ku, int i1, int i2, int i3, int i4);
     Eigen::MatrixXd                 make2x2Block(int ku, int i1, int i2, int i3, int i4);
     Eigen::MatrixXd                 make2x2Block_alt(int channel);

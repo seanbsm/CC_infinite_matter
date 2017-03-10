@@ -547,6 +547,134 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
 // ##                                              ##
 // ##################################################
 
+Eigen::MatrixXd MakeIntMat::D10b_makemat(int channel1, int channel2){
+
+    int range_lower1 = indexHolder_ppm_pph(0, channel1);
+    int range_upper1 = indexHolder_ppm_pph(1, channel1);
+    int range_lower2 = indexHolder_p_p(0, channel2);
+    int range_upper2 = indexHolder_p_p(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id;
+    int a; int k;
+    int c; int d;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+            //std::cout << "sup" << std::endl;
+
+            c = blockArrays_ppm_pph(1,i1);
+            d = blockArrays_ppm_pph(2,i1);
+            k = blockArrays_ppm_pph(3,i1);
+            a = blockArrays_p_p(1,i2);
+
+            id = Identity_ppph(c,d,a,k);
+            returnMat(i1-range_lower1, i2-range_lower2) = Vppph_elements[id];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeIntMat::D10c_makemat(int channel1, int channel2){
+
+    int range_lower1 = indexHolder_ppm_hhp(0, channel1);
+    int range_upper1 = indexHolder_ppm_hhp(1, channel1);
+    int range_lower2 = indexHolder_p_h(0, channel2);
+    int range_upper2 = indexHolder_p_h(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id;
+    int k; int l;
+    int c; int j;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+            //std::cout << "sup" << std::endl;
+
+            k = blockArrays_ppm_hhp(1,i1);
+            l = blockArrays_ppm_hhp(2,i1);
+            c = blockArrays_ppm_hhp(3,i1);
+            j = blockArrays_p_h(1,i2);
+
+            id = Identity_hhhp(k,l,j,c);
+            returnMat(i1-range_lower1, i2-range_lower2) = Vhhhp_elements[id];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeIntMat::T1a_makemat(int channel1, int channel2){
+
+    int range_lower1 = indexHolder_ppm_pph(0, channel1);
+    int range_upper1 = indexHolder_ppm_pph(1, channel1);
+    int range_lower2 = indexHolder_p_p(0, channel2);
+    int range_upper2 = indexHolder_p_p(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id;
+    int b; int c;
+    int d; int k;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+            //std::cout << "sup" << std::endl;
+
+            b = blockArrays_ppm_pph(1,i1);
+            c = blockArrays_ppm_pph(2,i1);
+            k = blockArrays_ppm_pph(3,i1);
+            d = blockArrays_p_p(1,i2);
+
+            id = Identity_ppph(b,c,d,k);
+            returnMat(i1-range_lower1, i2-range_lower2) = Vppph_elements[id];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeIntMat::T1b_makemat(int channel1, int channel2){
+
+    int range_lower1 = indexHolder_ppm_hhp(0, channel1);
+    int range_upper1 = indexHolder_ppm_hhp(1, channel1);
+    int range_lower2 = indexHolder_p_h(0, channel2);
+    int range_upper2 = indexHolder_p_h(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id;
+    int j; int k;
+    int l; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+            //std::cout << "sup" << std::endl;
+
+            j = blockArrays_ppm_hhp(1,i1);
+            k = blockArrays_ppm_hhp(2,i1);
+            c = blockArrays_ppm_hhp(3,i1);
+            l = blockArrays_p_h(1,i2);
+
+            id = Identity_hhhp(j,k,l,c);
+            returnMat(i1-range_lower1, i2-range_lower2) = Vhhhp_elements[id];
+        }
+    }
+
+    return returnMat;
+}
+
 //returns a block matrix of dimensions 3x1, currently only made for Vhhpp
 // i1,i2,i3,i4 specify whether there is a hole or particle (by a 0 or 1)  index at index ij, for j=1-4
 Eigen::MatrixXd MakeIntMat::make3x1Block(int ku, int i1, int i2, int i3, int i4){
