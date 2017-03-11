@@ -157,7 +157,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
     }
 
 
-    while (conFac > eps && counter < 5e1){
+    while (conFac > eps /*&& counter < 5e1*/){
         ECCD = 0;
         //could make an m_ampClass::updateT or something
         m_ampClass->T2_elements_new.clear();

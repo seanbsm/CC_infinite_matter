@@ -1688,12 +1688,12 @@ void MakeAmpMat::addElementsT3_T1a(){
                     val -= T3_elements_A_temp[index2];
                 }
 
-                id = ii + jj*N1 + kk*N2 + cc*N3 + aa*N4 + bb*N5; // Pab Pac
+                /*id = ii + jj*N1 + kk*N2 + cc*N3 + aa*N4 + bb*N5; // Pab Pac
                 //val += T3_temp[id];
                 if (T3_elements_I.find(id) != T3_elements_I.end() ){
                     index2 = T3_elements_I[id];
                     val += T3_elements_A_temp[index2];
-                }
+                }*/
 
                 id = kk + jj*N1 + ii*N2 + bb*N3 + aa*N4 + cc*N5; // Pab Pki
                 //val += T3_temp[id];
@@ -1723,7 +1723,7 @@ void MakeAmpMat::addElementsT3_T1a(){
                     val += T3_elements_A_temp[index2];
                 }
 
-                id = kk + ii*N1 + jj*N2 + aa*N3 + bb*N4 + cc*N5; // Pki Pkj
+                /*id = kk + ii*N1 + jj*N2 + aa*N3 + bb*N4 + cc*N5; // Pki Pkj
                 //val += T3_temp[id];
                 if (T3_elements_I.find(id) != T3_elements_I.end() ){
                     index2 = T3_elements_I[id];
@@ -1763,7 +1763,7 @@ void MakeAmpMat::addElementsT3_T1a(){
                 if (T3_elements_I.find(id) != T3_elements_I.end() ){
                     index2 = T3_elements_I[id];
                     val += T3_elements_A_temp[index2];
-                }
+                }*/
 
                 id = ii + jj*N1 + kk*N2 + aa*N3 + bb*N4 + cc*N5; // direct
                 //val += T3_temp[id];
@@ -1937,12 +1937,12 @@ void MakeAmpMat::addElementsT3_T1b(){
                     val -= T3_elements_A_temp[index2];
                 }
 
-                id = ii + jj*N1 + kk*N2 + cc*N3 + aa*N4 + bb*N5; // Pca Pcb
+                /*id = ii + jj*N1 + kk*N2 + cc*N3 + aa*N4 + bb*N5; // Pca Pcb
                 //val += T3_temp[id];
                 if (T3_elements_I.find(id) != T3_elements_I.end() ){
                     index2 = T3_elements_I[id];
                     val += T3_elements_A_temp[index2];
-                }
+                }*/
 
                 id = jj + ii*N1 + kk*N2 + cc*N3 + bb*N4 + aa*N5; // Pca Pij
                 //val += T3_temp[id];
@@ -1972,7 +1972,7 @@ void MakeAmpMat::addElementsT3_T1b(){
                     val += T3_elements_A_temp[index2];
                 }
 
-                id = kk + ii*N1 + jj*N2 + aa*N3 + bb*N4 + cc*N5; // Pij Pik
+                /*id = kk + ii*N1 + jj*N2 + aa*N3 + bb*N4 + cc*N5; // Pij Pik
                 //val += T3_temp[id];
                 if (T3_elements_I.find(id) != T3_elements_I.end() ){
                     index2 = T3_elements_I[id];
@@ -2012,7 +2012,7 @@ void MakeAmpMat::addElementsT3_T1b(){
                 if (T3_elements_I.find(id) != T3_elements_I.end() ){
                     index2 = T3_elements_I[id];
                     val += T3_elements_A_temp[index2];
-                }
+                }*/
 
                 id = ii + jj*N1 + kk*N2 + aa*N3 + bb*N4 + cc*N5; // direct
                 //val += T3_temp[id];
