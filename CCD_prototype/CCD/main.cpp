@@ -24,13 +24,13 @@ using namespace std;
 
 int main()
 {
-    double  eps     =   1e-15;                      //remember to adjust setprecision in master when changing this
+    double  eps     =   1e-16;                      //remember to adjust setprecision in master when changing this
     double  conFac  =   1;                          //convergence factor
 
     bool    intermediates = true;                   //turn on/off intermediates in CCD eqs
     bool    CCDT          = true;                   //turn on/off CCDT-1
     bool    timer         = true;                   //turn on/off timer
-    bool    relaxation    = false;                  //turn on/off relaxation when updating amplitudes
+    bool    relaxation    = true;                  //turn on/off relaxation when updating amplitudes
     double  alpha         = 0.3;                    //relaxation parameter
 
     bool    makeData      = false;                  //choose to write to file for a range of shells
@@ -43,11 +43,12 @@ int main()
         int     Nh      =   14;							//number of particles
         int     Nb      =   3;							//number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 can at max have N=14)
         double  rs      =   1;                          //Wigner Seitz radius
-        double  rb      =   1;                          //Bohr radius [MeV^-1]
-        double  m       =   1;//                //electron mass [MeV] (1 for HEG, 939.565 for MP)
+        double  rb      =   1.;                          //Bohr radius [MeV^-1]
+        double  m       =   1.;//                //electron mass [MeV] (1 for HEG, 939.565 for MP)
         //double  m       =   939.565;
         //double  rho     =   0.2;
-        double  L3      =   4*pi*Nh*rs/3;               //box volume
+        double  r1      =   pow(rs*rb, 3);
+        double  L3      =   4.*pi*Nh*r1/3.;               //box volume
         //double  L3      =   Nh/rho;
         double  L2      =   pow(L3, 2./3.);
         double  L1      =   pow(L3, 1./3.);

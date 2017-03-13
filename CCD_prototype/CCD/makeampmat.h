@@ -68,6 +68,9 @@ public:
     Eigen::MatrixXd                 T1b_makemat(int channel1, int channel2);
     void                            T1b_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
 
+    Eigen::MatrixXd                 T2c_makemat(int channel1, int channel2);
+    void                            T2c_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
+
     void                            make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::unordered_map<int, double>& T_list, bool add);
     void                            make3x1Block_inverse_D10b(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::unordered_map<int, double>& T_list, bool add);
     void                            make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::unordered_map<int, double>& T_list, bool add);
@@ -80,6 +83,7 @@ public:
     void                            addElementsT2(bool Pij, bool Pab);
     void                            addElementsT3_T1a();
     void                            addElementsT3_T1b();
+    void                            addElementsT3_T2c();
     void                            addElementsT3(bool Pij, bool Pik, bool Pjk, bool Pab, bool Pac, bool Pbc);
 
     std::unordered_map<int, int> permuteT3(int index, std::unordered_map<int, int> indices);

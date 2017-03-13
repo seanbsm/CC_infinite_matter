@@ -34,8 +34,30 @@ public:
 
     //T3 diagrams
     void makeT3(); //performs first CCDT iteration by making T3 amplitude objects
+
+    //diagrams linear in t2
     void T1a();
     void T1b();
+
+    //diagrams linear in t3
+    void T2c();
+    void T2d();
+    void T2e();
+
+    //diagrams quadratic in t2
+    void T3b();
+    void T3c();
+    void T3d();
+    void T3e();
+
+    //diagrams with t2*t3
+    void T5a();
+    void T5b();
+    void T5c();
+    void T5d();
+    void T5e();
+    void T5f();
+    void T5g();
 
 
     /*

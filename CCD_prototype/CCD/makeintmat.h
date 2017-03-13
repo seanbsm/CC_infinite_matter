@@ -52,6 +52,8 @@ public:
     Eigen::MatrixXi blockArrays_ppm_hhp;
     Eigen::MatrixXi blockArrays_ppm_pph;
     Eigen::MatrixXi blockArrays_ppp_ppp;
+    Eigen::MatrixXi blockArrays_pppm_hhhp;
+    Eigen::MatrixXi blockArrays_pppm_ppph;
 
     //T3 permutations, needed to restack t_ijk^abc matrices
     //same shape as corresponding blockArrays
@@ -81,6 +83,8 @@ public:
     std::vector<int> sortVec_ppm_hhp;
     std::vector<int> sortVec_ppm_pph;
     std::vector<int> sortVec_ppp_ppp;
+    std::vector<int> sortVec_pppm_hhhp;
+    std::vector<int> sortVec_pppm_ppph;
 
     //indexHolder holds upper and lower bound of indices for a certain kUnique, same indexing as the corresponding matrices
     Eigen::MatrixXi indexHolder_p_h;
@@ -96,6 +100,8 @@ public:
     Eigen::MatrixXi indexHolder_ppm_hhp;
     Eigen::MatrixXi indexHolder_ppm_pph;
     Eigen::MatrixXi indexHolder_ppp_ppp;
+    Eigen::MatrixXi indexHolder_pppm_hhhp;
+    Eigen::MatrixXi indexHolder_pppm_ppph;
 
     // these additional boundsHolders are possibly not necessary after the implementation of make3x1- and make2x2Block
     //these are needed for Qa
@@ -120,6 +126,7 @@ public:
     void                            mapper_2(std::vector<int> &sortVecIn, Eigen::MatrixXi &blockArraysIn, int i1, int i2, int s1, int s2);
     void                            mapper_2_alt();
     void                            mapper_3(std::vector<int> &sortVecIn, Eigen::MatrixXi &blockArraysIn, int i1, int i2, int i3, int s1, int s2, int s3);
+    void                            mapper_4(std::vector<int> &sortVecIn, Eigen::MatrixXi &blockArraysIn, int i1, int i2, int i3, int i4, int s1, int s2, int s3, int s4);
     void                            mapper_hp();        //special func made for Lc diagram, not necessary IF I fix sign convention for ph and hp
 
     void                            makeBlockMat(System* system, int Nh, int Ns);

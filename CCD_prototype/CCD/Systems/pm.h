@@ -13,6 +13,7 @@ public:
     int     kUnique1        (int p, int s1);
     int     kUnique2        (int p, int q, int s1, int s2);
     int     kUnique3        (int p, int q, int r, int s1, int s2, int s3);
+    int     kUnique4        (int p, int q, int r, int s, int s1, int s2, int s3, int s4);
 };
 
 #endif // PM_H
