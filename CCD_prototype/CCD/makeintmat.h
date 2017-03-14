@@ -171,7 +171,7 @@ public:
     Eigen::MatrixXd                 T5c_makemat(int channel1, int channel2);
     Eigen::MatrixXd                 T5d_makemat(int channel1, int channel2);
     Eigen::MatrixXd                 T5e_makemat(int channel1, int channel2);
-    Eigen::MatrixXd                 T5f_makemat(int channel1, int channel2);
+    Eigen::MatrixXd                 T5f_makemat(int channel1, int channel2); //T5f and T5g are identical, but it's nice to think of them seperate
     Eigen::MatrixXd                 T5g_makemat(int channel1, int channel2);
 
     Eigen::MatrixXd                 make3x1Block(int ku, int i1, int i2, int i3, int i4);

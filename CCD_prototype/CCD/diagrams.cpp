@@ -62,8 +62,17 @@ void Diagrams::Lb(){
     for (int n=0; n<m_intClass->Vhhpp_i.size(); n++){
         int ku = m_intClass->Vhhpp_i[n];
 
+        int m = 0; int index;
+        while (m<m_intClass->sortVec_pp_hh.size()){
+            if (m_intClass->sortVec_pp_hh[m] == ku){
+                index = m;
+                m = m_intClass->sortVec_pp_hh.size();
+            }
+            m++;
+        }
+
         Eigen::MatrixXd mat1 = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements);            // t_kl^ab
-        Eigen::MatrixXd mat2 = m_intClass->Vhhhh[n];                                                    // v_ij^kl
+        Eigen::MatrixXd mat2 = m_intClass->Vhhhh[index];                                                    // v_ij^kl
         Eigen::MatrixXd product = 0.5*mat2*mat1;                                                        // (v_ij^kl)(t_kl^ab)
 
         m_ampClass->make2x2Block_inverse(product,ku,0,0,1,1, m_ampClass->T2_elements_new, true);
@@ -439,7 +448,7 @@ void Diagrams::T2c(){
             if ( m_intClass->sortVec_pp_pp[i1] == m_intClass->sortVec_pppm_hhhp[i2]){
                 Eigen::MatrixXd mat1 = m_intClass->Vpppp[i1];
                 Eigen::MatrixXd mat2 = m_ampClass->T2c_makemat(i2, i1);
-                Eigen::MatrixXd product = 0.5*mat2*mat1.transpose();
+                Eigen::MatrixXd product = 0.5*mat2*mat1; //mathematically I need to transpose mat1, but it's symmetric
 
                 m_ampClass->T2c_inverse(product, i2, i1);
             }
@@ -450,6 +459,42 @@ void Diagrams::T2c(){
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
 }
 
+void Diagrams::T2d(){
+
+    for (int i1=0; i1<m_intClass->sortVec_pp_hh.size(); i1++){
+        for (int i2=0; i2<m_intClass->sortVec_pppm_ppph.size(); i2++){
+            if ( m_intClass->sortVec_pp_hh[i1] == m_intClass->sortVec_pppm_ppph[i2]){
+                Eigen::MatrixXd mat1 = m_intClass->Vhhhh[i1];
+                Eigen::MatrixXd mat2 = m_ampClass->T2d_makemat(i2, i1);
+                Eigen::MatrixXd product = 0.5*mat2*mat1; //mathematically I need to transpose mat1, but it's symmetric
+
+                m_ampClass->T2d_inverse(product, i2, i1);
+            }
+        }
+    }
+
+    //m_ampClass->addElementsT3_T2d();
+    std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
+}
+
+void Diagrams::T2e(){
+
+    for (int i1=0; i1<m_intClass->sortVec_pm_hp.size(); i1++){
+        for (int i2=0; i2<m_intClass->sortVec_ppmm_hhpp.size(); i2++){
+            if ( m_intClass->sortVec_pm_hp[i1] == m_intClass->sortVec_ppmm_hhpp[i2]){
+                Eigen::MatrixXd mat1 = m_intClass->Vhphp[i1];
+                Eigen::MatrixXd mat2 = m_ampClass->T2e_makemat(i2, i1);
+                Eigen::MatrixXd product = mat2*mat1; //mathematically I need to transpose mat1, but it's symmetric
+
+                m_ampClass->T2c_inverse(product, i2, i1);
+            }
+        }
+    }
+
+    //m_ampClass->addElementsT3_T2c();
+    std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
+}
+
 void Diagrams::T3b(){
 
     for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
@@ -457,18 +502,38 @@ void Diagrams::T3b(){
             for (int i3=0; i3<m_intClass->sortVec_ppm_hhp.size(); i3++){
                 if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_pph[i2] && m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i3]){
 
-                    Eigen::MatrixXd mat1 = m_intClass->T1a_makemat(i2, i1);
-                    Eigen::MatrixXd mat2 = m_ampClass->T1a_makemat(i3, i1);
+                    Eigen::MatrixXd mat1 = m_intClass->T3b_makemat(i2, i1);
+                    Eigen::MatrixXd mat2 = m_ampClass->T3b_makemat(i3, i1);
                     Eigen::MatrixXd product = mat2*mat1.transpose();
 
-                    m_ampClass->T1a_inverse(product, i3, i2);
+                    m_ampClass->T3b_inverse(product, i3, i2);
                 }
             }
         }
     }
 
-    m_ampClass->addElementsT3_T1a();
+    //m_ampClass->addElementsT3_T1a();
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
+}
 
+void Diagrams::T5a(){
+
+    for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
+        for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
+            for (int i3=0; i3<m_intClass->sortVec_ppm_hhp.size(); i3++){
+                if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_pph[i2] && m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i3]){
+
+                    Eigen::MatrixXd mat1 = m_intClass->T3b_makemat(i2, i1);
+                    Eigen::MatrixXd mat2 = m_ampClass->T3b_makemat(i3, i1);
+                    Eigen::MatrixXd product = mat2*mat1.transpose();
+
+                    m_ampClass->T3b_inverse(product, i3, i2);
+                }
+            }
+        }
+    }
+
+    //m_ampClass->addElementsT3_T1a();
+    std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
 }
 
