@@ -56,20 +56,81 @@ public:
     Eigen::MatrixXd                 make3x3Block_I_D10c(int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<double>& T_vec);
 
 
-    Eigen::MatrixXd                 D10b_makemat(int channel1, int channel2);
-    void                            D10b_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
 
+
+    //T3 contributions to T2
+    Eigen::MatrixXd                 D10b_makemat(int channel1, int channel2);
     Eigen::MatrixXd                 D10c_makemat(int channel1, int channel2);
+
+    //linear T2 terms in T3
+    Eigen::MatrixXd                 T1a_makemat(int channel1, int channel2);
+    Eigen::MatrixXd                 T1b_makemat(int channel1, int channel2);
+
+    //linear T3 terms in T3
+    Eigen::MatrixXd                 T2c_makemat(int channel1, int channel2);
+    Eigen::MatrixXd                 T2d_makemat(int channel1, int channel2);
+    Eigen::MatrixXd                 T2e_makemat(int channel1, int channel2);
+
+    //quadratic T2 terms in T3
+    Eigen::MatrixXd                 T3b_makemat_1(int channel1, int channel2);
+    Eigen::MatrixXd                 T3b_makemat_2(int channel1, int channel2);
+    Eigen::MatrixXd                 T3b_makemat_3(int channel1, int channel2);  //The convention makemat_1, makemat_2, and makemat_3 comes from the diagrams
+    Eigen::MatrixXd                 T3c_makemat_1(int channel1, int channel2);  //there are three matrices in these, so you need three constructors
+    Eigen::MatrixXd                 T3c_makemat_2(int channel1, int channel2);  //a pain, trust me, I know
+    Eigen::MatrixXd                 T3c_makemat_3(int channel1, int channel2);
+    Eigen::MatrixXd                 T3d_makemat_1(int channel1, int channel2);
+    Eigen::MatrixXd                 T3d_makemat_2(int channel1, int channel2);
+    Eigen::MatrixXd                 T3d_makemat_3(int channel1, int channel2);
+    Eigen::MatrixXd                 T3e_makemat_1(int channel1, int channel2);
+    Eigen::MatrixXd                 T3e_makemat_2(int channel1, int channel2);
+    Eigen::MatrixXd                 T3e_makemat_3(int channel1, int channel2);
+
+    //T2*T3 terms in T3
+    Eigen::MatrixXd                 T5a_makemat_1(int channel1, int channel2);
+    Eigen::MatrixXd                 T5a_makemat_2(int channel1, int channel2);
+    Eigen::MatrixXd                 T5b_makemat_1(int channel1, int channel2);
+    Eigen::MatrixXd                 T5b_makemat_2(int channel1, int channel2);
+    Eigen::MatrixXd                 T5c_makemat_1(int channel1, int channel2);
+    Eigen::MatrixXd                 T5c_makemat_2(int channel1, int channel2);
+    Eigen::MatrixXd                 T5d_makemat_1(int channel1, int channel2);
+    Eigen::MatrixXd                 T5d_makemat_2(int channel1, int channel2);
+    Eigen::MatrixXd                 T5e_makemat_1(int channel1, int channel2);
+    Eigen::MatrixXd                 T5e_makemat_2(int channel1, int channel2);
+    Eigen::MatrixXd                 T5f_makemat_1(int channel1, int channel2);
+    Eigen::MatrixXd                 T5f_makemat_2(int channel1, int channel2);
+    Eigen::MatrixXd                 T5g_makemat_1(int channel1, int channel2);
+    Eigen::MatrixXd                 T5g_makemat_2(int channel1, int channel2);
+
+
+    //T3 contributions to T2
+    void                            D10b_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
     void                            D10c_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
 
-    Eigen::MatrixXd                 T1a_makemat(int channel1, int channel2);
+    //linear T2 terms in T3
     void                            T1a_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
-
-    Eigen::MatrixXd                 T1b_makemat(int channel1, int channel2);
     void                            T1b_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
 
-    Eigen::MatrixXd                 T2c_makemat(int channel1, int channel2);
+    //linear T3 terms in T3
     void                            T2c_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
+    void                            T2d_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
+    void                            T2e_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
+
+    //quadratic T2 terms in T3
+    void                            T3b_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
+    void                            T3c_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
+    void                            T3d_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
+    void                            T3e_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
+
+    //T2*T3 terms in T3
+    void                            T5a_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
+    void                            T5b_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
+    void                            T5c_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
+    void                            T5d_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
+    void                            T5e_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
+    void                            T5f_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
+    void                            T5g_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
+
+
 
     void                            make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::unordered_map<int, double>& T_list, bool add);
     void                            make3x1Block_inverse_D10b(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, std::unordered_map<int, double>& T_list, bool add);

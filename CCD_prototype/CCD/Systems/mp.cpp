@@ -93,6 +93,23 @@ int MP::kUnique4(int k, int p, int q, int s, int s1, int s2, int s3, int s4){
     return kuni;
 }
 
+int MP::kUnique5(int k, int p, int q, int s, int t, int s1, int s2, int s3, int s4, int s5){
+    Eigen::Matrix<int, 5, 1> kk;
+    Eigen::Matrix<int, 5, 1> kp;
+    Eigen::Matrix<int, 5, 1> kq;
+    Eigen::Matrix<int, 5, 1> ks;
+    Eigen::Matrix<int, 5, 1> kt;
+    kk << m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k), m_states(5,k);
+    kp << m_states(1,p), m_states(2,p), m_states(3,p), m_states(4,p), m_states(5,p);
+    kq << m_states(1,q), m_states(2,q), m_states(3,q), m_states(4,q), m_states(5,q);
+    ks << m_states(1,s), m_states(2,s), m_states(3,s), m_states(4,s), m_states(5,s);
+    kt << m_states(1,t), m_states(2,t), m_states(3,t), m_states(4,t), m_states(5,t);
+    Eigen::VectorXi mom = s1*kk+s2*kp+s3*kq+s4*ks+s5*kt;
+
+    int kuni = mom(0) + mom(1)*m_dk + mom(2)*m_dk*m_dk + mom(3)*m_dk*m_dk*m_dk + mom(4)*m_dk*m_dk*m_dk*m_dk;
+    return kuni;
+}
+
 double MP::f(int p){
     double returnVal = h0(p);
     for (int i=0; i<m_Nh; i++){

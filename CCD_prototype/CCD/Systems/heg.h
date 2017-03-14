@@ -38,6 +38,7 @@ public:
     int     kUnique2        (int p, int q, int s1, int s2);
     int     kUnique3        (int p, int q, int r, int s1, int s2, int s3);
     int     kUnique4        (int p, int q, int r, int s, int s1, int s2, int s3, int s4);
+    int     kUnique5        (int p, int q, int r, int s, int t, int s1, int s2, int s3, int s4, int s5);
 };
 
 #endif // HEG_H

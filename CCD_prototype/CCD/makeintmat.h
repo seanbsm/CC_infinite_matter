@@ -53,7 +53,10 @@ public:
     Eigen::MatrixXi blockArrays_ppm_pph;
     Eigen::MatrixXi blockArrays_ppp_ppp;
     Eigen::MatrixXi blockArrays_pppm_hhhp;
+    Eigen::MatrixXi blockArrays_ppmm_hhpp;
     Eigen::MatrixXi blockArrays_pppm_ppph;
+    Eigen::MatrixXi blockArrays_pppmm_hhhpp;
+    Eigen::MatrixXi blockArrays_pppmm_ppphh;
 
     //T3 permutations, needed to restack t_ijk^abc matrices
     //same shape as corresponding blockArrays
@@ -84,7 +87,10 @@ public:
     std::vector<int> sortVec_ppm_pph;
     std::vector<int> sortVec_ppp_ppp;
     std::vector<int> sortVec_pppm_hhhp;
+    std::vector<int> sortVec_ppmm_hhpp;
     std::vector<int> sortVec_pppm_ppph;
+    std::vector<int> sortVec_pppmm_hhhpp;
+    std::vector<int> sortVec_pppmm_ppphh;
 
     //indexHolder holds upper and lower bound of indices for a certain kUnique, same indexing as the corresponding matrices
     Eigen::MatrixXi indexHolder_p_h;
@@ -101,7 +107,10 @@ public:
     Eigen::MatrixXi indexHolder_ppm_pph;
     Eigen::MatrixXi indexHolder_ppp_ppp;
     Eigen::MatrixXi indexHolder_pppm_hhhp;
+    Eigen::MatrixXi indexHolder_ppmm_hhpp;
     Eigen::MatrixXi indexHolder_pppm_ppph;
+    Eigen::MatrixXi indexHolder_pppmm_hhhpp;
+    Eigen::MatrixXi indexHolder_pppmm_ppphh;
 
     // these additional boundsHolders are possibly not necessary after the implementation of make3x1- and make2x2Block
     //these are needed for Qa
@@ -127,6 +136,7 @@ public:
     void                            mapper_2_alt();
     void                            mapper_3(std::vector<int> &sortVecIn, Eigen::MatrixXi &blockArraysIn, int i1, int i2, int i3, int s1, int s2, int s3);
     void                            mapper_4(std::vector<int> &sortVecIn, Eigen::MatrixXi &blockArraysIn, int i1, int i2, int i3, int i4, int s1, int s2, int s3, int s4);
+    void                            mapper_5(std::vector<int> &sortVecIn, Eigen::MatrixXi &blockArraysIn, int i1, int i2, int i3, int i4, int i5, int s1, int s2, int s3, int s4, int s5);
     void                            mapper_hp();        //special func made for Lc diagram, not necessary IF I fix sign convention for ph and hp
 
     void                            makeBlockMat(System* system, int Nh, int Ns);
@@ -139,10 +149,30 @@ public:
     Eigen::MatrixXd                 makeSquareBlock_s(Eigen::MatrixXi& array, int range_lower, int range_upper);
     Eigen::MatrixXd                 makeRektBlock(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
 
+    //T3 contributions to T2
     Eigen::MatrixXd                 D10b_makemat(int channel1, int channel2);
     Eigen::MatrixXd                 D10c_makemat(int channel1, int channel2);
+
+    //linear T2 terms in T3
     Eigen::MatrixXd                 T1a_makemat(int channel1, int channel2);
     Eigen::MatrixXd                 T1b_makemat(int channel1, int channel2);
+
+    //linear T3 terms in T3 (these already stored directly, and need no "make" function)
+
+    //quadratic T2 terms in T3
+    Eigen::MatrixXd                 T3b_makemat(int channel1, int channel2);
+    Eigen::MatrixXd                 T3c_makemat(int channel1, int channel2);
+    Eigen::MatrixXd                 T3d_makemat(int channel1, int channel2);
+    Eigen::MatrixXd                 T3e_makemat(int channel1, int channel2);
+
+    //T2*T3 terms in T3
+    Eigen::MatrixXd                 T5a_makemat(int channel1, int channel2);
+    Eigen::MatrixXd                 T5b_makemat(int channel1, int channel2);
+    Eigen::MatrixXd                 T5c_makemat(int channel1, int channel2);
+    Eigen::MatrixXd                 T5d_makemat(int channel1, int channel2);
+    Eigen::MatrixXd                 T5e_makemat(int channel1, int channel2);
+    Eigen::MatrixXd                 T5f_makemat(int channel1, int channel2);
+    Eigen::MatrixXd                 T5g_makemat(int channel1, int channel2);
 
     Eigen::MatrixXd                 make3x1Block(int ku, int i1, int i2, int i3, int i4);
     Eigen::MatrixXd                 make2x2Block(int ku, int i1, int i2, int i3, int i4);

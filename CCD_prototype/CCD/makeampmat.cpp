@@ -2335,6 +2335,786 @@ Eigen::MatrixXd MakeAmpMat::T2c_makemat(int channel1, int channel2){    //makes 
     return returnMat;
 }
 
+Eigen::MatrixXd MakeAmpMat::T2d_makemat(int channel1, int channel2){    //makes a 4x2 matrix
+
+    int range_lower1 = m_intClass->indexHolder_pppm_ppph(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_pppm_ppph(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_pp_hh(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pp_hh(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id; int index;
+    int l; int m; int k;
+    int a; int b; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+            //std::cout << "sup" << std::endl;
+
+            a = m_intClass->blockArrays_pppm_ppph(1,i1);
+            b = m_intClass->blockArrays_pppm_ppph(2,i1);
+            c = m_intClass->blockArrays_pppm_ppph(3,i1);
+            k = m_intClass->blockArrays_pppm_ppph(4,i1);
+            l = m_intClass->blockArrays_pp_hh(1,i2);
+            m = m_intClass->blockArrays_pp_hh(2,i2);
+
+            id = m_intClass->Identity_hhhppp(l,m,k,a,b,c);
+            index = T3_elements_I[index];
+            returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeAmpMat::T2e_makemat(int channel1, int channel2){    //makes a 4x2 matrix
+
+    int range_lower1 = m_intClass->indexHolder_ppmm_hhpp(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppmm_hhpp(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_pm_hp(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pm_hp(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id; int index;
+    int l; int j; int k;
+    int d; int b; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+            //std::cout << "sup" << std::endl;
+
+            j = m_intClass->blockArrays_ppmm_hhpp(1,i1);
+            k = m_intClass->blockArrays_ppmm_hhpp(2,i1);
+            b = m_intClass->blockArrays_ppmm_hhpp(3,i1);
+            c = m_intClass->blockArrays_ppmm_hhpp(4,i1);
+            l = m_intClass->blockArrays_pm_hp(1,i2);
+            d = m_intClass->blockArrays_pm_hp(2,i2);
+
+            id = m_intClass->Identity_hhhppp(l,j,k,d,b,c);
+            index = T3_elements_I[index];
+            returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeAmpMat::T3b_makemat_1(int channel1, int channel2){    //makes a 3x1 matrix
+
+    int range_lower1 = m_intClass->indexHolder_ppm_hhp(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppm_hhp(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_p_p(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_p_p(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id;
+    int j; int k;
+    int e; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            j = m_intClass->blockArrays_ppm_hhp(1,i1);
+            k = m_intClass->blockArrays_ppm_hhp(2,i1);
+            c = m_intClass->blockArrays_ppm_hhp(3,i1);
+            e = m_intClass->blockArrays_p_p(1,i2);
+
+            id = m_intClass->Identity_hhpp(j,k,e,c);
+            returnMat(i1-range_lower1, i2-range_lower2) = T2_elements[id];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeAmpMat::T3b_makemat_3(int channel1, int channel2){    //makes a 2x2 matrix
+
+    int range_lower1 = m_intClass->indexHolder_pm_ph(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_pm_ph(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_pm_ph(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pm_ph(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id;
+    int i; int l;
+    int a; int d;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            d = m_intClass->blockArrays_pm_ph(1,i1);
+            l = m_intClass->blockArrays_pm_ph(2,i1);
+            a = m_intClass->blockArrays_pm_ph(1,i1);
+            i = m_intClass->blockArrays_pm_ph(2,i2);
+
+            id = m_intClass->Identity_hhpp(i,l,a,d);
+            returnMat(i1-range_lower1, i2-range_lower2) = T2_elements[id];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeAmpMat::T3c_makemat_1(int channel1, int channel2){    //makes a 3x1 matrix
+
+    int range_lower1 = m_intClass->indexHolder_ppm_pph(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppm_pph(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_p_h(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_p_h(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id;
+    int m; int k;
+    int b; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            b = m_intClass->blockArrays_ppm_pph(1,i1);
+            c = m_intClass->blockArrays_ppm_pph(2,i1);
+            k = m_intClass->blockArrays_ppm_pph(3,i1);
+            m = m_intClass->blockArrays_p_h(1,i2);
+
+            id = m_intClass->Identity_hhpp(m,k,b,c);
+            returnMat(i1-range_lower1, i2-range_lower2) = T2_elements[id];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeAmpMat::T3c_makemat_3(int channel1, int channel2){    //makes a 2x2 matrix
+
+    int range_lower1 = m_intClass->indexHolder_pm_hp(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_pm_hp(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_pm_ph(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pm_ph(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id;
+    int i; int l;
+    int a; int d;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            l = m_intClass->blockArrays_pm_hp(1,i1);
+            d = m_intClass->blockArrays_pm_hp(2,i1);
+            a = m_intClass->blockArrays_pm_ph(1,i1);
+            i = m_intClass->blockArrays_pm_ph(2,i2);
+
+            id = m_intClass->Identity_hhpp(i,l,a,d);
+            returnMat(i1-range_lower1, i2-range_lower2) = T2_elements[id];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeAmpMat::T3d_makemat_1(int channel1, int channel2){    //makes a 2x2 matrix
+
+    int range_lower1 = m_intClass->indexHolder_pp_hh(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_pp_hh(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_pp_pp(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pp_pp(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id;
+    int j; int k;
+    int d; int e;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            j = m_intClass->blockArrays_pp_hh(1,i1);
+            k = m_intClass->blockArrays_pp_hh(2,i1);
+            d = m_intClass->blockArrays_pp_pp(1,i1);
+            e = m_intClass->blockArrays_pp_pp(2,i2);
+
+            id = m_intClass->Identity_hhpp(j,k,d,e);
+            returnMat(i1-range_lower1, i2-range_lower2) = T2_elements[id];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeAmpMat::T3d_makemat_3(int channel1, int channel2){    //makes a 3x1 matrix
+
+    int range_lower1 = m_intClass->indexHolder_ppm_pph(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppm_pph(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_p_h(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_p_h(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id;
+    int i; int l;
+    int a; int b;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            a = m_intClass->blockArrays_ppm_pph(1,i1);
+            b = m_intClass->blockArrays_ppm_pph(2,i1);
+            i = m_intClass->blockArrays_ppm_pph(3,i1);
+            l = m_intClass->blockArrays_p_h(1,i2);
+
+            id = m_intClass->Identity_hhpp(i,l,a,b);
+            returnMat(i1-range_lower1, i2-range_lower2) = T2_elements[id];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeAmpMat::T3e_makemat_1(int channel1, int channel2){    //makes a 2x2 matrix
+
+    int range_lower1 = m_intClass->indexHolder_pp_hh(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_pp_hh(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_pp_pp(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pp_pp(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id;
+    int l; int m;
+    int b; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            l = m_intClass->blockArrays_pp_hh(1,i1);
+            m = m_intClass->blockArrays_pp_hh(2,i1);
+            b = m_intClass->blockArrays_pp_pp(1,i1);
+            c = m_intClass->blockArrays_pp_pp(2,i2);
+
+            id = m_intClass->Identity_hhpp(l,m,b,c);
+            returnMat(i1-range_lower1, i2-range_lower2) = T2_elements[id];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeAmpMat::T3e_makemat_3(int channel1, int channel2){    //makes a 3x1 matrix
+
+    int range_lower1 = m_intClass->indexHolder_ppm_hhp(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppm_hhp(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_p_p(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_p_p(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id;
+    int i; int j;
+    int a; int d;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            i = m_intClass->blockArrays_ppm_hhp(1,i1);
+            j = m_intClass->blockArrays_ppm_hhp(2,i1);
+            a = m_intClass->blockArrays_ppm_hhp(3,i1);
+            d = m_intClass->blockArrays_p_p(1,i2);
+
+            id = m_intClass->Identity_hhpp(i,j,a,d);
+            returnMat(i1-range_lower1, i2-range_lower2) = T2_elements[id];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeAmpMat::T5a_makemat_1(int channel1, int channel2){    //makes a 2x2 matrix
+
+    int range_lower1 = m_intClass->indexHolder_pp_hp(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_pp_hp(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_pp_ph(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pp_ph(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id;
+    int i; int l;
+    int a; int d;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            l = m_intClass->blockArrays_pp_hp(1,i1);
+            d = m_intClass->blockArrays_pp_hp(2,i1);
+            a = m_intClass->blockArrays_pp_ph(1,i1);
+            i = m_intClass->blockArrays_pp_ph(2,i2);
+
+            id = m_intClass->Identity_hhpp(i,l,a,d);
+            returnMat(i1-range_lower1, i2-range_lower2) = T2_elements[id];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeAmpMat::T5a_makemat_2(int channel1, int channel2){    //makes a 4x2 matrix
+
+    int range_lower1 = m_intClass->indexHolder_ppmm_hhpp(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppmm_hhpp(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_pm_ph(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pm_ph(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id; int index;
+    int m; int j; int k;
+    int e; int b; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+            //std::cout << "sup" << std::endl;
+
+            j = m_intClass->blockArrays_ppmm_hhpp(1,i1);
+            k = m_intClass->blockArrays_ppmm_hhpp(2,i1);
+            b = m_intClass->blockArrays_ppmm_hhpp(3,i1);
+            c = m_intClass->blockArrays_ppmm_hhpp(4,i1);
+            e = m_intClass->blockArrays_pm_ph(1,i2);
+            m = m_intClass->blockArrays_pm_ph(2,i2);
+
+            id = m_intClass->Identity_hhhppp(m,j,k,e,b,c);
+            index = T3_elements_I[index];
+            returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeAmpMat::T5b_makemat_1(int channel1, int channel2){    //makes a 3x1 matrix
+
+    int range_lower1 = m_intClass->indexHolder_ppm_pph(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppm_pph(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_p_h(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_p_h(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id;
+    int l; int i;
+    int d; int e;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            d = m_intClass->blockArrays_ppm_pph(1,i1);
+            e = m_intClass->blockArrays_ppm_pph(2,i1);
+            l = m_intClass->blockArrays_ppm_pph(3,i1);
+            i = m_intClass->blockArrays_p_h(1,i2);
+
+            id = m_intClass->Identity_hhpp(l,i,d,e);
+            returnMat(i1-range_lower1, i2-range_lower2) = T2_elements[id];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeAmpMat::T5b_makemat_2(int channel1, int channel2){    //makes a 5x1 matrix
+
+    int range_lower1 = m_intClass->indexHolder_pppmm_ppphh(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_pppmm_ppphh(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_p_h(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_p_h(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id; int index;
+    int m; int j; int k;
+    int a; int b; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+            //std::cout << "sup" << std::endl;
+
+            a = m_intClass->blockArrays_pppmm_ppphh(1,i1);
+            b = m_intClass->blockArrays_pppmm_ppphh(2,i1);
+            c = m_intClass->blockArrays_pppmm_ppphh(3,i1);
+            j = m_intClass->blockArrays_pppmm_ppphh(4,i1);
+            k = m_intClass->blockArrays_pppmm_ppphh(5,i1);
+            m = m_intClass->blockArrays_p_h(1,i2);
+
+            id = m_intClass->Identity_hhhppp(m,j,k,a,b,c);
+            index = T3_elements_I[index];
+            returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeAmpMat::T5c_makemat_1(int channel1, int channel2){    //makes a 3x1 matrix
+
+    int range_lower1 = m_intClass->indexHolder_ppm_hhp(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppm_hhp(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_p_p(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_p_p(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id;
+    int l; int m;
+    int d; int a;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            l = m_intClass->blockArrays_ppm_hhp(1,i1);
+            m = m_intClass->blockArrays_ppm_hhp(2,i1);
+            d = m_intClass->blockArrays_ppm_hhp(3,i1);
+            a = m_intClass->blockArrays_p_p(1,i2);
+
+            id = m_intClass->Identity_hhpp(l,m,d,a);
+            returnMat(i1-range_lower1, i2-range_lower2) = T2_elements[id];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeAmpMat::T5c_makemat_2(int channel1, int channel2){    //makes a 5x1 matrix
+
+    int range_lower1 = m_intClass->indexHolder_pppmm_hhhpp(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_pppmm_hhhpp(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_p_p(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_p_p(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id; int index;
+    int i; int j; int k;
+    int e; int b; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+            //std::cout << "sup" << std::endl;
+
+            i = m_intClass->blockArrays_pppmm_hhhpp(1,i1);
+            j = m_intClass->blockArrays_pppmm_hhhpp(2,i1);
+            k = m_intClass->blockArrays_pppmm_hhhpp(3,i1);
+            b = m_intClass->blockArrays_pppmm_hhhpp(4,i1);
+            c = m_intClass->blockArrays_pppmm_hhhpp(5,i1);
+            e = m_intClass->blockArrays_p_p(1,i2);
+
+            id = m_intClass->Identity_hhhppp(i,j,k,e,b,c);
+            index = T3_elements_I[index];
+            returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeAmpMat::T5d_makemat_1(int channel1, int channel2){    //makes a 3x1 matrix
+
+    int range_lower1 = m_intClass->indexHolder_ppm_hhp(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppm_hhp(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_p_p(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_p_p(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id;
+    int i; int j;
+    int a; int d;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            i = m_intClass->blockArrays_ppm_hhp(1,i1);
+            j = m_intClass->blockArrays_ppm_hhp(2,i1);
+            a = m_intClass->blockArrays_ppm_hhp(3,i1);
+            d = m_intClass->blockArrays_p_p(1,i2);
+
+            id = m_intClass->Identity_hhpp(i,j,a,d);
+            returnMat(i1-range_lower1, i2-range_lower2) = T2_elements[id];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeAmpMat::T5d_makemat_2(int channel1, int channel2){    //makes a 3x3 matrix
+
+    int range_lower1 = m_intClass->indexHolder_ppm_hhp(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppm_hhp(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_ppm_pph(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_ppm_pph(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id; int index;
+    int l; int m; int k;
+    int b; int e; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+            //std::cout << "sup" << std::endl;
+
+            l = m_intClass->blockArrays_ppm_hhp(1,i1);
+            m = m_intClass->blockArrays_ppm_hhp(2,i1);
+            e = m_intClass->blockArrays_ppm_hhp(3,i1);
+            b = m_intClass->blockArrays_ppm_pph(1,i2);
+            c = m_intClass->blockArrays_ppm_pph(2,i2);
+            k = m_intClass->blockArrays_ppm_pph(3,i2);
+
+            id = m_intClass->Identity_hhhppp(l,m,k,b,e,c);
+            index = T3_elements_I[id];
+            returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeAmpMat::T5e_makemat_1(int channel1, int channel2){    //makes a 3x1 matrix
+
+    int range_lower1 = m_intClass->indexHolder_ppm_pph(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppm_pph(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_p_h(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_p_h(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id;
+    int i; int l;
+    int a; int b;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            a = m_intClass->blockArrays_ppm_pph(1,i1);
+            b = m_intClass->blockArrays_ppm_pph(2,i1);
+            i = m_intClass->blockArrays_ppm_pph(3,i1);
+            l = m_intClass->blockArrays_p_h(1,i2);
+
+            id = m_intClass->Identity_hhpp(i,l,a,b);
+            returnMat(i1-range_lower1, i2-range_lower2) = T2_elements[id];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeAmpMat::T5e_makemat_2(int channel1, int channel2){    //makes a 3x3 matrix
+
+    int range_lower1 = m_intClass->indexHolder_ppm_hhp(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppm_hhp(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_ppm_pph(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_ppm_pph(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id; int index;
+    int j; int m; int k;
+    int d; int e; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+            //std::cout << "sup" << std::endl;
+
+            j = m_intClass->blockArrays_ppm_hhp(1,i1);
+            k = m_intClass->blockArrays_ppm_hhp(2,i1);
+            c = m_intClass->blockArrays_ppm_hhp(3,i1);
+            d = m_intClass->blockArrays_ppm_pph(1,i2);
+            e = m_intClass->blockArrays_ppm_pph(2,i2);
+            m = m_intClass->blockArrays_ppm_pph(3,i2);
+
+            id = m_intClass->Identity_hhhppp(j,m,k,d,e,c);
+            index = T3_elements_I[id];
+            returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeAmpMat::T5f_makemat_1(int channel1, int channel2){    //makes a 2x2 matrix
+
+    int range_lower1 = m_intClass->indexHolder_pp_hh(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_pp_hh(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_pp_pp(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pp_pp(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id;
+    int i; int j;
+    int d; int e;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            i = m_intClass->blockArrays_pp_hh(1,i1);
+            j = m_intClass->blockArrays_pp_hh(2,i1);
+            d = m_intClass->blockArrays_pp_pp(1,i1);
+            e = m_intClass->blockArrays_pp_pp(2,i2);
+
+            id = m_intClass->Identity_hhpp(i,j,d,e);
+            returnMat(i1-range_lower1, i2-range_lower2) = T2_elements[id];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeAmpMat::T5f_makemat_2(int channel1, int channel2){    //makes a 4x2 matrix
+
+    int range_lower1 = m_intClass->indexHolder_pppm_ppph(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_pppm_ppph(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_pp_hh(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pp_hh(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id; int index;
+    int l; int m; int k;
+    int a; int b; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+            //std::cout << "sup" << std::endl;
+
+            a = m_intClass->blockArrays_pppm_ppph(1,i1);
+            b = m_intClass->blockArrays_pppm_ppph(2,i1);
+            c = m_intClass->blockArrays_pppm_ppph(3,i1);
+            k = m_intClass->blockArrays_pppm_ppph(4,i1);
+            l = m_intClass->blockArrays_pp_hh(1,i2);
+            m = m_intClass->blockArrays_pp_hh(2,i2);
+
+            id = m_intClass->Identity_hhhppp(l,m,k,a,b,c);
+            index = T3_elements_I[index];
+            returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeAmpMat::T5g_makemat_1(int channel1, int channel2){    //makes a 2x2 matrix
+
+    int range_lower1 = m_intClass->indexHolder_pp_hh(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_pp_hh(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_pp_pp(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pp_pp(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id;
+    int l; int m;
+    int a; int b;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            l = m_intClass->blockArrays_pp_hh(1,i1);
+            m = m_intClass->blockArrays_pp_hh(2,i1);
+            a = m_intClass->blockArrays_pp_pp(1,i1);
+            b = m_intClass->blockArrays_pp_pp(2,i2);
+
+            id = m_intClass->Identity_hhpp(l,m,a,b);
+            returnMat(i1-range_lower1, i2-range_lower2) = T2_elements[id];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeAmpMat::T5g_makemat_2(int channel1, int channel2){    //makes a 4x2 matrix
+
+    int range_lower1 = m_intClass->indexHolder_pppm_hhhp(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_pppm_hhhp(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_pp_pp(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pp_pp(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id; int index;
+    int i; int j; int k;
+    int d; int e; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+            //std::cout << "sup" << std::endl;
+
+            i = m_intClass->blockArrays_pppm_hhhp(1,i1);
+            j = m_intClass->blockArrays_pppm_hhhp(2,i1);
+            k = m_intClass->blockArrays_pppm_hhhp(3,i1);
+            c = m_intClass->blockArrays_pppm_hhhp(4,i1);
+            d = m_intClass->blockArrays_pm_ph(1,i2);
+            e = m_intClass->blockArrays_pm_ph(2,i2);
+
+            id = m_intClass->Identity_hhhppp(i,j,k,d,e,c);
+            index = T3_elements_I[index];
+            returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
+        }
+    }
+
+    return returnMat;
+}
+
 void MakeAmpMat::T1a_inverse(Eigen::MatrixXd inMat, int channel1, int channel2){
 
     int range_lower1 = m_intClass->indexHolder_ppm_hhp(0, channel1);
@@ -2393,6 +3173,370 @@ void MakeAmpMat::T1b_inverse(Eigen::MatrixXd inMat, int channel1, int channel2){
 }
 
 void MakeAmpMat::T2c_inverse(Eigen::MatrixXd inMat, int channel1, int channel2){
+
+    int range_lower1 = m_intClass->indexHolder_pppm_hhhp(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_pppm_hhhp(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_pp_pp(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pp_pp(1, channel2);
+
+    int id; int index;
+    int i; int j; int k;
+    int a; int b; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            i = m_intClass->blockArrays_pppm_hhhp(1,i1);
+            j = m_intClass->blockArrays_pppm_hhhp(2,i1);
+            k = m_intClass->blockArrays_pppm_hhhp(3,i1);
+            c = m_intClass->blockArrays_pppm_hhhp(4,i1);
+            a = m_intClass->blockArrays_pp_pp(1,i2);
+            b = m_intClass->blockArrays_pp_pp(2,i2);
+
+            id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
+            index = T3_elements_I[id];
+            T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
+        }
+    }
+}
+
+void MakeAmpMat::T2d_inverse(Eigen::MatrixXd inMat, int channel1, int channel2){
+
+    int range_lower1 = m_intClass->indexHolder_pppm_ppph(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_pppm_ppph(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_pp_hh(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pp_hh(1, channel2);
+
+    int id; int index;
+    int i; int j; int k;
+    int a; int b; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            a = m_intClass->blockArrays_pppm_ppph(1,i1);
+            b = m_intClass->blockArrays_pppm_ppph(2,i1);
+            c = m_intClass->blockArrays_pppm_ppph(3,i1);
+            k = m_intClass->blockArrays_pppm_ppph(4,i1);
+            i = m_intClass->blockArrays_pp_hh(1,i2);
+            j = m_intClass->blockArrays_pp_hh(2,i2);
+
+            id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
+            index = T3_elements_I[id];
+            T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
+        }
+    }
+}
+
+void MakeAmpMat::T2e_inverse(Eigen::MatrixXd inMat, int channel1, int channel2){
+
+    int range_lower1 = m_intClass->indexHolder_ppmm_hhpp(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppmm_hhpp(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_pm_ph(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pm_ph(1, channel2);
+
+    int id; int index;
+    int i; int j; int k;
+    int a; int b; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            j = m_intClass->blockArrays_ppmm_hhpp(1,i1);
+            k = m_intClass->blockArrays_ppmm_hhpp(2,i1);
+            b = m_intClass->blockArrays_ppmm_hhpp(3,i1);
+            c = m_intClass->blockArrays_ppmm_hhpp(4,i1);
+            a = m_intClass->blockArrays_pm_ph(1,i2);
+            i = m_intClass->blockArrays_pm_ph(2,i2);
+
+            id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
+            index = T3_elements_I[id];
+            T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
+        }
+    }
+}
+
+void MakeAmpMat::T3b_inverse(Eigen::MatrixXd inMat, int channel1, int channel2){
+
+    int range_lower1 = m_intClass->indexHolder_ppmm_hhpp(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppmm_hhpp(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_pm_ph(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pm_ph(1, channel2);
+
+    int id; int index;
+    int i; int j; int k;
+    int a; int b; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            j = m_intClass->blockArrays_ppmm_hhpp(1,i1);
+            k = m_intClass->blockArrays_ppmm_hhpp(2,i1);
+            c = m_intClass->blockArrays_ppmm_hhpp(3,i1);
+            b = m_intClass->blockArrays_ppmm_hhpp(4,i1);
+            a = m_intClass->blockArrays_pm_ph(1,i2);
+            i = m_intClass->blockArrays_pm_ph(2,i2);
+
+            id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
+            index = T3_elements_I[id];
+            T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
+        }
+    }
+}
+
+void MakeAmpMat::T3c_inverse(Eigen::MatrixXd inMat, int channel1, int channel2){
+
+    int range_lower1 = m_intClass->indexHolder_ppmm_hhpp(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppmm_hhpp(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_pm_ph(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pm_ph(1, channel2);
+
+    int id; int index;
+    int i; int j; int k;
+    int a; int b; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            k = m_intClass->blockArrays_ppmm_hhpp(1,i1);
+            j = m_intClass->blockArrays_ppmm_hhpp(2,i1);
+            b = m_intClass->blockArrays_ppmm_hhpp(3,i1);
+            c = m_intClass->blockArrays_ppmm_hhpp(4,i1);
+            a = m_intClass->blockArrays_pm_ph(1,i2);
+            i = m_intClass->blockArrays_pm_ph(2,i2);
+
+            id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
+            index = T3_elements_I[id];
+            T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
+        }
+    }
+}
+
+void MakeAmpMat::T3d_inverse(Eigen::MatrixXd inMat, int channel1, int channel2){
+
+    int range_lower1 = m_intClass->indexHolder_ppm_hhp(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppm_hhp(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_ppm_pph(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_ppm_pph(1, channel2);
+
+    int id; int index;
+    int i; int j; int k;
+    int a; int b; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            j = m_intClass->blockArrays_ppm_hhp(1,i1);
+            k = m_intClass->blockArrays_ppm_hhp(2,i1);
+            c = m_intClass->blockArrays_ppm_hhp(3,i1);
+            a = m_intClass->blockArrays_ppm_pph(1,i1);
+            b = m_intClass->blockArrays_ppm_pph(2,i2);
+            i = m_intClass->blockArrays_ppm_pph(3,i2);
+
+            id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
+            index = T3_elements_I[id];
+            T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
+        }
+    }
+}
+
+void MakeAmpMat::T3e_inverse(Eigen::MatrixXd inMat, int channel1, int channel2){
+
+    int range_lower1 = m_intClass->indexHolder_ppm_hhp(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppm_hhp(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_ppm_pph(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_ppm_pph(1, channel2);
+
+    int id; int index;
+    int i; int j; int k;
+    int a; int b; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            i = m_intClass->blockArrays_ppm_hhp(1,i1);
+            j = m_intClass->blockArrays_ppm_hhp(2,i1);
+            a = m_intClass->blockArrays_ppm_hhp(3,i1);
+            b = m_intClass->blockArrays_ppm_pph(1,i1);
+            c = m_intClass->blockArrays_ppm_pph(2,i2);
+            k = m_intClass->blockArrays_ppm_pph(3,i2);
+
+            id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
+            index = T3_elements_I[id];
+            T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
+        }
+    }
+}
+
+void MakeAmpMat::T5a_inverse(Eigen::MatrixXd inMat, int channel1, int channel2){
+
+    int range_lower1 = m_intClass->indexHolder_ppmm_hhpp(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppmm_hhpp(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_pm_ph(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pm_ph(1, channel2);
+
+    int id; int index;
+    int i; int j; int k;
+    int a; int b; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            j = m_intClass->blockArrays_ppmm_hhpp(1,i1);
+            k = m_intClass->blockArrays_ppmm_hhpp(2,i1);
+            b = m_intClass->blockArrays_ppmm_hhpp(3,i1);
+            c = m_intClass->blockArrays_ppmm_hhpp(4,i1);
+            a = m_intClass->blockArrays_pm_ph(1,i2);
+            i = m_intClass->blockArrays_pm_ph(2,i2);
+
+            id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
+            index = T3_elements_I[id];
+            T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
+        }
+    }
+}
+
+void MakeAmpMat::T5b_inverse(Eigen::MatrixXd inMat, int channel1, int channel2){
+
+    int range_lower1 = m_intClass->indexHolder_pppmm_ppphh(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_pppmm_ppphh(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_p_h(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_p_h(1, channel2);
+
+    int id; int index;
+    int i; int j; int k;
+    int a; int b; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            a = m_intClass->blockArrays_pppmm_ppphh(1,i1);
+            b = m_intClass->blockArrays_pppmm_ppphh(2,i1);
+            c = m_intClass->blockArrays_pppmm_ppphh(3,i1);
+            j = m_intClass->blockArrays_pppmm_ppphh(4,i1);
+            k = m_intClass->blockArrays_pppmm_ppphh(5,i1);
+            i = m_intClass->blockArrays_p_h(1,i2);
+
+            id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
+            index = T3_elements_I[id];
+            T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
+        }
+    }
+}
+
+void MakeAmpMat::T5c_inverse(Eigen::MatrixXd inMat, int channel1, int channel2){
+
+    int range_lower1 = m_intClass->indexHolder_pppmm_hhhpp(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_pppmm_hhhpp(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_p_p(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_p_p(1, channel2);
+
+    int id; int index;
+    int i; int j; int k;
+    int a; int b; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            i = m_intClass->blockArrays_pppmm_hhhpp(1,i1);
+            j = m_intClass->blockArrays_pppmm_hhhpp(2,i1);
+            k = m_intClass->blockArrays_pppmm_hhhpp(3,i1);
+            b = m_intClass->blockArrays_pppmm_hhhpp(4,i1);
+            c = m_intClass->blockArrays_pppmm_hhhpp(5,i1);
+            a = m_intClass->blockArrays_p_p(1,i2);
+
+            id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
+            index = T3_elements_I[id];
+            T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
+        }
+    }
+}
+
+void MakeAmpMat::T5d_inverse(Eigen::MatrixXd inMat, int channel1, int channel2){
+
+    int range_lower1 = m_intClass->indexHolder_ppm_hhp(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppm_hhp(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_ppm_pph(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_ppm_pph(1, channel2);
+
+    int id; int index;
+    int i; int j; int k;
+    int a; int b; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            i = m_intClass->blockArrays_ppm_hhp(1,i1);
+            j = m_intClass->blockArrays_ppm_hhp(2,i1);
+            a = m_intClass->blockArrays_ppm_hhp(3,i1);
+            b = m_intClass->blockArrays_ppm_pph(1,i1);
+            c = m_intClass->blockArrays_ppm_pph(2,i2);
+            k = m_intClass->blockArrays_ppm_pph(3,i2);
+
+            id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
+            index = T3_elements_I[id];
+            T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
+        }
+    }
+}
+
+void MakeAmpMat::T5e_inverse(Eigen::MatrixXd inMat, int channel1, int channel2){
+
+    int range_lower1 = m_intClass->indexHolder_ppm_hhp(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppm_hhp(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_ppm_pph(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_ppm_pph(1, channel2);
+
+    int id; int index;
+    int i; int j; int k;
+    int a; int b; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            j = m_intClass->blockArrays_ppm_hhp(1,i1);
+            k = m_intClass->blockArrays_ppm_hhp(2,i1);
+            c = m_intClass->blockArrays_ppm_hhp(3,i1);
+            a = m_intClass->blockArrays_ppm_pph(1,i1);
+            b = m_intClass->blockArrays_ppm_pph(2,i2);
+            i = m_intClass->blockArrays_ppm_pph(3,i2);
+
+            id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
+            index = T3_elements_I[id];
+            T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
+        }
+    }
+}
+
+void MakeAmpMat::T5f_inverse(Eigen::MatrixXd inMat, int channel1, int channel2){
+
+    int range_lower1 = m_intClass->indexHolder_pppm_ppph(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_pppm_ppph(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_pp_hh(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pp_hh(1, channel2);
+
+    int id; int index;
+    int i; int j; int k;
+    int a; int b; int c;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            a = m_intClass->blockArrays_pppm_ppph(1,i1);
+            b = m_intClass->blockArrays_pppm_ppph(2,i1);
+            c = m_intClass->blockArrays_pppm_ppph(3,i1);
+            k = m_intClass->blockArrays_pppm_ppph(4,i1);
+            i = m_intClass->blockArrays_pp_hh(1,i2);
+            j = m_intClass->blockArrays_pp_hh(2,i2);
+
+            id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
+            index = T3_elements_I[id];
+            T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
+        }
+    }
+}
+
+void MakeAmpMat::T5g_inverse(Eigen::MatrixXd inMat, int channel1, int channel2){
 
     int range_lower1 = m_intClass->indexHolder_pppm_hhhp(0, channel1);
     int range_upper1 = m_intClass->indexHolder_pppm_hhhp(1, channel1);

@@ -22,10 +22,11 @@ public:
     virtual double  assym_single    (int p, int q)                  = 0;
     virtual double  h0              (int p)                         = 0;
     virtual double  f               (int p)                         = 0;
-    virtual int     kUnique1        (int p, int s1)                                              = 0;
-    virtual int     kUnique2        (int p, int q, int s1, int s2)                               = 0;
-    virtual int     kUnique3        (int p, int q, int r, int s1, int s2, int s3)                = 0;
-    virtual int     kUnique4        (int p, int q, int r, int s, int s1, int s2, int s3, int s4) = 0;
+    virtual int     kUnique1        (int p, int s1)                                                             = 0;
+    virtual int     kUnique2        (int p, int q, int s1, int s2)                                              = 0;
+    virtual int     kUnique3        (int p, int q, int r, int s1, int s2, int s3)                               = 0;
+    virtual int     kUnique4        (int p, int q, int r, int s, int s1, int s2, int s3, int s4)                = 0;
+    virtual int     kUnique5        (int p, int q, int r, int s, int t, int s1, int s2, int s3, int s4, int s5) = 0;
 };
 
 #endif // SYSTEM_H
