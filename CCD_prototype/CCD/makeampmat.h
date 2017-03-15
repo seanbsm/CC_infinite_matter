@@ -71,6 +71,7 @@ public:
     Eigen::MatrixXd                 T2d_makemat(int channel1, int channel2);
     Eigen::MatrixXd                 T2e_makemat(int channel1, int channel2);
 
+
     //quadratic T2 terms in T3
     Eigen::MatrixXd                 T3b_makemat_1(int channel1, int channel2);
     Eigen::MatrixXd                 T3b_makemat_2(int channel1, int channel2);
@@ -114,6 +115,13 @@ public:
     void                            T2c_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
     void                            T2d_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
     void                            T2e_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
+
+    //since the T3b-e diagrams are more finicky than the rest, we need a remapper for the first product
+    std::unordered_map<int, double> T3D_remap;
+    void                            T3b_Inverse_temp(Eigen::MatrixXd inMat, int channel1, int channel2);
+    void                            T3c_Inverse_temp(Eigen::MatrixXd inMat, int channel1, int channel2);
+    void                            T3d_Inverse_temp(Eigen::MatrixXd inMat, int channel1, int channel2);
+    void                            T3e_Inverse_temp(Eigen::MatrixXd inMat, int channel1, int channel2);
 
     //quadratic T2 terms in T3
     void                            T3b_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);

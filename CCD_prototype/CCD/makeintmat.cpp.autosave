@@ -820,10 +820,10 @@ Eigen::MatrixXd MakeIntMat::T1b_makemat(int channel1, int channel2){    //makes 
 
 Eigen::MatrixXd MakeIntMat::T3b_makemat(int channel1, int channel2){    //makes a 2x2 matrix
 
-    int range_lower1 = indexHolder_pm_pp(0, channel1);
-    int range_upper1 = indexHolder_pm_pp(1, channel1);
-    int range_lower2 = indexHolder_pm_ph(0, channel2);
-    int range_upper2 = indexHolder_pm_ph(1, channel2);
+    int range_lower1 = indexHolder_pm_ph(0, channel1);
+    int range_upper1 = indexHolder_pm_ph(1, channel1);
+    int range_lower2 = indexHolder_pm_pp(0, channel2);
+    int range_upper2 = indexHolder_pm_pp(1, channel2);
 
     Eigen::MatrixXd returnMat;
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
@@ -836,10 +836,10 @@ Eigen::MatrixXd MakeIntMat::T3b_makemat(int channel1, int channel2){    //makes 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
         for (int i2 = range_lower2; i2<range_upper2; i2++){
 
-            b = blockArrays_pm_pp(1,i1);
-            e = blockArrays_pm_pp(2,i1);
-            d = blockArrays_pm_ph(1,i2);
-            l = blockArrays_pm_ph(2,i2);
+            d = blockArrays_pm_ph(1,i1);
+            l = blockArrays_pm_ph(2,i1);
+            b = blockArrays_pm_pp(1,i2);
+            e = blockArrays_pm_pp(2,i2);
 
             id = Identity_ppph(d,e,b,l);
             returnMat(i1-range_lower1, i2-range_lower2) = Vppph_elements[id];

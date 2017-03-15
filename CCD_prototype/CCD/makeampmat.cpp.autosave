@@ -2438,8 +2438,8 @@ Eigen::MatrixXd MakeAmpMat::T3b_makemat_1(int channel1, int channel2){    //make
 
 Eigen::MatrixXd MakeAmpMat::T3b_makemat_2(int channel1, int channel2){    //makes a 2x2 matrix
 
-    int range_lower1 = m_intClass->indexHolder_pm_ph(0, channel1);
-    int range_upper1 = m_intClass->indexHolder_pm_ph(1, channel1);
+    int range_lower1 = m_intClass->indexHolder_ppm_pph(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppm_pph(1, channel1);
     int range_lower2 = m_intClass->indexHolder_pm_ph(0, channel2);
     int range_upper2 = m_intClass->indexHolder_pm_ph(1, channel2);
 
