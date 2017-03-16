@@ -36,7 +36,7 @@ public:
 
     //std::unordered_map<int, int>              T2_elements_I;
     //std::vector<double>                       T2_elements_A;
-    std::unordered_map<int, int>              T3_elements_I;        //holds indices to T3_elements_A, same for _new and _temp
+    std::unordered_map<unsigned long long int, int>         T3_elements_I;        //holds indices to T3_elements_A, same for _new and _temp
     std::vector<double>                       T3_elements_A;        //holds T3 amplitudes
     std::vector<double>                       T3_elements_A_new;    //holds new T3 amplitudes
     std::vector<double>                       T3_elements_A_temp;   //holds temporary diagram contributions

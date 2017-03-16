@@ -333,7 +333,7 @@ void Diagrams::D10c(){
 // ##################################################
 
 void Diagrams::makeT3(){
-    int index = 0; int ku; int id;
+    int index = 0; int ku; unsigned long long int id;
     int i; int j; int k;
     int a; int b; int c;
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
@@ -506,6 +506,7 @@ void Diagrams::T3b(){
                     Eigen::MatrixXd mat2 = m_intClass->T3b_makemat(i3, i1);
                     Eigen::MatrixXd product = mat2*mat1;
 
+                    //std::cout << mat2 << std::endl;
                     m_ampClass->T3b_Inverse_temp(product, i3, i2);
                 }
             }
@@ -521,7 +522,7 @@ void Diagrams::T3b(){
 
                     Eigen::MatrixXd mat1 = m_ampClass->T3b_makemat_2(i1, i2);
                     Eigen::MatrixXd mat2 = m_ampClass->T3b_makemat_3(i3, i2);
-                    Eigen::MatrixXd product = mat2*mat1.transpose();
+                    Eigen::MatrixXd product = -mat2*mat1.transpose();
 
                     m_ampClass->T3b_inverse(product, i3, i1);
                 }
@@ -531,6 +532,8 @@ void Diagrams::T3b(){
 
     m_ampClass->addElementsT3_T3b();
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
+    m_ampClass->T3D_remap.clear();
+
 }
 
 /*void Diagrams::T5a(){

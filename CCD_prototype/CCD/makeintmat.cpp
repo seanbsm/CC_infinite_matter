@@ -41,12 +41,14 @@ void MakeIntMat::makePermutations(){
     blockArrays_ppp_hhh_Pij.conservativeResize(2,cols_h);
     blockArrays_ppp_hhh_Pik.conservativeResize(2,cols_h);
     blockArrays_ppp_hhh_Pjk.conservativeResize(2,cols_h);
-    blockArrays_ppp_hhh_Pijk.conservativeResize(2,cols_h);
+    blockArrays_ppp_hhh_Pijik.conservativeResize(2,cols_h);
+    blockArrays_ppp_hhh_Pijjk.conservativeResize(2,cols_h);
 
     blockArrays_ppp_ppp_Pab.conservativeResize(2,cols_p);
     blockArrays_ppp_ppp_Pac.conservativeResize(2,cols_p);
     blockArrays_ppp_ppp_Pbc.conservativeResize(2,cols_p);
-    blockArrays_ppp_ppp_Pabc.conservativeResize(2,cols_p);
+    blockArrays_ppp_ppp_Pabac.conservativeResize(2,cols_p);
+    blockArrays_ppp_ppp_Pabbc.conservativeResize(2,cols_p);
 
     int range_lower_h;
     int range_upper_h;
@@ -55,11 +57,11 @@ void MakeIntMat::makePermutations(){
 
     int i1; int j1; int k1;
     int i2; int j2; int k2;
-    int val_ij2; int val_ik2; int val_jk2; int val_ijk2;
+    int val_ij2; int val_ik2; int val_jk2; int val_ijik2; int val_ijjk2;
 
     int a1; int b1; int c1;
     int a2; int b2; int c2;
-    int val_ab2; int val_ac2; int val_bc2; int val_abc2;
+    int val_ab2; int val_ac2; int val_bc2; int val_abac2;; int val_abbc2;
 
     int val1;
 
@@ -112,27 +114,33 @@ void MakeIntMat::makePermutations(){
                 val_ij2  = j2 + i2*Nh + k2*Nh2;
                 val_ik2  = k2 + j2*Nh + i2*Nh2;
                 val_jk2  = i2 + k2*Nh + j2*Nh2;
-                val_ijk2 = k2 + i2*Nh + j2*Nh2; // P(ki)P(kj): (i,j,k) -> (k,i,j)
+                val_ijik2 = k2 + i2*Nh + j2*Nh2; // P(ki)P(kj): (i,j,k) -> (k,i,j)
+                val_ijjk2 = j2 + k2*Nh + i2*Nh2; // P(ki)P(kj): (i,j,k) -> (j,k,i)
 
                 //if(counter!=0){std::cout << counter << std::endl; std::cout << numOfKu3 << std::endl;}
                 if (val1 == val_ij2){
                     blockArrays_ppp_hhh_Pij.col(it1) << it1, it2;
-                    blockArrays_ppp_hhh_Pij.col(it2) << it2, it1;
+                    //blockArrays_ppp_hhh_Pij.col(it2) << it2, it1;
                     counter ++;
                 }
                 if (val1 == val_ik2){
                     blockArrays_ppp_hhh_Pik.col(it1) << it1, it2;
-                    blockArrays_ppp_hhh_Pik.col(it2) << it2, it1;
+                    //blockArrays_ppp_hhh_Pik.col(it2) << it2, it1;
                     counter ++;
                 }
                 if (val1 == val_jk2){
                     blockArrays_ppp_hhh_Pjk.col(it1) << it1, it2;
-                    blockArrays_ppp_hhh_Pjk.col(it2) << it2, it1;
+                    //blockArrays_ppp_hhh_Pjk.col(it2) << it2, it1;
                     counter ++;
                 }
-                if (val1 == val_ijk2){
-                    blockArrays_ppp_hhh_Pijk.col(it1) << it1, it2;
-                    blockArrays_ppp_hhh_Pijk.col(it2) << it2, it1;
+                if (val1 == val_ijik2){
+                    blockArrays_ppp_hhh_Pijik.col(it1) << it1, it2;
+                    //blockArrays_ppp_hhh_Pijik.col(it2) << it2, it1;
+                    counter ++;
+                }
+                if (val1 == val_ijjk2){
+                    blockArrays_ppp_hhh_Pijjk.col(it1) << it1, it2;
+                    //blockArrays_ppp_hhh_Pijjk.col(it2) << it2, it1;
                     counter ++;
                 }
             }
@@ -175,33 +183,41 @@ void MakeIntMat::makePermutations(){
                 val_ab2  = b2 + a2*Np + c2*Np2;
                 val_ac2  = c2 + b2*Np + a2*Np2;
                 val_bc2  = a2 + c2*Np + b2*Np2;
-                val_abc2 = c2 + a2*Np + b2*Np2; // P(ab)P(ac): (a,b,c) -> (c,a,b)
+                val_abac2 = c2 + a2*Np + b2*Np2; // P(ab)P(ac): (a,b,c) -> (c,a,b)
+                val_abbc2 = b2 + c2*Np + a2*Np2; // P(ab)P(bc): (a,b,c) -> (b,c,a)
 
                 if (val1 == val_ab2){
                     blockArrays_ppp_ppp_Pab.col(it1) << it1, it2;
-                    blockArrays_ppp_ppp_Pab.col(it2) << it2, it1;
+                    //blockArrays_ppp_ppp_Pab.col(it2) << it2, it1;
                     //if (it2-range_lower_p < 0){std::cout << it2-range_lower_p << std::endl;}
                     counter ++;
                 }
                 if (val1 == val_ac2){
                     blockArrays_ppp_ppp_Pac.col(it1) << it1, it2;
-                    blockArrays_ppp_ppp_Pac.col(it2) << it2, it1;
+                    //blockArrays_ppp_ppp_Pac.col(it2) << it2, it1;
                     counter ++;
                 }
                 if (val1 == val_bc2){
                     blockArrays_ppp_ppp_Pbc.col(it1) << it1, it2;
-                    blockArrays_ppp_ppp_Pbc.col(it2) << it2, it1;
+                    //blockArrays_ppp_ppp_Pbc.col(it2) << it2, it1;
                     counter ++;
                 }
-                if (val1 == val_abc2){
-                    blockArrays_ppp_ppp_Pabc.col(it1) << it1, it2;
-                    blockArrays_ppp_ppp_Pabc.col(it2) << it2, it1;
+                if (val1 == val_abac2){
+                    blockArrays_ppp_ppp_Pabac.col(it1) << it1, it2;
+                    //blockArrays_ppp_ppp_Pabac.col(it2) << it2, it1;
+                    counter ++;
+                }
+                if (val1 == val_abbc2){
+                    blockArrays_ppp_ppp_Pabbc.col(it1) << it1, it2;
+                    //blockArrays_ppp_ppp_Pabbc.col(it2) << it2, it1;
                     counter ++;
                 }
             }
             //if (counter == 0){ std::cout << it1-range_lower_h << std::endl;}
         }
     }
+
+    //std::cout << blockArrays_ppp_ppp_Pabbc.cols() << std::endl;
 
     /*for (int channel = 0; channel<5; channel++){
         range_lower_p = boundsHolder_hhhppp_ppp(0,channel);
@@ -695,7 +711,7 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
 // ##                                              ##
 // ##################################################
 
-Eigen::MatrixXd MakeIntMat::D10b_makemat(int channel1, int channel2){
+Eigen::MatrixXd MakeIntMat::D10b_makemat(int channel1, int channel2){    //makes a 3x1 matrix
 
     int range_lower1 = indexHolder_ppm_pph(0, channel1);
     int range_upper1 = indexHolder_ppm_pph(1, channel1);
@@ -836,10 +852,10 @@ Eigen::MatrixXd MakeIntMat::T3b_makemat(int channel1, int channel2){    //makes 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
         for (int i2 = range_lower2; i2<range_upper2; i2++){
 
-            l = blockArrays_pm_pp(1,i1);
-            d = blockArrays_pm_pp(2,i1);
-            e = blockArrays_pm_hp(1,i2);
-            b = blockArrays_pm_hp(2,i2);
+            e = blockArrays_pm_pp(1,i1);
+            b = blockArrays_pm_pp(2,i1);
+            l = blockArrays_pm_hp(1,i2);
+            d = blockArrays_pm_hp(2,i2);
 
             id = Identity_ppph(d,e,b,l);
             returnMat(i1-range_lower1, i2-range_lower2) = Vppph_elements[id];
@@ -2324,13 +2340,22 @@ int MakeIntMat::Identity_hhpp(int h1, int h2, int p1, int p2){
 }
 
 int MakeIntMat::Identity_ppph(int p1, int p2, int p3, int h1){
-    return h1 + p1*m_Nh + p2*m_Nh*(m_Ns-m_Nh) + p3*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
+    int out = h1 + p1*m_Nh + p2*m_Nh*(m_Ns-m_Nh) + p3*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
+    if(out<0){std::cout << out << std::endl;}
+    return out;
+    //return h1 + p1*m_Nh + p2*m_Nh*(m_Ns-m_Nh) + p3*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
 }
 
-int MakeIntMat::Identity_hhhppp(int h1, int h2, int h3, int p1, int p2, int p3){
-    return h1 + h2*m_Nh + h3*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh + p2*m_Nh*m_Nh*m_Nh*(m_Ns-m_Nh) + p3*m_Nh*m_Nh*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
+unsigned long long int MakeIntMat::Identity_hhhppp(int h1, int h2, int h3, int p1, int p2, int p3){
+    unsigned long long int out = h1 + h2*m_Nh + h3*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh + p2*m_Nh*m_Nh*m_Nh*(m_Ns-m_Nh) + p3*m_Nh*m_Nh*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
+    //if(out<0){std::cout << out << std::endl;}
+    return out;
+    //return h1 + h2*m_Nh + h3*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh + p2*m_Nh*m_Nh*m_Nh*(m_Ns-m_Nh) + p3*m_Nh*m_Nh*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
 }
 
 int MakeIntMat::Identity_hhhhhp(int h1, int h2, int h3, int h4, int h5, int p1){
-    return h1 + h2*m_Nh + h3*m_Nh*m_Nh + h4*m_Nh*m_Nh*m_Nh + h5*m_Nh*m_Nh*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh*m_Nh*m_Nh;
+    int out = h1 + h2*m_Nh + h3*m_Nh*m_Nh + h4*m_Nh*m_Nh*m_Nh + h5*m_Nh*m_Nh*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh*m_Nh*m_Nh;
+    if(out<0){std::cout << out << std::endl;}
+    return out;
+    //return h1 + h2*m_Nh + h3*m_Nh*m_Nh + h4*m_Nh*m_Nh*m_Nh + h5*m_Nh*m_Nh*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh*m_Nh*m_Nh;
 }

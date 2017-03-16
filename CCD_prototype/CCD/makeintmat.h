@@ -63,15 +63,17 @@ public:
 
     //T3 permutations, needed to restack t_ijk^abc matrices
     //same shape as corresponding blockArrays
-    Eigen::MatrixXi blockArrays_ppp_hhh_Pij;
-    Eigen::MatrixXi blockArrays_ppp_hhh_Pik;
-    Eigen::MatrixXi blockArrays_ppp_hhh_Pjk;
-    Eigen::MatrixXi blockArrays_ppp_hhh_Pijk;
+    Eigen::MatrixXi blockArrays_ppp_hhh_Pij;    // ijk <-> jik
+    Eigen::MatrixXi blockArrays_ppp_hhh_Pik;    // ijk <-> kji
+    Eigen::MatrixXi blockArrays_ppp_hhh_Pjk;    // ijk <-> ikj
+    Eigen::MatrixXi blockArrays_ppp_hhh_Pijik;  // ijk <-> kij
+    Eigen::MatrixXi blockArrays_ppp_hhh_Pijjk;  // ijk <-> jki
 
-    Eigen::MatrixXi blockArrays_ppp_ppp_Pab;
-    Eigen::MatrixXi blockArrays_ppp_ppp_Pac;
-    Eigen::MatrixXi blockArrays_ppp_ppp_Pbc;
-    Eigen::MatrixXi blockArrays_ppp_ppp_Pabc;
+    Eigen::MatrixXi blockArrays_ppp_ppp_Pab;    // abc <-> bac
+    Eigen::MatrixXi blockArrays_ppp_ppp_Pac;    // abc <-> cba
+    Eigen::MatrixXi blockArrays_ppp_ppp_Pbc;    // abc <-> acb
+    Eigen::MatrixXi blockArrays_ppp_ppp_Pabac;  // abc <-> cab
+    Eigen::MatrixXi blockArrays_ppp_ppp_Pabbc;  // abc <-> bca
 
     void makePermutations(); //fills all permutaion matrices
 
@@ -195,7 +197,7 @@ public:
     int                             Identity_hhhp(int h1, int h2, int h3, int p1);
     int                             Identity_hhpp(int h1, int h2, int p1, int p2);
     int                             Identity_ppph(int p1, int p2, int p3, int h1);
-    int                             Identity_hhhppp(int h1, int h2, int h3, int p1, int p2, int p3);
+    unsigned long long int          Identity_hhhppp(int h1, int h2, int h3, int p1, int p2, int p3);
     int                             Identity_hhhhhp(int h1, int h2, int h3, int h4, int h5, int p1); //this is a special function for T3e alone
     std::unordered_map<int, double>           Vhhhp_elements; //needed for T3
     std::unordered_map<int, double>           Vhhpp_elements;
