@@ -157,7 +157,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
     }
 
 
-    while (conFac > eps /*&& counter < 5e1*/){
+    while (conFac > eps /*&& counter < 1e1*/){
         ECCD = 0;
         //could make an m_ampClass::updateT or something
         m_ampClass->T2_elements_new.clear();
@@ -189,7 +189,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
 
             m_diagrams->T1a();
             m_diagrams->T1b();
-            //m_diagrams->T2c();
+            m_diagrams->T3b();
 
             //update T3 amplitudes
             for (int channel = 0; channel<m_intClass->numOfKu3; channel++){

@@ -822,8 +822,8 @@ Eigen::MatrixXd MakeIntMat::T3b_makemat(int channel1, int channel2){    //makes 
 
     int range_lower1 = indexHolder_pm_pp(0, channel1);
     int range_upper1 = indexHolder_pm_pp(1, channel1);
-    int range_lower2 = indexHolder_pm_ph(0, channel2);
-    int range_upper2 = indexHolder_pm_ph(1, channel2);
+    int range_lower2 = indexHolder_pm_hp(0, channel2);
+    int range_upper2 = indexHolder_pm_hp(1, channel2);
 
     Eigen::MatrixXd returnMat;
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
@@ -836,10 +836,10 @@ Eigen::MatrixXd MakeIntMat::T3b_makemat(int channel1, int channel2){    //makes 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
         for (int i2 = range_lower2; i2<range_upper2; i2++){
 
-            b = blockArrays_pm_pp(1,i1);
-            e = blockArrays_pm_pp(2,i1);
-            d = blockArrays_pm_ph(1,i2);
-            l = blockArrays_pm_ph(2,i2);
+            l = blockArrays_pm_pp(1,i1);
+            d = blockArrays_pm_pp(2,i1);
+            e = blockArrays_pm_hp(1,i2);
+            b = blockArrays_pm_hp(2,i2);
 
             id = Identity_ppph(d,e,b,l);
             returnMat(i1-range_lower1, i2-range_lower2) = Vppph_elements[id];
@@ -867,8 +867,8 @@ Eigen::MatrixXd MakeIntMat::T3c_makemat(int channel1, int channel2){    //makes 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
         for (int i2 = range_lower2; i2<range_upper2; i2++){
 
-            j = blockArrays_pm_hh(1,i1);
-            m = blockArrays_pm_hh(2,i1);
+            m = blockArrays_pm_hh(1,i1);
+            j = blockArrays_pm_hh(2,i1);
             d = blockArrays_pm_ph(1,i2);
             l = blockArrays_pm_ph(2,i2);
 
@@ -1499,8 +1499,8 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     if (m_triplesOn){
         mapper_2(sortVec_pp_ph, blockArrays_pp_ph, 1,0, 1,1);             //ph
         mapper_2(sortVec_pp_hp, blockArrays_pp_hp, 0,1, 1,1);             //hp
-        mapper_2(sortVec_pm_hh, blockArrays_pm_hh, 1,0, 1,-1);            //ph
-        mapper_2(sortVec_pm_pp, blockArrays_pm_pp, 0,1, 1,-1);            //hp
+        mapper_2(sortVec_pm_hh, blockArrays_pm_hh, 0,0, 1,-1);            //ph
+        mapper_2(sortVec_pm_pp, blockArrays_pm_pp, 1,1, 1,-1);            //hp
         mapper_3(sortVec_ppp_hhh, blockArrays_ppp_hhh, 0,0,0, 1,1,1);     //hhh
         mapper_3(sortVec_ppm_hhh, blockArrays_ppm_hhh, 0,0,0, 1,1,-1);    //hhh
         mapper_3(sortVec_ppp_ppp, blockArrays_ppp_ppp, 1,1,1, 1,1,1);     //ppp
@@ -1658,6 +1658,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             counter = 0;
             indexHolder_pm_hh.col(pp) << range_lower, range_upper; //this now has same indices as sortVec
         }
+
 
         counter     = 0;
         range_lower = 0;

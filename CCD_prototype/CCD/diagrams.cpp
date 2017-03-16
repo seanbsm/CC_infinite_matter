@@ -455,7 +455,7 @@ void Diagrams::T2c(){
         }
     }
 
-    m_ampClass->addElementsT3_T2c();
+    //m_ampClass->addElementsT3_T2c();
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
 }
 
@@ -497,6 +497,44 @@ void Diagrams::T2e(){
 
 void Diagrams::T3b(){
 
+    for (int i1=0; i1<m_intClass->sortVec_pm_hp.size(); i1++){
+        for (int i2=0; i2<m_intClass->sortVec_pm_ph.size(); i2++){
+            for (int i3=0; i3<m_intClass->sortVec_pm_pp.size(); i3++){
+                if ( m_intClass->sortVec_pm_hp[i1] == m_intClass->sortVec_pm_ph[i2] && m_intClass->sortVec_pm_hp[i1] == m_intClass->sortVec_pm_pp[i3]){
+
+                    Eigen::MatrixXd mat1 = m_ampClass->T3b_makemat_1(i1, i2);
+                    Eigen::MatrixXd mat2 = m_intClass->T3b_makemat(i3, i1);
+                    Eigen::MatrixXd product = mat2*mat1;
+
+                    m_ampClass->T3b_Inverse_temp(product, i3, i2);
+                }
+            }
+        }
+    }
+
+    //now use remapped function
+
+    for (int i1=0; i1<m_intClass->sortVec_ppm_pph.size(); i1++){
+        for (int i2=0; i2<m_intClass->sortVec_p_p.size(); i2++){
+            for (int i3=0; i3<m_intClass->sortVec_ppm_hhp.size(); i3++){
+                if ( m_intClass->sortVec_ppm_pph[i1] == m_intClass->sortVec_p_p[i2] && m_intClass->sortVec_ppm_pph[i1] == m_intClass->sortVec_ppm_hhp[i3]){
+
+                    Eigen::MatrixXd mat1 = m_ampClass->T3b_makemat_2(i1, i2);
+                    Eigen::MatrixXd mat2 = m_ampClass->T3b_makemat_3(i3, i2);
+                    Eigen::MatrixXd product = mat2*mat1.transpose();
+
+                    m_ampClass->T3b_inverse(product, i3, i1);
+                }
+            }
+        }
+    }
+
+    m_ampClass->addElementsT3_T3b();
+    std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
+}
+
+/*void Diagrams::T5a(){
+
     for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_ppm_hhp.size(); i3++){
@@ -514,26 +552,5 @@ void Diagrams::T3b(){
 
     //m_ampClass->addElementsT3_T1a();
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
-}
-
-void Diagrams::T5a(){
-
-    for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
-        for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
-            for (int i3=0; i3<m_intClass->sortVec_ppm_hhp.size(); i3++){
-                if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_pph[i2] && m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i3]){
-
-                    Eigen::MatrixXd mat1 = m_intClass->T3b_makemat(i2, i1);
-                    Eigen::MatrixXd mat2 = m_ampClass->T3b_makemat(i3, i1);
-                    Eigen::MatrixXd product = mat2*mat1.transpose();
-
-                    m_ampClass->T3b_inverse(product, i3, i2);
-                }
-            }
-        }
-    }
-
-    //m_ampClass->addElementsT3_T1a();
-    std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
-}
+}*/
 
