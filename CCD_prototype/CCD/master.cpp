@@ -92,11 +92,11 @@ double Master::CC_master(double eps, double conFac){
         ECCD_old += ((Vhhpp.transpose())*(temp)).trace();
 
     }
-    m_ampClass->T2_elements = m_ampClass->T2_elements_new;
+    //m_ampClass->T2_elements = m_ampClass->T2_elements_new;
 
 
     std::cout << std::endl;
-    std::cout << "MBPT2: " << std::setprecision (12) << 0.25*ECCD_old << std::endl;
+    std::cout << "MBPT2: " << std::setprecision (16) << 0.25*ECCD_old << std::endl;
     std::cout << std::endl;
     std::cout << "Start of CC iterations: " << std::endl;
 
@@ -125,30 +125,6 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
     double ECCD_old = E_MBPT2;
     double ECCD     = 0;
 
-
-    /*if (m_triplesOn){   //first iteration in the case of T3
-        if (m_intermediatesOn){
-            m_diagrams->La();
-            m_diagrams->I1_term();  // Lb, Qa
-            m_diagrams->I2_term();  // Lc, Qb, due to structure of blockarrays, this is no faster than calling Lc and Qb seperatly
-            m_diagrams->I3_term();  // Qd
-            m_diagrams->I4_term();  // Qc
-        }
-        else{
-            //CCD diagrams
-            m_diagrams->La();
-            m_diagrams->Lb();
-            m_diagrams->Lc();
-            m_diagrams->Qa();
-            m_diagrams->Qb();
-            m_diagrams->Qc();
-            m_diagrams->Qd();
-        }
-
-        //m_ampClass->T3_elements_new.clear();
-        m_diagrams->makeT3();
-    }*/
-
     if (m_triplesOn){
         m_diagrams->makeT3();
     }
@@ -163,7 +139,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
         m_ampClass->T2_elements_new.clear();
 
         //calculate CCD T2 diagrams
-        if (counter != 0){
+        if (counter != -1){
             if (m_intermediatesOn){
                 m_diagrams->La();
                 m_diagrams->I1_term();  // Lb, Qa
@@ -189,7 +165,20 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
 
             m_diagrams->T1a();
             m_diagrams->T1b();
-            m_diagrams->T3b();
+            //m_diagrams->T2c();
+            //m_diagrams->T2d();  //nan
+            //m_diagrams->T2e();  //wrong
+            //m_diagrams->T3b();
+            //m_diagrams->T3c();  //eigen dim error
+            //m_diagrams->T3d();
+            //m_diagrams->T3e();  //eigen dim error
+            //m_diagrams->T5a();  //slow?
+            //m_diagrams->T5b();
+            //m_diagrams->T5c();  //eigen dim error
+            //m_diagrams->T5d();
+            //m_diagrams->T5e();  //eigen dim error
+            //m_diagrams->T5f();
+            //m_diagrams->T5g();  //eigen dim error
 
             //update T3 amplitudes
             for (int channel = 0; channel<m_intClass->numOfKu3; channel++){

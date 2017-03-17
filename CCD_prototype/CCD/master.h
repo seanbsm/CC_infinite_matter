@@ -14,6 +14,7 @@ public:
     int               m_Nh                 = 0;        //number of particles
     int               m_Nb                 = 0;
     int               m_Ns                 = 0;
+    int               m_Np                 = 0;
     bool              m_triplesOn          = false;
     bool              m_intermediatesOn    = false;
     bool              m_timerOn            = false;

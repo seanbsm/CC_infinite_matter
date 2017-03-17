@@ -1788,7 +1788,6 @@ void MakeAmpMat::addElementsT3_T1b(){
 
         Eigen::MatrixXd Pik(rows,cols);
         Eigen::MatrixXd Pij(rows,cols);
-        Eigen::MatrixXd Pijk(rows,cols);
 
         for (int i=range_lower1; i<range_upper1; i++){
             Pik.row( i - range_lower1)  = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pik(1,i) - range_lower1 );
@@ -1940,6 +1939,152 @@ void MakeAmpMat::addElementsT3_T1b(){
     }*/
 }
 
+void MakeAmpMat::addElementsT3_T2c(){
+
+    int ku;
+
+    for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
+        ku = m_intClass->Vhhhppp_i[channel];
+
+        int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
+        int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
+
+        Eigen::MatrixXi tempIMat = T3_directMat[channel]; //this holds indices for T3_elements_A (as well as _new and _temp)
+        int rows = tempIMat.rows();
+        int cols = tempIMat.cols();
+
+        Eigen::MatrixXd tempAMat;
+        tempAMat.conservativeResize( rows, cols );
+
+        Eigen::MatrixXd tempAMat1;
+        tempAMat1.conservativeResize( rows, cols );
+
+        //should be easily parallizable?
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                tempAMat(row, col) = T3_elements_A_temp[ tempIMat(row, col) ];
+            }
+        }
+
+        //P(c/ab)
+        Eigen::MatrixXd Pac(rows,cols);
+        Eigen::MatrixXd Pbc(rows,cols);
+
+        for (int i=range_lower2; i<range_upper2; i++){
+            Pac.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pac(1,i)-range_lower2 );
+            Pbc.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pbc(1,i)-range_lower2 );
+        }
+
+        tempAMat1 = tempAMat - Pac - Pbc;
+
+        make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+    }
+}
+
+void MakeAmpMat::addElementsT3_T2d(){
+
+    int ku;
+
+    for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
+        ku = m_intClass->Vhhhppp_i[channel];
+
+        int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
+        int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
+
+        Eigen::MatrixXi tempIMat = T3_directMat[channel]; //this holds indices for T3_elements_A (as well as _new and _temp)
+        int rows = tempIMat.rows();
+        int cols = tempIMat.cols();
+
+        Eigen::MatrixXd tempAMat;
+        tempAMat.conservativeResize( rows, cols );
+
+        Eigen::MatrixXd tempAMat1;
+        tempAMat1.conservativeResize( rows, cols );
+
+        //should be easily parallizable?
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                tempAMat(row, col) = T3_elements_A_temp[ tempIMat(row, col) ];
+            }
+        }
+
+        //P(k/ij)
+        Eigen::MatrixXd Pik(rows,cols);
+        Eigen::MatrixXd Pjk(rows,cols);
+
+        for (int i=range_lower1; i<range_upper1; i++){
+            Pik.col( i-range_lower1 )   = tempAMat.col( m_intClass->blockArrays_ppp_hhh_Pik(1,i)-range_lower1 );
+            Pjk.col( i-range_lower1 )   = tempAMat.col( m_intClass->blockArrays_ppp_hhh_Pjk(1,i)-range_lower1 );
+        }
+
+        tempAMat1 = tempAMat - Pik - Pjk;
+
+        std::cout << tempAMat1 << std::endl;
+
+        make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+    }
+}
+
+/*void MakeAmpMat::addElementsT3_T2e(){
+
+    int ku;
+
+    for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
+        ku = m_intClass->Vhhhppp_i[channel];
+
+        int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
+        int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
+        int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
+        int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
+
+        Eigen::MatrixXi tempIMat = T3_directMat[channel]; //this holds indices for T3_elements_A (as well as _new and _temp)
+        int rows = tempIMat.rows();
+        int cols = tempIMat.cols();
+
+        Eigen::MatrixXd tempAMat;
+        tempAMat.conservativeResize( rows, cols );
+
+        Eigen::MatrixXd tempAMat1;
+        tempAMat1.conservativeResize( rows, cols );
+
+        //should be easily parallizable?
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                tempAMat(row, col) = T3_elements_A_temp[ tempIMat(row, col) ];
+            }
+        }
+
+        //P(abc)
+        Eigen::MatrixXd Pab(rows,cols);
+        Eigen::MatrixXd Pac(rows,cols);
+
+        for (int i=range_lower2; i<range_upper2; i++){
+            Pab.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pab(1,i)-range_lower2 );
+            Pac.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pac(1,i)-range_lower2 );
+        }
+
+        tempAMat1 = tempAMat - Pab - Pbc;
+
+        Eigen::MatrixXd tempAMat2;
+        tempAMat2.conservativeResize( rows, cols );
+
+        //P(i/jk)
+        Eigen::MatrixXd Pij(rows,cols);
+        Eigen::MatrixXd Pik(rows,cols);
+
+        for (int i=range_lower1; i<range_upper1; i++){
+            Pij.row( i - range_lower1 ) = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pij(1,i) - range_lower1 );
+            Pik.row( i - range_lower1)  = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pik(1,i) - range_lower1 );
+        }
+
+        tempAMat2 = tempAMat1 - Pij - Pik;
+
+        //std::cout << tempAMat2 << std::endl;
+
+        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+    }
+}*/
+
 void MakeAmpMat::addElementsT3_T3b(){
 
     int ku;
@@ -1998,11 +2143,545 @@ void MakeAmpMat::addElementsT3_T3b(){
             Pij.row( i - range_lower1 ) = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pij(1,i) - range_lower1 );
         }
 
-        tempAMat2 = tempAMat1 -Pik - Pij;
+        tempAMat2 = tempAMat1 - Pik - Pij;
 
         //std::cout << tempAMat2 << std::endl;
 
         make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+    }
+}
+
+void MakeAmpMat::addElementsT3_T3c(){
+
+    int ku;
+
+    for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
+        ku = m_intClass->Vhhhppp_i[channel];
+
+        int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
+        int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
+        int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
+        int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
+
+        Eigen::MatrixXi tempIMat = T3_directMat[channel]; //this holds indices for T3_elements_A (as well as _new and _temp)
+        int rows = tempIMat.rows();
+        int cols = tempIMat.cols();
+
+        Eigen::MatrixXd tempAMat;
+        tempAMat.conservativeResize( rows, cols );
+
+        Eigen::MatrixXd tempAMat1;
+        tempAMat1.conservativeResize( rows, cols );
+
+        //should be easily parallizable?
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                tempAMat(row, col) = T3_elements_A_temp[ tempIMat(row, col) ];
+            }
+        }
+
+        //P(a/bc)
+        Eigen::MatrixXd Pab(rows,cols);
+        Eigen::MatrixXd Pac(rows,cols);
+
+        for (int i=range_lower2; i<range_upper2; i++){
+            Pab.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pab(1,i)-range_lower2 );
+            Pac.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pac(1,i)-range_lower2 );
+        }
+
+        tempAMat1 = tempAMat - Pab - Pac;
+
+        Eigen::MatrixXd tempAMat2;
+        tempAMat2.conservativeResize( rows, cols );
+
+        //P(ijk)
+        Eigen::MatrixXd Pik(rows,cols);
+        Eigen::MatrixXd Pij(rows,cols);
+        Eigen::MatrixXd Pjk(rows,cols);
+        Eigen::MatrixXd Pijik(rows,cols);
+        Eigen::MatrixXd Pijjk(rows,cols);
+
+        for (int i=range_lower1; i<range_upper1; i++){
+            Pik.row( i - range_lower1)  = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pik(1,i) - range_lower1 );
+            Pij.row( i - range_lower1 ) = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pij(1,i) - range_lower1 );
+            Pjk.row( i - range_lower1)  = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pjk(1,i) - range_lower1 );
+            Pijik.row( i - range_lower1 ) = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pijik(1,i) - range_lower1 );
+            Pijjk.row( i - range_lower1)  = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pijjk(1,i) - range_lower1 );
+        }
+
+        tempAMat2 = tempAMat1 - Pik - Pij - Pjk + Pijik + Pijjk;
+
+        //std::cout << tempAMat2 << std::endl;
+
+        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+    }
+}
+
+void MakeAmpMat::addElementsT3_T3d(){
+
+    int ku;
+
+    for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
+        ku = m_intClass->Vhhhppp_i[channel];
+
+        int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
+        int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
+        int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
+        int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
+
+        Eigen::MatrixXi tempIMat = T3_directMat[channel]; //this holds indices for T3_elements_A (as well as _new and _temp)
+        int rows = tempIMat.rows();
+        int cols = tempIMat.cols();
+
+        Eigen::MatrixXd tempAMat;
+        tempAMat.conservativeResize( rows, cols );
+
+        Eigen::MatrixXd tempAMat1;
+        tempAMat1.conservativeResize( rows, cols );
+
+        //should be easily parallizable?
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                tempAMat(row, col) = T3_elements_A_temp[ tempIMat(row, col) ];
+            }
+        }
+
+        //P(c/ab)
+        Eigen::MatrixXd Pac(rows,cols);
+        Eigen::MatrixXd Pbc(rows,cols);
+
+        for (int i=range_lower2; i<range_upper2; i++){
+            Pac.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pac(1,i)-range_lower2 );
+            Pbc.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pbc(1,i)-range_lower2 );
+        }
+
+        tempAMat1 = tempAMat - Pac - Pbc;
+
+        Eigen::MatrixXd tempAMat2;
+        tempAMat2.conservativeResize( rows, cols );
+
+        //P(i/jk)
+        Eigen::MatrixXd Pij(rows,cols);
+        Eigen::MatrixXd Pik(rows,cols);
+
+        for (int i=range_lower1; i<range_upper1; i++){
+            Pij.row( i - range_lower1 ) = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pij(1,i) - range_lower1 );
+            Pik.row( i - range_lower1)  = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pik(1,i) - range_lower1 );
+        }
+
+        tempAMat2 = tempAMat1 - Pij - Pik;
+
+        //std::cout << tempAMat2 << std::endl;
+
+        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+    }
+}
+
+void MakeAmpMat::addElementsT3_T3e(){
+
+    int ku;
+
+    for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
+        ku = m_intClass->Vhhhppp_i[channel];
+
+        int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
+        int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
+        int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
+        int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
+
+        Eigen::MatrixXi tempIMat = T3_directMat[channel]; //this holds indices for T3_elements_A (as well as _new and _temp)
+        int rows = tempIMat.rows();
+        int cols = tempIMat.cols();
+
+        Eigen::MatrixXd tempAMat;
+        tempAMat.conservativeResize( rows, cols );
+
+        Eigen::MatrixXd tempAMat1;
+        tempAMat1.conservativeResize( rows, cols );
+
+        //should be easily parallizable?
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                tempAMat(row, col) = T3_elements_A_temp[ tempIMat(row, col) ];
+            }
+        }
+
+        //P(a/bc)
+        Eigen::MatrixXd Pab(rows,cols);
+        Eigen::MatrixXd Pac(rows,cols);
+
+        for (int i=range_lower2; i<range_upper2; i++){
+            Pab.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pab(1,i)-range_lower2 );
+            Pac.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pac(1,i)-range_lower2 );
+        }
+
+        tempAMat1 = tempAMat - Pab - Pac;
+
+        Eigen::MatrixXd tempAMat2;
+        tempAMat2.conservativeResize( rows, cols );
+
+        //P(k/ij)
+        Eigen::MatrixXd Pik(rows,cols);
+        Eigen::MatrixXd Pjk(rows,cols);
+
+        for (int i=range_lower1; i<range_upper1; i++){
+            Pik.row( i - range_lower1 ) = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pik(1,i) - range_lower1 );
+            Pjk.row( i - range_lower1)  = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pjk(1,i) - range_lower1 );
+        }
+
+        tempAMat2 = tempAMat1 - Pik - Pjk;
+
+        //std::cout << tempAMat2 << std::endl;
+
+        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+    }
+}
+
+void MakeAmpMat::addElementsT3_T5a(){
+
+    int ku;
+
+    for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
+        ku = m_intClass->Vhhhppp_i[channel];
+
+        int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
+        int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
+        int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
+        int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
+
+        Eigen::MatrixXi tempIMat = T3_directMat[channel]; //this holds indices for T3_elements_A (as well as _new and _temp)
+        int rows = tempIMat.rows();
+        int cols = tempIMat.cols();
+
+        Eigen::MatrixXd tempAMat;
+        tempAMat.conservativeResize( rows, cols );
+
+        Eigen::MatrixXd tempAMat1;
+        tempAMat1.conservativeResize( rows, cols );
+
+        //should be easily parallizable?
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                tempAMat(row, col) = T3_elements_A_temp[ tempIMat(row, col) ];
+            }
+        }
+
+        //P(a/bc)
+        Eigen::MatrixXd Pab(rows,cols);
+        Eigen::MatrixXd Pac(rows,cols);
+
+        for (int i=range_lower2; i<range_upper2; i++){
+            Pab.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pab(1,i)-range_lower2 );
+            Pac.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pac(1,i)-range_lower2 );
+        }
+
+        tempAMat1 = tempAMat - Pab - Pac;
+
+        Eigen::MatrixXd tempAMat2;
+        tempAMat2.conservativeResize( rows, cols );
+
+        //P(i/jk)
+        Eigen::MatrixXd Pij(rows,cols);
+        Eigen::MatrixXd Pik(rows,cols);
+
+        for (int i=range_lower1; i<range_upper1; i++){
+            Pij.row( i - range_lower1)  = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pij(1,i) - range_lower1 );
+            Pik.row( i - range_lower1 ) = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pik(1,i) - range_lower1 );
+        }
+
+        tempAMat2 = tempAMat1 - Pij - Pik;
+
+        //std::cout << tempAMat2 << std::endl;
+
+        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+    }
+}
+
+void MakeAmpMat::addElementsT3_T5b(){
+
+    int ku;
+
+    for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
+        ku = m_intClass->Vhhhppp_i[channel];
+
+        int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
+        int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
+
+        Eigen::MatrixXi tempIMat = T3_directMat[channel]; //this holds indices for T3_elements_A (as well as _new and _temp)
+        int rows = tempIMat.rows();
+        int cols = tempIMat.cols();
+
+        Eigen::MatrixXd tempAMat;
+        tempAMat.conservativeResize( rows, cols );
+
+        Eigen::MatrixXd tempAMat1;
+        tempAMat1.conservativeResize( rows, cols );
+
+        //should be easily parallizable?
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                tempAMat(row, col) = T3_elements_A_temp[ tempIMat(row, col) ];
+            }
+        }
+
+        //P(i/jk)
+        Eigen::MatrixXd Pij(rows,cols);
+        Eigen::MatrixXd Pik(rows,cols);
+
+        for (int i=range_lower1; i<range_upper1; i++){
+            Pij.row( i - range_lower1)  = tempAMat.row( m_intClass->blockArrays_ppp_hhh_Pij(1,i) - range_lower1 );
+            Pik.row( i - range_lower1 ) = tempAMat.row( m_intClass->blockArrays_ppp_hhh_Pik(1,i) - range_lower1 );
+        }
+
+        tempAMat1 = tempAMat - Pij - Pik;
+
+        make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+    }
+}
+
+void MakeAmpMat::addElementsT3_T5c(){
+
+    int ku;
+
+    for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
+        ku = m_intClass->Vhhhppp_i[channel];
+
+        int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
+        int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
+
+        Eigen::MatrixXi tempIMat = T3_directMat[channel]; //this holds indices for T3_elements_A (as well as _new and _temp)
+        int rows = tempIMat.rows();
+        int cols = tempIMat.cols();
+
+        Eigen::MatrixXd tempAMat;
+        tempAMat.conservativeResize( rows, cols );
+
+        Eigen::MatrixXd tempAMat1;
+        tempAMat1.conservativeResize( rows, cols );
+
+        //should be easily parallizable?
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                tempAMat(row, col) = T3_elements_A_temp[ tempIMat(row, col) ];
+            }
+        }
+
+        //P(a/bc)
+        Eigen::MatrixXd Pab(rows,cols);
+        Eigen::MatrixXd Pac(rows,cols);
+
+        for (int i=range_lower2; i<range_upper2; i++){
+            Pab.row( i - range_lower2)  = tempAMat.row( m_intClass->blockArrays_ppp_ppp_Pab(1,i) - range_lower2 );
+            Pac.row( i - range_lower2 ) = tempAMat.row( m_intClass->blockArrays_ppp_ppp_Pac(1,i) - range_lower2 );
+        }
+
+        tempAMat1 = tempAMat - Pab - Pac;
+
+        make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+    }
+}
+
+void MakeAmpMat::addElementsT3_T5d(){
+
+    int ku;
+
+    for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
+        ku = m_intClass->Vhhhppp_i[channel];
+
+        int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
+        int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
+        int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
+        int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
+
+        Eigen::MatrixXi tempIMat = T3_directMat[channel]; //this holds indices for T3_elements_A (as well as _new and _temp)
+        int rows = tempIMat.rows();
+        int cols = tempIMat.cols();
+
+        Eigen::MatrixXd tempAMat;
+        tempAMat.conservativeResize( rows, cols );
+
+        Eigen::MatrixXd tempAMat1;
+        tempAMat1.conservativeResize( rows, cols );
+
+        //should be easily parallizable?
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                tempAMat(row, col) = T3_elements_A_temp[ tempIMat(row, col) ];
+            }
+        }
+
+        //P(a/bc)
+        Eigen::MatrixXd Pab(rows,cols);
+        Eigen::MatrixXd Pac(rows,cols);
+
+        for (int i=range_lower2; i<range_upper2; i++){
+            Pab.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pab(1,i)-range_lower2 );
+            Pac.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pac(1,i)-range_lower2 );
+        }
+
+        tempAMat1 = tempAMat - Pab - Pac;
+
+        Eigen::MatrixXd tempAMat2;
+        tempAMat2.conservativeResize( rows, cols );
+
+        //P(k/ij)
+        Eigen::MatrixXd Pik(rows,cols);
+        Eigen::MatrixXd Pjk(rows,cols);
+
+        for (int i=range_lower1; i<range_upper1; i++){
+            Pik.row( i - range_lower1 ) = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pik(1,i) - range_lower1 );
+            Pjk.row( i - range_lower1)  = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pjk(1,i) - range_lower1 );
+        }
+
+        tempAMat2 = tempAMat1 - Pik - Pjk;
+
+        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+    }
+}
+
+void MakeAmpMat::addElementsT3_T5e(){
+
+    int ku;
+
+    for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
+        ku = m_intClass->Vhhhppp_i[channel];
+
+        int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
+        int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
+        int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
+        int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
+
+        Eigen::MatrixXi tempIMat = T3_directMat[channel]; //this holds indices for T3_elements_A (as well as _new and _temp)
+        int rows = tempIMat.rows();
+        int cols = tempIMat.cols();
+
+        Eigen::MatrixXd tempAMat;
+        tempAMat.conservativeResize( rows, cols );
+
+        Eigen::MatrixXd tempAMat1;
+        tempAMat1.conservativeResize( rows, cols );
+
+        //should be easily parallizable?
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                tempAMat(row, col) = T3_elements_A_temp[ tempIMat(row, col) ];
+            }
+        }
+
+        //P(c/ab)
+        Eigen::MatrixXd Pac(rows,cols);
+        Eigen::MatrixXd Pbc(rows,cols);
+
+        for (int i=range_lower2; i<range_upper2; i++){
+            Pac.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pac(1,i)-range_lower2 );
+            Pbc.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pbc(1,i)-range_lower2 );
+        }
+
+        tempAMat1 = tempAMat - Pac - Pbc;
+
+        Eigen::MatrixXd tempAMat2;
+        tempAMat2.conservativeResize( rows, cols );
+
+        //P(i/jk)
+        Eigen::MatrixXd Pij(rows,cols);
+        Eigen::MatrixXd Pik(rows,cols);
+
+        for (int i=range_lower1; i<range_upper1; i++){
+            Pij.row( i - range_lower1)  = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pij(1,i) - range_lower1 );
+            Pik.row( i - range_lower1 ) = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pik(1,i) - range_lower1 );
+        }
+
+        tempAMat2 = tempAMat1 - Pij - Pik;
+
+        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+    }
+}
+
+void MakeAmpMat::addElementsT3_T5f(){
+
+    int ku;
+
+    for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
+        ku = m_intClass->Vhhhppp_i[channel];
+
+        int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
+        int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
+        int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
+        int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
+
+        Eigen::MatrixXi tempIMat = T3_directMat[channel]; //this holds indices for T3_elements_A (as well as _new and _temp)
+        int rows = tempIMat.rows();
+        int cols = tempIMat.cols();
+
+        Eigen::MatrixXd tempAMat;
+        tempAMat.conservativeResize( rows, cols );
+
+        Eigen::MatrixXd tempAMat1;
+        tempAMat1.conservativeResize( rows, cols );
+
+        //should be easily parallizable?
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                tempAMat(row, col) = T3_elements_A_temp[ tempIMat(row, col) ];
+            }
+        }
+
+        //P(k/ij)
+        Eigen::MatrixXd Pik(rows,cols);
+        Eigen::MatrixXd Pjk(rows,cols);
+
+        for (int i=range_lower1; i<range_upper1; i++){
+            Pik.row( i - range_lower1 ) = tempAMat.row( m_intClass->blockArrays_ppp_hhh_Pik(1,i) - range_lower1 );
+            Pjk.row( i - range_lower1)  = tempAMat.row( m_intClass->blockArrays_ppp_hhh_Pjk(1,i) - range_lower1 );
+        }
+
+        tempAMat1 = tempAMat - Pik - Pjk;
+
+        make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+    }
+}
+
+void MakeAmpMat::addElementsT3_T5g(){
+
+    int ku;
+
+    for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
+        ku = m_intClass->Vhhhppp_i[channel];
+
+        int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
+        int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
+        int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
+        int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
+
+        Eigen::MatrixXi tempIMat = T3_directMat[channel]; //this holds indices for T3_elements_A (as well as _new and _temp)
+        int rows = tempIMat.rows();
+        int cols = tempIMat.cols();
+
+        Eigen::MatrixXd tempAMat;
+        tempAMat.conservativeResize( rows, cols );
+
+        Eigen::MatrixXd tempAMat1;
+        tempAMat1.conservativeResize( rows, cols );
+
+        //should be easily parallizable?
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                tempAMat(row, col) = T3_elements_A_temp[ tempIMat(row, col) ];
+            }
+        }
+
+        //P(c/ab)
+        Eigen::MatrixXd Pac(rows,cols);
+        Eigen::MatrixXd Pbc(rows,cols);
+
+        for (int i=range_lower2; i<range_upper2; i++){
+            Pac.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pac(1,i)-range_lower2 );
+            Pbc.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pbc(1,i)-range_lower2 );
+        }
+
+        tempAMat1 = tempAMat - Pac - Pbc;
+
+        make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 

@@ -27,6 +27,7 @@ private:
 public:
     int m_Nh = 0;
     int m_Ns = 0;
+    int m_Np = 0;
 
     /* Due to the momentum-conservation relation (kp+kq = kr+ks for <pq||rs>),
      * and due to alignment of matrices, we need several blockArrays, and corresponding

@@ -152,7 +152,20 @@ public:
     void                            addElementsT2(bool Pij, bool Pab);
     void                            addElementsT3_T1a();
     void                            addElementsT3_T1b();
+    void                            addElementsT3_T2c();
+    void                            addElementsT3_T2d();
+    void                            addElementsT3_T2e();
     void                            addElementsT3_T3b();
+    void                            addElementsT3_T3c();
+    void                            addElementsT3_T3d();
+    void                            addElementsT3_T3e();
+    void                            addElementsT3_T5a();
+    void                            addElementsT3_T5b();
+    void                            addElementsT3_T5c();
+    void                            addElementsT3_T5d();
+    void                            addElementsT3_T5e();
+    void                            addElementsT3_T5f();
+    void                            addElementsT3_T5g();
     void                            addElementsT3(bool Pij, bool Pik, bool Pjk, bool Pab, bool Pac, bool Pbc);
 
     std::unordered_map<int, int> permuteT3(int index, std::unordered_map<int, int> indices);
