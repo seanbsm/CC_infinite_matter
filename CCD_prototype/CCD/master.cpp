@@ -142,10 +142,10 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
         if (counter != -1){
             if (m_intermediatesOn){
                 m_diagrams->La();
-                m_diagrams->I1_term();  // Lb, Qa
-                m_diagrams->I2_term();  // Lc, Qb, due to structure of blockarrays, this is no faster than calling Lc and Qb seperatly
-                m_diagrams->I3_term();  // Qd
-                m_diagrams->I4_term();  // Qc
+                m_diagrams->I1_term1();  // Lb, Qa
+                m_diagrams->I2_term1();  // Lc, Qb, due to structure of blockarrays, this is no faster than calling Lc and Qb seperatly
+                m_diagrams->I3_term1();  // Qd
+                m_diagrams->I4_term1();  // Qc
             }
             else{
                 //CCD diagrams

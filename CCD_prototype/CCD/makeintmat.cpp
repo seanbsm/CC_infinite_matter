@@ -711,6 +711,130 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
 // ##                                              ##
 // ##################################################
 
+Eigen::MatrixXd MakeIntMat::I1_makemat(int channel1, int channel2){    //makes a 2x2 matrix
+
+    int range_lower1 = indexHolder_pp_hh(0, channel1);
+    int range_upper1 = indexHolder_pp_hh(1, channel1);
+    int range_lower2 = indexHolder_pp_pp(0, channel2);
+    int range_upper2 = indexHolder_pp_pp(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id;
+    int k; int l;
+    int c; int d;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            k = blockArrays_pp_hh(1,i1);
+            l = blockArrays_pp_hh(2,i1);
+            c = blockArrays_pp_pp(1,i2);
+            d = blockArrays_pp_pp(2,i2);
+
+            id = Identity_hhpp(k,l,c,d);
+            returnMat(i1-range_lower1, i2-range_lower2) = Vhhpp_elements[id];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeIntMat::I2_makemat(int channel1, int channel2){    //makes a 2x2 matrix
+
+    int range_lower1 = indexHolder_pm_hp(0, channel1);
+    int range_upper1 = indexHolder_pm_hp(1, channel1);
+    int range_lower2 = indexHolder_pm_ph(0, channel2);
+    int range_upper2 = indexHolder_pm_ph(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id;
+    int k; int l;
+    int c; int d;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            k = blockArrays_pm_hp(1,i1);
+            c = blockArrays_pm_hp(2,i1);
+            d = blockArrays_pm_ph(1,i2);
+            l = blockArrays_pm_ph(2,i2);
+
+            id = Identity_hhpp(k,l,c,d);
+            returnMat(i1-range_lower1, i2-range_lower2) = Vhhpp_elements[id];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeIntMat::I3_makemat(int channel1, int channel2){    //makes a 3x1 matrix
+
+    int range_lower1 = indexHolder_ppm_pph(0, channel1);
+    int range_upper1 = indexHolder_ppm_pph(1, channel1);
+    int range_lower2 = indexHolder_p_h(0, channel2);
+    int range_upper2 = indexHolder_p_h(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id;
+    int k; int l;
+    int c; int d;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            c = blockArrays_ppm_pph(1,i1);
+            d = blockArrays_ppm_pph(2,i1);
+            k = blockArrays_ppm_pph(3,i1);
+            l = blockArrays_p_h(1,i2);
+
+            id = Identity_hhpp(k,l,c,d);
+            returnMat(i1-range_lower1, i2-range_lower2) = Vhhpp_elements[id];
+        }
+    }
+
+    return returnMat;
+}
+
+Eigen::MatrixXd MakeIntMat::I4_makemat(int channel1, int channel2){    //makes a 3x1 matrix
+
+    int range_lower1 = indexHolder_ppm_hhp(0, channel1);
+    int range_upper1 = indexHolder_ppm_hhp(1, channel1);
+    int range_lower2 = indexHolder_p_p(0, channel2);
+    int range_upper2 = indexHolder_p_p(1, channel2);
+
+    Eigen::MatrixXd returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int id;
+    int k; int l;
+    int c; int d;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+
+            k = blockArrays_ppm_hhp(1,i1);
+            l = blockArrays_ppm_hhp(2,i1);
+            c = blockArrays_ppm_hhp(3,i1);
+            d = blockArrays_p_p(1,i2);
+
+            id = Identity_hhpp(k,l,c,d);
+            returnMat(i1-range_lower1, i2-range_lower2) = Vhhpp_elements[id];
+        }
+    }
+
+    return returnMat;
+}
+
 Eigen::MatrixXd MakeIntMat::D10b_makemat(int channel1, int channel2){    //makes a 3x1 matrix
 
     int range_lower1 = indexHolder_ppm_pph(0, channel1);

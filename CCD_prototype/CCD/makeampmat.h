@@ -57,6 +57,15 @@ public:
 
 
 
+    //CCD terms
+    Eigen::MatrixXd                 I1_makemat_1(int channel1, int channel2);
+    Eigen::MatrixXd                 I1_makemat_2(int channel1, int channel2);
+    Eigen::MatrixXd                 I2_makemat_1(int channel1, int channel2);
+    Eigen::MatrixXd                 I2_makemat_2(int channel1, int channel2);
+    Eigen::MatrixXd                 I3_makemat_1(int channel1, int channel2);
+    Eigen::MatrixXd                 I3_makemat_2(int channel1, int channel2);
+    Eigen::MatrixXd                 I4_makemat_1(int channel1, int channel2);
+    Eigen::MatrixXd                 I4_makemat_2(int channel1, int channel2);
 
     //T3 contributions to T2
     Eigen::MatrixXd                 D10b_makemat(int channel1, int channel2);
@@ -102,6 +111,11 @@ public:
     Eigen::MatrixXd                 T5g_makemat_1(int channel1, int channel2);
     Eigen::MatrixXd                 T5g_makemat_2(int channel1, int channel2);
 
+    //CCD terms
+    void                            I1_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
+    void                            I2_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
+    void                            I3_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
+    void                            I4_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
 
     //T3 contributions to T2
     void                            D10b_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);

@@ -70,6 +70,11 @@ public:
     void I3_term();
     void I4_term();
 
+    void I1_term1();
+    void I2_term1();
+    void I3_term1();
+    void I4_term1();
+
 };
 
 #endif // DIAGRAMS_H

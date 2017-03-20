@@ -176,6 +176,100 @@ void Diagrams::Qd(){
 // ##                                              ##
 // ##################################################
 
+void Diagrams::I1_term1(){
+    //#pragma omp parallel for
+    for (int i1=0; i1<m_intClass->sortVec_pp_hh.size(); i1++){
+        for (int i2=0; i2<m_intClass->sortVec_pp_pp.size(); i2++){
+            if ( m_intClass->sortVec_pp_hh[i1] == m_intClass->sortVec_pp_pp[i2] ){
+
+                Eigen::MatrixXd mat1 = m_ampClass->I1_makemat_1(i1,i2);
+                Eigen::MatrixXd mat2 = m_intClass->I1_makemat(i1,i2);
+
+                Eigen::MatrixXd I1   = 0.5*mat1*mat2.transpose();
+
+                Eigen::MatrixXd mat3 = m_intClass->Vhhhh[i1];
+
+                I1 += mat3;
+
+                Eigen::MatrixXd mat4 = m_ampClass->I1_makemat_2(i1,i2);
+
+                Eigen::MatrixXd product = 0.5*I1*mat4;
+
+                m_ampClass->I1_inverse(product, i1, i2);
+            }
+        }
+    }
+    m_ampClass->addElementsT2(0,0);
+    m_ampClass->T2_temp.clear();
+}
+
+void Diagrams::I2_term1(){
+    //#pragma omp parallel for
+    for (int i1=0; i1<m_intClass->sortVec_pm_hp.size(); i1++){
+        for (int i2=0; i2<m_intClass->sortVec_pm_ph.size(); i2++){
+            if ( m_intClass->sortVec_pm_hp[i1] == m_intClass->sortVec_pm_ph[i2] ){
+
+                Eigen::MatrixXd mat1 = m_ampClass->I2_makemat_1(i1,i2);
+                Eigen::MatrixXd mat2 = m_intClass->I2_makemat(i1,i2);
+
+                Eigen::MatrixXd I2   = 0.5*mat1*mat2.transpose();
+
+                Eigen::MatrixXd mat3 = m_intClass->Vhphp[i1];
+
+                I2 += mat3; //the minus is intentional
+
+                Eigen::MatrixXd mat4 = m_ampClass->I2_makemat_2(i1,i2);
+
+                Eigen::MatrixXd product = I2*mat4;
+
+                m_ampClass->I2_inverse(product, i1, i2);
+            }
+        }
+    }
+    m_ampClass->addElementsT2(1,1);
+    m_ampClass->T2_temp.clear();
+}
+
+void Diagrams::I3_term1(){
+    //#pragma omp parallel for
+    for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
+        for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
+            if ( m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_pph[i2] ){
+                Eigen::MatrixXd mat1 = m_ampClass->I3_makemat_1(i2,i1);
+                Eigen::MatrixXd mat2 = m_intClass->I3_makemat(i2,i1);
+                //std::cout << "sup" << std::endl;
+                Eigen::MatrixXd mat3 = m_ampClass->I3_makemat_2(i2,i1);
+
+                Eigen::MatrixXd product   = -0.5*mat3.transpose()*mat2*mat1.transpose();
+
+                m_ampClass->I3_inverse(product.transpose(), i2, i1);
+            }
+        }
+    }
+    m_ampClass->addElementsT2(1,0);
+    m_ampClass->T2_temp.clear();
+}
+
+void Diagrams::I4_term1(){
+    //#pragma omp parallel for
+    for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
+        for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
+            if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i2] ){
+
+                Eigen::MatrixXd mat1 = m_ampClass->I4_makemat_1(i2,i1);
+                Eigen::MatrixXd mat2 = m_intClass->I4_makemat(i2,i1);
+                Eigen::MatrixXd mat3 = m_ampClass->I4_makemat_2(i2,i1);
+
+                Eigen::MatrixXd product   = -0.5*mat3.transpose()*mat2*mat1.transpose();
+
+                m_ampClass->I4_inverse(product.transpose(), i2, i1);
+            }
+        }
+    }
+    m_ampClass->addElementsT2(0,1);
+    m_ampClass->T2_temp.clear();
+}
+
 void Diagrams::I1_term(){
     //#pragma omp parallel for
     for (int n=0; n<m_intClass->Vhhpp_i.size(); n++){
