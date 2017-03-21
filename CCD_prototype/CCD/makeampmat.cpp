@@ -1577,7 +1577,6 @@ void MakeAmpMat::addElementsT3_T1a(){
 
         Eigen::MatrixXd Pab(rows,cols);
         Eigen::MatrixXd Pac(rows,cols);
-        Eigen::MatrixXd Pabc(rows,cols);
 
         for (int i=range_lower2; i<range_upper2; i++){
             Pab.col( i-range_lower2 )  = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pab(1,i)-range_lower2 );
@@ -1591,7 +1590,6 @@ void MakeAmpMat::addElementsT3_T1a(){
 
         Eigen::MatrixXd Pik(rows,cols);
         Eigen::MatrixXd Pjk(rows,cols);
-        Eigen::MatrixXd Pijk(rows,cols);
 
         for (int i=range_lower1; i<range_upper1; i++){
             Pik.row( i - range_lower1)  = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pik(1,i) - range_lower1 );
@@ -1604,19 +1602,20 @@ void MakeAmpMat::addElementsT3_T1a(){
     }
 
 
-    /*int Np = m_intClass->m_Ns-m_intClass->m_Nh;
+    /*int Ns = m_intClass->m_Ns;
     int Nh = m_intClass->m_Nh;
     int N1 = Nh;
     int N2 = N1*Nh; //Nh*Nh;
     int N3 = N2*Nh; //Nh*Nh*Nh;
-    int N4 = N3*Np; //Nh*Nh*Nh*Np;
-    int N5 = N4*Np; //Nh*Nh*Nh*Np*Np;
+    int N4 = N3*Ns; //Nh*Nh*Nh*Np;
+    int N5 = N4*Ns; //Nh*Nh*Nh*Np*Np;
     unsigned long long int id; double val; int th; int index2;
     Eigen::MatrixXi mat_ID;
     Eigen::MatrixXd mat_VAL;
     Eigen::VectorXi vec_END;
 
     int size = m_intClass->blockArrays_ppp_hhh.cols()*m_intClass->blockArrays_ppp_ppp.cols();
+    //std::cout << size << std::endl;
     int index = 0;
 
     int n = 1;//omp_get_max_threads();
@@ -1732,11 +1731,11 @@ void MakeAmpMat::addElementsT3_T1a(){
         }
     }
 
-    for (int th=0; th<n; th++){
-        for (int index = 0; index<vec_END(th); index++){
+    for (int thread=0; thread<n; thread++){
+        for (int index = 0; index<vec_END(thread); index++){
             //std::cout << th << " " << index << std::endl;
-            val = mat_VAL(th,index);
-            id  = mat_ID(th,index);
+            val = mat_VAL(thread,index);
+            id  = mat_ID(thread,index);
             index2 = T3_elements_I[id];
             //std::cout << index2 << std::endl;
             //val -= T3_elements_A_temp[index2];
@@ -1801,7 +1800,7 @@ void MakeAmpMat::addElementsT3_T1b(){
     }
 
 
-    /*int Np = m_intClass->m_Ns-m_intClass->m_Nh;
+    /*int Np = m_intClass->m_Ns;
     int Nh = m_intClass->m_Nh;
     int N1 = Nh;
     int N2 = Nh*Nh; //Nh*Nh;
@@ -1927,11 +1926,11 @@ void MakeAmpMat::addElementsT3_T1b(){
         }
     }
 
-    for (int th=0; th<n; th++){
-        for (int index = 0; index<vec_END(th); index++){
+    for (int thread=0; thread<n; thread++){
+        for (int index = 0; index<vec_END(thread); index++){
             //std::cout << th << " " << index << std::endl;
-            val = mat_VAL(th,index);
-            id  = mat_ID(th,index);
+            val = mat_VAL(thread,index);
+            id  = mat_ID(thread,index);
             index2 = T3_elements_I[id];
             //std::cout << index2 << std::endl;
             //val -= T3_elements_A_temp[index2];
@@ -2123,11 +2122,11 @@ void MakeAmpMat::addElementsT3_T3b(){
         Eigen::MatrixXd Pabbc(rows,cols);
 
         for (int i=range_lower2; i<range_upper2; i++){
-            Pab.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pab(1,i)-range_lower2 );
-            Pac.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pac(1,i)-range_lower2 );
-            Pbc.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pbc(1,i)-range_lower2 );
-            Pabac.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pabac(1,i)-range_lower2 );
-            Pabbc.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pabbc(1,i)-range_lower2 );
+            Pab.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pab(1,i)  -range_lower2 );
+            Pac.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pac(1,i)  -range_lower2 );
+            Pbc.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pbc(1,i)  -range_lower2 );
+            Pabac.col( i-range_lower2 ) = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pabac(1,i)-range_lower2 );
+            Pabbc.col( i-range_lower2 ) = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pabbc(1,i)-range_lower2 );
         }
 
         tempAMat1 = tempAMat - Pab - Pbc - Pac + Pabac + Pabbc;

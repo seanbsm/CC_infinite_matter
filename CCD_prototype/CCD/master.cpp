@@ -163,12 +163,32 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
         if(m_triplesOn){
             std::fill(m_ampClass->T3_elements_A_new.begin(), m_ampClass->T3_elements_A_new.end(), 0); //reset T3 new
 
+            //update T2 amplitudes
+            /*for (int hh = 0; hh<m_intClass->numOfKu; hh++){
+                int ku = m_intClass->Vhhpp_i[hh];
+
+                Eigen::MatrixXd Vhhpp           = m_intClass->make2x2Block(ku,0,0,1,1);
+                Eigen::MatrixXd D_contributions = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements_new);
+                Eigen::MatrixXd temp = (Vhhpp + D_contributions).array()*m_ampClass->denomMat[hh].array();
+                m_ampClass->make2x2Block_inverse(temp, ku, 0,0,1,1, m_ampClass->T2_elements_new, false);
+            }
+            if (m_relaxation){
+                std::unordered_map<int, double> T2_temp = m_ampClass->T2_elements;
+                m_ampClass->T2_elements.clear();
+                for(auto const& it : m_ampClass->T2_elements_new) {
+                    m_ampClass->T2_elements[it.first] = m_alpha*it.second + (1-m_alpha)*T2_temp[it.first];
+                }
+            }
+            else{
+                m_ampClass->T2_elements = m_ampClass->T2_elements_new;
+            }*/
+
             m_diagrams->T1a();
             m_diagrams->T1b();
             //m_diagrams->T2c();
             //m_diagrams->T2d();  //nan
             //m_diagrams->T2e();  //wrong
-            //m_diagrams->T3b();
+            m_diagrams->T3b();
             //m_diagrams->T3c();  //eigen dim error
             //m_diagrams->T3d();
             //m_diagrams->T3e();  //eigen dim error
