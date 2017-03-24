@@ -138,7 +138,8 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
         ECCD = 0;
         //could make an m_ampClass::updateT or something
         m_ampClass->T2_elements_new.clear();
-        std::cout << "sup1" << std::endl;
+
+
 
         //calculate CCD T2 diagrams
         if (counter != -1){
@@ -160,7 +161,6 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
                 m_diagrams->Qd();
             }
         }
-        std::cout << "sup2" << std::endl;
 
         //calculate T2 contributions to T3 using T2_prev
         if(m_triplesOn){
@@ -185,17 +185,22 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             else{
                 m_ampClass->T2_elements = m_ampClass->T2_elements_new;
             }*/
-            std::cout << "sup21" << std::endl;
+
+
+            /*auto t1 = Clock::now();
+            auto t2 = Clock::now();
+            std::cout << "time: "
+                      << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+                      << " milliseconds" << std::endl;*/
+
             m_diagrams->T1a();
-            std::cout << "sup22" << std::endl;
             m_diagrams->T1b();
-            std::cout << "sup23" << std::endl;
             //m_diagrams->T2c();
             //m_diagrams->T2d();
             //m_diagrams->T2e();
             //m_diagrams->T3b();
             //m_diagrams->T3c();
-            //m_diagrams->T3d();
+            m_diagrams->T3d();
             //m_diagrams->T3e();  //slow?
             //m_diagrams->T5a();  //slow?
             //m_diagrams->T5b();
@@ -204,7 +209,6 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             //m_diagrams->T5e();
             //m_diagrams->T5f();
             //m_diagrams->T5g();
-            std::cout << "sup3" << std::endl;
 
             //update T3 amplitudes
             for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
@@ -213,9 +217,17 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
                 Eigen::MatrixXd D_contributions = m_ampClass->T3_buildDirectMat(channel, m_ampClass->T3_elements_A_new);
                 Eigen::MatrixXd temp = (D_contributions).array()*m_ampClass->denomMat3[channel].array();
 
-                m_ampClass->make3x3Block_inverse_I(temp, ku, 0,0,0,1,1,1, m_ampClass->T3_elements_A_new, false);
+                Eigen::MatrixXi tempIMat = m_ampClass->T3_directMat[channel]; //this holds indices for T3_elements_A (as well as _new and _temp)
+                int rows = tempIMat.rows();
+                int cols = tempIMat.cols();
+
+                for (int col=0; col<cols; col++){
+                    for (int row=0; row<rows; row++){
+                        m_ampClass->T3_elements_A_new[ tempIMat(row, col) ] = temp(row, col);
+                    }
+                }
             }
-            std::cout << "sup4" << std::endl;
+
             if (m_relaxation){
                 std::vector<double> T3_temp = m_ampClass->T3_elements_A;
 
@@ -233,7 +245,6 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             m_diagrams->D10c();
         }
 
-        std::cout << "sup5" << std::endl;
         //update T2 amplitudes
         for (int hh = 0; hh<m_intClass->numOfKu; hh++){
             int ku = m_intClass->Vhhpp_i[hh];
@@ -248,7 +259,6 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             Eigen::MatrixXd Thhpp = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements_new);
             ECCD += 0.25*((Vhhpp.transpose())*(Thhpp)).trace();
         }
-        std::cout << "sup6" << std::endl;
 
 
         cout << std::fixed << std::setprecision (16) << ECCD << endl;
@@ -280,7 +290,6 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
                 m_ampClass->T3_elements_A = m_ampClass->T3_elements_A_new;
             }*/
         }
-        std::cout << "sup7" << std::endl;
 
 
         //ECCD = 0; too good to delete; you don't want to know how long i used to find this

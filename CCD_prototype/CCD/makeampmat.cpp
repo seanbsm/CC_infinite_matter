@@ -1543,12 +1543,11 @@ void MakeAmpMat::addElementsT3_T1a(){
 
         for (int col=0; col<cols; col++){
             for (int row=0; row<rows; row++){
-                //tempAMat(row, col) = T3_elements_A_temp[ tempIMat(row, col) ];
                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat2(row, col);
             }
         }
 
-        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        //make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 
 
@@ -1746,7 +1745,13 @@ void MakeAmpMat::addElementsT3_T1b(){
 
         tempAMat2 = tempAMat1 -Pik - Pij;
 
-        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                T3_elements_A_new[ tempIMat(row, col) ] += tempAMat2(row, col);
+            }
+        }
+
+        //make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 
 

@@ -3,6 +3,9 @@
 #include <eigen3/Eigen/Dense>
 #include <eigen3/Eigen/Core>
 #include <omp.h>
+#include <chrono>
+
+typedef std::chrono::high_resolution_clock Clock;   //needed for timing
 
 Diagrams::Diagrams()
 {
@@ -475,6 +478,8 @@ void Diagrams::makeT3(){
 
 void Diagrams::T1a(){
 
+
+
     for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_ppm_hhp.size(); i3++){
@@ -490,6 +495,12 @@ void Diagrams::T1a(){
                     Eigen::MatrixXd product = mat2*mat1.transpose();
 
                     m_ampClass->T1a_inverse(product, i3, i2);
+
+                    /*auto t1 = Clock::now();
+                    auto t2 = Clock::now();
+                    std::cout << "time "
+                              << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+                              << " milliseconds" << std::endl;*/
                 }
             }
         }

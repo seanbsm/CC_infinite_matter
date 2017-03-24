@@ -2503,18 +2503,24 @@ int MakeIntMat::Identity_hhpp(int h1, int h2, int p1, int p2){
 
 int MakeIntMat::Identity_ppph(int p1, int p2, int p3, int h1){
     int out = h1 + p1*m_Nh + p2*m_Nh*(m_Ns) + p3*m_Nh*(m_Ns)*(m_Ns);
-    if(out<0){std::cout << out << std::endl;}
+    //if(out<0){std::cout << out << std::endl;}
+    //std::cout << out << std::endl;
     return out;
     //return h1 + p1*m_Nh + p2*m_Nh*(m_Ns-m_Nh) + p3*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
 }
 
 unsigned long long int MakeIntMat::Identity_hhhppp(int h1, int h2, int h3, int p1, int p2, int p3){
-    unsigned long long int out = h1 + h2*m_Nh + h3*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh + p2*m_Nh*m_Nh*m_Nh*(m_Ns) + p3*m_Nh*m_Nh*m_Nh*(m_Ns)*(m_Ns);
-    unsigned long int temp = h1 + h2*m_Nh + h3*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh + p2*m_Nh*m_Nh*m_Nh*(m_Ns) + p3*m_Nh*m_Nh*m_Nh*(m_Ns)*(m_Ns);
+    //unsigned long long int out = h1 + h2*m_Nh + h3*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh + p2*m_Nh*m_Nh*m_Nh*(m_Ns) + p3*m_Nh*m_Nh*m_Nh*(m_Ns)*(m_Ns);
+    unsigned long long int out  = (unsigned long long)h1
+                                + (unsigned long long)h2*m_Nh
+                                + (unsigned long long)h3*m_Nh*m_Nh
+                                + (unsigned long long)p1*m_Nh*m_Nh*m_Nh
+                                + (unsigned long long)p2*m_Nh*m_Nh*m_Nh*(m_Ns)
+                                + (unsigned long long)p3*m_Nh*m_Nh*m_Nh*(m_Ns)*(m_Ns);
 
     //unsigned long long int out = h1 + (h2+m_Nh) + (h3+2*m_Nh) + (p1+3*m_Nh) + p2*m_Nh*m_Nh*m_Nh*(m_Ns) + p3*m_Nh*m_Nh*m_Nh*(m_Ns)*(m_Ns);
     //if(out<0){std::cout << out << std::endl;}
-    std::cout << temp <<" " <<out << " " << h1<<", "<< h2<<", "<< h3<<", "<< p1<<", "<< p2<<", "<< p3<<", " << std::endl;
+    //std::cout  <<" " <<out << " " << h1<<", "<< h2<<", "<< h3<<", "<< p1<<", "<< p2<<", "<< p3<<", " << std::endl;
     return out;
     //return h1 + h2*m_Nh + h3*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh + p2*m_Nh*m_Nh*m_Nh*(m_Ns-m_Nh) + p3*m_Nh*m_Nh*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
 }
