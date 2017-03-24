@@ -437,11 +437,11 @@ void Diagrams::D10c(){
 // ##################################################
 
 void Diagrams::makeT3(){
-    int index = 0; int ku; unsigned long long int id;
+    int index = 0; unsigned long long int id;
     int i; int j; int k;
     int a; int b; int c;
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
-        ku = m_intClass->Vhhhppp_i[channel];
+        //ku = m_intClass->Vhhhppp_i[channel];
 
         int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
         int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
@@ -592,7 +592,7 @@ void Diagrams::T2e(){
                 Eigen::MatrixXd mat2 = m_ampClass->T2e_makemat(i2, i1);
                 Eigen::MatrixXd product = mat2*mat1; //mathematically I need to transpose mat1, but it's symmetric
 
-                m_ampClass->T2c_inverse(product, i2, i1);
+                m_ampClass->T2e_inverse(product, i2, i1);
             }
         }
     }
@@ -652,7 +652,7 @@ void Diagrams::T3c(){
                     Eigen::MatrixXd mat2 = m_intClass->T3c_makemat(i3, i2);
                     Eigen::MatrixXd product = mat1*mat2.transpose();
 
-                    m_ampClass->T3c_Inverse_temp(product, i1, i3);
+                    m_ampClass->T3c_Inverse_temp(product.transpose(), i3, i1);
                 }
             }
         }
@@ -699,6 +699,7 @@ void Diagrams::T3d(){
     }
 
     //now use remapped function
+    //std::cout << m_intClass->blockArrays_ppp_ppp.size() << std::endl;
 
     for (int i1=0; i1<m_intClass->sortVec_ppm_pph.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_p_h.size(); i2++){
@@ -754,7 +755,6 @@ void Diagrams::T3e(){
             }
         }
     }
-
     m_ampClass->addElementsT3_T3e();
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
     m_ampClass->T3D_remap.clear();
@@ -806,16 +806,14 @@ void Diagrams::T5b(){
 }
 
 void Diagrams::T5c(){
-
     for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_pppmm_hhhpp.size(); i3++){
                 if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_pppmm_hhhpp[i3] && m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i2]){
-
                     Eigen::MatrixXd mat1 = m_ampClass->T5c_makemat_1(i2, i1);
                     Eigen::MatrixXd mat2 = m_intClass->T5c_makemat(i2, i1);
                     Eigen::MatrixXd mat3 = m_ampClass->T5c_makemat_2(i3, i1);
-                    Eigen::MatrixXd product = -0.5*mat3*mat2.transpose()*mat1;
+                    Eigen::MatrixXd product = -0.5*mat3*mat1.transpose()*mat2;
 
                     m_ampClass->T5c_inverse(product, i3, i1);
                 }
@@ -859,7 +857,7 @@ void Diagrams::T5e(){
                     Eigen::MatrixXd mat1 = m_ampClass->T5e_makemat_1(i3, i1);
                     Eigen::MatrixXd mat2 = m_intClass->T5e_makemat(i3, i1);
                     Eigen::MatrixXd mat3 = m_ampClass->T5e_makemat_2(i2, i3);
-                    Eigen::MatrixXd product = -0.5*mat3*mat2.transpose()*mat1;
+                    Eigen::MatrixXd product = -0.5*mat3*mat2*mat1.transpose();
 
                     m_ampClass->T5e_inverse(product, i2, i3);
                 }
@@ -900,12 +898,12 @@ void Diagrams::T5g(){
             for (int i3=0; i3<m_intClass->sortVec_pppm_hhhp.size(); i3++){
                 if ( m_intClass->sortVec_pp_hh[i1] == m_intClass->sortVec_pp_pp[i2] && m_intClass->sortVec_pp_hh[i1] == m_intClass->sortVec_pppm_hhhp[i3]){
 
-                    Eigen::MatrixXd mat1 = m_ampClass->T5f_makemat_1(i1, i2);
-                    Eigen::MatrixXd mat2 = m_intClass->T5f_makemat(i1, i2);
-                    Eigen::MatrixXd mat3 = m_ampClass->T5f_makemat_2(i3, i1);
-                    Eigen::MatrixXd product = 0.25*mat3*mat2.transpose()*mat3;
+                    Eigen::MatrixXd mat1 = m_ampClass->T5g_makemat_1(i1, i2);
+                    Eigen::MatrixXd mat2 = m_intClass->T5g_makemat(i1, i2);
+                    Eigen::MatrixXd mat3 = m_ampClass->T5g_makemat_2(i3, i2);
+                    Eigen::MatrixXd product = 0.25*mat3*mat2.transpose()*mat1;
 
-                    m_ampClass->T5f_inverse(product, i3, i2);
+                    m_ampClass->T5g_inverse(product, i3, i2);
                 }
             }
         }

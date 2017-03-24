@@ -6,6 +6,8 @@
 #include <map>
 #include <chrono>
 
+//#include <unsupported/Eigen/CXX11/Tensor>
+
 //#include <mpi.h>
 #include <omp.h>
 //#include <stdio.h>
@@ -57,6 +59,33 @@ bool vecDelta(Eigen::VectorXi v1, Eigen::VectorXi v2){
 
 int main(int argc, char** argv)
 {
+    for (int m = 8; m<9; m++){
+        Eigen::initParallel();
+
+        omp_set_num_threads(m);
+        Eigen::setNbThreads(m);
+
+        int n = 4000;
+
+        auto t1 = Clock::now();
+        //Eigen::MatrixXd A = Eigen::MatrixXd::Random(n,n);
+        //Eigen::MatrixXd B = Eigen::MatrixXd::Random(n,n);
+        //Eigen::MatrixXd C;
+
+        std::cout << "start" << std::endl;
+
+        //C = A*B;
+        //Eigen::MatrixXd C = A*B;
+        Eigen::MatrixXd C = Eigen::MatrixXd::Random(n,n)*Eigen::MatrixXd::Random(n,n);
+        auto t2 = Clock::now();
+
+        std::cout << "end. time: "
+                  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+                  << " milliseconds" << std::endl;
+    }
+
+
+
     //MPI_Init (&argc, &argv);	/* starts MPI */
     //int rank, size;
     //MPI_Comm_rank (MPI_COMM_WORLD, &rank);	/* get current process id */
@@ -87,7 +116,7 @@ int main(int argc, char** argv)
                 7,8,9,4,5,2,6,3,2,4;*/
 
 
-    int xLim = 2e3;
+    /*int xLim = 2e3;
     int yLim = 2e3;
     Eigen::MatrixXi M;
     std::vector<int> V;
@@ -101,6 +130,9 @@ int main(int argc, char** argv)
             Map[x+y] = x+y;
         }
     }
+
+    int a = 2147483647;
+    std::cout << a << std::endl;
 
     auto t1 = Clock::now();
 
@@ -118,7 +150,7 @@ int main(int argc, char** argv)
 
     std::cout << "Total time used: "
               << std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count()
-              << " " << std::endl;
+              << " " << std::endl;*/
 
     //MPI_Finalize();
 

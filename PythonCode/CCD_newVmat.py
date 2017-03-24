@@ -317,7 +317,7 @@ def D9():	#Q_d
 	
 def diagrams():	#sum over all L_i and Q_i diagrams
 	#print sum(D3()), sum(D4()), sum(D5()), sum(D6()), sum(D7()), sum(D8()), sum(D9())
-	returnVal = D7()# + D4() + D5() + D6() + D7() + D8() + D9()
+	returnVal = D3() + D4() + D5() + D6() + D7() + D8() + D9()
 	return returnVal
 
 

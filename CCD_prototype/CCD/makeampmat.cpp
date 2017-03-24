@@ -194,15 +194,11 @@ void MakeAmpMat::make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
         indexHolder2_pointer = m_intClass->indexHolder_p_p;
     }
 
-    int length1 = indexHolder1_pointer.cols();
-    int length2 = indexHolder2_pointer.cols();
-
-    int index1; int index2;
+    int index1=-1; int index2=-1;
 
     auto it1 = std::find(sortVec1.begin(), sortVec1.end(), ku);
     if (it1 == sortVec1.end()){
         std::cout << "make3x1Block_inverse in MakeAmpMat, kUnique not found for rows" << std::endl;
-        std::exit;
     }
     else{
       index1 = distance(sortVec1.begin(), it1);
@@ -211,7 +207,6 @@ void MakeAmpMat::make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
     auto it2 = std::find(sortVec2.begin(), sortVec2.end(), ku);
     if (it2 == sortVec2.end()){
         std::cout << "make3x1Block_inverse in MakeAmpMat, kUnique not found for columns" << std::endl;
-        std::exit;
     }
     else{
       index2 = distance(sortVec2.begin(), it2);
@@ -221,9 +216,6 @@ void MakeAmpMat::make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
     int range_upper1 = indexHolder1_pointer(1,index1);
     int range_lower2 = indexHolder2_pointer(0,index2);
     int range_upper2 = indexHolder2_pointer(1,index2);
-
-    int dim1 = range_upper1 - range_lower1;
-    int dim2 = range_upper2 - range_lower2;
 
     int id;
     int ii; int jj;
@@ -324,15 +316,11 @@ void MakeAmpMat::make3x1Block_inverse_D10b(Eigen::MatrixXd inMat, int ku, int i1
         indexHolder2_pointer = m_intClass->indexHolder_p_p;
     }
 
-    int length1 = indexHolder1_pointer.cols();
-    int length2 = indexHolder2_pointer.cols();
-
-    int index1; int index2;
+    int index1=-1; int index2=-1;
 
     auto it1 = std::find(sortVec1.begin(), sortVec1.end(), ku);
     if (it1 == sortVec1.end()){
         std::cout << "make3x1Block_inverse in MakeAmpMat, kUnique not found for rows" << std::endl;
-        std::exit;
     }
     else{
       index1 = distance(sortVec1.begin(), it1);
@@ -341,7 +329,6 @@ void MakeAmpMat::make3x1Block_inverse_D10b(Eigen::MatrixXd inMat, int ku, int i1
     auto it2 = std::find(sortVec2.begin(), sortVec2.end(), ku);
     if (it2 == sortVec2.end()){
         std::cout << "make3x1Block_inverse in MakeAmpMat, kUnique not found for columns" << std::endl;
-        std::exit;
     }
     else{
       index2 = distance(sortVec2.begin(), it2);
@@ -351,9 +338,6 @@ void MakeAmpMat::make3x1Block_inverse_D10b(Eigen::MatrixXd inMat, int ku, int i1
     int range_upper1 = indexHolder1_pointer(1,index1);
     int range_lower2 = indexHolder2_pointer(0,index2);
     int range_upper2 = indexHolder2_pointer(1,index2);
-
-    int dim1 = range_upper1 - range_lower1;
-    int dim2 = range_upper2 - range_lower2;
 
     int id;
     int ii; int jj;
@@ -415,7 +399,7 @@ void MakeAmpMat::make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
     bool cond_hh1 = (i1 == 0 && i2 == 0);
     bool cond_hp1 = (i1 == 0 && i2 == 1);
     bool cond_ph1 = (i1 == 1 && i2 == 0);
-    bool cond_pp1 = (i1 == 1 && i2 == 1);
+    //bool cond_pp1 = (i1 == 1 && i2 == 1); //no test done for this
 
     bool cond_hh2 = (i3 == 0 && i4 == 0);
     bool cond_hp2 = (i3 == 0 && i4 == 1);
@@ -483,15 +467,11 @@ void MakeAmpMat::make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
         indexHolder2_pointer = m_intClass->indexHolder_pp_pp;
     }
 
-    int length1 = indexHolder1_pointer.cols();
-    int length2 = indexHolder2_pointer.cols();
-
-    int index1; int index2;
+    int index1=-1; int index2=-1;
 
     auto it1 = std::find(sortVec1.begin(), sortVec1.end(), ku);
     if (it1 == sortVec1.end()){
         std::cout << "make2x2Block_inverse in MakeAmpMat, kUnique not found for rows" << std::endl;
-        std::exit;
     }
     else{
       index1 = distance(sortVec1.begin(), it1);
@@ -500,7 +480,6 @@ void MakeAmpMat::make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
     auto it2 = std::find(sortVec2.begin(), sortVec2.end(), ku);
     if (it2 == sortVec2.end()){
         std::cout << "make2x2Block_inverse in MakeAmpMat, kUnique not found for columns" << std::endl;
-        std::exit;
     }
     else{
       index2 = distance(sortVec2.begin(), it2);
@@ -588,7 +567,7 @@ void MakeAmpMat::make3x3Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
     bool cond_hhh1 = (i1 == 0 && i2 == 0 && i3==0);
     bool cond_pph1 = (i1 == 1 && i2 == 1 && i3==0);
     bool cond_hhp1 = (i1 == 0 && i2 == 0 && i3==1);
-    bool cond_ppp1 = (i1 == 1 && i2 == 1 && i3==1);
+    //bool cond_ppp1 = (i1 == 1 && i2 == 1 && i3==1);
 
     bool cond_hhh2 = (i4 == 0 && i5 == 0 && i6==0);
     bool cond_pph2 = (i4 == 1 && i5 == 1 && i6==0);
@@ -656,15 +635,11 @@ void MakeAmpMat::make3x3Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
         indexHolder2_pointer = m_intClass->indexHolder_ppp_ppp;
     }
 
-    int length1 = indexHolder1_pointer.cols();
-    int length2 = indexHolder2_pointer.cols();
-
-    int index1; int index2;
+    int index1=-1; int index2=-1;
 
     auto it1 = std::find(sortVec1.begin(), sortVec1.end(), ku);
     if (it1 == sortVec1.end()){
         std::cout << "make3x1Block_inverse in MakeAmpMat, kUnique not found for rows" << std::endl;
-        std::exit;
     }
     else{
       index1 = distance(sortVec1.begin(), it1);
@@ -673,7 +648,6 @@ void MakeAmpMat::make3x3Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
     auto it2 = std::find(sortVec2.begin(), sortVec2.end(), ku);
     if (it2 == sortVec2.end()){
         std::cout << "make3x1Block_inverse in MakeAmpMat, kUnique not found for columns" << std::endl;
-        std::exit;
     }
     else{
       index2 = distance(sortVec2.begin(), it2);
@@ -683,9 +657,6 @@ void MakeAmpMat::make3x3Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
     int range_upper1 = indexHolder1_pointer(1,index1);
     int range_lower2 = indexHolder2_pointer(0,index2);
     int range_upper2 = indexHolder2_pointer(1,index2);
-
-    int dim1 = range_upper1 - range_lower1;
-    int dim2 = range_upper2 - range_lower2;
 
     unsigned long long int id;
     int ii; int jj; int kk;
@@ -785,6 +756,7 @@ void MakeAmpMat::T3_makeDirectMat(){
                 //id = ii + jj*N1 + kk*N2 + aa*N3 + bb*N4 + cc*N5;
 
                 index = T3_elements_I[id];
+                //if (index == 0){std::cout << index << std::endl;}
                 insertMat(hhh-range_lower1, ppp-range_lower2) = index;
             }
         }
@@ -796,7 +768,7 @@ void MakeAmpMat::T3_makeMap(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i
     bool cond_hhh1 = (i1 == 0 && i2 == 0 && i3==0);
     bool cond_pph1 = (i1 == 1 && i2 == 1 && i3==0);
     bool cond_hhp1 = (i1 == 0 && i2 == 0 && i3==1);
-    bool cond_ppp1 = (i1 == 1 && i2 == 1 && i3==1);
+    //bool cond_ppp1 = (i1 == 1 && i2 == 1 && i3==1);
 
     bool cond_hhh2 = (i4 == 0 && i5 == 0 && i6==0);
     bool cond_pph2 = (i4 == 1 && i5 == 1 && i6==0);
@@ -864,15 +836,11 @@ void MakeAmpMat::T3_makeMap(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i
         indexHolder2_pointer = m_intClass->indexHolder_ppp_ppp;
     }
 
-    int length1 = indexHolder1_pointer.cols();
-    int length2 = indexHolder2_pointer.cols();
-
-    int index1; int index2;
+    int index1=-1; int index2=-1;
 
     auto it1 = std::find(sortVec1.begin(), sortVec1.end(), ku);
     if (it1 == sortVec1.end()){
         std::cout << "make3x1Block_inverse in MakeAmpMat, kUnique not found for rows" << std::endl;
-        std::exit;
     }
     else{
       index1 = distance(sortVec1.begin(), it1);
@@ -881,7 +849,6 @@ void MakeAmpMat::T3_makeMap(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i
     auto it2 = std::find(sortVec2.begin(), sortVec2.end(), ku);
     if (it2 == sortVec2.end()){
         std::cout << "make3x1Block_inverse in MakeAmpMat, kUnique not found for columns" << std::endl;
-        std::exit;
     }
     else{
       index2 = distance(sortVec2.begin(), it2);
@@ -891,9 +858,6 @@ void MakeAmpMat::T3_makeMap(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i
     int range_upper1 = indexHolder1_pointer(1,index1);
     int range_lower2 = indexHolder2_pointer(0,index2);
     int range_upper2 = indexHolder2_pointer(1,index2);
-
-    int dim1 = range_upper1 - range_lower1;
-    int dim2 = range_upper2 - range_lower2;
 
     unsigned long long int id; int index;
     int ii; int jj; int kk;
@@ -954,7 +918,7 @@ void MakeAmpMat::make3x3Block_inverse_I(Eigen::MatrixXd inMat, int ku, int i1, i
     bool cond_hhh1 = (i1 == 0 && i2 == 0 && i3==0);
     bool cond_pph1 = (i1 == 1 && i2 == 1 && i3==0);
     bool cond_hhp1 = (i1 == 0 && i2 == 0 && i3==1);
-    bool cond_ppp1 = (i1 == 1 && i2 == 1 && i3==1);
+    //bool cond_ppp1 = (i1 == 1 && i2 == 1 && i3==1);
 
     bool cond_hhh2 = (i4 == 0 && i5 == 0 && i6==0);
     bool cond_pph2 = (i4 == 1 && i5 == 1 && i6==0);
@@ -1022,15 +986,11 @@ void MakeAmpMat::make3x3Block_inverse_I(Eigen::MatrixXd inMat, int ku, int i1, i
         indexHolder2_pointer = m_intClass->indexHolder_ppp_ppp;
     }
 
-    int length1 = indexHolder1_pointer.cols();
-    int length2 = indexHolder2_pointer.cols();
-
-    int index1; int index2;
+    int index1=-1; int index2=-1;
 
     auto it1 = std::find(sortVec1.begin(), sortVec1.end(), ku);
     if (it1 == sortVec1.end()){
         std::cout << "make3x1Block_inverse in MakeAmpMat, kUnique not found for rows" << std::endl;
-        std::exit;
     }
     else{
       index1 = distance(sortVec1.begin(), it1);
@@ -1039,7 +999,6 @@ void MakeAmpMat::make3x3Block_inverse_I(Eigen::MatrixXd inMat, int ku, int i1, i
     auto it2 = std::find(sortVec2.begin(), sortVec2.end(), ku);
     if (it2 == sortVec2.end()){
         std::cout << "make3x1Block_inverse in MakeAmpMat, kUnique not found for columns" << std::endl;
-        std::exit;
     }
     else{
       index2 = distance(sortVec2.begin(), it2);
@@ -1049,9 +1008,6 @@ void MakeAmpMat::make3x3Block_inverse_I(Eigen::MatrixXd inMat, int ku, int i1, i
     int range_upper1 = indexHolder1_pointer(1,index1);
     int range_lower2 = indexHolder2_pointer(0,index2);
     int range_upper2 = indexHolder2_pointer(1,index2);
-
-    int dim1 = range_upper1 - range_lower1;
-    int dim2 = range_upper2 - range_lower2;
 
     unsigned long long int id; int index;
     int ii; int jj; int kk;
@@ -1099,6 +1055,9 @@ void MakeAmpMat::make3x3Block_inverse_I(Eigen::MatrixXd inMat, int ku, int i1, i
                         id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
 
                         index = T3_elements_I[id];
+
+                        //std::cout << id << std::endl;
+                        //std::cout << index << std::endl;
                         T_vec[index] += val;
                     //}
                 }
@@ -1138,7 +1097,7 @@ void MakeAmpMat::make3x3Block_inverse_I_T1a(Eigen::MatrixXd inMat, int ku, int i
     bool cond_hhh1 = (i1 == 0 && i2 == 0 && i3==0);
     bool cond_pph1 = (i1 == 1 && i2 == 1 && i3==0);
     bool cond_hhp1 = (i1 == 0 && i2 == 0 && i3==1);
-    bool cond_ppp1 = (i1 == 1 && i2 == 1 && i3==1);
+    //bool cond_ppp1 = (i1 == 1 && i2 == 1 && i3==1);
 
     bool cond_hhh2 = (i4 == 0 && i5 == 0 && i6==0);
     bool cond_pph2 = (i4 == 1 && i5 == 1 && i6==0);
@@ -1206,15 +1165,11 @@ void MakeAmpMat::make3x3Block_inverse_I_T1a(Eigen::MatrixXd inMat, int ku, int i
         indexHolder2_pointer = m_intClass->indexHolder_ppp_ppp;
     }
 
-    int length1 = indexHolder1_pointer.cols();
-    int length2 = indexHolder2_pointer.cols();
-
-    int index1; int index2;
+    int index1=-1; int index2=-1;
 
     auto it1 = std::find(sortVec1.begin(), sortVec1.end(), ku);
     if (it1 == sortVec1.end()){
         std::cout << "make3x1Block_inverse in MakeAmpMat, kUnique not found for rows" << std::endl;
-        std::exit;
     }
     else{
       index1 = distance(sortVec1.begin(), it1);
@@ -1223,7 +1178,6 @@ void MakeAmpMat::make3x3Block_inverse_I_T1a(Eigen::MatrixXd inMat, int ku, int i
     auto it2 = std::find(sortVec2.begin(), sortVec2.end(), ku);
     if (it2 == sortVec2.end()){
         std::cout << "make3x1Block_inverse in MakeAmpMat, kUnique not found for columns" << std::endl;
-        std::exit;
     }
     else{
       index2 = distance(sortVec2.begin(), it2);
@@ -1233,9 +1187,6 @@ void MakeAmpMat::make3x3Block_inverse_I_T1a(Eigen::MatrixXd inMat, int ku, int i
     int range_upper1 = indexHolder1_pointer(1,index1);
     int range_lower2 = indexHolder2_pointer(0,index2);
     int range_upper2 = indexHolder2_pointer(1,index2);
-
-    int dim1 = range_upper1 - range_lower1;
-    int dim2 = range_upper2 - range_lower2;
 
     unsigned long long int id; int index;
     int ii; int jj; int kk;
@@ -1322,7 +1273,7 @@ void MakeAmpMat::make3x3Block_inverse_I_T1b(Eigen::MatrixXd inMat, int ku, int i
     bool cond_hhh1 = (i1 == 0 && i2 == 0 && i3==0);
     bool cond_pph1 = (i1 == 1 && i2 == 1 && i3==0);
     bool cond_hhp1 = (i1 == 0 && i2 == 0 && i3==1);
-    bool cond_ppp1 = (i1 == 1 && i2 == 1 && i3==1);
+    //bool cond_ppp1 = (i1 == 1 && i2 == 1 && i3==1);
 
     bool cond_hhh2 = (i4 == 0 && i5 == 0 && i6==0);
     bool cond_pph2 = (i4 == 1 && i5 == 1 && i6==0);
@@ -1390,15 +1341,11 @@ void MakeAmpMat::make3x3Block_inverse_I_T1b(Eigen::MatrixXd inMat, int ku, int i
         indexHolder2_pointer = m_intClass->indexHolder_ppp_ppp;
     }
 
-    int length1 = indexHolder1_pointer.cols();
-    int length2 = indexHolder2_pointer.cols();
-
-    int index1; int index2;
+    int index1=-1; int index2=-1;
 
     auto it1 = std::find(sortVec1.begin(), sortVec1.end(), ku);
     if (it1 == sortVec1.end()){
         std::cout << "make3x1Block_inverse in MakeAmpMat, kUnique not found for rows" << std::endl;
-        std::exit;
     }
     else{
       index1 = distance(sortVec1.begin(), it1);
@@ -1407,7 +1354,6 @@ void MakeAmpMat::make3x3Block_inverse_I_T1b(Eigen::MatrixXd inMat, int ku, int i
     auto it2 = std::find(sortVec2.begin(), sortVec2.end(), ku);
     if (it2 == sortVec2.end()){
         std::cout << "make3x1Block_inverse in MakeAmpMat, kUnique not found for columns" << std::endl;
-        std::exit;
     }
     else{
       index2 = distance(sortVec2.begin(), it2);
@@ -1417,9 +1363,6 @@ void MakeAmpMat::make3x3Block_inverse_I_T1b(Eigen::MatrixXd inMat, int ku, int i
     int range_upper1 = indexHolder1_pointer(1,index1);
     int range_lower2 = indexHolder2_pointer(0,index2);
     int range_upper2 = indexHolder2_pointer(1,index2);
-
-    int dim1 = range_upper1 - range_lower1;
-    int dim2 = range_upper2 - range_lower2;
 
     unsigned long long int id; int index;
     int ii; int jj; int kk;
@@ -1593,10 +1536,17 @@ void MakeAmpMat::addElementsT3_T1a(){
 
         for (int i=range_lower1; i<range_upper1; i++){
             Pik.row( i - range_lower1)  = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pik(1,i) - range_lower1 );
-            Pjk.row( i - range_lower1 )  = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pjk(1,i) - range_lower1 );
+            Pjk.row( i - range_lower1 ) = tempAMat1.row( m_intClass->blockArrays_ppp_hhh_Pjk(1,i) - range_lower1 );
         }
 
         tempAMat2 = tempAMat1 -Pik - Pjk;
+
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                //tempAMat(row, col) = T3_elements_A_temp[ tempIMat(row, col) ];
+                T3_elements_A_new[ tempIMat(row, col) ] += tempAMat2(row, col);
+            }
+        }
 
         make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
@@ -2013,13 +1963,11 @@ void MakeAmpMat::addElementsT3_T2d(){
         Eigen::MatrixXd Pjk(rows,cols);
 
         for (int i=range_lower1; i<range_upper1; i++){
-            Pik.col( i-range_lower1 )   = tempAMat.col( m_intClass->blockArrays_ppp_hhh_Pik(1,i)-range_lower1 );
-            Pjk.col( i-range_lower1 )   = tempAMat.col( m_intClass->blockArrays_ppp_hhh_Pjk(1,i)-range_lower1 );
+            Pik.row( i-range_lower1 )   = tempAMat.row( m_intClass->blockArrays_ppp_hhh_Pik(1,i)-range_lower1 );
+            Pjk.row( i-range_lower1 )   = tempAMat.row( m_intClass->blockArrays_ppp_hhh_Pjk(1,i)-range_lower1 );
         }
 
         tempAMat1 = tempAMat - Pik - Pjk;
-
-        std::cout << tempAMat1 << std::endl;
 
         make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
@@ -2122,11 +2070,11 @@ void MakeAmpMat::addElementsT3_T3b(){
         Eigen::MatrixXd Pabbc(rows,cols);
 
         for (int i=range_lower2; i<range_upper2; i++){
-            Pab.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pab(1,i)  -range_lower2 );
-            Pac.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pac(1,i)  -range_lower2 );
-            Pbc.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pbc(1,i)  -range_lower2 );
-            Pabac.col( i-range_lower2 ) = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pabac(1,i)-range_lower2 );
-            Pabbc.col( i-range_lower2 ) = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pabbc(1,i)-range_lower2 );
+            Pab.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pab(1,i)  - range_lower2 );
+            Pac.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pac(1,i)  - range_lower2 );
+            Pbc.col( i-range_lower2 )   = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pbc(1,i)  - range_lower2 );
+            Pabac.col( i-range_lower2 ) = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pabac(1,i)- range_lower2 );
+            Pabbc.col( i-range_lower2 ) = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pabbc(1,i)- range_lower2 );
         }
 
         tempAMat1 = tempAMat - Pab - Pbc - Pac + Pabac + Pabbc;
@@ -2471,8 +2419,8 @@ void MakeAmpMat::addElementsT3_T5c(){
         Eigen::MatrixXd Pac(rows,cols);
 
         for (int i=range_lower2; i<range_upper2; i++){
-            Pab.row( i - range_lower2)  = tempAMat.row( m_intClass->blockArrays_ppp_ppp_Pab(1,i) - range_lower2 );
-            Pac.row( i - range_lower2 ) = tempAMat.row( m_intClass->blockArrays_ppp_ppp_Pac(1,i) - range_lower2 );
+            Pab.col( i - range_lower2)  = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pab(1,i) - range_lower2 );
+            Pac.col( i - range_lower2 ) = tempAMat.col( m_intClass->blockArrays_ppp_ppp_Pac(1,i) - range_lower2 );
         }
 
         tempAMat1 = tempAMat - Pab - Pac;
@@ -2606,8 +2554,6 @@ void MakeAmpMat::addElementsT3_T5f(){
 
         int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
         int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
-        int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
-        int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
 
         Eigen::MatrixXi tempIMat = T3_directMat[channel]; //this holds indices for T3_elements_A (as well as _new and _temp)
         int rows = tempIMat.rows();
@@ -2648,8 +2594,6 @@ void MakeAmpMat::addElementsT3_T5g(){
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
-        int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
-        int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
         int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
         int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
 
@@ -2690,7 +2634,7 @@ Eigen::MatrixXd MakeAmpMat::make3x3Block_I(int ku, int i1, int i2, int i3, int i
     bool cond_hhh1 = (i1 == 0 && i2 == 0 && i3==0);
     bool cond_pph1 = (i1 == 1 && i2 == 1 && i3==0);
     bool cond_hhp1 = (i1 == 0 && i2 == 0 && i3==1);
-    bool cond_ppp1 = (i1 == 1 && i2 == 1 && i3==1);
+    //bool cond_ppp1 = (i1 == 1 && i2 == 1 && i3==1);
 
     bool cond_hhh2 = (i4 == 0 && i5 == 0 && i6==0);
     bool cond_pph2 = (i4 == 1 && i5 == 1 && i6==0);
@@ -2757,9 +2701,6 @@ Eigen::MatrixXd MakeAmpMat::make3x3Block_I(int ku, int i1, int i2, int i3, int i
         sortVec2             = m_intClass->sortVec_ppp_ppp;
         indexHolder2_pointer = m_intClass->indexHolder_ppp_ppp;
     }
-
-    int length1 = indexHolder1_pointer.cols();
-    int length2 = indexHolder2_pointer.cols();
 
     int index1; int index2;
 
@@ -3376,7 +3317,7 @@ Eigen::MatrixXd MakeAmpMat::T2c_makemat(int channel1, int channel2){    //makes 
             e = m_intClass->blockArrays_pp_pp(2,i2);
 
             id = m_intClass->Identity_hhhppp(i,j,k,d,e,c);
-            index = T3_elements_I[index];
+            index = T3_elements_I[id];
             returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
         }
     }
@@ -3401,7 +3342,6 @@ Eigen::MatrixXd MakeAmpMat::T2d_makemat(int channel1, int channel2){    //makes 
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-            //std::cout << "sup" << std::endl;
 
             a = m_intClass->blockArrays_pppm_ppph(1,i1);
             b = m_intClass->blockArrays_pppm_ppph(2,i1);
@@ -3411,7 +3351,7 @@ Eigen::MatrixXd MakeAmpMat::T2d_makemat(int channel1, int channel2){    //makes 
             m = m_intClass->blockArrays_pp_hh(2,i2);
 
             id = m_intClass->Identity_hhhppp(l,m,k,a,b,c);
-            index = T3_elements_I[index];
+            index = T3_elements_I[id];
             returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
         }
     }
@@ -3446,7 +3386,7 @@ Eigen::MatrixXd MakeAmpMat::T2e_makemat(int channel1, int channel2){    //makes 
             d = m_intClass->blockArrays_pm_hp(2,i2);
 
             id = m_intClass->Identity_hhhppp(l,j,k,d,b,c);
-            index = T3_elements_I[index];
+            index = T3_elements_I[id];
             returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
         }
     }
@@ -3630,7 +3570,7 @@ Eigen::MatrixXd MakeAmpMat::T3c_makemat_3(int channel1, int channel2){    //make
             b = m_intClass->blockArrays_ppm_pph(1,i1);
             c = m_intClass->blockArrays_ppm_pph(2,i1);
             k = m_intClass->blockArrays_ppm_pph(3,i1);
-            m = m_intClass->blockArrays_p_h(2,i2);
+            m = m_intClass->blockArrays_p_h(1,i2);
 
             id = m_intClass->Identity_hhpp(m,k,b,c);
             returnMat(i1-range_lower1, i2-range_lower2) = T2_elements[id];
@@ -3660,7 +3600,7 @@ Eigen::MatrixXd MakeAmpMat::T3d_makemat_1(int channel1, int channel2){    //make
 
             j = m_intClass->blockArrays_pp_hh(1,i1);
             k = m_intClass->blockArrays_pp_hh(2,i1);
-            d = m_intClass->blockArrays_pp_pp(1,i1);
+            d = m_intClass->blockArrays_pp_pp(1,i2);
             e = m_intClass->blockArrays_pp_pp(2,i2);
 
             id = m_intClass->Identity_hhpp(j,k,d,e);
@@ -3684,7 +3624,7 @@ Eigen::MatrixXd MakeAmpMat::T3d_makemat_2(int channel1, int channel2){    //make
 
     int id;
     int j; int k;
-    int l; int c;
+    int c; int l;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
         for (int i2 = range_lower2; i2<range_upper2; i2++){
@@ -3886,7 +3826,7 @@ Eigen::MatrixXd MakeAmpMat::T5a_makemat_2(int channel1, int channel2){    //make
             m = m_intClass->blockArrays_pm_ph(2,i2);
 
             id = m_intClass->Identity_hhhppp(m,j,k,e,b,c);
-            index = T3_elements_I[index];
+            index = T3_elements_I[id];
             returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
         }
     }
@@ -3952,7 +3892,7 @@ Eigen::MatrixXd MakeAmpMat::T5b_makemat_2(int channel1, int channel2){    //make
             m = m_intClass->blockArrays_p_h(1,i2);
 
             id = m_intClass->Identity_hhhppp(m,j,k,a,b,c);
-            index = T3_elements_I[index];
+            index = T3_elements_I[id];
             returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
         }
     }
@@ -4018,7 +3958,7 @@ Eigen::MatrixXd MakeAmpMat::T5c_makemat_2(int channel1, int channel2){    //make
             e = m_intClass->blockArrays_p_p(1,i2);
 
             id = m_intClass->Identity_hhhppp(i,j,k,e,b,c);
-            index = T3_elements_I[index];
+            index = T3_elements_I[id];
             returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
         }
     }
@@ -4216,7 +4156,7 @@ Eigen::MatrixXd MakeAmpMat::T5f_makemat_2(int channel1, int channel2){    //make
             m = m_intClass->blockArrays_pp_hh(2,i2);
 
             id = m_intClass->Identity_hhhppp(l,m,k,a,b,c);
-            index = T3_elements_I[index];
+            index = T3_elements_I[id];
             returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
         }
     }
@@ -4278,11 +4218,11 @@ Eigen::MatrixXd MakeAmpMat::T5g_makemat_2(int channel1, int channel2){    //make
             j = m_intClass->blockArrays_pppm_hhhp(2,i1);
             k = m_intClass->blockArrays_pppm_hhhp(3,i1);
             c = m_intClass->blockArrays_pppm_hhhp(4,i1);
-            d = m_intClass->blockArrays_pm_ph(1,i2);
-            e = m_intClass->blockArrays_pm_ph(2,i2);
+            d = m_intClass->blockArrays_pp_pp(1,i2);
+            e = m_intClass->blockArrays_pp_pp(2,i2);
 
             id = m_intClass->Identity_hhhppp(i,j,k,d,e,c);
-            index = T3_elements_I[index];
+            index = T3_elements_I[id];
             returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
         }
     }
@@ -4317,10 +4257,10 @@ void MakeAmpMat::T3b_Inverse_temp(Eigen::MatrixXd inMat, int channel1, int chann
 
 void MakeAmpMat::T3c_Inverse_temp(Eigen::MatrixXd inMat, int channel1, int channel2){
 
-    int range_lower1 = m_intClass->indexHolder_pm_hp(0, channel1);
-    int range_upper1 = m_intClass->indexHolder_pm_hp(1, channel1);
-    int range_lower2 = m_intClass->indexHolder_pm_hh(0, channel2);
-    int range_upper2 = m_intClass->indexHolder_pm_hh(1, channel2);
+    int range_lower1 = m_intClass->indexHolder_pm_hh(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_pm_hh(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_pm_hp(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pm_hp(1, channel2);
 
 
     int id;
@@ -4329,10 +4269,10 @@ void MakeAmpMat::T3c_Inverse_temp(Eigen::MatrixXd inMat, int channel1, int chann
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-            i = m_intClass->blockArrays_pm_hp(1,i1);
-            a = m_intClass->blockArrays_pm_hp(2,i1);
-            m = m_intClass->blockArrays_pm_hh(1,i2);
-            j = m_intClass->blockArrays_pm_hh(2,i2);
+            m = m_intClass->blockArrays_pm_hh(1,i1);
+            j = m_intClass->blockArrays_pm_hh(2,i1);
+            i = m_intClass->blockArrays_pm_hp(1,i2);
+            a = m_intClass->blockArrays_pm_hp(2,i2);
 
             id = m_intClass->Identity_hhhp(m,j,i,a);
             T3D_remap[id] =  inMat(i1-range_lower1, i2-range_lower2);
@@ -4344,20 +4284,20 @@ void MakeAmpMat::T3d_Inverse_temp(Eigen::MatrixXd inMat, int channel1, int chann
 
     int range_lower1 = m_intClass->indexHolder_pp_hh(0, channel1);
     int range_upper1 = m_intClass->indexHolder_pp_hh(1, channel1);
-    int range_lower2 = m_intClass->indexHolder_pp_hp(0, channel2);
-    int range_upper2 = m_intClass->indexHolder_pp_hp(1, channel2);
+    int range_lower2 = m_intClass->indexHolder_pp_ph(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pp_ph(1, channel2);
 
 
     int id;
     int j; int k;
-    int l; int c;
+    int c; int l;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
         for (int i2 = range_lower2; i2<range_upper2; i2++){
             j = m_intClass->blockArrays_pp_hh(1,i1);
             k = m_intClass->blockArrays_pp_hh(2,i1);
-            l = m_intClass->blockArrays_pp_hp(1,i2);
-            c = m_intClass->blockArrays_pp_hp(2,i2);
+            c = m_intClass->blockArrays_pp_ph(1,i2);
+            l = m_intClass->blockArrays_pp_ph(2,i2);
 
             id = m_intClass->Identity_hhhp(j,k,l,c);
             T3D_remap[id] =  inMat(i1-range_lower1, i2-range_lower2);
@@ -4621,8 +4561,8 @@ void MakeAmpMat::T3e_inverse(Eigen::MatrixXd inMat, int channel1, int channel2){
 
     int range_lower1 = m_intClass->indexHolder_pppm_hhhp(0, channel1);
     int range_upper1 = m_intClass->indexHolder_pppm_hhhp(1, channel1);
-    int range_lower2 = m_intClass->indexHolder_pp_hh(0, channel2);
-    int range_upper2 = m_intClass->indexHolder_pp_hh(1, channel2);
+    int range_lower2 = m_intClass->indexHolder_pp_pp(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pp_pp(1, channel2);
 
     unsigned long long int id; int index;
     int i; int j; int k;
@@ -4635,8 +4575,8 @@ void MakeAmpMat::T3e_inverse(Eigen::MatrixXd inMat, int channel1, int channel2){
             j = m_intClass->blockArrays_pppm_hhhp(2,i1);
             k = m_intClass->blockArrays_pppm_hhhp(3,i1);
             a = m_intClass->blockArrays_pppm_hhhp(4,i1);
-            b = m_intClass->blockArrays_pp_hh(1,i2);
-            c = m_intClass->blockArrays_pp_hh(2,i2);
+            b = m_intClass->blockArrays_pp_pp(1,i2);
+            c = m_intClass->blockArrays_pp_pp(2,i2);
 
             id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
             index = T3_elements_I[id];
@@ -4846,7 +4786,7 @@ Eigen::MatrixXd MakeAmpMat::make3x3Block_I_D10c(int ku, int i1, int i2, int i3, 
     bool cond_hhh1 = (i1 == 0 && i2 == 0 && i3==0);
     bool cond_pph1 = (i1 == 1 && i2 == 1 && i3==0);
     bool cond_hhp1 = (i1 == 0 && i2 == 0 && i3==1);
-    bool cond_ppp1 = (i1 == 1 && i2 == 1 && i3==1);
+    //bool cond_ppp1 = (i1 == 1 && i2 == 1 && i3==1);
 
     bool cond_hhh2 = (i4 == 0 && i5 == 0 && i6==0);
     bool cond_pph2 = (i4 == 1 && i5 == 1 && i6==0);
@@ -4913,9 +4853,6 @@ Eigen::MatrixXd MakeAmpMat::make3x3Block_I_D10c(int ku, int i1, int i2, int i3, 
         sortVec2             = m_intClass->sortVec_ppp_ppp;
         indexHolder2_pointer = m_intClass->indexHolder_ppp_ppp;
     }
-
-    int length1 = indexHolder1_pointer.cols();
-    int length2 = indexHolder2_pointer.cols();
 
     int index1; int index2;
 
@@ -4981,7 +4918,7 @@ Eigen::MatrixXd MakeAmpMat::make3x3Block(int ku, int i1, int i2, int i3, int i4,
     bool cond_hhh1 = (i1 == 0 && i2 == 0 && i3==0);
     bool cond_pph1 = (i1 == 1 && i2 == 1 && i3==0);
     bool cond_hhp1 = (i1 == 0 && i2 == 0 && i3==1);
-    bool cond_ppp1 = (i1 == 1 && i2 == 1 && i3==1);
+    //bool cond_ppp1 = (i1 == 1 && i2 == 1 && i3==1);
 
     bool cond_hhh2 = (i4 == 0 && i5 == 0 && i6==0);
     bool cond_pph2 = (i4 == 1 && i5 == 1 && i6==0);
@@ -5048,9 +4985,6 @@ Eigen::MatrixXd MakeAmpMat::make3x3Block(int ku, int i1, int i2, int i3, int i4,
         sortVec2             = m_intClass->sortVec_ppp_ppp;
         indexHolder2_pointer = m_intClass->indexHolder_ppp_ppp;
     }
-
-    int length1 = indexHolder1_pointer.cols();
-    int length2 = indexHolder2_pointer.cols();
 
     int index1; int index2;
 
@@ -5163,9 +5097,6 @@ Eigen::MatrixXd MakeAmpMat::make3x1Block(int ku, int i1, int i2, int i3, int i4,
         indexHolder2_pointer = m_intClass->indexHolder_p_p;
     }
 
-    int length1 = indexHolder1_pointer.cols();
-    int length2 = indexHolder2_pointer.cols();
-
     int index1; int index2;
 
     Eigen::MatrixXd returnMat;
@@ -5234,7 +5165,7 @@ Eigen::MatrixXd MakeAmpMat::make2x2Block(int ku, int i1, int i2, int i3, int i4,
     bool cond_hh1 = (i1 == 0 && i2 == 0);
     bool cond_hp1 = (i1 == 0 && i2 == 1);
     bool cond_ph1 = (i1 == 1 && i2 == 0);
-    bool cond_pp1 = (i1 == 1 && i2 == 1);
+    //bool cond_pp1 = (i1 == 1 && i2 == 1);
 
     bool cond_hh2 = (i3 == 0 && i4 == 0);
     bool cond_hp2 = (i3 == 0 && i4 == 1);
@@ -5301,9 +5232,6 @@ Eigen::MatrixXd MakeAmpMat::make2x2Block(int ku, int i1, int i2, int i3, int i4,
         sortVec2             = m_intClass->sortVec_pp_pp;
         indexHolder2_pointer = m_intClass->indexHolder_pp_pp;
     }
-
-    int length1 = indexHolder1_pointer.cols();
-    int length2 = indexHolder2_pointer.cols();
 
     int index1; int index2;
 

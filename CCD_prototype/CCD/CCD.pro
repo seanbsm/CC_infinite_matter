@@ -26,4 +26,5 @@ HEADERS += \
 
 
 QMAKE_CXXFLAGS+= -fopenmp
+QMAKE_CXXFLAGS+= -O3
 QMAKE_LFLAGS +=  -fopenmp
