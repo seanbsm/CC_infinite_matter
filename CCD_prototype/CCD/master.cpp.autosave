@@ -203,7 +203,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             //m_diagrams->T3d();
             //m_diagrams->T3e();  //slow?
             //m_diagrams->T5a();  //slow?
-            m_diagrams->T5b();
+            //m_diagrams->T5b();
             //m_diagrams->T5c();  //slow?
             //m_diagrams->T5d();
             //m_diagrams->T5e();
