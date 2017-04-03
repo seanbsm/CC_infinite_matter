@@ -216,7 +216,7 @@ class PM:	#Pairing Model
 #we use natural units
 N 	= 14							#number of particles
 NB 	= 2							#number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 can at max have N=14)
-rs 	= 1.0						#Wigner Seitz radius
+rs 	= 1.6						#Wigner Seitz radius
 rb 	= 1.#2.68#268*1e-6/27.211			#Bohr radius [MeV^-1]
 m 	= 1.#0.511#*1e6/21.211			#electron mass [MeV]
 L3 	= 4*pi*N*rs**3/3.				#box length

@@ -3749,10 +3749,11 @@ Eigen::MatrixXd MakeAmpMat::T3e_makemat_2(int channel1, int channel2){    //make
             k = m_intClass->blockArrays_pppm_hhhp(3,i1);
             a = m_intClass->blockArrays_pppm_hhhp(4,i1);
             l = m_intClass->blockArrays_pp_hh(1,i2);
-            m = m_intClass->blockArrays_pp_hh(1,i2);
+            m = m_intClass->blockArrays_pp_hh(2,i2);
 
             id = m_intClass->Identity_hhhhhp(i,j,l,m,k,a);
             returnMat(i1-range_lower1, i2-range_lower2) = T3D_remap[id];
+            //std::cout << T3D_remap[id] << std::endl;
         }
     }
 
@@ -3810,7 +3811,7 @@ Eigen::MatrixXd MakeAmpMat::T5a_makemat_1(int channel1, int channel2){    //make
 
             l = m_intClass->blockArrays_pp_hp(1,i1);
             d = m_intClass->blockArrays_pp_hp(2,i1);
-            a = m_intClass->blockArrays_pp_ph(1,i1);
+            a = m_intClass->blockArrays_pp_ph(1,i2);
             i = m_intClass->blockArrays_pp_ph(2,i2);
 
             id = m_intClass->Identity_hhpp(i,l,a,d);
@@ -4140,7 +4141,7 @@ Eigen::MatrixXd MakeAmpMat::T5f_makemat_1(int channel1, int channel2){    //make
 
             i = m_intClass->blockArrays_pp_hh(1,i1);
             j = m_intClass->blockArrays_pp_hh(2,i1);
-            d = m_intClass->blockArrays_pp_pp(1,i1);
+            d = m_intClass->blockArrays_pp_pp(1,i2);
             e = m_intClass->blockArrays_pp_pp(2,i2);
 
             id = m_intClass->Identity_hhpp(i,j,d,e);
@@ -4206,7 +4207,7 @@ Eigen::MatrixXd MakeAmpMat::T5g_makemat_1(int channel1, int channel2){    //make
 
             l = m_intClass->blockArrays_pp_hh(1,i1);
             m = m_intClass->blockArrays_pp_hh(2,i1);
-            a = m_intClass->blockArrays_pp_pp(1,i1);
+            a = m_intClass->blockArrays_pp_pp(1,i2);
             b = m_intClass->blockArrays_pp_pp(2,i2);
 
             id = m_intClass->Identity_hhpp(l,m,a,b);
@@ -4350,6 +4351,7 @@ void MakeAmpMat::T3e_Inverse_temp(Eigen::MatrixXd inMat, int channel1, int chann
 
             id = m_intClass->Identity_hhhhhp(i,j,l,m,k,a);
             T3D_remap[id] =  inMat(i1-range_lower1, i2-range_lower2);
+            //std::cout << T3D_remap[id] << std::endl;
         }
     }
 }
@@ -4708,7 +4710,7 @@ void MakeAmpMat::T5d_inverse(Eigen::MatrixXd inMat, int channel1, int channel2){
             i = m_intClass->blockArrays_ppm_hhp(1,i1);
             j = m_intClass->blockArrays_ppm_hhp(2,i1);
             a = m_intClass->blockArrays_ppm_hhp(3,i1);
-            b = m_intClass->blockArrays_ppm_pph(1,i1);
+            b = m_intClass->blockArrays_ppm_pph(1,i2);
             c = m_intClass->blockArrays_ppm_pph(2,i2);
             k = m_intClass->blockArrays_ppm_pph(3,i2);
 
@@ -4736,7 +4738,7 @@ void MakeAmpMat::T5e_inverse(Eigen::MatrixXd inMat, int channel1, int channel2){
             j = m_intClass->blockArrays_ppm_hhp(1,i1);
             k = m_intClass->blockArrays_ppm_hhp(2,i1);
             c = m_intClass->blockArrays_ppm_hhp(3,i1);
-            a = m_intClass->blockArrays_ppm_pph(1,i1);
+            a = m_intClass->blockArrays_ppm_pph(1,i2);
             b = m_intClass->blockArrays_ppm_pph(2,i2);
             i = m_intClass->blockArrays_ppm_pph(3,i2);
 

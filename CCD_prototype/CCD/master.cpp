@@ -201,7 +201,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             //m_diagrams->T3b();
             //m_diagrams->T3c();
             //m_diagrams->T3d();
-            //m_diagrams->T3e();  //slow?
+            //m_diagrams->T3e();  //slow? (didn't find the element, now it does)
             //m_diagrams->T5a();  //slow?
             //m_diagrams->T5b();
             //m_diagrams->T5c();  //slow?

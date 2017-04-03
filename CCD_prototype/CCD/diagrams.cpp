@@ -478,8 +478,6 @@ void Diagrams::makeT3(){
 
 void Diagrams::T1a(){
 
-
-
     for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_ppm_hhp.size(); i3++){
@@ -744,6 +742,7 @@ void Diagrams::T3e(){
                     Eigen::MatrixXd mat2 = m_intClass->T3e_makemat(i3, i2);
                     Eigen::MatrixXd product = mat1*mat2.transpose();
 
+                    //std::cout << product << std::endl;
                     m_ampClass->T3e_Inverse_temp(product, i1, i3);
                 }
             }
@@ -760,6 +759,7 @@ void Diagrams::T3e(){
                     Eigen::MatrixXd mat1 = m_ampClass->T3e_makemat_2(i3, i2);
                     Eigen::MatrixXd mat2 = m_ampClass->T3e_makemat_3(i2, i1);
                     Eigen::MatrixXd product = -0.5*mat1*mat2;
+
 
                     m_ampClass->T3e_inverse(product, i3, i1);
                 }

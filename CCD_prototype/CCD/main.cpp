@@ -29,9 +29,9 @@ int main()
     double  conFac  =   1;                          //convergence factor
 
     bool    intermediates = true;                   //turn on/off intermediates in CCD eqs
-    bool    CCDT          = true;                   //turn on/off CCDT-1
+    bool    CCDT          = false;                   //turn on/off CCDT-1
     bool    timer         = true;                   //turn on/off timer
-    bool    relaxation    = true;                  //turn on/off relaxation when updating amplitudes
+    bool    relaxation    = false;                  //turn on/off relaxation when updating amplitudes
     double  alpha         = 0.8;                    //relaxation parameter
 
     bool    makeData      = false;                  //choose to write to file for a range of shells
@@ -50,8 +50,8 @@ int main()
         //we use natural units
         const double  pi      =   M_PI;
         int     Nh      =   14;							//number of particles
-        int     Nb      =   5;							//number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 can at max have N=14)
-        double  rs      =   1;                          //Wigner Seitz radius
+        int     Nb      =   3;							//number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 can at max have N=14)
+        double  rs      =   2;//5915;                          //Wigner Seitz radius
         double  rb      =   1.;                          //Bohr radius [MeV^-1]
         double  m       =   1.;//                //electron mass [MeV] (1 for HEG, 939.565 for MP)
         //double  m       =   939.565;
@@ -61,6 +61,7 @@ int main()
         //double  L3      =   Nh/rho;
         double  L2      =   pow(L3, 2./3.);
         double  L1      =   pow(L3, 1./3.);
+        cout << L1 << endl;
 
         Master* master = new Master;
         master->setSize(Nh, Nb);
