@@ -93,8 +93,6 @@ void MakeAmpMat::emptyFockMaps(){
 //for now we store the Fock matrix, but perhaps later it would be better to calculate it "on the fly"
 //I deliberately declared a lot of ints here, but merely for easier debugging and readability
 void MakeAmpMat::makeDenomMat(){
-    //for (int i=0; i<m_intClass->sortVec_hh.size(); i++){   //remember, Vhhpp_i holds all kUnique for Vhhpp
-    double eps = 1e-15;
 
     for (int i=0; i<m_intClass->numOfKu; i++){
         int lowBound_hh  = m_intClass->boundsHolder_hhpp_hh(0,i);
@@ -113,14 +111,7 @@ void MakeAmpMat::makeDenomMat(){
                 int jj = m_intClass->blockArrays_pp_hh(2,hh);
                 int aa = m_intClass->blockArrays_pp_pp(1,pp);
                 int bb = m_intClass->blockArrays_pp_pp(2,pp);
-                double element = (double)(FockMap_h[ii] + FockMap_h[jj] - FockMap_p[aa] - FockMap_p[bb] );
-                if ( abs(element) > eps){
-                    newMat(hh-lowBound_hh, pp-lowBound_pp) = 1./( (double)element );
-                }
-                else{
-                    newMat(hh-lowBound_hh, pp-lowBound_pp) = 0;
-                }
-                //newMat(hh-lowBound_hh, pp-lowBound_pp) = 1./( (double)(FockMap_h[ii] + FockMap_h[jj] - FockMap_p[aa] - FockMap_p[bb] ) );
+                newMat(hh-lowBound_hh, pp-lowBound_pp) = 1./( (double)(FockMap_h[ii] + FockMap_h[jj] - FockMap_p[aa] - FockMap_p[bb] ) );
             }
         }
         denomMat.push_back( newMat );
@@ -128,8 +119,6 @@ void MakeAmpMat::makeDenomMat(){
 }
 
 void MakeAmpMat::makeDenomMat3(){
-    //for (int i=0; i<m_intClass->sortVec_hh.size(); i++){   //remember, Vhhpp_i holds all kUnique for Vhhpp
-    double eps = 1e-15;
 
     //#pragma omp parallel for
     for (int i=0; i<m_intClass->numOfKu3; i++){
@@ -152,14 +141,7 @@ void MakeAmpMat::makeDenomMat3(){
                 int aa = m_intClass->blockArrays_ppp_ppp(1,ppp);
                 int bb = m_intClass->blockArrays_ppp_ppp(2,ppp);
                 int cc = m_intClass->blockArrays_ppp_ppp(3,ppp);
-                double element = (double)(FockMap_h[ii] + FockMap_h[jj] + FockMap_h[kk] - FockMap_p[aa] - FockMap_p[bb] - FockMap_p[cc] );
-                if ( abs(element) > eps){
-                    newMat(hhh-lowBound_hhh, ppp-lowBound_ppp) = 1./( (double)element );
-                }
-                else{
-                    newMat(hhh-lowBound_hhh, ppp-lowBound_ppp) = 0;
-                }
-                //newMat(hhh-lowBound_hhh, ppp-lowBound_ppp) = 1./( (double)(FockMap_h[ii] + FockMap_h[jj] + FockMap_h[kk] - FockMap_p[aa] - FockMap_p[bb] - FockMap_p[cc] ) );
+                newMat(hhh-lowBound_hhh, ppp-lowBound_ppp) = 1./( (double)(FockMap_h[ii] + FockMap_h[jj] + FockMap_h[kk] - FockMap_p[aa] - FockMap_p[bb] - FockMap_p[cc] ) );
             }
         }
         denomMat3.push_back( newMat );

@@ -553,6 +553,8 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
             blockArrays_temp.col(c) = blockArrays_temp2.col(c);
         }
 
+        blockArrays_temp2.resize(0,0);
+
         /*for (int a=m_Nh; a<m_Ns; a++){
             for (int b=m_Nh; b<m_Ns; b++){
                 for (int c=m_Nh; c<m_Ns; c++){
@@ -630,6 +632,8 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
             blockArrays_temp2.col(c) = blockArrays_temp1.col(c);
         }
 
+        blockArrays_temp1.resize(0,0);
+
         /*for (int i=0; i<m_Nh; i++){
             for (int j=0; j<m_Nh; j++){
                 for (int k=0; k<m_Nh; k++){
@@ -676,6 +680,7 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
             blockArrays_temp2.col(c) = blockArrays_temp1.col(c);
         }
 
+        blockArrays_temp1.resize(0,0);
 
         /*for (int i=0; i<m_Nh; i++){
             for (int j=0; j<m_Nh; j++){
@@ -721,6 +726,9 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
         for (int c=0; c<index; c++){
             blockArrays_temp2.col(c) = blockArrays_temp1.col(c);
         }
+
+        blockArrays_temp1.resize(0,0);
+
         std::cout << "made blockArrays_pppm_ppph" << std::endl;
 
         /*for (int a=m_Nh; a<m_Ns; a++){
@@ -803,6 +811,8 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
             blockArrays_temp2.col(c) = blockArrays_temp1.col(c);
         }
 
+        blockArrays_temp1.resize(0,0);
+
         std::cout << "made blockArrays_pppmm_hhhpp" << std::endl;
 
         /*for (int i=0; i<m_Nh; i++){
@@ -859,6 +869,8 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
         for (int c=0; c<index; c++){
             blockArrays_temp2.col(c) = blockArrays_temp1.col(c);
         }
+
+        blockArrays_temp1.resize(0,0);
 
         /*for (int a=m_Nh; a<m_Ns; a++){
             for (int b=m_Nh; b<m_Ns; b++){
@@ -2414,7 +2426,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         range_lower_pp = boundsHolder_hhpp_pp(0,h);
         range_upper_pp = boundsHolder_hhpp_pp(1,h);
         makeMatMap_hhpp(blockArrays_pp_hh, blockArrays_pp_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp);
-        makeMatVec(blockArrays_pp_hh, blockArrays_pp_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp);
+       // makeMatVec(blockArrays_pp_hh, blockArrays_pp_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp);
     }
     cout << "made Vhhpp" << endl;
 

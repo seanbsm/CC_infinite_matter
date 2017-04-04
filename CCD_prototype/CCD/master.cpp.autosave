@@ -193,7 +193,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
                       << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
                       << " milliseconds" << std::endl;*/
 
-            m_diagrams->T1a();
+            //m_diagrams->T1a();
             m_diagrams->T1b();
             //m_diagrams->T2c();
             //m_diagrams->T2d();

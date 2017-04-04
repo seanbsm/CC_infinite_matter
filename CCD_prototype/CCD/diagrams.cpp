@@ -3,6 +3,7 @@
 #include <eigen3/Eigen/Dense>
 #include <eigen3/Eigen/Core>
 #include <omp.h>
+#include <mpi.h>
 #include <chrono>
 
 typedef std::chrono::high_resolution_clock Clock;   //needed for timing
@@ -473,6 +474,8 @@ void Diagrams::makeT3(){
     m_ampClass->T3_elements_A_new.resize(m_ampClass->T3_elements_I.size(), 0);
     m_ampClass->T3_elements_A_temp.resize(m_ampClass->T3_elements_I.size(), 0);
 
+    //std::cout << m_ampClass->T3_elements_A.size() << std::endl;
+
     m_ampClass->T3_makeDirectMat();
 }
 
@@ -482,11 +485,6 @@ void Diagrams::T1a(){
         for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_ppm_hhp.size(); i3++){
                 if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_pph[i2] && m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i3]){
-
-                    //int ku = m_intClass->sortVec_p_p[i1];
-                    //Eigen::MatrixXd mat1 = m_intClass->make3x1Block(ku,1,1,0,1);
-                    //Eigen::MatrixXd mat2 = m_ampClass->make3x1Block(ku,0,0,1,1, m_ampClass->T2_elements);
-                    //m_ampClass->make3x3Block_inverse_I_T1a(product, ku, 0,0,1,1,1,0, m_ampClass->T3_elements_A_temp, true);
 
                     Eigen::MatrixXd mat1 = m_intClass->T1a_makemat(i2, i1);
                     Eigen::MatrixXd mat2 = m_ampClass->T1a_makemat(i3, i1);
@@ -504,30 +502,55 @@ void Diagrams::T1a(){
         }
     }
 
-    //m_ampClass->addElementsT3(1,0,0,1,0,0); // 0,1,1,1,1,0
-
     m_ampClass->addElementsT3_T1a();
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
-
 }
 
 void Diagrams::T1b(){
+
+    /*Eigen::MatrixXi matches_root;
+    Eigen::MatrixXi matches_recv;
+
+    for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
+        for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
+            for (int i3=0; i3<m_intClass->sortVec_ppm_pph.size(); i3++){
+                if ( m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_hhp[i2] && m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_pph[i3]){
+                    matches_root.conservativeResize(3, matches_root.cols()+1);
+                    matches_root.col(matches_root.cols()-1) << i1,i2,i3;
+                }
+            }
+        }
+    }
+
+    //broadcast the necessesary blockArrays
+    MPI_Bcast(m_intClass->blockArrays_p_h.data(), m_intClass->blockArrays_p_h.cols()*m_intClass->blockArrays_p_h*rows(), MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(m_intClass->blockArrays_ppm_hhp.data(), m_intClass->blockArrays_ppm_hhp.cols()*m_intClass->blockArrays_ppm_hhp*rows(), MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(m_intClass->blockArrays_ppm_pph.data(), m_intClass->blockArrays_ppm_pph.cols()*m_intClass->blockArrays_ppm_pph*rows(), MPI_INT, 0, MPI_COMM_WORLD);
+
+    //scatter the channels
+    MPI_Scatter(matches_root.data(), matches_root.cols()*matches_root.rows(), MPI_INT, matches_recv.data(), matches_recv.cols()*matches_recv.rows(), MPI_INT, 0, MPI_COMM_WORLD);
+
+    int i1; int i2; int i3;
+    for (int i=0; i<matches_recv.cols(); i++){
+        i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
+
+        Eigen::MatrixXd mat1 = m_intClass->T1b_makemat(i2, i1);
+        Eigen::MatrixXd mat2 = m_ampClass->T1b_makemat(i3, i1);
+        Eigen::MatrixXd product = -1*(mat1*mat2.transpose());
+
+        m_ampClass->T1b_inverse(product, i2, i3);
+
+    }*/
 
     for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_ppm_pph.size(); i3++){
                 if ( m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_hhp[i2] && m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_pph[i3]){
 
-                    //int ku = m_intClass->sortVec_p_h[i1];
-                    //Eigen::MatrixXd mat1 = m_intClass->make3x1Block(ku,0,0,1,0);
-                    //Eigen::MatrixXd mat2 = m_ampClass->make3x1Block(ku,1,1,0,0, m_ampClass->T2_elements);
-                    //m_ampClass->make3x3Block_inverse_I_T1b(product, ku, 0,0,1,1,1,0, m_ampClass->T3_elements_A_temp, true);
-
                     Eigen::MatrixXd mat1 = m_intClass->T1b_makemat(i2, i1);
                     Eigen::MatrixXd mat2 = m_ampClass->T1b_makemat(i3, i1);
                     Eigen::MatrixXd product = -1*(mat1*mat2.transpose());
 
-                    //std::cout << product << std::endl;
                     m_ampClass->T1b_inverse(product, i2, i3);
                 }
             }
@@ -536,24 +559,6 @@ void Diagrams::T1b(){
 
     m_ampClass->addElementsT3_T1b();
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
-
-    /*for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
-        for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
-            if ( m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_hhp[i2] ){
-                int ku = m_intClass->sortVec_p_h[i1];
-
-                Eigen::MatrixXd mat1 = m_intClass->make3x1Block(ku,0,0,1,0);
-                Eigen::MatrixXd mat2 = m_ampClass->make3x1Block(ku,1,1,0,0, m_ampClass->T2_elements);
-
-                Eigen::MatrixXd product = mat1*mat2.transpose();
-                //std::cout << product << std::endl;
-                m_ampClass->make3x3Block_inverse(product, ku, 0,0,1,1,1,0, m_ampClass->T3_elements_new, true);
-            }
-        }
-    }
-    //m_ampClass->addElementsT3(1,1,0,0,1,1); // 1,1,0,0,1,1
-    m_ampClass->addElementsT3_T1b();
-    m_ampClass->T3_temp.clear();*/
 }
 
 void Diagrams::T2c(){

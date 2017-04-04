@@ -100,14 +100,14 @@ class HEG:	#Homogenous Electron Gas
 #we use natural units
 N 	= 14							#number of particles
 NB 	= 3							#number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 can at max have N=14)
-rs 	= 1.5						#Wigner Seitz radius
+rs 	= 1.6						#Wigner Seitz radius
 rb 	= 1.#2.68#268*1e-6/27.211			#Bohr radius [MeV^-1]
 m 	= 1.#0.511#*1e6/21.211			#electron mass [MeV]
 L3 	= 4*pi*N*rs**3/3.				#box length
 L2 	= L3**(2./3)
 L1 	= L3**(1./3)
 g 	= 1.							#pairing strength
-eps = 1e-10
+eps = 1e-14
 conFac = 1
 print L3
 system = HEG()

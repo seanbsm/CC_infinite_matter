@@ -246,12 +246,12 @@ class CCD():
         
         #Terms linear in T2
         
-        #T2new += .5*np.einsum("abcd,cdij->abij", self.V([1,1,1,1]), self.T2) #La (ladder)
+        T2new += .5*np.einsum("abcd,cdij->abij", self.V([1,1,1,1]), self.T2) #La (ladder)
         
         T2new += .5*np.einsum("klij,abkl->abij", self.V([0,0,0,0]), self.T2) #Lb 
 
         dtemp = np.einsum("kbcj,acik->abij", self.V([0,1,1,0]), self.T2) 
-        #T2new += dtemp - np.einsum("abij->baij", dtemp) - np.einsum("abij->abji", dtemp) + np.einsum("abij->baji", dtemp) #Lc
+        T2new += dtemp - np.einsum("abij->baij", dtemp) - np.einsum("abij->abji", dtemp) + np.einsum("abij->baji", dtemp) #Lc
         
         #Terms quadratic in T2
         
@@ -262,17 +262,17 @@ class CCD():
         
         dtemp = np.einsum("klcd,acik->adil", Vklcd, self.T2) #Qb
         dtemp = np.einsum("adil,dblj->abij", dtemp, self.T2) #Qb
-        #T2new += .5*(dtemp - np.einsum("abij->baij", dtemp) - np.einsum("abij->abji", dtemp) + np.einsum("abij->baji", dtemp)) #Qb
+        T2new += .5*(dtemp - np.einsum("abij->baij", dtemp) - np.einsum("abij->abji", dtemp) + np.einsum("abij->baji", dtemp)) #Qb
         
         #optional, but highly inefficient: dtemp = np.einsum("klcd,cdik,abjl", self.V([0,0,1,1]), self.T2, self.T2) #Qc
         dtemp = np.einsum("klcd,cdki->il", Vklcd, self.T2) #Qc
         dtemp = np.einsum("il,ablj->abij", dtemp, self.T2) #Qc
-        #T2new += -.5*(dtemp - np.einsum("abij->abji", dtemp))
+        T2new += -.5*(dtemp - np.einsum("abij->abji", dtemp))
         
         #optional, but highly inefficient: dtemp = np.einsum("klcd,cakl,dbij", self.V([0,0,1,1]), self.T2, self.T2) #Qd
         dtemp = np.einsum("klcd,cakl->ad", Vklcd, self.T2) #Qd
         dtemp = np.einsum("ad,dbij->abij", dtemp, self.T2) #Qd
-        #T2new += -.5*(dtemp - np.einsum("abij->baij", dtemp))
+        T2new += -.5*(dtemp - np.einsum("abij->baij", dtemp))
         
         #Updating amplitudes
         self.T2 = T2new/(self.bs.ET2(np.arange(self.Nh, self.Ns,1),np.arange(self.Nh, self.Ns,1),np.arange(self.Nh),np.arange(self.Nh)))
@@ -280,7 +280,7 @@ class CCD():
             
             
 #Initialize basis for 4 shells, rs = 1.0, 14 occupied states
-bs = electronbasis(3,1.5,14)
+bs = electronbasis(3,1.6,14)
 print "Number of states:", bs.nstates
 
 CC = CCD(bs) #initialize CCD solver for basis bs
