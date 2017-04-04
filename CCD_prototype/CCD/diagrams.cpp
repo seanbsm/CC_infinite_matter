@@ -508,7 +508,7 @@ void Diagrams::T1a(){
 
 void Diagrams::T1b(){
 
-    /*Eigen::MatrixXi matches_root;
+    Eigen::MatrixXi matches_root;
     Eigen::MatrixXi matches_recv;
 
     for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
@@ -540,9 +540,9 @@ void Diagrams::T1b(){
 
         m_ampClass->T1b_inverse(product, i2, i3);
 
-    }*/
+    }
 
-    for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
+    /*for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_ppm_pph.size(); i3++){
                 if ( m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_hhp[i2] && m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_pph[i3]){
@@ -555,7 +555,7 @@ void Diagrams::T1b(){
                 }
             }
         }
-    }
+    }*/
 
     m_ampClass->addElementsT3_T1b();
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
