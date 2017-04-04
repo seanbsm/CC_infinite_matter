@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <chrono>
+#include <mpi.h>
 #include <omp.h>
 #include <iomanip> //needed for std::setprecision
 
@@ -48,27 +49,30 @@ void Master::setClasses(){
     cout << m_Ns << endl;
 
     m_intClass->setTriples(m_triplesOn);
-    m_intClass->makeBlockMat(m_system, m_Nh, m_Ns);
-
     m_diagrams->setAmpClass(m_ampClass);
     m_diagrams->setIntClass(m_intClass);
     m_diagrams->setSystem(m_system);
     m_ampClass->setIntClass(m_intClass);
     m_ampClass->setSystem(m_system);
 
-    m_ampClass->makeFockMaps();
-    m_ampClass->makeDenomMat();
-    m_ampClass->setElements_T2();
+    if (world_rank == 0){
+        m_intClass->makeBlockMat(m_system, m_Nh, m_Ns);
 
+        m_ampClass->makeFockMaps();
+        m_ampClass->makeDenomMat();
+        m_ampClass->setElements_T2();
 
-    if (m_triplesOn){
-        m_ampClass->makeDenomMat3();
-        m_intClass->makePermutations();
+        if (m_triplesOn){
+            m_ampClass->makeDenomMat3();
+            m_intClass->makePermutations();
+        }
     }
     m_ampClass->emptyFockMaps();
 }
 
 double Master::CC_master(double eps, double conFac){
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
 
     //would be better to simply let "m_ampClass" and "m_diagrams" inherit master?
     if (m_timerOn){
@@ -86,22 +90,23 @@ double Master::CC_master(double eps, double conFac){
     }
 
     double ECCD_old = 0;
-    for (int channel = 0; channel<m_intClass->numOfKu; channel++){
-        Eigen::MatrixXd Vhhpp = m_intClass->make2x2Block(m_intClass->Vhhpp_i[channel],0,0,1,1);
-        //Eigen::MatrixXd Vhhpp = m_intClass->make2x2Block_alt(h);
-        Eigen::MatrixXd temp = Vhhpp.array()*m_ampClass->denomMat[channel].array();
-        ECCD_old += ((Vhhpp.transpose())*(temp)).trace();
 
+    if (world_rank == 0){
+        for (int channel = 0; channel<m_intClass->numOfKu; channel++){
+            Eigen::MatrixXd Vhhpp = m_intClass->make2x2Block(m_intClass->Vhhpp_i[channel],0,0,1,1);
+            //Eigen::MatrixXd Vhhpp = m_intClass->make2x2Block_alt(h);
+            Eigen::MatrixXd temp = Vhhpp.array()*m_ampClass->denomMat[channel].array();
+            ECCD_old += ((Vhhpp.transpose())*(temp)).trace();
+
+        }
+        //m_ampClass->T2_elements = m_ampClass->T2_elements_new;
+
+
+        std::cout << std::endl;
+        std::cout << "MBPT2: " << std::setprecision (16) << 0.25*ECCD_old << std::endl;
+        std::cout << std::endl;
+        std::cout << "Start of CC iterations: " << std::endl;
     }
-    //m_ampClass->T2_elements = m_ampClass->T2_elements_new;
-
-
-    std::cout << std::endl;
-    std::cout << "MBPT2: " << std::setprecision (16) << 0.25*ECCD_old << std::endl;
-    std::cout << std::endl;
-    std::cout << "Start of CC iterations: " << std::endl;
-
-
 
     double ECC;
     if (m_timerOn){
@@ -142,7 +147,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
 
 
         //calculate CCD T2 diagrams
-        if (counter != -1){
+        if (counter != -1 && world_rank==0){
             if (m_intermediatesOn){
                 m_diagrams->La();
                 m_diagrams->I1_term1();  // Lb, Qa
@@ -166,34 +171,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
         if(m_triplesOn){
             std::fill(m_ampClass->T3_elements_A_new.begin(), m_ampClass->T3_elements_A_new.end(), 0); //reset T3 new
 
-            //update T2 amplitudes
-            /*for (int hh = 0; hh<m_intClass->numOfKu; hh++){
-                int ku = m_intClass->Vhhpp_i[hh];
-
-                Eigen::MatrixXd Vhhpp           = m_intClass->make2x2Block(ku,0,0,1,1);
-                Eigen::MatrixXd D_contributions = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements_new);
-                Eigen::MatrixXd temp = (Vhhpp + D_contributions).array()*m_ampClass->denomMat[hh].array();
-                m_ampClass->make2x2Block_inverse(temp, ku, 0,0,1,1, m_ampClass->T2_elements_new, false);
-            }
-            if (m_relaxation){
-                std::unordered_map<int, double> T2_temp = m_ampClass->T2_elements;
-                m_ampClass->T2_elements.clear();
-                for(auto const& it : m_ampClass->T2_elements_new) {
-                    m_ampClass->T2_elements[it.first] = m_alpha*it.second + (1-m_alpha)*T2_temp[it.first];
-                }
-            }
-            else{
-                m_ampClass->T2_elements = m_ampClass->T2_elements_new;
-            }*/
-
-
-            /*auto t1 = Clock::now();
-            auto t2 = Clock::now();
-            std::cout << "time: "
-                      << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
-                      << " milliseconds" << std::endl;*/
-
-            m_diagrams->T1a();
+            //m_diagrams->T1a();
             m_diagrams->T1b();
             //m_diagrams->T2c();
             //m_diagrams->T2d();
@@ -211,32 +189,34 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             //m_diagrams->T5g();
 
             //update T3 amplitudes
-            for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
-                int ku = m_intClass->Vhhhppp_i[channel];
+            if (world_rank == 0){
+                for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
+                    int ku = m_intClass->Vhhhppp_i[channel];
 
-                Eigen::MatrixXd D_contributions = m_ampClass->T3_buildDirectMat(channel, m_ampClass->T3_elements_A_new);
-                Eigen::MatrixXd temp = (D_contributions).array()*m_ampClass->denomMat3[channel].array();
+                    Eigen::MatrixXd D_contributions = m_ampClass->T3_buildDirectMat(channel, m_ampClass->T3_elements_A_new);
+                    Eigen::MatrixXd temp = (D_contributions).array()*m_ampClass->denomMat3[channel].array();
 
-                Eigen::MatrixXi tempIMat = m_ampClass->T3_directMat[channel]; //this holds indices for T3_elements_A (as well as _new and _temp)
-                int rows = tempIMat.rows();
-                int cols = tempIMat.cols();
+                    Eigen::MatrixXi tempIMat = m_ampClass->T3_directMat[channel]; //this holds indices for T3_elements_A (as well as _new and _temp)
+                    int rows = tempIMat.rows();
+                    int cols = tempIMat.cols();
 
-                for (int col=0; col<cols; col++){
-                    for (int row=0; row<rows; row++){
-                        m_ampClass->T3_elements_A_new[ tempIMat(row, col) ] = temp(row, col);
+                    for (int col=0; col<cols; col++){
+                        for (int row=0; row<rows; row++){
+                            m_ampClass->T3_elements_A_new[ tempIMat(row, col) ] = temp(row, col);
+                        }
                     }
                 }
-            }
 
-            if (m_relaxation){
-                std::vector<double> T3_temp = m_ampClass->T3_elements_A;
+                if (m_relaxation){
+                    std::vector<double> T3_temp = m_ampClass->T3_elements_A;
 
-                for(int it=0; it<m_ampClass->T3_elements_A_new.size(); it++){
-                    m_ampClass->T3_elements_A[it] = m_alpha*m_ampClass->T3_elements_A_new[it] + (1-m_alpha)*T3_temp[it];
+                    for(int it=0; it<m_ampClass->T3_elements_A_new.size(); it++){
+                        m_ampClass->T3_elements_A[it] = m_alpha*m_ampClass->T3_elements_A_new[it] + (1-m_alpha)*T3_temp[it];
+                    }
                 }
-            }
-            else{
-                m_ampClass->T3_elements_A = m_ampClass->T3_elements_A_new;
+                else{
+                    m_ampClass->T3_elements_A = m_ampClass->T3_elements_A_new;
+                }
             }
 
 
@@ -245,52 +225,39 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             m_diagrams->D10c();
         }
 
-        //update T2 amplitudes
-        for (int hh = 0; hh<m_intClass->numOfKu; hh++){
-            int ku = m_intClass->Vhhpp_i[hh];
+        if (world_rank == 0){
+            //update T2 amplitudes
+            for (int hh = 0; hh<m_intClass->numOfKu; hh++){
+                int ku = m_intClass->Vhhpp_i[hh];
 
-            Eigen::MatrixXd Vhhpp           = m_intClass->make2x2Block(ku,0,0,1,1);
-            Eigen::MatrixXd D_contributions = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements_new);
-            Eigen::MatrixXd temp = (Vhhpp + D_contributions).array()*m_ampClass->denomMat[hh].array();
+                Eigen::MatrixXd Vhhpp           = m_intClass->make2x2Block(ku,0,0,1,1);
+                Eigen::MatrixXd D_contributions = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements_new);
+                Eigen::MatrixXd temp = (Vhhpp + D_contributions).array()*m_ampClass->denomMat[hh].array();
 
-            //std::cout << m_ampClass->denomMat[hh] << std::endl;
-            m_ampClass->make2x2Block_inverse(temp, ku, 0,0,1,1, m_ampClass->T2_elements_new, false);
+                m_ampClass->make2x2Block_inverse(temp, ku, 0,0,1,1, m_ampClass->T2_elements_new, false);
 
-            Eigen::MatrixXd Thhpp = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements_new);
-            ECCD += 0.25*((Vhhpp.transpose())*(Thhpp)).trace();
-        }
-
-
-        cout << std::fixed << std::setprecision (16) << ECCD << endl;
-
-        conFac = abs(ECCD - ECCD_old);
-        ECCD_old = ECCD;
-        counter += 1;
-
-        if (m_relaxation){
-            std::unordered_map<int, double> T2_temp = m_ampClass->T2_elements;
-            m_ampClass->T2_elements.clear();
-            for(auto const& it : m_ampClass->T2_elements_new) {
-                m_ampClass->T2_elements[it.first] = m_alpha*it.second + (1-m_alpha)*T2_temp[it.first];
+                Eigen::MatrixXd Thhpp = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements_new);
+                ECCD += 0.25*((Vhhpp.transpose())*(Thhpp)).trace();
             }
 
-            /*if(m_triplesOn){
-                std::vector<double> T3_temp = m_ampClass->T3_elements_A;
 
-                for(int it=0; it<m_ampClass->T3_elements_A_new.size(); it++){
-                    m_ampClass->T3_elements_A[it] = m_alpha*m_ampClass->T3_elements_A_new[it] + (1-m_alpha)*T3_temp[it];
+            cout << std::fixed << std::setprecision (16) << ECCD << endl;
+
+            conFac = abs(ECCD - ECCD_old);
+            ECCD_old = ECCD;
+            counter += 1;
+
+            if (m_relaxation){
+                std::unordered_map<int, double> T2_temp = m_ampClass->T2_elements;
+                m_ampClass->T2_elements.clear();
+                for(auto const& it : m_ampClass->T2_elements_new) {
+                    m_ampClass->T2_elements[it.first] = m_alpha*it.second + (1-m_alpha)*T2_temp[it.first];
                 }
-            }*/
-
+            }
+            else{
+                m_ampClass->T2_elements = m_ampClass->T2_elements_new;
+            }
         }
-        else{
-            m_ampClass->T2_elements = m_ampClass->T2_elements_new;
-
-            /*if(m_triplesOn){
-                m_ampClass->T3_elements_A = m_ampClass->T3_elements_A_new;
-            }*/
-        }
-
 
         //ECCD = 0; too good to delete; you don't want to know how long i used to find this
     }

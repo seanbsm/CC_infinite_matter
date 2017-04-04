@@ -5,6 +5,7 @@
 #include <fstream>
 #include <math.h>
 #include <chrono>
+#include <mpi.h>
 #include <omp.h>
 #include <eigen3/Eigen/Dense>
 //#include <eigen3/Eigen/Core>
@@ -23,8 +24,17 @@ typedef std::chrono::high_resolution_clock Clock;   //needed for timing
 
 using namespace std;
 
-int main()
+int main(int argc, char** argv)
 {
+
+    MPI_Init(&argc, &argv);
+    int world_size;
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size); //sets world_size equal to world size
+    int world_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank); //sets world_rank equal to world rank
+
+    MPI_Status status;
+
     double  eps     =   1e-16;                      //remember to adjust setprecision in master when changing this
     double  conFac  =   1;                          //convergence factor
 

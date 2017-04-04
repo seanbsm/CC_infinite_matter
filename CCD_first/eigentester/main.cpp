@@ -79,6 +79,7 @@ int main(int argc, char** argv)
         Eigen::MatrixXd C = Eigen::MatrixXd::Random(n,n)*Eigen::MatrixXd::Random(n,n);
         auto t2 = Clock::now();
 
+
         std::cout << "end. time: "
                   << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
                   << " milliseconds" << std::endl;

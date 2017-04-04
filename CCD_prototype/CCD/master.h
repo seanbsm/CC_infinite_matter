@@ -21,7 +21,7 @@ public:
     bool              m_relaxation         = false;
     double            m_alpha              = 1;
 
-
+    int world_rank;
 
     void setSize();
     void setSystem(class System* system);
