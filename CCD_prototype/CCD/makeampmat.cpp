@@ -94,6 +94,7 @@ void MakeAmpMat::emptyFockMaps(){
 //I deliberately declared a lot of ints here, but merely for easier debugging and readability
 void MakeAmpMat::makeDenomMat(){
 
+
     for (int i=0; i<m_intClass->numOfKu; i++){
         int lowBound_hh  = m_intClass->boundsHolder_hhpp_hh(0,i);
         int highBound_hh = m_intClass->boundsHolder_hhpp_hh(1,i);
@@ -120,7 +121,9 @@ void MakeAmpMat::makeDenomMat(){
 
 void MakeAmpMat::makeDenomMat3(){
 
-    //#pragma omp parallel for
+    std::unordered_map<int, double> FockMap_h_copy = FockMap_h;
+    std::unordered_map<int, double> FockMap_p_copy = FockMap_p;
+
     for (int i=0; i<m_intClass->numOfKu3; i++){
         int lowBound_hhh  = m_intClass->boundsHolder_hhhppp_hhh(0,i);
         int highBound_hhh = m_intClass->boundsHolder_hhhppp_hhh(1,i);
@@ -132,16 +135,17 @@ void MakeAmpMat::makeDenomMat3(){
         Eigen::MatrixXd newMat;
         newMat.conservativeResize(dim_hhh, dim_ppp);
 
-       // #pragma omp parallel for
-        for (int hhh=lowBound_hhh; hhh<highBound_hhh; hhh++){
-            for (int ppp=lowBound_ppp; ppp<highBound_ppp; ppp++){
+        int n = omp_get_max_threads();
+        #pragma omp parallel for num_threads(n) firstprivate(FockMap_h_copy, FockMap_p_copy)
+        for (int ppp=lowBound_ppp; ppp<highBound_ppp; ppp++){
+            for (int hhh=lowBound_hhh; hhh<highBound_hhh; hhh++){
                 int ii = m_intClass->blockArrays_ppp_hhh(1,hhh);
                 int jj = m_intClass->blockArrays_ppp_hhh(2,hhh);
                 int kk = m_intClass->blockArrays_ppp_hhh(3,hhh);
                 int aa = m_intClass->blockArrays_ppp_ppp(1,ppp);
                 int bb = m_intClass->blockArrays_ppp_ppp(2,ppp);
                 int cc = m_intClass->blockArrays_ppp_ppp(3,ppp);
-                newMat(hhh-lowBound_hhh, ppp-lowBound_ppp) = 1./( (double)(FockMap_h[ii] + FockMap_h[jj] + FockMap_h[kk] - FockMap_p[aa] - FockMap_p[bb] - FockMap_p[cc] ) );
+                newMat(hhh-lowBound_hhh, ppp-lowBound_ppp) = 1./( (double)(FockMap_h_copy[ii] + FockMap_h_copy[jj] + FockMap_h_copy[kk] - FockMap_p_copy[aa] - FockMap_p_copy[bb] - FockMap_p_copy[cc] ) );
             }
         }
         denomMat3.push_back( newMat );

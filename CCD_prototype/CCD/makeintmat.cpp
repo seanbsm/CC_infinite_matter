@@ -107,10 +107,13 @@ void MakeIntMat::makePermutations(){
                 counter ++;
             }*/
 
+            int n = omp_get_max_threads();
+            #pragma omp parallel for num_threads(n) private(i2,j2,k2, val_ij2,val_ik2,val_jk2,val_ijik2,val_ijjk2)
             for (int it2 = range_lower_h; it2<range_upper_h; it2++){  //starting at it1+1 means I'll never do the same permutation twice
                 i2 = blockArrays_ppp_hhh(1,it2);
                 j2 = blockArrays_ppp_hhh(2,it2);
                 k2 = blockArrays_ppp_hhh(3,it2);
+                //std::cout << omp_get_thread_num() << std::endl;
 
                 val_ij2  = j2 + i2*Nh + k2*Nh2;
                 val_ik2  = k2 + j2*Nh + i2*Nh2;
@@ -124,32 +127,34 @@ void MakeIntMat::makePermutations(){
                 if (val1 == val_ij2){
                     blockArrays_ppp_hhh_Pij.col(it1) << it1, it2;
                     //blockArrays_ppp_hhh_Pij.col(it2) << it2, it1;
-                    counter ++;
+                    //counter ++;
                 }
                 if (val1 == val_ik2){
                     blockArrays_ppp_hhh_Pik.col(it1) << it1, it2;
                     //blockArrays_ppp_hhh_Pik.col(it2) << it2, it1;
-                    counter ++;
+                    //counter ++;
                 }
                 if (val1 == val_jk2){
                     blockArrays_ppp_hhh_Pjk.col(it1) << it1, it2;
                     //blockArrays_ppp_hhh_Pjk.col(it2) << it2, it1;
-                    counter ++;
+                    //counter ++;
                 }
                 if (val1 == val_ijik2){
                     blockArrays_ppp_hhh_Pijik.col(it1) << it1, it2;
                     //blockArrays_ppp_hhh_Pijik.col(it2) << it2, it1;
-                    counter ++;
+                    //counter ++;
                 }
                 if (val1 == val_ijjk2){
                     blockArrays_ppp_hhh_Pijjk.col(it1) << it1, it2;
                     //blockArrays_ppp_hhh_Pijjk.col(it2) << it2, it1;
-                    counter ++;
+                    //counter ++;
                 }
             }
-            //if (counter == 0){ std::cout << it1-range_lower_h << std::endl;}
+            //if (counter != 5){ std::cout << "not all hole permutations found" << std::endl;}
         }
 
+
+        //std::cout << blockArrays_ppp_hhh_Pijjk << std::endl;
 
         //ppp permutations
         for (int it1 = range_lower_p; it1<range_upper_p; it1++){
@@ -178,6 +183,8 @@ void MakeIntMat::makePermutations(){
                 counter ++;
             }*/
 
+            int n = omp_get_max_threads();
+            #pragma omp parallel for num_threads(n) private(a2,b2,c2, val_ab2,val_ac2,val_bc2,val_abac2,val_abbc2)
             for (int it2 = range_lower_p; it2<range_upper_p; it2++){  //starting at it1+1 means I'll never do the same permutation twice
                 a2 = blockArrays_ppp_ppp(1,it2);
                 b2 = blockArrays_ppp_ppp(2,it2);
@@ -195,30 +202,30 @@ void MakeIntMat::makePermutations(){
                     blockArrays_ppp_ppp_Pab.col(it1) << it1, it2;
                     //blockArrays_ppp_ppp_Pab.col(it2) << it2, it1;
                     //if (it2-range_lower_p < 0){std::cout << it2-range_lower_p << std::endl;}
-                    counter ++;
+                    //counter ++;
                 }
                 if (val1 == val_ac2){
                     blockArrays_ppp_ppp_Pac.col(it1) << it1, it2;
                     //blockArrays_ppp_ppp_Pac.col(it2) << it2, it1;
-                    counter ++;
+                    //counter ++;
                 }
                 if (val1 == val_bc2){
                     blockArrays_ppp_ppp_Pbc.col(it1) << it1, it2;
                     //blockArrays_ppp_ppp_Pbc.col(it2) << it2, it1;
-                    counter ++;
+                    //counter ++;
                 }
                 if (val1 == val_abac2){
                     blockArrays_ppp_ppp_Pabac.col(it1) << it1, it2;
                     //blockArrays_ppp_ppp_Pabac.col(it2) << it2, it1;
-                    counter ++;
+                    //counter ++;
                 }
                 if (val1 == val_abbc2){
                     blockArrays_ppp_ppp_Pabbc.col(it1) << it1, it2;
                     //blockArrays_ppp_ppp_Pabbc.col(it2) << it2, it1;
-                    counter ++;
+                    //counter ++;
                 }
             }
-            //if (counter == 0){ std::cout << it1-range_lower_h << std::endl;}
+            //if (counter != 5){ std::cout << "not all particle permutations found" << std::endl;;}
         }
     }
 
@@ -2071,10 +2078,13 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     indexHolder_hp_s.conservativeResize(2,sortVec_hp_s.size());
     for (int hp=0; hp<sortVec_hp_s.size(); hp++){
         int val_hp = sortVec_hp_s[hp];
-        for (int bA_hp=0; bA_hp<m_Nh*(m_Ns-m_Nh); bA_hp++){
+        for (int bA_hp=range_upper; bA_hp<m_Nh*(m_Ns-m_Nh); bA_hp++){
             if (val_hp == blockArrays_hp_s(0,bA_hp)){
                 range_upper = bA_hp+1;
                 counter += 1;
+            }
+            else if (val_hp < blockArrays_hp_s(0,bA_hp)){
+                break;
             }
         }
         range_lower = range_upper - counter;
@@ -2092,10 +2102,13 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         auto it2 = std::find(sortVec_pp_ph.begin(), sortVec_pp_ph.end(), val_pp);
         auto it3 = std::find(sortVec_pppm_hhhp.begin(), sortVec_pppm_hhhp.end(), val_pp);
         if (it1 != sortVec_pp_hh.end() || it2 != sortVec_pp_ph.end() || it3 != sortVec_pppm_hhhp.end()){
-            for (int bA_pp=0; bA_pp<(m_Ns-m_Nh)*(m_Ns-m_Nh); bA_pp++){
+            for (int bA_pp=range_upper; bA_pp<(m_Ns-m_Nh)*(m_Ns-m_Nh); bA_pp++){
                 if (val_pp == blockArrays_pp_pp(0,bA_pp)){
                     range_upper = bA_pp+1;
                     counter += 1;
+                }
+                else if(val_pp < blockArrays_pp_pp(0,bA_pp)){
+                    break;
                 }
             }
         }
@@ -2115,10 +2128,13 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         auto it1 = std::find(sortVec_p_p.begin(), sortVec_p_p.end(), val_hhp);
         auto it2 = std::find(sortVec_ppm_pph.begin(), sortVec_ppm_pph.end(), val_hhp);
         if (it1 != sortVec_p_p.end() || it2 != sortVec_ppm_pph.end()){
-            for (int bA_hhp=0; bA_hhp<m_Nh*m_Nh*(m_Ns-m_Nh); bA_hhp++){
+            for (int bA_hhp=range_upper; bA_hhp<m_Nh*m_Nh*(m_Ns-m_Nh); bA_hhp++){
                 if (val_hhp == blockArrays_ppm_hhp(0,bA_hhp)){
                     range_upper = bA_hhp+1;
                     counter += 1;
+                }
+                else if(val_hhp < blockArrays_ppm_hhp(0,bA_hhp)){
+                    break;
                 }
             }
         }
@@ -2136,10 +2152,13 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         auto it1 = std::find(sortVec_p_h.begin(), sortVec_p_h.end(), val_pph);
         auto it2 = std::find(sortVec_ppm_hhp.begin(), sortVec_ppm_hhp.end(), val_pph);
         if (it1 != sortVec_p_h.end() || it2 != sortVec_ppm_hhp.end()){
-            for (int bA_pph=0; bA_pph<m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh); bA_pph++){
+            for (int bA_pph=range_upper; bA_pph<m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh); bA_pph++){
                 if (val_pph == blockArrays_ppm_pph(0,bA_pph)){
                     range_upper = bA_pph+1;
                     counter += 1;
+                }
+                else if(val_pph < blockArrays_ppm_pph(0,bA_pph)){
+                    break;
                 }
             }
         }
@@ -2157,10 +2176,13 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             int val_hhh = sortVec_ppp_hhh[hhh];
             auto it = std::find(sortVec_ppp_ppp.begin(), sortVec_ppp_ppp.end(), val_hhh);
             if (it != sortVec_ppp_ppp.end()){
-                for (int bA_hhh=0; bA_hhh<m_Nh*m_Nh*m_Nh; bA_hhh++){
+                for (int bA_hhh=range_upper; bA_hhh<m_Nh*m_Nh*m_Nh; bA_hhh++){
                     if (val_hhh == blockArrays_ppp_hhh(0,bA_hhh)){
                         range_upper = bA_hhh+1;
                         counter += 1;
+                    }
+                    else if (val_hhh < blockArrays_ppp_hhh(0,bA_hhh)){
+                        break;
                     }
                 }
             }
@@ -2177,10 +2199,13 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             int val_hhh = sortVec_ppm_hhh[hhh];
             auto it = std::find(sortVec_p_p.begin(), sortVec_p_p.end(), val_hhh);
             if (it != sortVec_p_p.end()){
-                for (int bA_hhh=0; bA_hhh<m_Nh*m_Nh*m_Nh; bA_hhh++){
+                for (int bA_hhh=range_upper; bA_hhh<m_Nh*m_Nh*m_Nh; bA_hhh++){
                     if (val_hhh == blockArrays_ppm_hhh(0,bA_hhh)){
                         range_upper = bA_hhh+1;
                         counter += 1;
+                    }
+                    else if (val_hhh < blockArrays_ppm_hhh(0,bA_hhh)){
+                        break;
                     }
                 }
             }
@@ -2197,10 +2222,13 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             int val_ppp = sortVec_ppp_ppp[ppp];
             auto it = std::find(sortVec_ppp_hhh.begin(), sortVec_ppp_hhh.end(), val_ppp);
             if (it != sortVec_ppp_hhh.end()){
-                for (int bA_ppp=0; bA_ppp<blockArrays_ppp_ppp.cols(); bA_ppp++){
+                for (int bA_ppp=range_upper; bA_ppp<blockArrays_ppp_ppp.cols(); bA_ppp++){
                     if (val_ppp == blockArrays_ppp_ppp(0,bA_ppp)){
                         range_upper = bA_ppp+1;
                         counter += 1;
+                    }
+                    else if (val_ppp < blockArrays_ppp_ppp(0,bA_ppp)){
+                        break;
                     }
                 }
             }
@@ -2221,10 +2249,13 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             int val_hhhp = sortVec_pppm_hhhp[hhhp];
             auto it = std::find(sortVec_pp_pp.begin(), sortVec_pp_pp.end(), val_hhhp);
             if (it != sortVec_pp_pp.end()){
-                for (int bA_hhhp=0; bA_hhhp<blockArrays_pppm_hhhp.cols(); bA_hhhp++){
+                for (int bA_hhhp=range_upper; bA_hhhp<blockArrays_pppm_hhhp.cols(); bA_hhhp++){
                     if (val_hhhp == blockArrays_pppm_hhhp(0,bA_hhhp)){
                         range_upper = bA_hhhp+1;
                         counter += 1;
+                    }
+                    else if (val_hhhp < blockArrays_pppm_hhhp(0,bA_hhhp)){
+                        break;
                     }
                 }
             }
@@ -2241,10 +2272,13 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             int val_hhpp = sortVec_ppmm_hhpp[hhpp];
             auto it = std::find(sortVec_pm_ph.begin(), sortVec_pm_ph.end(), val_hhpp);
             if (it != sortVec_pm_ph.end()){
-                for (int bA_hhpp=0; bA_hhpp<blockArrays_ppmm_hhpp.cols(); bA_hhpp++){
+                for (int bA_hhpp=range_upper; bA_hhpp<blockArrays_ppmm_hhpp.cols(); bA_hhpp++){
                     if (val_hhpp == blockArrays_ppmm_hhpp(0,bA_hhpp)){
                         range_upper = bA_hhpp+1;
                         counter += 1;
+                    }
+                    else if (val_hhpp < blockArrays_ppmm_hhpp(0,bA_hhpp)){
+                        break;
                     }
                 }
             }
@@ -2261,10 +2295,13 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             int val_ppph = sortVec_pppm_ppph[ppph];
             auto it = std::find(sortVec_pp_hh.begin(), sortVec_pp_hh.end(), val_ppph);
             if (it != sortVec_pp_hh.end()){
-                for (int bA_ppph=0; bA_ppph<blockArrays_pppm_ppph.cols(); bA_ppph++){
+                for (int bA_ppph=range_upper; bA_ppph<blockArrays_pppm_ppph.cols(); bA_ppph++){
                     if (val_ppph == blockArrays_pppm_ppph(0,bA_ppph)){
                         range_upper = bA_ppph+1;
                         counter += 1;
+                    }
+                    else if (val_ppph < blockArrays_pppm_ppph(0,bA_ppph)){
+                        break;
                     }
                 }
             }
@@ -2285,10 +2322,13 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             int val_hhhpp = sortVec_pppmm_hhhpp[hhhpp];
             auto it = std::find(sortVec_p_p.begin(), sortVec_p_p.end(), val_hhhpp);
             if (it != sortVec_p_p.end()){
-                for (int bA_hhhpp=0; bA_hhhpp<blockArrays_pppmm_hhhpp.cols(); bA_hhhpp++){
+                for (int bA_hhhpp=range_upper; bA_hhhpp<blockArrays_pppmm_hhhpp.cols(); bA_hhhpp++){
                     if (val_hhhpp == blockArrays_pppmm_hhhpp(0,bA_hhhpp)){
                         range_upper = bA_hhhpp+1;
                         counter += 1;
+                    }
+                    else if (val_hhhpp < blockArrays_pppmm_hhhpp(0,bA_hhhpp)){
+                        break;
                     }
                 }
             }
@@ -2305,10 +2345,13 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             int val_ppphh = sortVec_pppmm_ppphh[ppphh];
             auto it = std::find(sortVec_p_h.begin(), sortVec_p_h.end(), val_ppphh);
             if (it != sortVec_p_h.end()){
-                for (int bA_ppphh=0; bA_ppphh<blockArrays_pppmm_ppphh.cols(); bA_ppphh++){
+                for (int bA_ppphh=range_upper; bA_ppphh<blockArrays_pppmm_ppphh.cols(); bA_ppphh++){
                     if (val_ppphh == blockArrays_pppmm_ppphh(0,bA_ppphh)){
                         range_upper = bA_ppphh+1;
                         counter += 1;
+                    }
+                    else if (val_ppphh < blockArrays_pppmm_ppphh(0,bA_ppphh)){
+                        break;
                     }
                 }
             }

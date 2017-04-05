@@ -508,6 +508,8 @@ void Diagrams::T1a(){
 
 void Diagrams::T1b(){
 
+    MPI_Barrier(MPI_COMM_WORLD);
+
     int world_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
     int world_size;
@@ -518,6 +520,7 @@ void Diagrams::T1b(){
     Eigen::MatrixXi matches_root;
     Eigen::MatrixXi matches_recv;
 
+    if (world_rank == 0){
     for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_ppm_pph.size(); i3++){
@@ -528,19 +531,23 @@ void Diagrams::T1b(){
             }
         }
     }
+    }
     //broadcast the necessesary blockArrays
-    std::cout << m_intClass->blockArrays_p_h.cols()*m_intClass->blockArrays_p_h.rows() << std::endl;
-    std::cout << m_intClass->blockArrays_ppm_hhp.cols()*m_intClass->blockArrays_ppm_hhp.rows()<< std::endl;
+    /*std::cout << m_intClass->blockArrays_p_h.cols()*m_intClass->blockArrays_p_h.rows() << std::endl;
+    std::cout << m_intClass->blockArrays_ppm_pph.cols()*m_intClass->blockArrays_ppm_pph.rows()<< std::endl;
     MPI_Bcast(m_intClass->blockArrays_p_h.data(), m_intClass->blockArrays_p_h.cols()*m_intClass->blockArrays_p_h.rows(), MPI_INT, 0, MPI_COMM_WORLD);
     std::cout << "sup1" << std::endl;
     MPI_Bcast(m_intClass->blockArrays_ppm_hhp.data(), m_intClass->blockArrays_ppm_hhp.cols()*m_intClass->blockArrays_ppm_hhp.rows(), MPI_INT, 0, MPI_COMM_WORLD);
     std::cout << "sup2" << std::endl;
     MPI_Bcast(m_intClass->blockArrays_ppm_pph.data(), m_intClass->blockArrays_ppm_pph.cols()*m_intClass->blockArrays_ppm_pph.rows(), MPI_INT, 0, MPI_COMM_WORLD);
-
+*/
+    MPI_Barrier(MPI_COMM_WORLD);
     //scatter the channels
-    MPI_Scatter(matches_root.data(), matches_root.cols()*matches_root.rows(), MPI_INT, matches_recv.data(), matches_recv.cols()*matches_recv.rows(), MPI_INT, 0, MPI_COMM_WORLD);
-
+    int delegated_channels = matches_root.cols()*matches_root.rows()/world_size;
+    matches_recv.conservativeResize(3,delegated_channels);
+    MPI_Scatter(matches_root.data(), delegated_channels, MPI_INT, matches_recv.data(), delegated_channels, MPI_INT, 0, MPI_COMM_WORLD);
     int i1; int i2; int i3;
+    std::cout << matches_recv << " " << world_rank << std::endl;
     for (int i=0; i<matches_recv.cols(); i++){
         i1 = matches_recv(0,i); i2 = matches_recv(1,i); i3 = matches_recv(2,i);
 
@@ -551,6 +558,7 @@ void Diagrams::T1b(){
         m_ampClass->T1b_inverse(product, i2, i3);
 
     }
+    //std::cout << "sup"<< std::endl;
 
     if (world_rank != 0){
         m_intClass->blockArrays_p_h.resize(0,0);
@@ -563,7 +571,6 @@ void Diagrams::T1b(){
     int size = m_ampClass->T3_elements_A.size();
     T3_elements_recv.resize( size );
     for (int rank=1; rank<world_size; rank++){
-        std::cout << "sup" << std::endl;
         if (world_rank == 0){
             MPI_Recv(&T3_elements_recv, size, MPI_DOUBLE, 0, rank, MPI_COMM_WORLD, &status);
 

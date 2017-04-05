@@ -116,9 +116,9 @@ int main(int argc, char** argv)
         //we use natural units
         const double  pi      =   M_PI;
 
-        int lower_bound = 5; int upper_bound = 21;  //set lower and upper limits on shells to be used
+        int lower_bound = 2; int upper_bound = 41;  //set lower and upper limits on shells to be used
 
-        int     Nb      =   3;
+        //int     Nb      =   3;
         int     Nh      =   14;							//number of particles
         //double  rs      =   1;                          //Wigner Seitz radius
         //double  rb      =   1;                          //Bohr radius [MeV^-1]
@@ -130,14 +130,21 @@ int main(int argc, char** argv)
         //double  L2      =   pow(L3, 2./3.);
         //double  L1      =   pow(L3, 1./3.);
 
-        double ECC;
-        ofstream myfile;
 
-        myfile.open("Nh_14_HEG_T1a_T1b_D10c.txt");
+        int prev_num_states = 0;
+        int curr_num_states;
+
+        for (int j=1; j<20; j++){
+            double ECC;
+            ofstream myfile;
+            ostringstream os;
+        double  rs      =   j/(double)10;                          //Wigner Seitz radius
+        os << "Nh_14_HEG_rs" << rs*10 <<".txt";
+        string s = os.str();
+        myfile.open(s);
         for (int i=lower_bound; i<upper_bound; i++){
-
-            double  rs      =   i/10.;                          //Wigner Seitz radius
-            double  rb      = 1;
+            int Nb = i;
+            double  rb      =   1;
             //std::cout << rs << std::endl;
             double  m       =   1;                //electron mass [MeV] (1 for HEG, 939.565 for MP)
             double  r1      =   pow(rs*rb, 3);
@@ -149,6 +156,13 @@ int main(int argc, char** argv)
             master->setSize(Nh, Nb);
 
             master->setSystem(new HEG(master, m, L3, L2, L1));
+
+            curr_num_states = master->m_Ns;
+            //std::cout << curr_num_states << std::endl;
+
+            if (curr_num_states != prev_num_states){
+
+            prev_num_states = curr_num_states;
 
             master->setTriples(CCDT);
             master->setIntermediates(intermediates);
@@ -182,10 +196,12 @@ int main(int argc, char** argv)
                           << " seconds, with intermediates OFF" << std::endl;
             }
 
-            myfile <<  Nb << " " << "&" << " " << master->m_Ns << " " << "&" << " " << std::setprecision(12) << ECC << " \\\\ " << "\n";
+            myfile <<  Nb << " " << "&" << " " << master->m_Ns << " " << "&" << " " << std::setprecision(16) << ECC << " \\\\ " << "\n" << std::flush;
+            }
 
         }
         myfile.close();
+    }
     }
 
     return 0;
