@@ -39,12 +39,12 @@ int main(int argc, char** argv)
     double  conFac  =   1;                          //convergence factor
 
     bool    intermediates = true;                   //turn on/off intermediates in CCD eqs
-    bool    CCDT          = true;                   //turn on/off CCDT-1
+    bool    CCDT          = false;                   //turn on/off CCDT-1
     bool    timer         = true;                   //turn on/off timer
     bool    relaxation    = true;                  //turn on/off relaxation when updating amplitudes
     double  alpha         = 0.8;                    //relaxation parameter
 
-    bool    makeData      = false;                  //choose to write to file for a range of shells
+    bool    makeData      = true;                  //choose to write to file for a range of shells
 
     Eigen::initParallel();
 
@@ -60,7 +60,7 @@ int main(int argc, char** argv)
         //we use natural units
         const double  pi      =   M_PI;
         int     Nh      =   14;							//number of particles
-        int     Nb      =   3;							//number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 can at max have N=14)
+        int     Nb      =   5;							//number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 can at max have N=14)
         double  rs      =   1;                          //Wigner Seitz radius
         double  rb      =   1.;                          //Bohr radius [MeV^-1]
         double  m       =   1.;//                //electron mass [MeV] (1 for HEG, 939.565 for MP)
@@ -134,7 +134,7 @@ int main(int argc, char** argv)
         int prev_num_states = 0;
         int curr_num_states;
 
-        for (int j=1; j<20; j++){
+        for (int j=2; j<20; j++){
             double ECC;
             ofstream myfile;
             ostringstream os;
@@ -203,6 +203,8 @@ int main(int argc, char** argv)
         myfile.close();
     }
     }
+
+    MPI_Finalize();
 
     return 0;
 

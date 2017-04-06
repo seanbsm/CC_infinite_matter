@@ -27,7 +27,6 @@ vector<size_t> sort_indexes(const vector<T> &v) {
 
 
 void MakeIntMat::makePermutations(){
-    std::vector<int> temp;
 
     int Nh  = m_Nh;
     int Nh2 = Nh*Nh;
@@ -108,7 +107,7 @@ void MakeIntMat::makePermutations(){
             }*/
 
             int n = omp_get_max_threads();
-            #pragma omp parallel for num_threads(n) private(i2,j2,k2, val_ij2,val_ik2,val_jk2,val_ijik2,val_ijjk2)
+            //#pragma omp parallel for num_threads(n) private(i2,j2,k2, val_ij2,val_ik2,val_jk2,val_ijik2,val_ijjk2)
             for (int it2 = range_lower_h; it2<range_upper_h; it2++){  //starting at it1+1 means I'll never do the same permutation twice
                 i2 = blockArrays_ppp_hhh(1,it2);
                 j2 = blockArrays_ppp_hhh(2,it2);
@@ -184,7 +183,7 @@ void MakeIntMat::makePermutations(){
             }*/
 
             int n = omp_get_max_threads();
-            #pragma omp parallel for num_threads(n) private(a2,b2,c2, val_ab2,val_ac2,val_bc2,val_abac2,val_abbc2)
+            //#pragma omp parallel for num_threads(n) private(a2,b2,c2, val_ab2,val_ac2,val_bc2,val_abac2,val_abbc2)
             for (int it2 = range_lower_p; it2<range_upper_p; it2++){  //starting at it1+1 means I'll never do the same permutation twice
                 a2 = blockArrays_ppp_ppp(1,it2);
                 b2 = blockArrays_ppp_ppp(2,it2);

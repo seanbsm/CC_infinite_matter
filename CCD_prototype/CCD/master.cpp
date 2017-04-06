@@ -152,7 +152,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
 
 
         //calculate CCD T2 diagrams
-        if (counter != -1 && world_rank==0){
+        if (counter != -1){
             if (m_intermediatesOn){
                 m_diagrams->La();
                 m_diagrams->I1_term1();  // Lb, Qa
@@ -225,12 +225,14 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             }
 
 
+            MPI_Bcast(m_ampClass->T3_elements_A.data(), m_ampClass->T3_elements_A.size(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
             //calculate T3 contributions to T2 using T3_current
             m_diagrams->D10b();
             m_diagrams->D10c();
         }
 
-        if (world_rank == 0){
+        //if (world_rank == 0){
             //update T2 amplitudes
             for (int hh = 0; hh<m_intClass->numOfKu; hh++){
                 int ku = m_intClass->Vhhpp_i[hh];
@@ -262,7 +264,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             else{
                 m_ampClass->T2_elements = m_ampClass->T2_elements_new;
             }
-        }
+        //}
 
         //ECCD = 0; too good to delete; you don't want to know how long i used to find this
     }

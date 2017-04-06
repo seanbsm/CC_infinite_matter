@@ -4,6 +4,7 @@
 #include <eigen3/Eigen/Dense>
 #include <eigen3/Eigen/Core>
 #include <map>
+#include <unordered_map>
 #include <chrono>
 
 //#include <unsupported/Eigen/CXX11/Tensor>
@@ -11,6 +12,7 @@
 //#include <mpi.h>
 #include <omp.h>
 //#include <stdio.h>
+#include "testclass.h"
 
 typedef std::chrono::high_resolution_clock Clock;   //needed for timing
 
@@ -59,7 +61,11 @@ bool vecDelta(Eigen::VectorXi v1, Eigen::VectorXi v2){
 
 int main(int argc, char** argv)
 {
-    for (int m = 8; m<9; m++){
+
+    std::cout << 14 % 6 << std::endl;
+
+
+    /*for (int m = 8; m<9; m++){
         Eigen::initParallel();
 
         omp_set_num_threads(m);
@@ -83,9 +89,40 @@ int main(int argc, char** argv)
         std::cout << "end. time: "
                   << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
                   << " milliseconds" << std::endl;
+    }*/
+
+
+    /*std::unordered_map<int, double> T;
+    std::vector<int> D1;
+    std::vector<int> D2;
+    std::vector<int> D3;
+
+    int limit = 1e5;
+
+    for (int i = 0; i<limit; i++){
+        T[i] = limit-1-i;
+        D1.push_back(i);
+        D2.push_back(limit-1-i);
+        D3.push_back(i+1);
     }
 
+    testClass* Tester = new testClass;
 
+    Tester->D1 = D1;
+    Tester->D2 = D2;
+
+    auto t1 = Clock::now();
+
+    for (int j=0; j<limit; j++){
+        //std::cout << D3[T[j]] << std::endl;
+        std::cout << D3[Tester->testy( j )] << std::endl;
+    }
+    //std::cout << "wut" << std::endl;
+    auto t2 = Clock::now();
+
+    std::cout << "end. time: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+              << " milliseconds" << std::endl;*/
 
     //MPI_Init (&argc, &argv);	/* starts MPI */
     //int rank, size;

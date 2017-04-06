@@ -542,12 +542,61 @@ void Diagrams::T1b(){
     MPI_Bcast(m_intClass->blockArrays_ppm_pph.data(), m_intClass->blockArrays_ppm_pph.cols()*m_intClass->blockArrays_ppm_pph.rows(), MPI_INT, 0, MPI_COMM_WORLD);
 */
     MPI_Barrier(MPI_COMM_WORLD);
+
     //scatter the channels
-    int delegated_channels = matches_root.cols()*matches_root.rows()/world_size;
-    matches_recv.conservativeResize(3,delegated_channels);
-    MPI_Scatter(matches_root.data(), delegated_channels, MPI_INT, matches_recv.data(), delegated_channels, MPI_INT, 0, MPI_COMM_WORLD);
+
+    int delegated_channels;
+    int delegated_columns;
+    int remain;
+    int displs[world_size];
+    int sendCount[world_size];
+
+    if (world_rank == 0){
+        remain              = (matches_root.cols() % world_size)*matches_root.rows();
+        delegated_columns   = matches_root.cols()/world_size;
+        delegated_channels  = delegated_columns*matches_root.rows();
+    }
+
+
+    MPI_Bcast(&delegated_channels, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&delegated_columns,  1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&remain,  1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    for (int rank=0; rank<world_size; rank++){
+        displs[rank] = delegated_channels*rank;
+        sendCount[rank] = delegated_channels;
+        if (rank == world_size-1 && remain!=0){ sendCount[rank] += remain; }
+    }
+
+    if (world_rank!=world_size-1){
+        matches_recv.conservativeResize(3, delegated_columns);
+    }
+    else if (world_rank==world_size-1){
+        matches_recv.conservativeResize(3, delegated_columns + remain/3);
+    }
+
+
+    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Scatterv(matches_root.data(), sendCount, displs, MPI_INT, matches_recv.data(), sendCount[world_rank], MPI_INT, 0, MPI_COMM_WORLD);
+    //MPI_Scatter(matches_root.data(), delegated_channels, MPI_INT, matches_recv.data(), delegated_channels, MPI_INT, 0, MPI_COMM_WORLD);
+
     int i1; int i2; int i3;
-    std::cout << matches_recv << " " << world_rank << std::endl;
+    MPI_Barrier(MPI_COMM_WORLD);
+
+    //std::cout << matches_root << std::endl;
+
+    //std::cout << matches_recv.cols() << " " << matches_recv.rows() << " "<< world_rank << std::endl;
+    /*MPI_Barrier(MPI_COMM_WORLD);
+    if (world_rank==0){std::cout << matches_recv << std::endl;}
+    MPI_Barrier(MPI_COMM_WORLD);
+    if (world_rank==1){std::cout << matches_recv << std::endl;}
+    MPI_Barrier(MPI_COMM_WORLD);
+    if (world_rank==2){std::cout << matches_recv << std::endl;}
+    MPI_Barrier(MPI_COMM_WORLD);
+    if (world_rank==3){std::cout << matches_recv << std::endl;}
+    MPI_Barrier(MPI_COMM_WORLD);*/
+    //std::cout << matches_recv << std::endl;
+
     for (int i=0; i<matches_recv.cols(); i++){
         i1 = matches_recv(0,i); i2 = matches_recv(1,i); i3 = matches_recv(2,i);
 
@@ -556,18 +605,15 @@ void Diagrams::T1b(){
         Eigen::MatrixXd product = -1*(mat1*mat2.transpose());
 
         m_ampClass->T1b_inverse(product, i2, i3);
-
-    }
-    //std::cout << "sup"<< std::endl;
-
-    if (world_rank != 0){
-        m_intClass->blockArrays_p_h.resize(0,0);
-        m_intClass->blockArrays_ppm_hhp.resize(0,0);
-        m_intClass->blockArrays_ppm_pph.resize(0,0);
     }
 
+    std::vector<double> TempVec;
+    if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
-    std::vector<int> T3_elements_recv;
+    if (world_rank == 0){ m_ampClass->T3_elements_A_temp = TempVec ;}
+
+    /*std::vector<int> T3_elements_recv;
     int size = m_ampClass->T3_elements_A.size();
     T3_elements_recv.resize( size );
     for (int rank=1; rank<world_size; rank++){
@@ -584,7 +630,7 @@ void Diagrams::T1b(){
             MPI_Send(&m_ampClass->T3_elements_A_temp, size, MPI_DOUBLE, 0, rank, MPI_COMM_WORLD);
         }
         MPI_Barrier(MPI_COMM_WORLD);
-    }
+    }*/
 
     /*for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
@@ -601,7 +647,9 @@ void Diagrams::T1b(){
         }
     }*/
 
-    m_ampClass->addElementsT3_T1b();
+    if (world_rank == 0){
+        m_ampClass->addElementsT3_T1b();
+    }
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
 }
 
