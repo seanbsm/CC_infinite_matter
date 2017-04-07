@@ -18,6 +18,8 @@ public:
 
     Diagrams();
 
+    Eigen::MatrixXi distributeChannels(Eigen::MatrixXi channels);
+
     //T2 diagrams
     void setIntClass(class MakeIntMat* intClass);
     void setAmpClass(class MakeAmpMat* ampClass);

@@ -39,16 +39,16 @@ int main(int argc, char** argv)
     double  conFac  =   1;                          //convergence factor
 
     bool    intermediates = true;                   //turn on/off intermediates in CCD eqs
-    bool    CCDT          = false;                   //turn on/off CCDT-1
+    bool    CCDT          = true;                   //turn on/off CCDT-1
     bool    timer         = true;                   //turn on/off timer
     bool    relaxation    = true;                  //turn on/off relaxation when updating amplitudes
     double  alpha         = 0.8;                    //relaxation parameter
 
-    bool    makeData      = true;                  //choose to write to file for a range of shells
+    bool    makeData      = false;                  //choose to write to file for a range of shells
 
     Eigen::initParallel();
 
-    int threads = 8;
+    int threads = 2;
     omp_set_num_threads(threads);
     Eigen::setNbThreads(threads);
 
@@ -60,7 +60,7 @@ int main(int argc, char** argv)
         //we use natural units
         const double  pi      =   M_PI;
         int     Nh      =   14;							//number of particles
-        int     Nb      =   5;							//number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 can at max have N=14)
+        int     Nb      =   4;							//number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 can at max have N=14)
         double  rs      =   1;                          //Wigner Seitz radius
         double  rb      =   1.;                          //Bohr radius [MeV^-1]
         double  m       =   1.;//                //electron mass [MeV] (1 for HEG, 939.565 for MP)
@@ -116,7 +116,7 @@ int main(int argc, char** argv)
         //we use natural units
         const double  pi      =   M_PI;
 
-        int lower_bound = 2; int upper_bound = 41;  //set lower and upper limits on shells to be used
+        int lower_bound = 2; int upper_bound = 34;  //set lower and upper limits on shells to be used
 
         //int     Nb      =   3;
         int     Nh      =   14;							//number of particles

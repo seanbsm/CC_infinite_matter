@@ -479,36 +479,7 @@ void Diagrams::makeT3(){
     m_ampClass->T3_makeDirectMat();
 }
 
-void Diagrams::T1a(){
-
-    for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
-        for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
-            for (int i3=0; i3<m_intClass->sortVec_ppm_hhp.size(); i3++){
-                if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_pph[i2] && m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i3]){
-
-                    Eigen::MatrixXd mat1 = m_intClass->T1a_makemat(i2, i1);
-                    Eigen::MatrixXd mat2 = m_ampClass->T1a_makemat(i3, i1);
-                    Eigen::MatrixXd product = mat2*mat1.transpose();
-
-                    m_ampClass->T1a_inverse(product, i3, i2);
-
-                    /*auto t1 = Clock::now();
-                    auto t2 = Clock::now();
-                    std::cout << "time "
-                              << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
-                              << " milliseconds" << std::endl;*/
-                }
-            }
-        }
-    }
-
-    m_ampClass->addElementsT3_T1a();
-    std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
-}
-
-void Diagrams::T1b(){
-
-    MPI_Barrier(MPI_COMM_WORLD);
+Eigen::MatrixXi Diagrams::distributeChannels(Eigen::MatrixXi channels){
 
     int world_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
@@ -516,22 +487,6 @@ void Diagrams::T1b(){
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
     MPI_Status status;
 
-
-    Eigen::MatrixXi matches_root;
-    Eigen::MatrixXi matches_recv;
-
-    if (world_rank == 0){
-    for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
-        for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
-            for (int i3=0; i3<m_intClass->sortVec_ppm_pph.size(); i3++){
-                if ( m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_hhp[i2] && m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_pph[i3]){
-                    matches_root.conservativeResize(3, matches_root.cols()+1);
-                    matches_root.col(matches_root.cols()-1) << i1,i2,i3;
-                }
-            }
-        }
-    }
-    }
     //broadcast the necessesary blockArrays
     /*std::cout << m_intClass->blockArrays_p_h.cols()*m_intClass->blockArrays_p_h.rows() << std::endl;
     std::cout << m_intClass->blockArrays_ppm_pph.cols()*m_intClass->blockArrays_ppm_pph.rows()<< std::endl;
@@ -540,10 +495,12 @@ void Diagrams::T1b(){
     MPI_Bcast(m_intClass->blockArrays_ppm_hhp.data(), m_intClass->blockArrays_ppm_hhp.cols()*m_intClass->blockArrays_ppm_hhp.rows(), MPI_INT, 0, MPI_COMM_WORLD);
     std::cout << "sup2" << std::endl;
     MPI_Bcast(m_intClass->blockArrays_ppm_pph.data(), m_intClass->blockArrays_ppm_pph.cols()*m_intClass->blockArrays_ppm_pph.rows(), MPI_INT, 0, MPI_COMM_WORLD);
-*/
-    MPI_Barrier(MPI_COMM_WORLD);
+    */
 
-    //scatter the channels
+    Eigen::MatrixXi matches_root;
+    Eigen::MatrixXi matches_recv;
+
+    if (world_rank == 0){ matches_root = channels;}
 
     int delegated_channels;
     int delegated_columns;
@@ -556,7 +513,6 @@ void Diagrams::T1b(){
         delegated_columns   = matches_root.cols()/world_size;
         delegated_channels  = delegated_columns*matches_root.rows();
     }
-
 
     MPI_Bcast(&delegated_channels, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(&delegated_columns,  1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -576,27 +532,106 @@ void Diagrams::T1b(){
     }
 
 
-    MPI_Barrier(MPI_COMM_WORLD);
     MPI_Scatterv(matches_root.data(), sendCount, displs, MPI_INT, matches_recv.data(), sendCount[world_rank], MPI_INT, 0, MPI_COMM_WORLD);
     //MPI_Scatter(matches_root.data(), delegated_channels, MPI_INT, matches_recv.data(), delegated_channels, MPI_INT, 0, MPI_COMM_WORLD);
 
+    return matches_recv;
+}
+
+void Diagrams::T1a(){
+
+    int world_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+    int world_size;
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+    MPI_Status status;
+
+
+    Eigen::MatrixXi matches_root;
+    Eigen::MatrixXi matches_recv;
+
+    if (world_rank == 0){
+        for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
+            for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
+                for (int i3=0; i3<m_intClass->sortVec_ppm_hhp.size(); i3++){
+                    if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_pph[i2] && m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i3]){
+                        matches_root.conservativeResize(3, matches_root.cols()+1);
+                        matches_root.col(matches_root.cols()-1) << i1,i2,i3;
+                    }
+                }
+            }
+        }
+    }
+
+    matches_recv = distributeChannels(matches_root);
+
     int i1; int i2; int i3;
-    MPI_Barrier(MPI_COMM_WORLD);
+    for (int i=0; i<matches_recv.cols(); i++){
+        i1 = matches_recv(0,i); i2 = matches_recv(1,i); i3 = matches_recv(2,i);
 
-    //std::cout << matches_root << std::endl;
+        Eigen::MatrixXd mat1 = m_intClass->T1a_makemat(i2, i1);
+        Eigen::MatrixXd mat2 = m_ampClass->T1a_makemat(i3, i1);
+        Eigen::MatrixXd product = mat2*mat1.transpose();
 
-    //std::cout << matches_recv.cols() << " " << matches_recv.rows() << " "<< world_rank << std::endl;
-    /*MPI_Barrier(MPI_COMM_WORLD);
-    if (world_rank==0){std::cout << matches_recv << std::endl;}
-    MPI_Barrier(MPI_COMM_WORLD);
-    if (world_rank==1){std::cout << matches_recv << std::endl;}
-    MPI_Barrier(MPI_COMM_WORLD);
-    if (world_rank==2){std::cout << matches_recv << std::endl;}
-    MPI_Barrier(MPI_COMM_WORLD);
-    if (world_rank==3){std::cout << matches_recv << std::endl;}
-    MPI_Barrier(MPI_COMM_WORLD);*/
-    //std::cout << matches_recv << std::endl;
+        m_ampClass->T1a_inverse(product, i3, i2);
+    }
 
+    std::vector<double> TempVec;
+    if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    if (world_rank == 0){ m_ampClass->T3_elements_A_temp = TempVec ;}
+
+    /*for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
+        for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
+            for (int i3=0; i3<m_intClass->sortVec_ppm_hhp.size(); i3++){
+                if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_pph[i2] && m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i3]){
+
+                    Eigen::MatrixXd mat1 = m_intClass->T1a_makemat(i2, i1);
+                    Eigen::MatrixXd mat2 = m_ampClass->T1a_makemat(i3, i1);
+                    Eigen::MatrixXd product = mat2*mat1.transpose();
+
+                    m_ampClass->T1a_inverse(product, i3, i2);
+                }
+            }
+        }
+    }*/
+
+    if (world_rank == 0){
+        m_ampClass->addElementsT3_T1a();
+    }
+    std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
+}
+
+
+void Diagrams::T1b(){
+
+    int world_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+    int world_size;
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+    MPI_Status status;
+
+
+    Eigen::MatrixXi matches_root;
+    Eigen::MatrixXi matches_recv;
+
+    if (world_rank == 0){
+        for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
+            for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
+                for (int i3=0; i3<m_intClass->sortVec_ppm_pph.size(); i3++){
+                    if ( m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_hhp[i2] && m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_pph[i3]){
+                        matches_root.conservativeResize(3, matches_root.cols()+1);
+                        matches_root.col(matches_root.cols()-1) << i1,i2,i3;
+                    }
+                }
+            }
+        }
+    }
+
+    matches_recv = distributeChannels(matches_root);
+
+    int i1; int i2; int i3;
     for (int i=0; i<matches_recv.cols(); i++){
         i1 = matches_recv(0,i); i2 = matches_recv(1,i); i3 = matches_recv(2,i);
 
@@ -612,25 +647,6 @@ void Diagrams::T1b(){
     MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
     if (world_rank == 0){ m_ampClass->T3_elements_A_temp = TempVec ;}
-
-    /*std::vector<int> T3_elements_recv;
-    int size = m_ampClass->T3_elements_A.size();
-    T3_elements_recv.resize( size );
-    for (int rank=1; rank<world_size; rank++){
-        if (world_rank == 0){
-            MPI_Recv(&T3_elements_recv, size, MPI_DOUBLE, 0, rank, MPI_COMM_WORLD, &status);
-
-            for (int i=0; i<size; i++){
-                m_ampClass->T3_elements_A_temp[i] = T3_elements_recv[i];
-                std::cout << T3_elements_recv[i] << " sup" << std::endl;
-            }
-
-        }
-        else if (world_rank == rank){
-            MPI_Send(&m_ampClass->T3_elements_A_temp, size, MPI_DOUBLE, 0, rank, MPI_COMM_WORLD);
-        }
-        MPI_Barrier(MPI_COMM_WORLD);
-    }*/
 
     /*for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
@@ -871,7 +887,54 @@ void Diagrams::T3e(){
 
 void Diagrams::T5a(){
 
-    for (int i1=0; i1<m_intClass->sortVec_pm_hp.size(); i1++){
+    int world_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+    int world_size;
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+    MPI_Status status;
+
+
+    Eigen::MatrixXi matches_root;
+    Eigen::MatrixXi matches_recv;
+
+    if (world_rank == 0){
+        for (int i1=0; i1<m_intClass->sortVec_pm_hp.size(); i1++){
+                for (int i2=0; i2<m_intClass->sortVec_pm_ph.size(); i2++){
+                    for (int i3=0; i3<m_intClass->sortVec_ppmm_hhpp.size(); i3++){
+                        if ( m_intClass->sortVec_pm_hp[i1] == m_intClass->sortVec_ppmm_hhpp[i3] && m_intClass->sortVec_pm_hp[i1] == m_intClass->sortVec_pm_ph[i2]){
+                        matches_root.conservativeResize(3, matches_root.cols()+1);
+                        matches_root.col(matches_root.cols()-1) << i1,i2,i3;
+                    }
+                }
+            }
+        }
+    }
+
+    matches_recv = distributeChannels(matches_root);
+
+    int i1; int i2; int i3;
+    for (int i=0; i<matches_recv.cols(); i++){
+        i1 = matches_recv(0,i); i2 = matches_recv(1,i); i3 = matches_recv(2,i);
+
+        Eigen::MatrixXd mat1 = m_ampClass->T5a_makemat_1(i1, i2);
+        Eigen::MatrixXd mat2 = m_intClass->T5a_makemat(i1, i2);
+        Eigen::MatrixXd mat3 = m_ampClass->T5a_makemat_2(i3, i2);
+        Eigen::MatrixXd product = mat3*mat2.transpose()*mat1;
+
+        m_ampClass->T5a_inverse(product, i3, i2);
+    }
+
+    std::vector<double> TempVec;
+    if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    if (world_rank == 0){ m_ampClass->T3_elements_A_temp = TempVec ;}
+
+    if (world_rank == 0){
+        m_ampClass->addElementsT3_T5a();
+    }
+
+    /*for (int i1=0; i1<m_intClass->sortVec_pm_hp.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_pm_ph.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_ppmm_hhpp.size(); i3++){
                 if ( m_intClass->sortVec_pm_hp[i1] == m_intClass->sortVec_ppmm_hhpp[i3] && m_intClass->sortVec_pm_hp[i1] == m_intClass->sortVec_pm_ph[i2]){
@@ -887,13 +950,60 @@ void Diagrams::T5a(){
         }
     }
 
-    m_ampClass->addElementsT3_T5a();
+    m_ampClass->addElementsT3_T5a();*/
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
 }
 
 void Diagrams::T5b(){
 
-    for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
+    int world_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+    int world_size;
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+    MPI_Status status;
+
+
+    Eigen::MatrixXi matches_root;
+    Eigen::MatrixXi matches_recv;
+
+    if (world_rank == 0){
+        for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
+                for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
+                    for (int i3=0; i3<m_intClass->sortVec_pppmm_ppphh.size(); i3++){
+                        if ( m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_pppmm_ppphh[i3] && m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_pph[i2]){
+                        matches_root.conservativeResize(3, matches_root.cols()+1);
+                        matches_root.col(matches_root.cols()-1) << i1,i2,i3;
+                    }
+                }
+            }
+        }
+    }
+
+    matches_recv = distributeChannels(matches_root);
+
+    int i1; int i2; int i3;
+    for (int i=0; i<matches_recv.cols(); i++){
+        i1 = matches_recv(0,i); i2 = matches_recv(1,i); i3 = matches_recv(2,i);
+
+        Eigen::MatrixXd mat1 = m_ampClass->T5b_makemat_1(i2, i1);
+        Eigen::MatrixXd mat2 = m_intClass->T5b_makemat(i2, i1);
+        Eigen::MatrixXd mat3 = m_ampClass->T5b_makemat_2(i3, i1);
+        Eigen::MatrixXd product = -0.5*mat3*mat2.transpose()*mat1;
+
+        m_ampClass->T5b_inverse(product, i3, i1);
+    }
+
+    std::vector<double> TempVec;
+    if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    if (world_rank == 0){ m_ampClass->T3_elements_A_temp = TempVec ;}
+
+    if (world_rank == 0){
+        m_ampClass->addElementsT3_T5b();
+    }
+
+    /*for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_pppmm_ppphh.size(); i3++){
                 if ( m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_pppmm_ppphh[i3] && m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_pph[i2]){
@@ -909,12 +1019,60 @@ void Diagrams::T5b(){
         }
     }
 
-    m_ampClass->addElementsT3_T5b();
+    m_ampClass->addElementsT3_T5b();*/
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
 }
 
 void Diagrams::T5c(){
-    for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
+
+    int world_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+    int world_size;
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+    MPI_Status status;
+
+
+    Eigen::MatrixXi matches_root;
+    Eigen::MatrixXi matches_recv;
+
+    if (world_rank == 0){
+        for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
+                for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
+                    for (int i3=0; i3<m_intClass->sortVec_pppmm_hhhpp.size(); i3++){
+                        if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_pppmm_hhhpp[i3] && m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i2]){
+                        matches_root.conservativeResize(3, matches_root.cols()+1);
+                        matches_root.col(matches_root.cols()-1) << i1,i2,i3;
+                    }
+                }
+            }
+        }
+    }
+
+    matches_recv = distributeChannels(matches_root);
+
+    int i1; int i2; int i3;
+    for (int i=0; i<matches_recv.cols(); i++){
+        i1 = matches_recv(0,i); i2 = matches_recv(1,i); i3 = matches_recv(2,i);
+
+        Eigen::MatrixXd mat1 = m_ampClass->T5c_makemat_1(i2, i1);
+        Eigen::MatrixXd mat2 = m_intClass->T5c_makemat(i2, i1);
+        Eigen::MatrixXd mat3 = m_ampClass->T5c_makemat_2(i3, i1);
+        Eigen::MatrixXd product = -0.5*mat3*mat1.transpose()*mat2;
+
+        m_ampClass->T5c_inverse(product, i3, i1);
+    }
+
+    std::vector<double> TempVec;
+    if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    if (world_rank == 0){ m_ampClass->T3_elements_A_temp = TempVec ;}
+
+    if (world_rank == 0){
+        m_ampClass->addElementsT3_T5c();
+    }
+
+    /*for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_pppmm_hhhpp.size(); i3++){
                 if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_pppmm_hhhpp[i3] && m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i2]){
@@ -929,13 +1087,60 @@ void Diagrams::T5c(){
         }
     }
 
-    m_ampClass->addElementsT3_T5c();
+    m_ampClass->addElementsT3_T5c();*/
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
 }
 
 void Diagrams::T5d(){
 
-    for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
+    int world_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+    int world_size;
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+    MPI_Status status;
+
+
+    Eigen::MatrixXi matches_root;
+    Eigen::MatrixXi matches_recv;
+
+    if (world_rank == 0){
+        for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
+                for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
+                    for (int i3=0; i3<m_intClass->sortVec_ppm_pph.size(); i3++){
+                        if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_pph[i3] && m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i2]){
+                        matches_root.conservativeResize(3, matches_root.cols()+1);
+                        matches_root.col(matches_root.cols()-1) << i1,i2,i3;
+                    }
+                }
+            }
+        }
+    }
+
+    matches_recv = distributeChannels(matches_root);
+
+    int i1; int i2; int i3;
+    for (int i=0; i<matches_recv.cols(); i++){
+        i1 = matches_recv(0,i); i2 = matches_recv(1,i); i3 = matches_recv(2,i);
+
+        Eigen::MatrixXd mat1 = m_ampClass->T5d_makemat_1(i2, i1);
+        Eigen::MatrixXd mat2 = m_intClass->T5d_makemat(i2, i1);
+        Eigen::MatrixXd mat3 = m_ampClass->T5d_makemat_2(i2, i3);
+        Eigen::MatrixXd product = -0.5*mat1*mat2.transpose()*mat3;
+
+        m_ampClass->T5d_inverse(product, i2, i3);
+    }
+
+    std::vector<double> TempVec;
+    if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    if (world_rank == 0){ m_ampClass->T3_elements_A_temp = TempVec ;}
+
+    if (world_rank == 0){
+        m_ampClass->addElementsT3_T5d();
+    }
+
+    /*for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_ppm_pph.size(); i3++){
                 if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_pph[i3] && m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i2]){
@@ -951,13 +1156,60 @@ void Diagrams::T5d(){
         }
     }
 
-    m_ampClass->addElementsT3_T5d();
+    m_ampClass->addElementsT3_T5d();*/
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
 }
 
 void Diagrams::T5e(){
 
-    for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
+    int world_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+    int world_size;
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+    MPI_Status status;
+
+
+    Eigen::MatrixXi matches_root;
+    Eigen::MatrixXi matches_recv;
+
+    if (world_rank == 0){
+        for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
+                for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
+                    for (int i3=0; i3<m_intClass->sortVec_ppm_pph.size(); i3++){
+                        if ( m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_pph[i3] && m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_hhp[i2]){
+                        matches_root.conservativeResize(3, matches_root.cols()+1);
+                        matches_root.col(matches_root.cols()-1) << i1,i2,i3;
+                    }
+                }
+            }
+        }
+    }
+
+    matches_recv = distributeChannels(matches_root);
+
+    int i1; int i2; int i3;
+    for (int i=0; i<matches_recv.cols(); i++){
+        i1 = matches_recv(0,i); i2 = matches_recv(1,i); i3 = matches_recv(2,i);
+
+        Eigen::MatrixXd mat1 = m_ampClass->T5e_makemat_1(i3, i1);
+        Eigen::MatrixXd mat2 = m_intClass->T5e_makemat(i3, i1);
+        Eigen::MatrixXd mat3 = m_ampClass->T5e_makemat_2(i2, i3);
+        Eigen::MatrixXd product = -0.5*mat3*mat2*mat1.transpose();
+
+        m_ampClass->T5e_inverse(product, i2, i3);
+    }
+
+    std::vector<double> TempVec;
+    if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    if (world_rank == 0){ m_ampClass->T3_elements_A_temp = TempVec ;}
+
+    if (world_rank == 0){
+        m_ampClass->addElementsT3_T5e();
+    }
+
+    /*for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_ppm_pph.size(); i3++){
                 if ( m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_pph[i3] && m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_hhp[i2]){
@@ -973,13 +1225,60 @@ void Diagrams::T5e(){
         }
     }
 
-    m_ampClass->addElementsT3_T5e();
+    m_ampClass->addElementsT3_T5e();*/
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
 }
 
 void Diagrams::T5f(){
 
-    for (int i1=0; i1<m_intClass->sortVec_pp_hh.size(); i1++){
+    int world_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+    int world_size;
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+    MPI_Status status;
+
+
+    Eigen::MatrixXi matches_root;
+    Eigen::MatrixXi matches_recv;
+
+    if (world_rank == 0){
+        for (int i1=0; i1<m_intClass->sortVec_pp_hh.size(); i1++){
+                for (int i2=0; i2<m_intClass->sortVec_pp_pp.size(); i2++){
+                    for (int i3=0; i3<m_intClass->sortVec_pppm_ppph.size(); i3++){
+                        if ( m_intClass->sortVec_pp_hh[i1] == m_intClass->sortVec_pp_pp[i2] && m_intClass->sortVec_pp_hh[i1] == m_intClass->sortVec_pppm_ppph[i3]){
+                        matches_root.conservativeResize(3, matches_root.cols()+1);
+                        matches_root.col(matches_root.cols()-1) << i1,i2,i3;
+                    }
+                }
+            }
+        }
+    }
+
+    matches_recv = distributeChannels(matches_root);
+
+    int i1; int i2; int i3;
+    for (int i=0; i<matches_recv.cols(); i++){
+        i1 = matches_recv(0,i); i2 = matches_recv(1,i); i3 = matches_recv(2,i);
+
+        Eigen::MatrixXd mat1 = m_ampClass->T5f_makemat_1(i1, i2);
+        Eigen::MatrixXd mat2 = m_intClass->T5f_makemat(i1, i2);
+        Eigen::MatrixXd mat3 = m_ampClass->T5f_makemat_2(i3, i1);
+        Eigen::MatrixXd product = 0.25*mat1*mat2.transpose()*mat3.transpose();
+
+        m_ampClass->T5f_inverse(product.transpose(), i3, i1);
+    }
+
+    std::vector<double> TempVec;
+    if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    if (world_rank == 0){ m_ampClass->T3_elements_A_temp = TempVec ;}
+
+    if (world_rank == 0){
+        m_ampClass->addElementsT3_T5f();
+    }
+
+    /*for (int i1=0; i1<m_intClass->sortVec_pp_hh.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_pp_pp.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_pppm_ppph.size(); i3++){
                 if ( m_intClass->sortVec_pp_hh[i1] == m_intClass->sortVec_pp_pp[i2] && m_intClass->sortVec_pp_hh[i1] == m_intClass->sortVec_pppm_ppph[i3]){
@@ -995,13 +1294,60 @@ void Diagrams::T5f(){
         }
     }
 
-    m_ampClass->addElementsT3_T5f();
+    m_ampClass->addElementsT3_T5f();*/
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
 }
 
 void Diagrams::T5g(){
 
-    for (int i1=0; i1<m_intClass->sortVec_pp_hh.size(); i1++){
+    int world_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+    int world_size;
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+    MPI_Status status;
+
+
+    Eigen::MatrixXi matches_root;
+    Eigen::MatrixXi matches_recv;
+
+    if (world_rank == 0){
+        for (int i1=0; i1<m_intClass->sortVec_pp_hh.size(); i1++){
+                for (int i2=0; i2<m_intClass->sortVec_pp_pp.size(); i2++){
+                    for (int i3=0; i3<m_intClass->sortVec_pppm_hhhp.size(); i3++){
+                        if ( m_intClass->sortVec_pp_hh[i1] == m_intClass->sortVec_pp_pp[i2] && m_intClass->sortVec_pp_hh[i1] == m_intClass->sortVec_pppm_hhhp[i3]){
+                        matches_root.conservativeResize(3, matches_root.cols()+1);
+                        matches_root.col(matches_root.cols()-1) << i1,i2,i3;
+                    }
+                }
+            }
+        }
+    }
+
+    matches_recv = distributeChannels(matches_root);
+
+    int i1; int i2; int i3;
+    for (int i=0; i<matches_recv.cols(); i++){
+        i1 = matches_recv(0,i); i2 = matches_recv(1,i); i3 = matches_recv(2,i);
+
+        Eigen::MatrixXd mat1 = m_ampClass->T5g_makemat_1(i1, i2);
+        Eigen::MatrixXd mat2 = m_intClass->T5g_makemat(i1, i2);
+        Eigen::MatrixXd mat3 = m_ampClass->T5g_makemat_2(i3, i2);
+        Eigen::MatrixXd product = 0.25*mat3*mat2.transpose()*mat1;
+
+        m_ampClass->T5g_inverse(product, i3, i2);
+    }
+
+    std::vector<double> TempVec;
+    if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    if (world_rank == 0){ m_ampClass->T3_elements_A_temp = TempVec ;}
+
+    if (world_rank == 0){
+        m_ampClass->addElementsT3_T5g();
+    }
+
+    /*for (int i1=0; i1<m_intClass->sortVec_pp_hh.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_pp_pp.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_pppm_hhhp.size(); i3++){
                 if ( m_intClass->sortVec_pp_hh[i1] == m_intClass->sortVec_pp_pp[i2] && m_intClass->sortVec_pp_hh[i1] == m_intClass->sortVec_pppm_hhhp[i3]){
@@ -1017,6 +1363,6 @@ void Diagrams::T5g(){
         }
     }
 
-    m_ampClass->addElementsT3_T5g();
+    m_ampClass->addElementsT3_T5g();*/
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
 }

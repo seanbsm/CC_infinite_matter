@@ -143,6 +143,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
         counter ++;
     }
 
+    std::cout << m_ampClass->T3_elements_A.size() << std::endl;
 
     while (conFac > eps /*&& counter < 4*/){
         ECCD = 0;
@@ -176,7 +177,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
         if(m_triplesOn){
             std::fill(m_ampClass->T3_elements_A_new.begin(), m_ampClass->T3_elements_A_new.end(), 0); //reset T3 new
 
-            //m_diagrams->T1a();
+            m_diagrams->T1a();
             m_diagrams->T1b();
             //m_diagrams->T2c();
             //m_diagrams->T2d();
@@ -185,13 +186,13 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             //m_diagrams->T3c();
             //m_diagrams->T3d();
             //m_diagrams->T3e();  //this is slower because the remap is bigger
-            //m_diagrams->T5a();  //slow?
-            //m_diagrams->T5b();
-            //m_diagrams->T5c();  //slow?
-            //m_diagrams->T5d();
-            //m_diagrams->T5e();
-            //m_diagrams->T5f();
-            //m_diagrams->T5g();
+            m_diagrams->T5a();  //slow?
+            m_diagrams->T5b();
+            m_diagrams->T5c();  //slow?
+            m_diagrams->T5d();
+            m_diagrams->T5e();
+            m_diagrams->T5f();
+            m_diagrams->T5g();
 
             //update T3 amplitudes
             if (world_rank == 0){
@@ -228,8 +229,10 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             MPI_Bcast(m_ampClass->T3_elements_A.data(), m_ampClass->T3_elements_A.size(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
             //calculate T3 contributions to T2 using T3_current
-            m_diagrams->D10b();
-            m_diagrams->D10c();
+            //if (world_rank==0){
+                m_diagrams->D10b();
+                m_diagrams->D10c();
+            //}
         }
 
         //if (world_rank == 0){
@@ -248,7 +251,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             }
 
 
-            cout << std::fixed << std::setprecision (16) << ECCD << endl;
+            if (world_rank==0){cout << std::fixed << std::setprecision (16) << ECCD << endl;}
 
             conFac = abs(ECCD - ECCD_old);
             ECCD_old = ECCD;
@@ -266,7 +269,10 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             }
         //}
 
+        //MPI_Bcast(&conFac,  1, MPI_INT, 0, MPI_COMM_WORLD);
+
         //ECCD = 0; too good to delete; you don't want to know how long i used to find this
     }
+    //MPI_Bcast(&ECCD,  1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     return ECCD;
 }
