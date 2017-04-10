@@ -1,7 +1,7 @@
 #ifndef MAKEINTMAT_H
 #define MAKEINTMAT_H
 
-#include <eigen3/Eigen/Dense>
+#include "eigen3/Eigen/Dense"
 #include <Systems/system.h>
 #include <Systems/heg.h>
 #include <Systems/mp.h>

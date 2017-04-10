@@ -1,7 +1,7 @@
 #ifndef MAKEAMPMAT_H
 #define MAKEAMPMAT_H
 
-#include <eigen3/Eigen/Dense>
+#include "eigen3/Eigen/Dense"
 #include <makeintmat.h>
 #include <Systems/system.h>
 #include <Systems/heg.h>
@@ -33,6 +33,12 @@ public:
     std::unordered_map<int, double>           T3_elements;
     std::unordered_map<int, double>           T3_temp;
     std::unordered_map<int, double>           T3_elements_new;
+
+    //The T5b and T5c use very demanding remappings, so it's far more efficient, both in CPU and memory,
+    //to have matrices storing the indices, rather than finding them on the go.
+    //These matrices are made in mapper_5 in the intClass, because this is a late fix
+    std::vector<Eigen::MatrixXi>              T3_T5b_indices;
+    std::vector<Eigen::MatrixXi>              T3_T5c_indices;
 
     //std::unordered_map<int, int>              T2_elements_I;
     //std::vector<double>                       T2_elements_A;
@@ -100,8 +106,10 @@ public:
     Eigen::MatrixXd                 T5a_makemat_2(int channel1, int channel2);
     Eigen::MatrixXd                 T5b_makemat_1(int channel1, int channel2);
     Eigen::MatrixXd                 T5b_makemat_2(int channel1, int channel2);
+    Eigen::MatrixXi                 T5b_makemat_2_I(int channel1, int channel2); //index, not double
     Eigen::MatrixXd                 T5c_makemat_1(int channel1, int channel2);
     Eigen::MatrixXd                 T5c_makemat_2(int channel1, int channel2);
+    Eigen::MatrixXi                 T5c_makemat_2_I(int channel1, int channel2); //index, not double
     Eigen::MatrixXd                 T5d_makemat_1(int channel1, int channel2);
     Eigen::MatrixXd                 T5d_makemat_2(int channel1, int channel2);
     Eigen::MatrixXd                 T5e_makemat_1(int channel1, int channel2);
@@ -147,6 +155,8 @@ public:
     void                            T5a_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
     void                            T5b_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
     void                            T5c_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
+    void                            T5b_inverse_I(Eigen::MatrixXd inMat, int channel);
+    void                            T5c_inverse_I(Eigen::MatrixXd inMat, int channel);
     void                            T5d_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
     void                            T5e_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
     void                            T5f_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);

@@ -5,7 +5,7 @@
 #include "system.h"
 #include <math.h>
 #include <cmath>
-#include <eigen3/Eigen/Dense>
+#include "eigen3/Eigen/Dense"
 
 class MP : public System
 {

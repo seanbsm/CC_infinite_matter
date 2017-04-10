@@ -1,7 +1,7 @@
 #ifndef DIAGRAMS_H
 #define DIAGRAMS_H
 
-#include <eigen3/Eigen/Dense>
+#include "eigen3/Eigen/Dense"
 #include <makeintmat.h>
 #include <makeampmat.h>
 #include <Systems/system.h>
@@ -18,7 +18,14 @@ public:
 
     Diagrams();
 
-    Eigen::MatrixXi distributeChannels(Eigen::MatrixXi channels);
+    Eigen::MatrixXi distributeChannels(Eigen::MatrixXi channels, int elements);
+
+    //because screw general solvers
+    void makeT5bIndexMat();
+    void makeT5cIndexMat();
+    Eigen::MatrixXd contructMatT5b(int index);
+    Eigen::MatrixXd contructMatT5c(int index);
+    void destroy5Map(); //to remove that memory monstrosity
 
     //T2 diagrams
     void setIntClass(class MakeIntMat* intClass);

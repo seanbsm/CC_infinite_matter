@@ -65,12 +65,12 @@ void Master::setClasses(){
         m_ampClass->setElements_T2();
         std::cout << "finished setElements_T2" << std::endl;
 
-        if (m_triplesOn){
+        if (m_triplesOn && world_rank==0){
             m_ampClass->makeDenomMat3();
             std::cout << "finished makeDenomMat3" << std::endl;
-            m_intClass->makePermutations();
-            std::cout << "finished makePermutations" << std::endl;
         }
+        m_intClass->makePermutations();
+        std::cout << "finished makePermutations" << std::endl;
     }
     m_ampClass->emptyFockMaps();
 }
@@ -138,14 +138,20 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
 
     if (m_triplesOn){
         m_diagrams->makeT3();
+        if (world_rank == 0){
+            m_diagrams->makeT5bIndexMat();
+            m_diagrams->makeT5cIndexMat();
+            m_diagrams->destroy5Map();
+        }
+        //std::cout << "sup" << std::endl;
     }
     else{
         counter ++;
     }
 
-    std::cout << m_ampClass->T3_elements_A.size() << std::endl;
+    //std::cout << m_intClass->blockArrays_pppmm_ppphh.cols()*m_intClass->blockArrays_pppmm_ppphh.rows() << std::endl;
 
-    while (conFac > eps /*&& counter < 4*/){
+    while (conFac > eps /*&& counter < 8*/){
         ECCD = 0;
         //could make an m_ampClass::updateT or something
         m_ampClass->T2_elements_new.clear();
@@ -179,16 +185,26 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
 
             m_diagrams->T1a();
             m_diagrams->T1b();
-            //m_diagrams->T2c();
-            //m_diagrams->T2d();
-            //m_diagrams->T2e();
-            //m_diagrams->T3b();
-            //m_diagrams->T3c();
-            //m_diagrams->T3d();
-            //m_diagrams->T3e();  //this is slower because the remap is bigger
+            m_diagrams->T2c();
+            m_diagrams->T2d();
+            m_diagrams->T2e();
+            if (world_rank==0){
+                m_diagrams->T3b();
+            }
+            if (world_rank==0 || world_rank==1){
+                m_diagrams->T3c();
+            }
+            if (world_rank==0 || world_rank==2){
+                m_diagrams->T3d();
+            }
+            if (world_rank==0 || world_rank==3){
+                m_diagrams->T3e();  //this is slower because the remap is bigger
+            }
             m_diagrams->T5a();  //slow?
-            m_diagrams->T5b();
-            m_diagrams->T5c();  //slow?
+            if (world_rank == 0){
+                m_diagrams->T5b();
+                m_diagrams->T5c();  //slow?
+            }
             m_diagrams->T5d();
             m_diagrams->T5e();
             m_diagrams->T5f();

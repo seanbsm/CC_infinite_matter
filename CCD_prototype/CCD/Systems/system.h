@@ -2,7 +2,7 @@
 #define SYSTEM_H
 
 #include <master.h>
-#include <eigen3/Eigen/Dense>
+#include "eigen3/Eigen/Dense"
 
 class System
 {

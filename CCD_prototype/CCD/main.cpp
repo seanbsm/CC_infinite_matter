@@ -7,7 +7,7 @@
 #include <chrono>
 #include <mpi.h>
 #include <omp.h>
-#include <eigen3/Eigen/Dense>
+#include "eigen3/Eigen/Dense"
 //#include <eigen3/Eigen/Core>
 
 typedef std::chrono::high_resolution_clock Clock;   //needed for timing
@@ -60,7 +60,7 @@ int main(int argc, char** argv)
         //we use natural units
         const double  pi      =   M_PI;
         int     Nh      =   14;							//number of particles
-        int     Nb      =   4;							//number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 can at max have N=14)
+        int     Nb      =   5;							//number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 can at max have N=14)
         double  rs      =   1;                          //Wigner Seitz radius
         double  rb      =   1.;                          //Bohr radius [MeV^-1]
         double  m       =   1.;//                //electron mass [MeV] (1 for HEG, 939.565 for MP)
@@ -116,7 +116,7 @@ int main(int argc, char** argv)
         //we use natural units
         const double  pi      =   M_PI;
 
-        int lower_bound = 2; int upper_bound = 34;  //set lower and upper limits on shells to be used
+        int lower_bound = 2; int upper_bound = 33;  //set lower and upper limits on shells to be used
 
         //int     Nb      =   3;
         int     Nh      =   14;							//number of particles
