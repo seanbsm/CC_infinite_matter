@@ -8,7 +8,7 @@
 #include <iostream>
 #include <chrono>
 #include <mpi.h>
-#include <omp.h>
+//#include <omp.h>
 #include <iomanip> //needed for std::setprecision
 
 typedef std::chrono::high_resolution_clock Clock;   //needed for timing
@@ -26,6 +26,10 @@ void Master::setSystem(class System* system){
 
 void Master::setTriples(bool argument){
     m_triplesOn = argument;
+}
+
+void Master::setCCType(int type){
+    m_CC_type = type;
 }
 
 void Master::setIntermediates(bool argument){
@@ -88,7 +92,7 @@ double Master::CC_master(double eps, double conFac){
 
         std::cout << "Time used: "
                   << std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count()
-                  << " seconds on making indexHolders" << std::endl;
+                  << " seconds on making blockArray structures" << std::endl;
     }
     else{
         setClasses();
@@ -183,32 +187,45 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
         if(m_triplesOn){
             std::fill(m_ampClass->T3_elements_A_new.begin(), m_ampClass->T3_elements_A_new.end(), 0); //reset T3 new
 
-            m_diagrams->T1a();
-            m_diagrams->T1b();
-            m_diagrams->T2c();
-            m_diagrams->T2d();
-            m_diagrams->T2e();
-            if (world_rank==0){
-                m_diagrams->T3b();
+            if (m_CC_type >= 1 ){
+                m_diagrams->T1a();
+                m_diagrams->T1b();
             }
-            if (world_rank==0 || world_rank==1){
-                m_diagrams->T3c();
+            if (m_CC_type == 3 ){
+                m_diagrams->T2c();
+                m_diagrams->T2d();
+                m_diagrams->T2e();
             }
-            if (world_rank==0 || world_rank==2){
-                m_diagrams->T3d();
+            if (m_CC_type >= 2){
+                // These diagrams require a re-alignment, done through a temporary map
+                // I have been unable to figure out how to send maps through MPI
+                // So this has to be done in serial for now (although we can do one for each proc, given there are 4 running)
+                if (world_rank==0){
+                    m_diagrams->T3b();
+                }
+                if (world_rank==0 || world_rank==1){
+                    m_diagrams->T3c();
+                }
+                if (world_rank==0 || world_rank==2){
+                    m_diagrams->T3d();
+                }
+                if (world_rank==0 || world_rank==3){
+                    m_diagrams->T3e();  //this is slower than the others because the remap is bigger
+                }
             }
-            if (world_rank==0 || world_rank==3){
-                m_diagrams->T3e();  //this is slower because the remap is bigger
+            if (m_CC_type == 3){
+                m_diagrams->T5a();      //slow?
+                if (world_rank == 0){
+                    //These two diagrams are very mem heavy in the blockArray approach, so they're done differently (see thesis)
+                    //Therefore they are done with OpenMP on proc 0, not with MPI
+                    m_diagrams->T5b();
+                    m_diagrams->T5c();  //slow?
+                }
+                m_diagrams->T5d();
+                m_diagrams->T5e();
+                m_diagrams->T5f();
+                m_diagrams->T5g();
             }
-            m_diagrams->T5a();  //slow?
-            if (world_rank == 0){
-                m_diagrams->T5b();
-                m_diagrams->T5c();  //slow?
-            }
-            m_diagrams->T5d();
-            m_diagrams->T5e();
-            m_diagrams->T5f();
-            m_diagrams->T5g();
 
             //update T3 amplitudes
             if (world_rank == 0){

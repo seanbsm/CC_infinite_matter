@@ -2,11 +2,13 @@
 //other libraries
 #include <iostream>
 #include <iomanip>
+#include <cstdlib>
+#include <string>
 #include <fstream>
 #include <math.h>
 #include <chrono>
 #include <mpi.h>
-#include <omp.h>
+//#include <omp.h>
 #include "eigen3/Eigen/Dense"
 //#include <eigen3/Eigen/Core>
 
@@ -24,6 +26,7 @@ typedef std::chrono::high_resolution_clock Clock;   //needed for timing
 
 using namespace std;
 
+//argv will accept: System (string), Nh (int), Nb (int), rs/rho (double), precision (double), degree of triples (CCD, CCDT-1, CCDT-2, etc)
 int main(int argc, char** argv)
 {
 
@@ -33,20 +36,20 @@ int main(int argc, char** argv)
     int world_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank); //sets world_rank equal to world rank
 
-    MPI_Status status;
+    double       eps     = atof(argv[5]);              //remember to adjust setprecision in master when changing this
+    double       conFac  = 1;                          //convergence factor
+    const double pi      = M_PI;
 
-    double  eps     =   1e-16;                      //remember to adjust setprecision in master when changing this
-    double  conFac  =   1;                          //convergence factor
 
     bool    intermediates = true;                   //turn on/off intermediates in CCD eqs
     bool    CCDT          = true;                   //turn on/off CCDT-1
     bool    timer         = true;                   //turn on/off timer
-    bool    relaxation    = true;                  //turn on/off relaxation when updating amplitudes
+    bool    relaxation    = true;                   //turn on/off relaxation when updating amplitudes
     double  alpha         = 0.8;                    //relaxation parameter
 
     bool    makeData      = false;                  //choose to write to file for a range of shells
 
-    Eigen::initParallel();
+    /*Eigen::initParallel();
 
     int threads = 2;
     omp_set_num_threads(threads);
@@ -54,35 +57,96 @@ int main(int argc, char** argv)
 
     int n = Eigen::nbThreads( );
 
-    std::cout << n << std::endl;
+    std::cout << n << std::endl;*/
 
     if (makeData == false){
+
+        if (argc != 7 && argc != 1){
+            MPI_Finalize();
+            if (world_rank == 0){
+                std::cout << "Failure: Missmatch command line arguments" << std::endl;
+                std::cout << "The command line arguments are: Model, #particles, #shells, rs/rho, desired precision (down to 1e-16), which CC approximation" << std::endl;
+                std::cout << "The CC models are: 0 -> full CCD" << std::endl;
+                std::cout << "                   1 -> CCDT-1" << std::endl;
+                std::cout << "                   2 -> CCDT-2" << std::endl;
+                std::cout << "                   3 -> full CCDT" << std::endl;
+                std::cout << "If you require any other set of CC diagrams, edit them manually in master.cpp (in function Iterator)" << std::endl;
+            }
+            return 0;
+        }
+
         //we use natural units
-        const double  pi      =   M_PI;
-        int     Nh      =   14;							//number of particles
-        int     Nb      =   5;							//number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 can at max have N=14)
-        double  rs      =   1;                          //Wigner Seitz radius
-        double  rb      =   1.;                          //Bohr radius [MeV^-1]
-        double  m       =   1.;//                //electron mass [MeV] (1 for HEG, 939.565 for MP)
-        //double  m       =   939.565;
-        //double  rho     =   0.2;
-        double  r1      =   pow(rs*rb, 3);
-        double  L3      =   4.*pi*Nh*r1/3.;               //box volume
-        //double  L3      =   Nh/rho;
-        double  L2      =   pow(L3, 2./3.);
-        double  L1      =   pow(L3, 1./3.);
-        //cout << L1 << endl;
+        int Nh; int Nb;
+        if (argc==7){//user defined size
+            Nh = atoi(argv[2]);				//number of particles
+            Nb = atoi(argv[3]);				//number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
+        }
+        else{        //default size
+            Nh = 14;                        //number of particles
+            Nb = 3;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
+        }
+        double  rs;     //Wigner Seitz radius
+        double  rho;    //Density
+        double  L3;     //Box volume
+        double  L2;
+        double  L1;
+        double  m;      //Particle mass
 
         Master* master = new Master;
         master->setSize(Nh, Nb);
 
-        master->setSystem(new HEG(master, m, L3, L2, L1));
+        //set system and physical parameters
+        if (argc != 7){
+            if (world_rank == 0){
+                std::cout << "No arguments given, running default setup" << std::endl;
+                std::cout << "Default setup: HEG for Nh=14, Nb=3, rs=1.0, 1e-16 precision, CCDT" << std::endl;
+            }
+            m          = 1;             //Electron mass [MeV?]
+            rs         = 1;
+            double  rb = 1.;            //Bohr radius [MeV^-1]
+            double  r1 = pow(rs*rb, 3);
+            L3         = 4.*pi*Nh*r1/3.;
+            L2         = pow(L3, 2./3.);
+            L1         = pow(L3, 1./3.);
+            master->setSystem(new HEG(master, m, L3, L2, L1));
+        }
+        else if (std::string(argv[1]) == "HEG"){
+            m          = 1;             //Electron mass [MeV?]
+            rs         = atof(argv[4]);
+            double  rb = 1.;            //Bohr radius [MeV^-1]
+            double  r1 = pow(rs*rb, 3);
+            L3         = 4.*pi*Nh*r1/3.;
+            L2         = pow(L3, 2./3.);
+            L1         = pow(L3, 1./3.);
+            master->setSystem(new HEG(master, m, L3, L2, L1));
+        }
+        else if (std::string(argv[1]) == "MP"){
+            m   = 939.565;              //Neutron mass [MeV]
+            rho = atof(argv[4]);
+            L3  = Nh/rho;
+            L2  = pow(L3, 2./3.);
+            L1  = pow(L3, 1./3.);
+            master->setSystem(new MP(master, m, L3, L2, L1));
+        }
+        else{
+            MPI_Finalize();
+            if (world_rank == 0){
+                std::cout << "Failure: You need to submit a model, e.g. HEG or MP" << std::endl;
+                std::cout << "Which model is specified in the first command line argument" << std::endl;
+            }
+            return 0;
+        }
 
         master->setTriples(CCDT);
         master->setIntermediates(intermediates);
         master->setRelaxation(relaxation, alpha);
         master->setTimer(timer);
-
+        if (argc == 7){
+            master->setCCType(atoi(argv[6]));
+        }
+        else{
+            master->setCCType(3);
+        }
 
         cout << "C++ code" << endl;
 
@@ -90,7 +154,7 @@ int main(int argc, char** argv)
 
         if (CCDT){
             double ECCDT = master->CC_master(eps, conFac);
-            cout << "Delta ECCDT-1: "<< ECCDT << endl;
+            cout << "Delta ECCDT: "<< ECCDT << endl;
         }
         else{
             double ECCD = master->CC_master(eps, conFac);
@@ -99,24 +163,25 @@ int main(int argc, char** argv)
 
         auto t2 = Clock::now();
 
-        if (intermediates){
-            std::cout << "Total time used: "
-                      << std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count()
-                      << " seconds, with intermediates ON" << std::endl;
-        }
-        else{
-            std::cout << "Total time used: "
-                      << std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count()
-                      << " seconds, with intermediates OFF" << std::endl;
+        if (world_rank == 0){
+            if (intermediates){
+                std::cout << "Total time used: "
+                          << std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count()
+                          << " seconds, with intermediates ON" << std::endl;
+            }
+            else{
+                std::cout << "Total time used: "
+                          << std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count()
+                          << " seconds, with intermediates OFF" << std::endl;
+            }
         }
 
     }
     else if (makeData == true){
 
         //we use natural units
-        const double  pi      =   M_PI;
 
-        int lower_bound = 2; int upper_bound = 33;  //set lower and upper limits on shells to be used
+        int lower_bound = 2; int upper_bound = 10;  //set lower and upper limits on shells to be used
 
         //int     Nb      =   3;
         int     Nh      =   14;							//number of particles
@@ -134,28 +199,33 @@ int main(int argc, char** argv)
         int prev_num_states = 0;
         int curr_num_states;
 
-        for (int j=2; j<20; j++){
+        for (int j=1; j<20; j++){
             double ECC;
-            ofstream myfile;
-            ostringstream os;
-        double  rs      =   j/(double)10;                          //Wigner Seitz radius
-        os << "Nh_14_HEG_rs" << rs*10 <<".txt";
-        string s = os.str();
-        myfile.open(s);
+            double  rho      =   j/(double)100;                          //Wigner Seitz radius
+            //if (world_rank==0){
+                ofstream myfile;
+                ostringstream os;
+                os << "Nh_14_MP_rho" << rho*100 <<".txt";
+                string s = os.str();
+                myfile.open(s);
+            //}
         for (int i=lower_bound; i<upper_bound; i++){
             int Nb = i;
             double  rb      =   1;
             //std::cout << rs << std::endl;
-            double  m       =   1;                //electron mass [MeV] (1 for HEG, 939.565 for MP)
-            double  r1      =   pow(rs*rb, 3);
-            double  L3      =   4.*pi*Nh*r1/3.;               //box volume
+            //double  m       =   1;                //electron mass [MeV] (1 for HEG, 939.565 for MP)
+            double  m       =   939.565;
+            //double  rho     =   0.2;
+            //double  r1      =   pow(rs*rb, 3);
+            //double  L3      =   4.*pi*Nh*r1/3.;               //box volume
+            double  L3      =   Nh/rho;
             double  L2      =   pow(L3, 2./3.);
             double  L1      =   pow(L3, 1./3.);
 
             Master* master = new Master;
             master->setSize(Nh, Nb);
 
-            master->setSystem(new HEG(master, m, L3, L2, L1));
+            master->setSystem(new MP(master, m, L3, L2, L1));
 
             curr_num_states = master->m_Ns;
             //std::cout << curr_num_states << std::endl;
@@ -196,11 +266,15 @@ int main(int argc, char** argv)
                           << " seconds, with intermediates OFF" << std::endl;
             }
 
+            //if (world_rank==0){
             myfile <<  Nb << " " << "&" << " " << master->m_Ns << " " << "&" << " " << std::setprecision(16) << ECC << " \\\\ " << "\n" << std::flush;
+            //}
             }
 
         }
+        //if(world_rank==0){
         myfile.close();
+        //}
     }
     }
 

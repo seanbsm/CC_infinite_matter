@@ -2,7 +2,7 @@
 #include "Systems/system.h"
 #include "Systems/heg.h"
 #include "eigen3/Eigen/Dense"
-#include <omp.h>
+//#include <omp.h>
 #include <mpi.h>
 #include <iostream>
 
@@ -107,8 +107,8 @@ void MakeIntMat::makePermutations(){
                 counter ++;
             }*/
 
-            int n = omp_get_max_threads();
-            #pragma omp parallel for num_threads(2) private(i2,j2,k2, val_ij2,val_ik2,val_jk2,val_ijik2,val_ijjk2)
+            //int n = omp_get_max_threads();
+            //#pragma omp parallel for num_threads(2) private(i2,j2,k2, val_ij2,val_ik2,val_jk2,val_ijik2,val_ijjk2)
             for (int it2 = range_lower_h; it2<range_upper_h; it2++){  //starting at it1+1 means I'll never do the same permutation twice
                 i2 = blockArrays_ppp_hhh(1,it2);
                 j2 = blockArrays_ppp_hhh(2,it2);
@@ -183,8 +183,8 @@ void MakeIntMat::makePermutations(){
                 counter ++;
             }*/
 
-            int n = omp_get_max_threads();
-            #pragma omp parallel for num_threads(2) private(a2,b2,c2, val_ab2,val_ac2,val_bc2,val_abac2,val_abbc2)
+            //int n = omp_get_max_threads();
+            //#pragma omp parallel for num_threads(2) private(a2,b2,c2, val_ab2,val_ac2,val_bc2,val_abac2,val_abbc2)
             for (int it2 = range_lower_p; it2<range_upper_p; it2++){  //starting at it1+1 means I'll never do the same permutation twice
                 a2 = blockArrays_ppp_ppp(1,it2);
                 b2 = blockArrays_ppp_ppp(2,it2);

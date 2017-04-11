@@ -1,3 +1,4 @@
+
 #ifndef MASTER_H
 #define MASTER_H
 
@@ -16,6 +17,7 @@ public:
     int               m_Ns                 = 0;
     int               m_Np                 = 0;
     bool              m_triplesOn          = false;
+    int               m_CC_type            = 0;
     bool              m_intermediatesOn    = false;
     bool              m_timerOn            = false;
     bool              m_relaxation         = false;
@@ -31,6 +33,7 @@ public:
     void setTimer(bool argument);
     void setRelaxation(bool argument, double alpha);
     void setClasses();
+    void setCCType(int type);
 
     double CC_master(double eps, double conFac);
     double Iterator(double eps, double conFac, double E_MBPT2);
