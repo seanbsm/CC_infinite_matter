@@ -2,7 +2,7 @@
 #include "Systems/system.h"
 #include "Systems/heg.h"
 #include "eigen3/Eigen/Dense"
-//#include <omp.h>
+#include <omp.h>
 #include <mpi.h>
 #include <iostream>
 
@@ -67,18 +67,10 @@ void MakeIntMat::makePermutations(){
     int val1;
 
     for (int channel = 0; channel<numOfKu3; channel++){
-        //std::cout << "still running" << std::endl;
         range_lower_h = boundsHolder_hhhppp_hhh(0,channel);
         range_upper_h = boundsHolder_hhhppp_hhh(1,channel);
         range_lower_p = boundsHolder_hhhppp_ppp(0,channel);
         range_upper_p = boundsHolder_hhhppp_ppp(1,channel);
-        //th = omp_get_thread_num();
-
-        //int size = (range_upper1-range_lower1)*(range_upper2-range_lower2);
-
-        //int index = 0; //-1
-        //#pragma omp parallel for num_threads(n) private(N1,N2,N3,N4,N5, id) firstprivate(index) //shared(index)
-
 
         //hhh permutations
         for (int it1 = range_lower_h; it1<range_upper_h; it1++){
@@ -107,13 +99,12 @@ void MakeIntMat::makePermutations(){
                 counter ++;
             }*/
 
-            //int n = omp_get_max_threads();
-            //#pragma omp parallel for num_threads(2) private(i2,j2,k2, val_ij2,val_ik2,val_jk2,val_ijik2,val_ijjk2)
-            for (int it2 = range_lower_h; it2<range_upper_h; it2++){  //starting at it1+1 means I'll never do the same permutation twice
+            int n = omp_get_max_threads();
+            #pragma omp parallel for num_threads(2) private(i2,j2,k2, val_ij2,val_ik2,val_jk2,val_ijik2,val_ijjk2)
+            for (int it2 = range_lower_h; it2<range_upper_h; it2++){
                 i2 = blockArrays_ppp_hhh(1,it2);
                 j2 = blockArrays_ppp_hhh(2,it2);
                 k2 = blockArrays_ppp_hhh(3,it2);
-                //std::cout << omp_get_thread_num() << std::endl;
 
                 val_ij2  = j2 + i2*Nh + k2*Nh2;
                 val_ik2  = k2 + j2*Nh + i2*Nh2;
@@ -121,9 +112,6 @@ void MakeIntMat::makePermutations(){
                 val_ijik2 = k2 + i2*Nh + j2*Nh2; // P(ki)P(kj): (i,j,k) -> (k,i,j)
                 val_ijjk2 = j2 + k2*Nh + i2*Nh2; // P(ki)P(kj): (i,j,k) -> (j,k,i)
 
-                //if ( (it1<0 || it2<0) || (it1<0 && it2<0)){std::cout << it1 << " " << it2 << std::endl;}
-
-                //if(counter!=0){std::cout << counter << std::endl; std::cout << numOfKu3 << std::endl;}
                 if (val1 == val_ij2){
                     blockArrays_ppp_hhh_Pij.col(it1) << it1, it2;
                     //blockArrays_ppp_hhh_Pij.col(it2) << it2, it1;
@@ -153,9 +141,6 @@ void MakeIntMat::makePermutations(){
             //if (counter != 5){ std::cout << "not all hole permutations found" << std::endl;}
         }
 
-
-        //std::cout << blockArrays_ppp_hhh_Pijjk << std::endl;
-
         //ppp permutations
         for (int it1 = range_lower_p; it1<range_upper_p; it1++){
             a1 = blockArrays_ppp_ppp(1,it1);
@@ -183,8 +168,8 @@ void MakeIntMat::makePermutations(){
                 counter ++;
             }*/
 
-            //int n = omp_get_max_threads();
-            //#pragma omp parallel for num_threads(2) private(a2,b2,c2, val_ab2,val_ac2,val_bc2,val_abac2,val_abbc2)
+            int n = omp_get_max_threads();
+            #pragma omp parallel for num_threads(2) private(a2,b2,c2, val_ab2,val_ac2,val_bc2,val_abac2,val_abbc2)
             for (int it2 = range_lower_p; it2<range_upper_p; it2++){  //starting at it1+1 means I'll never do the same permutation twice
                 a2 = blockArrays_ppp_ppp(1,it2);
                 b2 = blockArrays_ppp_ppp(2,it2);
@@ -195,8 +180,6 @@ void MakeIntMat::makePermutations(){
                 val_bc2  = a2 + c2*Np + b2*Np2;
                 val_abac2 = c2 + a2*Np + b2*Np2; // P(ab)P(ac): (a,b,c) -> (c,a,b)
                 val_abbc2 = b2 + c2*Np + a2*Np2; // P(ab)P(bc): (a,b,c) -> (b,c,a)
-
-                //if ( (it1<0 || it2<0) || (it1<0 && it2<0)){std::cout << it1 << " " << it2 << std::endl;}
 
                 if (val1 == val_ab2){
                     blockArrays_ppp_ppp_Pab.col(it1) << it1, it2;

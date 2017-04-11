@@ -8,9 +8,8 @@
 #include <math.h>
 #include <chrono>
 #include <mpi.h>
-//#include <omp.h>
+#include <omp.h>
 #include "eigen3/Eigen/Dense"
-//#include <eigen3/Eigen/Core>
 
 typedef std::chrono::high_resolution_clock Clock;   //needed for timing
 
@@ -49,7 +48,7 @@ int main(int argc, char** argv)
 
     bool    makeData      = false;                  //choose to write to file for a range of shells
 
-    /*Eigen::initParallel();
+    Eigen::initParallel();
 
     int threads = 2;
     omp_set_num_threads(threads);
@@ -57,7 +56,7 @@ int main(int argc, char** argv)
 
     int n = Eigen::nbThreads( );
 
-    std::cout << n << std::endl;*/
+    std::cout << "OMP threads for world " << world_rank << ": " << n << std::endl;
 
     if (makeData == false){
 

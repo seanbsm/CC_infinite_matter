@@ -2,7 +2,7 @@
 #include <iostream>
 #include <stdlib.h>
 
-//#include <omp.h>
+#include <omp.h>
 
 MakeAmpMat::MakeAmpMat()
 {
@@ -135,8 +135,8 @@ void MakeAmpMat::makeDenomMat3(){
         Eigen::MatrixXd newMat;
         newMat.conservativeResize(dim_hhh, dim_ppp);
 
-        //int n = omp_get_max_threads();
-        //#pragma omp parallel for num_threads(n) firstprivate(FockMap_h_copy, FockMap_p_copy)
+        int n = omp_get_max_threads();
+        #pragma omp parallel for num_threads(n) firstprivate(FockMap_h_copy, FockMap_p_copy)
         for (int ppp=lowBound_ppp; ppp<highBound_ppp; ppp++){
             for (int hhh=lowBound_hhh; hhh<highBound_hhh; hhh++){
                 int ii = m_intClass->blockArrays_ppp_hhh(1,hhh);
@@ -4755,7 +4755,7 @@ void MakeAmpMat::T5b_inverse_I(Eigen::MatrixXd inMat, int channel){
     int cols = T3_T5b_indices[channel].cols();
     int index;
 
-    //#pragma omp parallel for num_threads(2) private(index)
+    #pragma omp parallel for num_threads(2) private(index)
     for (int i1 = 0; i1<rows; i1++){
         for (int i2 = 0; i2<cols; i2++){
             index = T3_T5b_indices[channel](i1,i2);
@@ -4770,7 +4770,7 @@ void MakeAmpMat::T5c_inverse_I(Eigen::MatrixXd inMat, int channel){
     int cols = T3_T5c_indices[channel].cols();
     int index;
 
-    //#pragma omp parallel for num_threads(2) private(index)
+    #pragma omp parallel for num_threads(2) private(index)
     for (int i1 = 0; i1<rows; i1++){
         for (int i2 = 0; i2<cols; i2++){
             index = T3_T5c_indices[channel](i1,i2);

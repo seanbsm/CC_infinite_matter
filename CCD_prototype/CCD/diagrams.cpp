@@ -2,7 +2,7 @@
 
 #include "eigen3/Eigen/Dense"
 #include "eigen3/Eigen/Core"
-//#include <omp.h>
+#include <omp.h>
 #include <mpi.h>
 #include <chrono>
 
@@ -1180,7 +1180,7 @@ Eigen::MatrixXd Diagrams::contructMatT5b(int index){
     int cols = m_ampClass->T3_T5b_indices[index].cols();
     Eigen::MatrixXd returnMat;
     returnMat.conservativeResize(rows, cols);
-    //#pragma omp parallel for num_threads(2)
+    #pragma omp parallel for num_threads(2)
     for (int row=0; row<rows; row++){
         for (int col=0; col<cols; col++){
             returnMat(row,col) = m_ampClass->T3_elements_A[m_ampClass->T3_T5b_indices[index](row, col) ];
@@ -1194,7 +1194,7 @@ Eigen::MatrixXd Diagrams::contructMatT5c(int index){
     int cols = m_ampClass->T3_T5c_indices[index].cols();
     Eigen::MatrixXd returnMat;
     returnMat.conservativeResize(rows, cols);
-    //#pragma omp parallel for num_threads(2)
+    #pragma omp parallel for num_threads(2)
     for (int row=0; row<rows; row++){
         for (int col=0; col<cols; col++){
             returnMat(row,col) = m_ampClass->T3_elements_A[m_ampClass->T3_T5c_indices[index](row, col) ];

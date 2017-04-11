@@ -8,7 +8,7 @@
 #include <iostream>
 #include <chrono>
 #include <mpi.h>
-//#include <omp.h>
+#include <omp.h>
 #include <iomanip> //needed for std::setprecision
 
 typedef std::chrono::high_resolution_clock Clock;   //needed for timing
