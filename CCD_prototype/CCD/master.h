@@ -21,12 +21,15 @@ public:
     bool              m_intermediatesOn    = false;
     bool              m_timerOn            = false;
     bool              m_relaxation         = false;
+    bool              m_threadsOn          = false;
+    int               m_threads            = 1;
     double            m_alpha              = 1;
 
     int world_rank;
 
     void setSize();
     void setSystem(class System* system);
+    void setThreads(bool argument, int num);
     void setSize(int Nh, int Nb);
     void setIntermediates(bool argument);
     void setTriples(bool argument);

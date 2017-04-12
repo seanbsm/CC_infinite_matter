@@ -20,6 +20,13 @@ void Master::setSize(int Nh, int Nb){
     m_Nb = Nb;
 }
 
+void Master::setThreads(bool argument, int num){
+    m_threadsOn = argument;
+    if (argument){
+        m_threads = num;
+    }
+}
+
 void Master::setSystem(class System* system){
     m_system = system;
 }
@@ -187,14 +194,21 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
         if(m_triplesOn){
             std::fill(m_ampClass->T3_elements_A_new.begin(), m_ampClass->T3_elements_A_new.end(), 0); //reset T3 new
 
+            //std::cout << m_ampClass->T2_elements.size() << std::endl;
+
             if (m_CC_type >= 1 ){
                 m_diagrams->T1a();
+                std::cout << "T1a, world: "<< world_rank<< std::endl;
                 m_diagrams->T1b();
+                std::cout << "T1b, world: "<< world_rank<< std::endl;
             }
-            if (m_CC_type == 3 ){
+            /*if (m_CC_type == 3 ){
                 m_diagrams->T2c();
+                std::cout << "T2c, world: "<< world_rank<< std::endl;
                 m_diagrams->T2d();
+                std::cout << "T2d, world: "<< world_rank<< std::endl;
                 m_diagrams->T2e();
+                std::cout << "T2e, world: "<< world_rank<< std::endl;
             }
             if (m_CC_type >= 2){
                 // These diagrams require a re-alignment, done through a temporary map
@@ -202,29 +216,40 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
                 // So this has to be done in serial for now (although we can do one for each proc, given there are 4 running)
                 if (world_rank==0){
                     m_diagrams->T3b();
+                    std::cout << "T3b, world: "<< world_rank<< std::endl;
                 }
                 if (world_rank==0 || world_rank==1){
                     m_diagrams->T3c();
+                    std::cout << "T3c, world: "<< world_rank<< std::endl;
                 }
                 if (world_rank==0 || world_rank==2){
                     m_diagrams->T3d();
+                    std::cout << "T3e, world: "<< world_rank<< std::endl;
                 }
                 if (world_rank==0 || world_rank==3){
                     m_diagrams->T3e();  //this is slower than the others because the remap is bigger
+                    std::cout << "T3e, world: "<< world_rank<< std::endl;
                 }
-            }
+            }*/
             if (m_CC_type == 3){
                 m_diagrams->T5a();      //slow?
                 if (world_rank == 0){
                     //These two diagrams are very mem heavy in the blockArray approach, so they're done differently (see thesis)
                     //Therefore they are done with OpenMP on proc 0, not with MPI
                     m_diagrams->T5b();
+                    std::cout << "T5b, world: "<< world_rank<< std::endl;
                     m_diagrams->T5c();  //slow?
+                    std::cout << "T5c, world: "<< world_rank<< std::endl;
                 }
+                MPI_Barrier(MPI_COMM_WORLD);
                 m_diagrams->T5d();
+                std::cout << "T5d, world: "<< world_rank<< std::endl;
                 m_diagrams->T5e();
+                std::cout << "T5e, world: "<< world_rank<< std::endl;
                 m_diagrams->T5f();
+                std::cout << "T5f, world: "<< world_rank<< std::endl;
                 m_diagrams->T5g();
+                std::cout << "T5g, world: "<< world_rank<< std::endl;
             }
 
             //update T3 amplitudes

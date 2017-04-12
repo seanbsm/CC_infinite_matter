@@ -5,6 +5,8 @@
 #include <omp.h>
 #include <mpi.h>
 #include <chrono>
+#include <time.h>
+#include <unistd.h>
 
 typedef std::chrono::high_resolution_clock Clock;   //needed for timing
 
@@ -191,7 +193,6 @@ void Diagrams::Qd(){
 // ##################################################
 
 void Diagrams::I1_term1(){
-    //#pragma omp parallel for
     for (int i1=0; i1<m_intClass->sortVec_pp_hh.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_pp_pp.size(); i2++){
             if ( m_intClass->sortVec_pp_hh[i1] == m_intClass->sortVec_pp_pp[i2] ){
@@ -218,7 +219,6 @@ void Diagrams::I1_term1(){
 }
 
 void Diagrams::I2_term1(){
-    //#pragma omp parallel for
     for (int i1=0; i1<m_intClass->sortVec_pm_hp.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_pm_ph.size(); i2++){
             if ( m_intClass->sortVec_pm_hp[i1] == m_intClass->sortVec_pm_ph[i2] ){
@@ -245,7 +245,6 @@ void Diagrams::I2_term1(){
 }
 
 void Diagrams::I3_term1(){
-    //#pragma omp parallel for
     for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
             if ( m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_pph[i2] ){
@@ -265,7 +264,6 @@ void Diagrams::I3_term1(){
 }
 
 void Diagrams::I4_term1(){
-    //#pragma omp parallel for
     for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
             if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i2] ){
@@ -285,7 +283,6 @@ void Diagrams::I4_term1(){
 }
 
 void Diagrams::I1_term(){
-    //#pragma omp parallel for
     for (int n=0; n<m_intClass->Vhhpp_i.size(); n++){
         int ku = m_intClass->Vhhpp_i[n];
 
@@ -1180,7 +1177,7 @@ Eigen::MatrixXd Diagrams::contructMatT5b(int index){
     int cols = m_ampClass->T3_T5b_indices[index].cols();
     Eigen::MatrixXd returnMat;
     returnMat.conservativeResize(rows, cols);
-    #pragma omp parallel for num_threads(2)
+    #pragma omp parallel for /*num_threads(2)*/
     for (int row=0; row<rows; row++){
         for (int col=0; col<cols; col++){
             returnMat(row,col) = m_ampClass->T3_elements_A[m_ampClass->T3_T5b_indices[index](row, col) ];
@@ -1194,7 +1191,7 @@ Eigen::MatrixXd Diagrams::contructMatT5c(int index){
     int cols = m_ampClass->T3_T5c_indices[index].cols();
     Eigen::MatrixXd returnMat;
     returnMat.conservativeResize(rows, cols);
-    #pragma omp parallel for num_threads(2)
+    #pragma omp parallel for /*num_threads(2)*/
     for (int row=0; row<rows; row++){
         for (int col=0; col<cols; col++){
             returnMat(row,col) = m_ampClass->T3_elements_A[m_ampClass->T3_T5c_indices[index](row, col) ];
@@ -1262,22 +1259,23 @@ void Diagrams::T5b(){
 
     int index = 0;
 
+    Eigen::MatrixXd mat1, mat2, mat3, product, tempMat;
     for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_pppmm_ppphh.size(); i3++){
                 if ( m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_pppmm_ppphh[i3] && m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_pph[i2]){
 
-                    Eigen::MatrixXd mat1 = m_ampClass->T5b_makemat_1(i2, i1);
-                    Eigen::MatrixXd mat2 = m_intClass->T5b_makemat(i2, i1);
+                    mat1 = m_ampClass->T5b_makemat_1(i2, i1);
+                    mat2 = m_intClass->T5b_makemat(i2, i1);
                     //Eigen::MatrixXd mat3 = m_ampClass->T5b_makemat_2(i3, i1);
-                    Eigen::MatrixXd mat3 = contructMatT5b(index);
-                    Eigen::MatrixXd product = -0.5*mat3*mat2.transpose()*mat1;
-                    //std::cout << "sup1" << std::endl;
+                    tempMat = mat2.transpose()*mat1;
+                    mat3 = contructMatT5b(index);
+                    product = -0.5*mat3*tempMat;
+
 
                     //m_ampClass->T5b_inverse(product, i3, i1);
                     m_ampClass->T5b_inverse_I(product, index);
-                    //std::cout << "sup2" << std::endl;
-                     index++;
+                    index++;
                 }
             }
         }
@@ -1339,19 +1337,22 @@ void Diagrams::T5c(){
 
     int index = 0;
 
+    Eigen::MatrixXd mat1, mat2, mat3, product, tempMat;
     for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_pppmm_hhhpp.size(); i3++){
                 if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_pppmm_hhhpp[i3] && m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i2]){
-                    Eigen::MatrixXd mat1 = m_ampClass->T5c_makemat_1(i2, i1);
-                    Eigen::MatrixXd mat2 = m_intClass->T5c_makemat(i2, i1);
+                    mat1 = m_ampClass->T5c_makemat_1(i2, i1);
+                    mat2 = m_intClass->T5c_makemat(i2, i1);
                     //Eigen::MatrixXd mat3 = m_ampClass->T5c_makemat_2(i3, i1);
-                    Eigen::MatrixXd mat3 = contructMatT5c(index);
-                    Eigen::MatrixXd product = -0.5*mat3*mat1.transpose()*mat2;
+                    tempMat = mat1.transpose()*mat2;
+                    mat3 = contructMatT5c(index);
+                    product = -0.5*mat3*tempMat;
 
                     //m_ampClass->T5c_inverse(product, i3, i1);
                     m_ampClass->T5c_inverse_I(product, index);
-                     index++;
+                    //std::cout << mat2.cols() << " " << mat2.rows() << " " << mat2.cols()*mat2.rows() << std::endl;
+                    index++;
                 }
             }
         }

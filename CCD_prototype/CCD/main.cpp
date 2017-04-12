@@ -25,7 +25,7 @@ typedef std::chrono::high_resolution_clock Clock;   //needed for timing
 
 using namespace std;
 
-//argv will accept: System (string), Nh (int), Nb (int), rs/rho (double), precision (double), degree of triples (CCD, CCDT-1, CCDT-2, etc)
+//argv will accept: System (string), Nh (int), Nb (int), rs/rho (double), precision (double), degree of triples (CCD, CCDT-1, CCDT-2, etc), #threads per MPI world
 int main(int argc, char** argv)
 {
 
@@ -48,19 +48,32 @@ int main(int argc, char** argv)
 
     bool    makeData      = false;                  //choose to write to file for a range of shells
 
-    Eigen::initParallel();
+    bool    threadsOn     = false;
+    if (atoi(argv[7]) > 1){
+        threadsOn = true;
 
-    int threads = 2;
-    omp_set_num_threads(threads);
-    Eigen::setNbThreads(threads);
-
-    int n = Eigen::nbThreads( );
-
-    std::cout << "OMP threads for world " << world_rank << ": " << n << std::endl;
+        Eigen::initParallel();
+        int threads = atoi(argv[7]);
+        omp_set_dynamic(0);
+        omp_set_num_threads(threads);
+        Eigen::setNbThreads(threads);
+        int n = Eigen::nbThreads( );
+        std::cout << "OMP threads for world " << world_rank << ": " << n << std::endl;
+    }
+    else{
+        omp_set_dynamic(0);
+        omp_set_num_threads(8);
+        if (world_rank==0){
+            std::cout << "Threading is turned off, meaning:" << std::endl;
+            std::cout << "- Eigen won't run parallel matrix products" << std::endl;
+            std::cout << "- Permutations will be performed in serial" << std::endl;
+            std::cout << "- Diagrams T5b and T5c will be run in serial" << std::endl;
+        }
+    }
 
     if (makeData == false){
 
-        if (argc != 7 && argc != 1){
+        if (argc != 8 && argc != 1){
             MPI_Finalize();
             if (world_rank == 0){
                 std::cout << "Failure: Missmatch command line arguments" << std::endl;
@@ -76,7 +89,7 @@ int main(int argc, char** argv)
 
         //we use natural units
         int Nh; int Nb;
-        if (argc==7){//user defined size
+        if (argc==8){//user defined size
             Nh = atoi(argv[2]);				//number of particles
             Nb = atoi(argv[3]);				//number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
         }
@@ -95,7 +108,7 @@ int main(int argc, char** argv)
         master->setSize(Nh, Nb);
 
         //set system and physical parameters
-        if (argc != 7){
+        if (argc != 8){
             if (world_rank == 0){
                 std::cout << "No arguments given, running default setup" << std::endl;
                 std::cout << "Default setup: HEG for Nh=14, Nb=3, rs=1.0, 1e-16 precision, CCDT" << std::endl;
@@ -140,7 +153,8 @@ int main(int argc, char** argv)
         master->setIntermediates(intermediates);
         master->setRelaxation(relaxation, alpha);
         master->setTimer(timer);
-        if (argc == 7){
+        master->setThreads(threadsOn, atoi(argv[7]));
+        if (argc == 8){
             master->setCCType(atoi(argv[6]));
         }
         else{

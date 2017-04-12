@@ -7,6 +7,11 @@
 #include <unordered_map>
 #include <chrono>
 
+#include <iomanip>
+#include <cstdlib>
+#include <string>
+#include <fstream>
+
 //#include <unsupported/Eigen/CXX11/Tensor>
 
 //#include <mpi.h>
@@ -62,8 +67,18 @@ bool vecDelta(Eigen::VectorXi v1, Eigen::VectorXi v2){
 int main(int argc, char** argv)
 {
 
-    std::cout << 14 % 6 << std::endl;
+    //std::cout << 14 % 6 << std::endl;
 
+    ofstream myfile;
+    ostringstream os;
+    os << "verytemp.txt";
+    string s = os.str();
+
+    for (int i=0; i<20; i++){
+        myfile.open(s, ios::app);
+        myfile <<  i << "\n" << std::flush;
+        myfile.close();
+    }
 
     /*for (int m = 8; m<9; m++){
         Eigen::initParallel();

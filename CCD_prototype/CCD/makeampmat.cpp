@@ -136,7 +136,7 @@ void MakeAmpMat::makeDenomMat3(){
         newMat.conservativeResize(dim_hhh, dim_ppp);
 
         int n = omp_get_max_threads();
-        #pragma omp parallel for num_threads(n) firstprivate(FockMap_h_copy, FockMap_p_copy)
+        #pragma omp parallel for /*num_threads(n)*/ firstprivate(FockMap_h_copy, FockMap_p_copy)
         for (int ppp=lowBound_ppp; ppp<highBound_ppp; ppp++){
             for (int hhh=lowBound_hhh; hhh<highBound_hhh; hhh++){
                 int ii = m_intClass->blockArrays_ppp_hhh(1,hhh);
@@ -4755,7 +4755,7 @@ void MakeAmpMat::T5b_inverse_I(Eigen::MatrixXd inMat, int channel){
     int cols = T3_T5b_indices[channel].cols();
     int index;
 
-    #pragma omp parallel for num_threads(2) private(index)
+    #pragma omp parallel for /*num_threads(2)*/ private(index)
     for (int i1 = 0; i1<rows; i1++){
         for (int i2 = 0; i2<cols; i2++){
             index = T3_T5b_indices[channel](i1,i2);
@@ -4770,7 +4770,7 @@ void MakeAmpMat::T5c_inverse_I(Eigen::MatrixXd inMat, int channel){
     int cols = T3_T5c_indices[channel].cols();
     int index;
 
-    #pragma omp parallel for num_threads(2) private(index)
+    #pragma omp parallel for /*num_threads(2)*/ private(index)
     for (int i1 = 0; i1<rows; i1++){
         for (int i2 = 0; i2<cols; i2++){
             index = T3_T5c_indices[channel](i1,i2);
@@ -5133,7 +5133,6 @@ Eigen::MatrixXd MakeAmpMat::make3x3Block(int ku, int i1, int i2, int i3, int i4,
     returnMat.conservativeResize(dim1, dim2);
     unsigned long long int id;
     if (cond_hhp1 && cond_pph2){
-        //#pragma omp parallel for
         for (int i = range_lower1; i<range_upper1; i++){
             for (int j = range_lower2; j<range_upper2; j++){
                 id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(3,j), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j), (blockArrays1_pointer)(3,i));
@@ -5148,8 +5147,6 @@ Eigen::MatrixXd MakeAmpMat::make3x3Block(int ku, int i1, int i2, int i3, int i4,
         }
     }
     else if (cond_hhh1 && cond_ppp2){
-        //std::cout << "sup1" << std::endl;
-        //#pragma omp parallel for
         for (int i = range_lower1; i<range_upper1; i++){
             for (int j = range_lower2; j<range_upper2; j++){
                 id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j), (blockArrays2_pointer)(3,j));
@@ -5245,7 +5242,6 @@ Eigen::MatrixXd MakeAmpMat::make3x1Block(int ku, int i1, int i2, int i3, int i4,
     //int id;
     //std::cout << "sup1" << std::endl;
     if (cond_hhp && cond_p){
-        //#pragma omp parallel for
         for (int i = range_lower1; i<range_upper1; i++){
             for (int j = range_lower2; j<range_upper2; j++){
                 int id = m_intClass->Identity_hhpp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j));
@@ -5254,7 +5250,6 @@ Eigen::MatrixXd MakeAmpMat::make3x1Block(int ku, int i1, int i2, int i3, int i4,
         }
     }
     else if (cond_pph && cond_h){
-        //#pragma omp parallel for
         for (int i = range_lower1; i<range_upper1; i++){
             for (int j = range_lower2; j<range_upper2; j++){
                 int id = m_intClass->Identity_hhpp((blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i));
