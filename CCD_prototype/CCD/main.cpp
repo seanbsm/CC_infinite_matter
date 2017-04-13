@@ -41,7 +41,7 @@ int main(int argc, char** argv)
 
 
     bool    intermediates = true;                   //turn on/off intermediates in CCD eqs
-    bool    CCDT          = true;                   //turn on/off CCDT-1
+    //bool    CCDT          = true;                   //turn on/off CCDT-1
     bool    timer         = true;                   //turn on/off timer
     bool    relaxation    = true;                   //turn on/off relaxation when updating amplitudes
     double  alpha         = 0.8;                    //relaxation parameter
@@ -149,16 +149,27 @@ int main(int argc, char** argv)
             return 0;
         }
 
-        master->setTriples(CCDT);
+        bool CCDT;
+
         master->setIntermediates(intermediates);
         master->setRelaxation(relaxation, alpha);
         master->setTimer(timer);
         master->setThreads(threadsOn, atoi(argv[7]));
         if (argc == 8){
             master->setCCType(atoi(argv[6]));
+            if (atoi(argv[6])==0){
+                master->setTriples(false);
+                CCDT = false;
+            }
+            else{
+                master->setTriples(true);
+                CCDT = true;
+            }
         }
         else{
             master->setCCType(3);
+            master->setTriples(true);
+            CCDT = true;
         }
 
         cout << "C++ code" << endl;
@@ -211,6 +222,7 @@ int main(int argc, char** argv)
 
         int prev_num_states = 0;
         int curr_num_states;
+        bool CCDT = true;
 
         for (int j=1; j<20; j++){
             double ECC;

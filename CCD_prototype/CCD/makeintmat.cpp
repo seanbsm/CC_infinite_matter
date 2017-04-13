@@ -497,17 +497,51 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
     }
     // 1 1 0
     else if (cond_pph){
-        colSize = (m_Ns-m_Nh)*(m_Ns-m_Nh)*m_Nh;
-        blockArrays_temp.conservativeResize(4, colSize);
+        colSize = 10000;//colSize = (m_Ns-m_Nh)*(m_Ns-m_Nh)*m_Nh;
+        //blockArrays_temp.conservativeResize(4, colSize);
+
+        Eigen::MatrixXi   blockArrays_temp2;
+        blockArrays_temp2.conservativeResize(4, colSize);
+
+        int ku;
 
         for (int a=m_Nh; a<m_Ns; a++){
+            for (int b=m_Nh; b<m_Ns; b++){
+                for (int i=0; i<m_Nh; i++){
+                    ku = m_system->kUnique3(a,b,i,s1,s2,s3);
+                    auto it1 = std::find(sortVec_ppm_hhp.begin(), sortVec_ppm_hhp.end(), ku);
+                    auto it2 = std::find(sortVec_p_h.begin(), sortVec_p_h.end(), ku);
+                    auto it3 = std::find(sortVec_p_p.begin(), sortVec_p_p.end(), ku);
+                    if (it1 != sortVec_ppp_hhh.end() || it2 != sortVec_p_h.end() || it3 != sortVec_p_p.end()){
+                        blockArrays_temp2.col(index) << ku,a,b,i;
+                        index += 1;
+
+                        if (index >= colSize){
+                            colSize += 10000;
+                            blockArrays_temp2.conservativeResize(4, colSize);
+                        }
+                    }
+                }
+            }
+        }
+
+        std::cout << "made blockArrays_ppm_pph" << std::endl;
+
+        blockArrays_temp.conservativeResize(4, index);
+        for (int c=0; c<index; c++){
+            blockArrays_temp.col(c) = blockArrays_temp2.col(c);
+        }
+
+        blockArrays_temp2.resize(0,0);
+
+        /*for (int a=m_Nh; a<m_Ns; a++){
             for (int b=m_Nh; b<m_Ns; b++){
                 for (int i=0; i<m_Nh; i++){
                     blockArrays_temp.col(index) << m_system->kUnique3(a,b,i,s1,s2,s3),a,b,i;
                     index += 1;
                 }
             }
-        }
+        }*/
     }
     // 1 1 1
     else if (cond_ppp){
@@ -1866,6 +1900,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     m_Ns = Ns;
     m_Np = Ns-Nh;
 
+
     //The mapper functions take ascending values, i.e. they won't accept (1,0,1) as argument, but (0,1,1) works
     //I did this for several reasons, none of which I see the point in jotting down here
 
@@ -2479,32 +2514,8 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         numOfKu3 = boundsHolder_hhhppp_hhh.cols();
     }
 
+
     if (world_rank==0){cout << "made indexHolders" << endl;}
-
-    /*for (int h=0; h<boundsHolder_hhpp_hh.cols(); h++){
-        range_lower_hh = boundsHolder_hhpp_hh(0,h);
-        range_upper_hh = boundsHolder_hhpp_hh(1,h);
-        range_lower_pp = boundsHolder_hhpp_pp(0,h);
-        range_upper_pp = boundsHolder_hhpp_pp(1,h);
-        Vhhpp.push_back( makeRektBlock(blockArrays_hh, blockArrays_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp) );
-        Vhhpp_i.push_back( sortVec_pp_hh[h] );
-    }*/
-
-    /*for (int h=0; h<boundsHolder_hhpp_hh.cols(); h++){
-        range_lower_hh = boundsHolder_hhpp_hh(0,h);
-        range_upper_hh = boundsHolder_hhpp_hh(1,h);
-        range_lower_pp = boundsHolder_hhpp_pp(0,h);
-        range_upper_pp = boundsHolder_hhpp_pp(1,h);
-
-        //makeMatMap_hhpp makes ALL non-zero elements of Vhhpp, there are no others
-        //i.e. V_hhp_p can't have any elements outside those in Vhhpp
-        makeMatMap_hhpp(blockArrays_hh, blockArrays_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp);
-
-        //These two lines should no longer be needed
-        Vhhpp.push_back( makeRektBlock(blockArrays_hh, blockArrays_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp) );
-        //Vhhpp_i.push_back( sortVec_pp_hh[h] );
-    }*/
-
 
     //make Vhhpp map
     for (int h=0; h<boundsHolder_hhpp_hh.cols(); h++){
@@ -2513,7 +2524,6 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         range_lower_pp = boundsHolder_hhpp_pp(0,h);
         range_upper_pp = boundsHolder_hhpp_pp(1,h);
         makeMatMap_hhpp(blockArrays_pp_hh, blockArrays_pp_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp);
-       // makeMatVec(blockArrays_pp_hh, blockArrays_pp_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp);
     }
     if (world_rank==0){cout << "made Vhhpp" << endl;}
 
@@ -2545,15 +2555,6 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         if (world_rank==0){cout << "made Vhhhp" << endl;}
     }
 
-
-
-
-
-
-
-
-
-
     //Below we make Vpppp, Vhhhh, and Vhphp, which are distinct from Vhhpp --> don't need any remapping of elements
     for (int h=0; h<indexHolder_pp_hh.cols(); h++){
         range_lower_hh = indexHolder_pp_hh(0,h);
@@ -2584,24 +2585,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         //Vpppp_i.push_back( sortVec_pp_pp[p] );
     }
 
-    //for (int i = 0; i<Vhhpp_i.size(); i++){
-    //    cout << blockArrays_pp(0,boundsHolder_hhpp_pp(0,i)) << endl;
-    //}
 
-    //Vpppp
-    /*for (int l=0; l<sortVec_pp_pp.size(); l++){
-        int val = sortVec_pp_pp[l];
-        for (int h=0; h<(m_Ns-m_Nh)*(m_Ns-m_Nh); h++){ //goes through the entire blockArrays (which is sorted, so there'll be no interrupted repetitions)
-            if ( val == blockArrays_pp(0,h) ){
-                range_upper = h+1;
-            }
-        }
-        Eigen::MatrixXd newElement = makeSquareBlock(blockArrays_pp, range_lower, range_upper);
-
-        Vpppp.push_back( newElement );
-        Vpppp_i.push_back( val );
-        range_lower = range_upper; //doing this reset here is not a problem, unlike for that of Vhhpp
-    }*/
     if (world_rank==0){cout << "made Vpppp" << endl;}
 }
 

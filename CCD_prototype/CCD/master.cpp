@@ -170,7 +170,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
 
 
         //calculate CCD T2 diagrams
-        if (counter != -1){
+        if (counter != -1 && world_rank == 0){
             if (m_intermediatesOn){
                 m_diagrams->La();
                 m_diagrams->I1_term1();  // Lb, Qa
@@ -192,6 +192,31 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
 
         //calculate T2 contributions to T3 using T2_prev
         if(m_triplesOn){
+
+            //send double amplitudes from world 0
+            int     size; if(world_rank==0){size = m_ampClass->T2_elements.size();}
+            MPI_Bcast(&size, 1, MPI_INT, 0 ,MPI_COMM_WORLD);
+
+            int     identities[size];
+            double  values[size];
+            if (world_rank==0){
+                int counter = 0;
+                for(auto const &it : m_ampClass->T2_elements) {
+                    identities[counter] = it.first;
+                    values[counter]     = it.second;
+                    counter ++;
+                }
+            }
+
+            MPI_Bcast(&identities, size, MPI_INT, 0, MPI_COMM_WORLD);
+            MPI_Bcast(&values, size, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+            if (world_rank!=0){
+                for (int i=0;i<size;i++){
+                    m_ampClass->T2_elements[identities[i]] = values[i];
+                }
+            }
+
+
             std::fill(m_ampClass->T3_elements_A_new.begin(), m_ampClass->T3_elements_A_new.end(), 0); //reset T3 new
 
             //std::cout << m_ampClass->T2_elements.size() << std::endl;
