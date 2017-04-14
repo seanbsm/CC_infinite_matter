@@ -68,20 +68,23 @@ void Master::setClasses(){
 
     if (1){
         m_intClass->makeBlockMat(m_system, m_Nh, m_Ns);
-        std::cout << "finished makeblockmat" << std::endl;
-        m_ampClass->makeFockMaps();
-        std::cout << "finished makeFockMaps" << std::endl;
-        m_ampClass->makeDenomMat();
-        std::cout << "finished makeDenomMat" << std::endl;
-        m_ampClass->setElements_T2();
-        std::cout << "finished setElements_T2" << std::endl;
+        std::cout << "World " << world_rank << " finished makeBlockMat" << std::endl;
+
+        if (world_rank==0){
+            m_ampClass->makeFockMaps();
+            std::cout << "finished makeFockMaps" << std::endl;
+            m_ampClass->makeDenomMat();
+            std::cout << "finished makeDenomMat" << std::endl;
+            m_ampClass->setElements_T2();
+            std::cout << "finished setElements_T2" << std::endl;
+        }
 
         if (m_triplesOn && world_rank==0){
             m_ampClass->makeDenomMat3();
             std::cout << "finished makeDenomMat3" << std::endl;
+            m_intClass->makePermutations();
+            std::cout << "finished makePermutations" << std::endl;
         }
-        m_intClass->makePermutations();
-        std::cout << "finished makePermutations" << std::endl;
     }
     m_ampClass->emptyFockMaps();
 }
@@ -131,9 +134,11 @@ double Master::CC_master(double eps, double conFac){
         ECC = Iterator(eps, conFac, ECCD_old);
         auto t2 = Clock::now();
 
-        std::cout << "Time used: "
-                  << std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count()
-                  << " seconds on solving CC" << std::endl;
+        if (world_rank==0){
+            std::cout << "Time used: "
+                      << std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count()
+                      << " seconds on solving CC" << std::endl;
+        }
     }
     else{
         ECC = Iterator(eps, conFac, ECCD_old);
@@ -312,13 +317,13 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             MPI_Bcast(m_ampClass->T3_elements_A.data(), m_ampClass->T3_elements_A.size(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
             //calculate T3 contributions to T2 using T3_current
-            //if (world_rank==0){
+            if (world_rank==0){
                 m_diagrams->D10b();
                 m_diagrams->D10c();
-            //}
+            }
         }
 
-        //if (world_rank == 0){
+        if (world_rank == 0){
             //update T2 amplitudes
             for (int hh = 0; hh<m_intClass->numOfKu; hh++){
                 int ku = m_intClass->Vhhpp_i[hh];
@@ -350,12 +355,12 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             else{
                 m_ampClass->T2_elements = m_ampClass->T2_elements_new;
             }
-        //}
+        }
 
-        //MPI_Bcast(&conFac,  1, MPI_INT, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&conFac,  1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
         //ECCD = 0; too good to delete; you don't want to know how long i used to find this
     }
-    //MPI_Bcast(&ECCD,  1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&ECCD,  1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     return ECCD;
 }

@@ -69,7 +69,7 @@ int main(int argc, char** argv)
 
     //std::cout << 14 % 6 << std::endl;
 
-    ofstream myfile;
+    /*ofstream myfile;
     ostringstream os;
     os << "verytemp.txt";
     string s = os.str();
@@ -78,7 +78,34 @@ int main(int argc, char** argv)
         myfile.open(s, ios::app);
         myfile <<  i << "\n" << std::flush;
         myfile.close();
+    }*/
+
+
+    std::unordered_map<int, double> T;
+    int size = 1e6;
+
+    for (int i = 0; i<size; i++){
+        T[i] = (double)i*3;
     }
+
+    std::vector<double> T2;
+    T2.resize(size);
+
+
+    #pragma omp parallel for num_threads(4)
+    for (int j=0; j<size; j++){
+        int val = j*3;
+        T2[j] = T[val];
+    }
+
+    cout << "sup" << endl;
+
+    int sum_of_elems = 0;
+    std::for_each(T2.begin(), T2.end(), [&] (int n) {
+        sum_of_elems += n;
+    });
+
+    cout << sum_of_elems << endl;
 
     /*for (int m = 8; m<9; m++){
         Eigen::initParallel();

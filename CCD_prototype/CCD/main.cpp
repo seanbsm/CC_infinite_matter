@@ -178,11 +178,11 @@ int main(int argc, char** argv)
 
         if (CCDT){
             double ECCDT = master->CC_master(eps, conFac);
-            cout << "Delta ECCDT: "<< ECCDT << endl;
+            if (world_rank==0){cout << "Delta ECCDT: "<< ECCDT << endl;}
         }
         else{
             double ECCD = master->CC_master(eps, conFac);
-            cout << "Delta ECCD: "<< ECCD << endl;
+            if (world_rank==0){cout << "Delta ECCD: "<< ECCD << endl;}
         }
 
         auto t2 = Clock::now();
