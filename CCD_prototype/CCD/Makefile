@@ -11,10 +11,10 @@ MAKEFILE      = Makefile
 ####### Compiler, tools and options
 
 CC            = /usr/bin/mpicxx
-CXX           = mpicxx
+CXX           = mpicxx -O3
 DEFINES       = 
-CFLAGS        = -m64 -pipe -m64 -O3 -I/usr/local/include -pthread -O2 -Wall -W -fPIE $(DEFINES)
-CXXFLAGS      = -m64 -pipe -std=c++11 -m64 -O3 -fopenmp -I/usr/local/include -pthread -DMPICH_IGNORE_CXX_SEEK -O2 -I/usr/local/include -pthread -DMPICH_IGNORE_CXX_SEEK -Wall -W -fPIE $(DEFINES)
+CFLAGS        = -m64 -I/usr/local/include -pthread -O3 -Wall -W -fPIE $(DEFINES)
+CXXFLAGS      = -m64 -fopenmp -std=c++11 -I/usr/local/include -pthread -DMPICH_IGNORE_CXX_SEEK -I/usr/local/include -pthread -DMPICH_IGNORE_CXX_SEEK -O3 -Wall -W -fPIE $(DEFINES)
 INCPATH       = -I. -isystem /usr/include/openmpi-x86_64 -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64
 QMAKE         = /usr/lib/x86_64-linux-gnu/qt5/bin/qmake
 DEL_FILE      = rm -f
@@ -34,8 +34,8 @@ TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = CCD1.0.0
 DISTDIR = /home/sean/Projects/Project_Genesis/CCD_prototype/CCD/.tmp/CCD1.0.0
-LINK          = mpicxx
-LFLAGS        = -m64 -m64 -O3 -fopenmp -pthread -Wl,-rpath -Wl,/usr/local/lib -Wl,--enable-new-dtags -L/usr/local/lib -lmpi -Wl,-O1
+LINK          = mpicxx -O3
+LFLAGS        = -m64 -fopenmp -O3 -pthread -Wl,-rpath -Wl,/usr/local/lib -Wl,--enable-new-dtags -L/usr/local/lib -lmpi -Wl,-O1
 LIBS          = $(SUBLIBS)  
 AR            = ar cqs
 RANLIB        = 
@@ -524,6 +524,15 @@ main.o: main.cpp eigen3/Eigen/Dense \
 		Systems/mp.h \
 		makeampmat.h \
 		makeintmat.h \
+		sparsepp/spp.h \
+		sparsepp/spp_stdint.h \
+		sparsepp/spp_config.h \
+		sparsepp/spp_traits.h \
+		sparsepp/spp_utils.h \
+		sparsepp/spp_alloc.h \
+		sparsepp/spp_bitset.h \
+		sparsepp/spp_smartptr.h \
+		sparsepp/spp_btree.h \
 		Systems/pm.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
@@ -1164,6 +1173,15 @@ master.o: master.cpp master.h \
 		Systems/mp.h \
 		makeampmat.h \
 		makeintmat.h \
+		sparsepp/spp.h \
+		sparsepp/spp_stdint.h \
+		sparsepp/spp_config.h \
+		sparsepp/spp_traits.h \
+		sparsepp/spp_utils.h \
+		sparsepp/spp_alloc.h \
+		sparsepp/spp_bitset.h \
+		sparsepp/spp_smartptr.h \
+		sparsepp/spp_btree.h \
 		Systems/pm.h \
 		diagrams.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o master.o master.cpp
@@ -1590,6 +1608,15 @@ makeampmat.o: makeampmat.cpp makeampmat.h \
 		master.h \
 		Systems/heg.h \
 		Systems/mp.h \
+		sparsepp/spp.h \
+		sparsepp/spp_stdint.h \
+		sparsepp/spp_config.h \
+		sparsepp/spp_traits.h \
+		sparsepp/spp_utils.h \
+		sparsepp/spp_alloc.h \
+		sparsepp/spp_bitset.h \
+		sparsepp/spp_smartptr.h \
+		sparsepp/spp_btree.h \
 		Systems/pm.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o makeampmat.o makeampmat.cpp
 
@@ -1803,7 +1830,16 @@ makeintmat.o: makeintmat.cpp makeintmat.h \
 		Systems/system.h \
 		master.h \
 		Systems/heg.h \
-		Systems/mp.h
+		Systems/mp.h \
+		sparsepp/spp.h \
+		sparsepp/spp_stdint.h \
+		sparsepp/spp_config.h \
+		sparsepp/spp_traits.h \
+		sparsepp/spp_utils.h \
+		sparsepp/spp_alloc.h \
+		sparsepp/spp_bitset.h \
+		sparsepp/spp_smartptr.h \
+		sparsepp/spp_btree.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o makeintmat.o makeintmat.cpp
 
 diagrams.o: diagrams.cpp diagrams.h \
@@ -2018,6 +2054,15 @@ diagrams.o: diagrams.cpp diagrams.h \
 		master.h \
 		Systems/heg.h \
 		Systems/mp.h \
+		sparsepp/spp.h \
+		sparsepp/spp_stdint.h \
+		sparsepp/spp_config.h \
+		sparsepp/spp_traits.h \
+		sparsepp/spp_utils.h \
+		sparsepp/spp_alloc.h \
+		sparsepp/spp_bitset.h \
+		sparsepp/spp_smartptr.h \
+		sparsepp/spp_btree.h \
 		makeampmat.h \
 		Systems/pm.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o diagrams.o diagrams.cpp

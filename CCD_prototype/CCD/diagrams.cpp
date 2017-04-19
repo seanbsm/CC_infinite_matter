@@ -438,9 +438,12 @@ void Diagrams::D10c(){
 // ##################################################
 
 void Diagrams::makeT3(){
-    int index = 0; unsigned long long int id;
+    int index = 0; unsigned long int id;
     int i; int j; int k;
     int a; int b; int c;
+    int n = 4;//omp_get_max_threads();
+    std::cout << n << std::endl;
+    m_ampClass->T3_elements_IV.resize(n);
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         //ku = m_intClass->Vhhhppp_i[channel];
 
@@ -462,10 +465,21 @@ void Diagrams::makeT3(){
 
                 //if (m_ampClass->T3_elements_I.find(id) != m_ampClass->T3_elements_I.end()){std::cout << id << std::endl;}
                 m_ampClass->T3_elements_I[id] = index;
+
+                for (int j=0; j<n; j++){
+                    m_ampClass->T3_elements_IV[j][id] = index;
+                }
+
                 index ++;
             }
         }
     }
+
+/*    m_ampClass->T3_elements_IV.resize(omp_get_num_threads());
+
+    for (int j=0; j<omp_get_num_threads(); j++){
+        m_ampClass->T3_elements_IV[j] = m_ampClass->T3_elements_I;
+    }*/
 
     m_ampClass->T3_elements_A.resize(m_ampClass->T3_elements_I.size(), 0);
     m_ampClass->T3_elements_A_new.resize(m_ampClass->T3_elements_I.size(), 0);
@@ -569,6 +583,8 @@ void Diagrams::T1a(){
         Eigen::MatrixXd mat1 = m_intClass->T1a_makemat(i2, i1);
         Eigen::MatrixXd mat2 = m_ampClass->T1a_makemat(i3, i1);
         Eigen::MatrixXd product = mat2*mat1.transpose();
+
+        //std::cout << product.cols() << " " << product.rows() << std::endl;
 
         m_ampClass->T1a_inverse(product, i3, i2);
     }
@@ -1050,7 +1066,6 @@ void Diagrams::T3e(){
                         Eigen::MatrixXd mat1 = m_ampClass->T3e_makemat_2(i3, i2);
                         Eigen::MatrixXd mat2 = m_ampClass->T3e_makemat_3(i2, i1);
                         Eigen::MatrixXd product = -0.5*mat1*mat2;
-
 
                         m_ampClass->T3e_inverse(product, i3, i1);
                     }

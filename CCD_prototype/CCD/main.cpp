@@ -28,6 +28,7 @@ using namespace std;
 //argv will accept: System (string), Nh (int), Nb (int), rs/rho (double), precision (double), degree of triples (CCD, CCDT-1, CCDT-2, etc), #threads per MPI world
 int main(int argc, char** argv)
 {
+    Eigen::initParallel();
 
     MPI_Init(&argc, &argv);
     int world_size;
@@ -95,7 +96,7 @@ int main(int argc, char** argv)
         }
         else{        //default size
             Nh = 14;                        //number of particles
-            Nb = 3;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
+            Nb = 5;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
         }
         double  rs;     //Wigner Seitz radius
         double  rho;    //Density
@@ -114,7 +115,7 @@ int main(int argc, char** argv)
                 std::cout << "Default setup: HEG for Nh=14, Nb=3, rs=1.0, 1e-16 precision, CCDT" << std::endl;
             }
             m          = 1;             //Electron mass [MeV?]
-            rs         = 1;
+            rs         = 2;
             double  rb = 1.;            //Bohr radius [MeV^-1]
             double  r1 = pow(rs*rb, 3);
             L3         = 4.*pi*Nh*r1/3.;

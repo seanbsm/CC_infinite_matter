@@ -1010,12 +1010,18 @@ Eigen::MatrixXd MakeIntMat::I1_makemat(int channel1, int channel2){    //makes a
     for (int i1 = range_lower1; i1<range_upper1; i1++){
         for (int i2 = range_lower2; i2<range_upper2; i2++){
 
+            /*
             k = blockArrays_pp_hh(1,i1);
             l = blockArrays_pp_hh(2,i1);
             c = blockArrays_pp_pp(1,i2);
             d = blockArrays_pp_pp(2,i2);
-
             id = Identity_hhpp(k,l,c,d);
+            */
+
+            id = Identity_hhpp(blockArrays_pp_hh(1,i1),
+                               blockArrays_pp_hh(2,i1),
+                               blockArrays_pp_pp(1,i2),
+                               blockArrays_pp_pp(2,i2));
             returnMat(i1-range_lower1, i2-range_lower2) = Vhhpp_elements[id];
         }
     }
@@ -1041,12 +1047,19 @@ Eigen::MatrixXd MakeIntMat::I2_makemat(int channel1, int channel2){    //makes a
     for (int i1 = range_lower1; i1<range_upper1; i1++){
         for (int i2 = range_lower2; i2<range_upper2; i2++){
 
+            /*
             k = blockArrays_pm_hp(1,i1);
             c = blockArrays_pm_hp(2,i1);
             d = blockArrays_pm_ph(1,i2);
             l = blockArrays_pm_ph(2,i2);
-
             id = Identity_hhpp(k,l,c,d);
+            */
+
+            id = Identity_hhpp(blockArrays_pm_hp(1,i1),
+                               blockArrays_pm_ph(2,i2),
+                               blockArrays_pm_hp(2,i1),
+                               blockArrays_pm_ph(1,i2));
+
             returnMat(i1-range_lower1, i2-range_lower2) = Vhhpp_elements[id];
         }
     }
@@ -1072,12 +1085,19 @@ Eigen::MatrixXd MakeIntMat::I3_makemat(int channel1, int channel2){    //makes a
     for (int i1 = range_lower1; i1<range_upper1; i1++){
         for (int i2 = range_lower2; i2<range_upper2; i2++){
 
+            /*
             c = blockArrays_ppm_pph(1,i1);
             d = blockArrays_ppm_pph(2,i1);
             k = blockArrays_ppm_pph(3,i1);
             l = blockArrays_p_h(1,i2);
-
             id = Identity_hhpp(k,l,c,d);
+            */
+
+            id = Identity_hhpp(blockArrays_ppm_pph(3,i1),
+                               blockArrays_p_h(1,i2),
+                               blockArrays_ppm_pph(1,i1),
+                               blockArrays_ppm_pph(2,i1));
+
             returnMat(i1-range_lower1, i2-range_lower2) = Vhhpp_elements[id];
         }
     }
@@ -1103,12 +1123,19 @@ Eigen::MatrixXd MakeIntMat::I4_makemat(int channel1, int channel2){    //makes a
     for (int i1 = range_lower1; i1<range_upper1; i1++){
         for (int i2 = range_lower2; i2<range_upper2; i2++){
 
+            /*
             k = blockArrays_ppm_hhp(1,i1);
             l = blockArrays_ppm_hhp(2,i1);
             c = blockArrays_ppm_hhp(3,i1);
             d = blockArrays_p_p(1,i2);
-
             id = Identity_hhpp(k,l,c,d);
+            */
+
+            id = Identity_hhpp(blockArrays_ppm_hhp(1,i1),
+                               blockArrays_ppm_hhp(2,i1),
+                               blockArrays_ppm_hhp(3,i1),
+                               blockArrays_p_p(1,i2));
+
             returnMat(i1-range_lower1, i2-range_lower2) = Vhhpp_elements[id];
         }
     }
@@ -1255,10 +1282,9 @@ Eigen::MatrixXd MakeIntMat::T3b_makemat(int channel1, int channel2){    //makes 
     int b; int l;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
+        e = blockArrays_pm_pp(1,i1);
+        b = blockArrays_pm_pp(2,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-
-            e = blockArrays_pm_pp(1,i1);
-            b = blockArrays_pm_pp(2,i1);
             l = blockArrays_pm_hp(1,i2);
             d = blockArrays_pm_hp(2,i2);
 
@@ -1286,10 +1312,9 @@ Eigen::MatrixXd MakeIntMat::T3c_makemat(int channel1, int channel2){    //makes 
     int j; int d;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
+        m = blockArrays_pm_hh(1,i1);
+        j = blockArrays_pm_hh(2,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-
-            m = blockArrays_pm_hh(1,i1);
-            j = blockArrays_pm_hh(2,i1);
             d = blockArrays_pm_ph(1,i2);
             l = blockArrays_pm_ph(2,i2);
 
@@ -1317,10 +1342,9 @@ Eigen::MatrixXd MakeIntMat::T3d_makemat(int channel1, int channel2){    //makes 
     int c; int l;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
+        d = blockArrays_pp_pp(1,i1);
+        e = blockArrays_pp_pp(2,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-
-            d = blockArrays_pp_pp(1,i1);
-            e = blockArrays_pp_pp(2,i1);
             c = blockArrays_pp_ph(1,i2);
             l = blockArrays_pp_ph(2,i2);
 
@@ -1348,11 +1372,10 @@ Eigen::MatrixXd MakeIntMat::T3e_makemat(int channel1, int channel2){    //makes 
     int k; int d;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
+        l = blockArrays_ppm_hhh(1,i1);
+        m = blockArrays_ppm_hhh(2,i1);
+        k = blockArrays_ppm_hhh(3,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-
-            l = blockArrays_ppm_hhh(1,i1);
-            m = blockArrays_ppm_hhh(2,i1);
-            k = blockArrays_ppm_hhh(3,i1);
             d = blockArrays_p_p(1,i2);
 
             id = Identity_hhhp(l,m,k,d);
@@ -1379,10 +1402,9 @@ Eigen::MatrixXd MakeIntMat::T5a_makemat(int channel1, int channel2){    //makes 
     int d; int e;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
+        l = blockArrays_pm_hp(1,i1);
+        d = blockArrays_pm_hp(2,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-
-            l = blockArrays_pm_hp(1,i1);
-            d = blockArrays_pm_hp(2,i1);
             e = blockArrays_pm_ph(1,i2);
             m = blockArrays_pm_ph(2,i2);
 
@@ -1410,11 +1432,10 @@ Eigen::MatrixXd MakeIntMat::T5b_makemat(int channel1, int channel2){    //makes 
     int d; int e;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
+        d = blockArrays_ppm_pph(1,i1);
+        e = blockArrays_ppm_pph(2,i1);
+        l = blockArrays_ppm_pph(3,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-
-            d = blockArrays_ppm_pph(1,i1);
-            e = blockArrays_ppm_pph(2,i1);
-            l = blockArrays_ppm_pph(3,i1);
             m = blockArrays_p_h(1,i2);
 
             id = Identity_hhpp(l,m,d,e);
@@ -1441,11 +1462,10 @@ Eigen::MatrixXd MakeIntMat::T5c_makemat(int channel1, int channel2){    //makes 
     int d; int e;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
+        l = blockArrays_ppm_hhp(1,i1);
+        m = blockArrays_ppm_hhp(2,i1);
+        d = blockArrays_ppm_hhp(3,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-
-            l = blockArrays_ppm_hhp(1,i1);
-            m = blockArrays_ppm_hhp(2,i1);
-            d = blockArrays_ppm_hhp(3,i1);
             e = blockArrays_p_p(1,i2);
 
             id = Identity_hhpp(l,m,d,e);
@@ -1472,11 +1492,10 @@ Eigen::MatrixXd MakeIntMat::T5d_makemat(int channel1, int channel2){    //makes 
     int d; int e;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
+        l = blockArrays_ppm_hhp(1,i1);
+        m = blockArrays_ppm_hhp(2,i1);
+        e = blockArrays_ppm_hhp(3,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-
-            l = blockArrays_ppm_hhp(1,i1);
-            m = blockArrays_ppm_hhp(2,i1);
-            e = blockArrays_ppm_hhp(3,i1);
             d = blockArrays_p_p(1,i2);
 
             id = Identity_hhpp(l,m,d,e);
@@ -1503,11 +1522,10 @@ Eigen::MatrixXd MakeIntMat::T5e_makemat(int channel1, int channel2){    //makes 
     int d; int e;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
+        d = blockArrays_ppm_pph(1,i1);
+        e = blockArrays_ppm_pph(2,i1);
+        m = blockArrays_ppm_pph(3,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-
-            d = blockArrays_ppm_pph(1,i1);
-            e = blockArrays_ppm_pph(2,i1);
-            m = blockArrays_ppm_pph(3,i1);
             l = blockArrays_p_h(1,i2);
 
             id = Identity_hhpp(l,m,d,e);
@@ -1534,10 +1552,9 @@ Eigen::MatrixXd MakeIntMat::T5f_makemat(int channel1, int channel2){    //makes 
     int d; int e;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
+        l = blockArrays_pp_hh(1,i1);
+        m = blockArrays_pp_hh(2,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-
-            l = blockArrays_pp_hh(1,i1);
-            m = blockArrays_pp_hh(2,i1);
             d = blockArrays_pp_pp(1,i2);
             e = blockArrays_pp_pp(2,i2);
 
@@ -1565,10 +1582,9 @@ Eigen::MatrixXd MakeIntMat::T5g_makemat(int channel1, int channel2){    //makes 
     int d; int e;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
+        l = blockArrays_pp_hh(1,i1);
+        m = blockArrays_pp_hh(2,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-
-            l = blockArrays_pp_hh(1,i1);
-            m = blockArrays_pp_hh(2,i1);
             d = blockArrays_pp_pp(1,i2);
             e = blockArrays_pp_pp(2,i2);
 
@@ -2051,8 +2067,9 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     indexHolder_pm_ph.conservativeResize(2,sortVec_pm_ph.size());
     for (int ph=0; ph<sortVec_pm_ph.size(); ph++){
         int val_ph = sortVec_pm_ph[ph];
-        auto it = std::find(sortVec_pm_hp.begin(), sortVec_pm_hp.end(), val_ph);
-        if (it != sortVec_pm_hp.end()){
+        auto it1 = std::find(sortVec_pm_hp.begin(), sortVec_pm_hp.end(), val_ph);
+        auto it2 = std::find(sortVec_ppmm_hhpp.begin(), sortVec_ppmm_hhpp.end(), val_ph);
+        if (it1 != sortVec_pm_hp.end() || it2 != sortVec_ppmm_hhpp.end()){
             for (int bA_ph=0; bA_ph<m_Nh*(m_Ns-m_Nh); bA_ph++){
                 if (val_ph == blockArrays_pm_ph(0,bA_ph)){
                     range_upper = bA_ph+1;
@@ -2743,16 +2760,16 @@ int MakeIntMat::Identity_ppph(int p1, int p2, int p3, int h1){
     //return h1 + p1*m_Nh + p2*m_Nh*(m_Ns-m_Nh) + p3*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
 }
 
-unsigned long long int MakeIntMat::Identity_hhhppp(int h1, int h2, int h3, int p1, int p2, int p3){
-    //unsigned long long int out = h1 + h2*m_Nh + h3*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh + p2*m_Nh*m_Nh*m_Nh*(m_Ns) + p3*m_Nh*m_Nh*m_Nh*(m_Ns)*(m_Ns);
-    unsigned long long int out  = (unsigned long long)h1
-                                + (unsigned long long)h2*m_Nh
-                                + (unsigned long long)h3*m_Nh*m_Nh
-                                + (unsigned long long)p1*m_Nh*m_Nh*m_Nh
-                                + (unsigned long long)p2*m_Nh*m_Nh*m_Nh*(m_Ns)
-                                + (unsigned long long)p3*m_Nh*m_Nh*m_Nh*(m_Ns)*(m_Ns);
+unsigned long int MakeIntMat::Identity_hhhppp(int h1, int h2, int h3, int p1, int p2, int p3){
+    //unsigned long int out = h1 + h2*m_Nh + h3*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh + p2*m_Nh*m_Nh*m_Nh*(m_Ns) + p3*m_Nh*m_Nh*m_Nh*(m_Ns)*(m_Ns);
+    unsigned long int out  = (unsigned long int)h1
+                                + (unsigned long int)h2*m_Nh
+                                + (unsigned long int)h3*m_Nh*m_Nh
+                                + (unsigned long int)p1*m_Nh*m_Nh*m_Nh
+                                + (unsigned long int)p2*m_Nh*m_Nh*m_Nh*(m_Ns)
+                                + (unsigned long int)p3*m_Nh*m_Nh*m_Nh*(m_Ns)*(m_Ns);
 
-    //unsigned long long int out = h1 + (h2+m_Nh) + (h3+2*m_Nh) + (p1+3*m_Nh) + p2*m_Nh*m_Nh*m_Nh*(m_Ns) + p3*m_Nh*m_Nh*m_Nh*(m_Ns)*(m_Ns);
+    //unsigned long int out = h1 + (h2+m_Nh) + (h3+2*m_Nh) + (p1+3*m_Nh) + p2*m_Nh*m_Nh*m_Nh*(m_Ns) + p3*m_Nh*m_Nh*m_Nh*(m_Ns)*(m_Ns);
     //if(out<0){std::cout << out << std::endl;}
     //std::cout  <<" " <<out << " " << h1<<", "<< h2<<", "<< h3<<", "<< p1<<", "<< p2<<", "<< p3<<", " << std::endl;
     return out;

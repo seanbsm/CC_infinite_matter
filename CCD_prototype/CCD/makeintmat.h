@@ -8,6 +8,7 @@
 #include <iostream>
 #include <map>
 #include <unordered_map>
+#include <sparsepp/spp.h>
 
 class MakeIntMat
 {
@@ -205,11 +206,12 @@ public:
     int                             Identity_hhhp(int h1, int h2, int h3, int p1);
     int                             Identity_hhpp(int h1, int h2, int p1, int p2);
     int                             Identity_ppph(int p1, int p2, int p3, int h1);
-    unsigned long long int          Identity_hhhppp(int h1, int h2, int h3, int p1, int p2, int p3);
+    unsigned long int          Identity_hhhppp(int h1, int h2, int h3, int p1, int p2, int p3);
     int                             Identity_hhhhhp(int h1, int h2, int h3, int h4, int h5, int p1); //this is a special function for T3e alone
-    std::unordered_map<int, double>           Vhhhp_elements; //needed for T3
-    std::unordered_map<int, double>           Vhhpp_elements;
-    std::unordered_map<int, double>           Vppph_elements; //needed for T3
+    spp::sparse_hash_map<int, double>           Vhhhp_elements; //needed for T3
+    spp::sparse_hash_map<int, double>           Vhhpp_elements;
+    spp::sparse_hash_map<int, double>           Vppph_elements; //needed for T3
+
 
     //Eigen::VectorXd                 Vhhpp_vector;
     std::vector<double>             Vhhpp_vector;

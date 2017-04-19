@@ -16,6 +16,7 @@
 
 //#include <mpi.h>
 #include <omp.h>
+#include <sparsepp/spp.h>
 //#include <stdio.h>
 #include "testclass.h"
 
@@ -67,6 +68,215 @@ bool vecDelta(Eigen::VectorXi v1, Eigen::VectorXi v2){
 int main(int argc, char** argv)
 {
 
+    int threads = 4;
+    std::vector<spp::sparse_hash_map<int, int>> VP;
+    VP.resize(threads);
+    spp::sparse_hash_map<int, int> VS;
+
+    int lim = 1e6; int in;
+    for(int i=0;i<lim;i++){
+        in = i;
+        VS[in] = i;
+    }
+
+    for (int j=0;j<threads;j++){
+        VP[j] = VS;
+    }
+
+    int x=500; int y=80;
+    Eigen::MatrixXi MatR;
+    MatR.conservativeResize(x,y);
+    MatR.setRandom();
+
+    Eigen::MatrixXi MatW1;
+    MatW1.conservativeResize(x,y);
+
+    Eigen::MatrixXi MatW2;
+    MatW2.conservativeResize(x,y);
+
+    auto t1 = Clock::now();
+
+    int thread;
+    //spp::sparse_hash_map<unsigned long int, int>* map = nullptr;
+#pragma omp parallel for num_threads(4) private(thread)
+    for (int c=0;c<MatW1.cols();c++){
+        thread = omp_get_thread_num();
+        //map = &VP[thread];
+        for(int r=0;r<MatW1.rows();r++){
+            MatW1(r,c) = VP[thread][MatR(r,c)];
+            //MatW1(r,c) = (int)map[(unsigned long int)MatR(r,c)];
+        }
+    }
+
+    auto t2 = Clock::now();
+
+    std::cout << "time: "
+              << std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count()
+              << " nanoseconds."
+              << std::endl;
+
+    t1 = Clock::now();
+
+    for (int c=0;c<MatW2.cols();c++){
+        for(int r=0;r<MatW2.rows();r++){
+            MatW2(r,c) = VS[MatR(r,c)];
+        }
+    }
+
+    t2 = Clock::now();
+
+    std::cout << "time: "
+              << std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count()
+              << " nanoseconds."
+              << std::endl;
+
+    /*unsigned long int i1= 1e9;
+    unsigned long int i2= 1e6;
+    while (i2<i1){
+        i1 *= 10;
+        cout << i1 << endl;
+    }*/
+
+
+    /*int max = 1e6;
+    int threads = 4;
+    int max4 = max/threads;
+    //std::vector<std::unordered_map<int, double>> VP;
+    std::unordered_map<int, double> VP[threads];
+    //VP.resize(threads);
+    for (int j=0; j<threads; j++){
+        for (int i = j*max4; i<max4*(j+1); i++){
+            double hey = i;
+            VP[j][i] = hey;
+        }
+    }
+
+    spp::sparse_hash_map<int, int> VSS;
+
+    std::unordered_map<int, double> VS;
+    for (int i = 0; i<max; i++){
+        double hey = i;
+        VS[i] = hey;
+        VSS[i] = hey;
+    }
+    //cout << VS.size() << endl;
+
+    int find = -100;
+    double finds = 0;
+    double findsP[threads];
+
+    int times[threads];
+    for (int j=0; j<threads; j++){
+        times[j] = 0;
+    }
+
+    int x=1000; int y=100;
+    Eigen::MatrixXi MatR;
+    MatR.conservativeResize(x,y);
+    MatR.setRandom();
+
+    Eigen::MatrixXi MatW1;
+    MatW1.conservativeResize(x,y);
+
+    Eigen::MatrixXi MatW2;
+    MatW2.conservativeResize(x,y);
+
+    Eigen::MatrixXi MatB;
+    MatB.conservativeResize(x,y);
+
+
+    auto T1 = Clock::now();
+    int step = MatR.cols()/threads;*/
+   /* for (int k=0; k<threads; k++){
+#pragma omp parallel num_threads(threads)
+        {
+            int thread = omp_get_thread_num();
+            int val; int move = 0;
+            int minCol = step*thread+step*k;
+            int maxCol = step*(thread+1)+step*k;
+            if (maxCol > MatR.cols()){move=-MatR.cols();}
+            for (int c=minCol+move; c<maxCol+move; c++){
+                for (int r=0; r<MatR.rows(); r++){
+                    if (MatB(r,c)!=1){
+                        val = VP[thread][MatR(r,c)];
+                        if (val != 0){MatW(r,c) = val; MatB(r,c) = 1;}
+                    }
+                }
+            }
+        }
+    }*/
+    /*#pragma omp parallel for ordered num_threads(threads)
+    for (int c=0; c<MatR.cols(); c++){
+        for (int r=0; r<MatR.rows(); r++){
+            MatW1(r,c) = VS[MatR(r,c)];
+        }
+    }*/
+
+    /*auto T2 = Clock::now();
+    std::cout << "time: "
+              << std::chrono::duration_cast<std::chrono::nanoseconds>(T2 - T1).count()
+              << " nanoseconds."
+              << std::endl;
+
+    auto T3 = Clock::now();
+    //#pragma omp parallel for num_threads(threads)
+    for (int c=0; c<MatR.cols(); c++){
+        for (int r=0; r<MatR.rows(); r++){
+            //cout << "hey" << endl;
+            MatW2(r,c) = VSS[MatR(r,c)];
+        }
+    }
+    auto T4 = Clock::now();
+    std::cout << "time: "
+              << std::chrono::duration_cast<std::chrono::nanoseconds>(T4 - T3).count()
+              << " nanoseconds."
+              << std::endl;*/
+
+   /* for (int c=0; c<MatR.cols(); c++){
+        for (int r=0; r<MatR.rows(); r++){
+            if (MatW1(r,c)!=MatW2(r,c)){cout << "FUCK" << endl;}
+        }
+    }*/
+
+    //cout << "start" << endl;
+    //auto t5 = Clock::now();
+    /*#pragma omp parallel for num_threads(threads)
+    for (int j=0; j<threads; j++){
+        auto t1 = Clock::now();
+        findsP[j] = VP[j][find];
+        auto t2 = Clock::now();
+        times[j] = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count();
+        //std::cout << VP[j][find] << std::endl;
+    }*/
+    /*#pragma omp parallel num_threads(threads)
+        findsP[omp_get_thread_num()] = VP[omp_get_thread_num()][find];*/
+
+
+    /*auto t6 = Clock::now();
+    cout << "end" << endl;
+
+    int time=0;
+    for (int j=0; j<threads; j++){
+        if (time<times[j]){time = times[j];}
+        cout << times[j] << endl;
+    }
+
+    std::cout << "time: "
+              << std::chrono::duration_cast<std::chrono::nanoseconds>(t6 - t5).count()
+              << " nanoseconds. Val: "
+              << finds
+              << std::endl;
+
+    auto t3 = Clock::now(); cout << "start" << endl;
+    finds = VS[find];
+    auto t4 = Clock::now(); cout << "end" << endl;
+    std::cout << "time: "
+              << std::chrono::duration_cast<std::chrono::nanoseconds>(t4 - t3).count()
+              << " nanoseconds. Val: "
+              << finds
+              << std::endl;*/
+
+
     //std::cout << 14 % 6 << std::endl;
 
     /*ofstream myfile;
@@ -80,32 +290,43 @@ int main(int argc, char** argv)
         myfile.close();
     }*/
 
+    /*int min = 14;
+    int max = 2000;
+    int index = 0;
 
-    std::unordered_map<int, double> T;
-    int size = 1e6;
+    std::vector<int> checks;
 
-    for (int i = 0; i<size; i++){
-        T[i] = (double)i*3;
+    for (int i=0;i<30;i++){
+        checks.push_back( i*10 );
     }
 
-    std::vector<double> T2;
-    T2.resize(size);
+    int size = max*max*max*max;
+    Eigen::MatrixXi mat;
+    mat.conservativeResize(1, size);
+    std::cout << "sup" << std::endl;
 
 
-    #pragma omp parallel for num_threads(4)
-    for (int j=0; j<size; j++){
-        int val = j*3;
-        T2[j] = T[val];
+    auto t1 = Clock::now();
+
+    for (int i1 = min; i1<max; i1++){
+        for (int i2 = min; i2<max; i2++){
+            for (int i3 = min; i3<max; i3++){
+                int check = i1*1+i2*2+i3*3;
+                auto it = std::find(checks.begin(), checks.end(), check);
+                if (it != checks.end()){
+                    mat(0,index) = check;
+                    index ++;
+                }
+            }
+        }
     }
 
-    cout << "sup" << endl;
 
-    int sum_of_elems = 0;
-    std::for_each(T2.begin(), T2.end(), [&] (int n) {
-        sum_of_elems += n;
-    });
+    auto t2 = Clock::now();
 
-    cout << sum_of_elems << endl;
+    std::cout << "end. time: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+              << " milliseconds" << std::endl;*/
 
     /*for (int m = 8; m<9; m++){
         Eigen::initParallel();
