@@ -120,7 +120,7 @@ double MP::f(int p){
 
 double MP::h0(int p){
     double energy = m_states(0,p);
-    return energy*pi*pi*m_hbarc*m_hbarc/(2*m_m*m_L2);
+    return energy*2*pi*pi*m_hbarc*m_hbarc/(m_m*m_L2);
 }
 
 /*
