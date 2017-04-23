@@ -17,7 +17,8 @@ SOURCES += main.cpp \
     Systems/system.cpp \
     makeampmat.cpp \
     makeintmat.cpp \
-    diagrams.cpp
+    diagrams.cpp \
+    Systems/chiral.cpp
 
 HEADERS += \
     Systems/heg.h \
@@ -27,7 +28,8 @@ HEADERS += \
     Systems/system.h \
     makeampmat.h \
     makeintmat.h \
-    diagrams.h
+    diagrams.h \
+    Systems/chiral.h
 
 INCLUDEPATH += /usr/include/openmpi-x86_64
 QMAKE_CXX = mpicxx #/usr/lib64/openmpi/bin/mpicxx #mpicxx

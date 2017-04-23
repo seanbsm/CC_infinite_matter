@@ -184,8 +184,8 @@ double MP::assym(int p, int q, int r, int s){
     if ( sp+sq != sr+ss){ return 0; }               //spin conservation
     if ( tp+tq != tr+ts){ return 0; }               //isospin conservation
 
-    double q2_dir = 0.25*piOverL*piOverL*(kp-kq-kr+ks).squaredNorm();   // <pq||rs> (direct)
-    double q2_ex = 0.25*piOverL*piOverL*(kp-kq+kr-ks).squaredNorm();    // <pq||sr> (exchange)
+    double q2_dir = piOverL*piOverL*(kp-kq-kr+ks).squaredNorm();   // <pq||rs> (direct)
+    double q2_ex = piOverL*piOverL*(kp-kq+kr-ks).squaredNorm();    // <pq||sr> (exchange)
 
    // cout << q2_ex << endl;
 
