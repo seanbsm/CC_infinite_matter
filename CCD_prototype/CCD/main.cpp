@@ -96,7 +96,7 @@ int main(int argc, char** argv)
         }
         else{        //default size
             Nh = 14;                        //number of particles
-            Nb = 5;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
+            Nb = 3;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
         }
         double  rs;     //Wigner Seitz radius
         double  rho;    //Density
@@ -115,7 +115,7 @@ int main(int argc, char** argv)
                 std::cout << "Default setup: HEG for Nh=14, Nb=3, rs=1.0, 1e-16 precision, CCDT" << std::endl;
             }
             m          = 1;             //Electron mass [MeV?]
-            rs         = 2;
+            rs         = 1;
             double  rb = 1.;            //Bohr radius [MeV^-1]
             double  r1 = pow(rs*rb, 3);
             L3         = 4.*pi*Nh*r1/3.;
@@ -136,7 +136,7 @@ int main(int argc, char** argv)
         else if (std::string(argv[1]) == "MP"){
             m   = 939.565;              //Neutron mass [MeV]
             rho = atof(argv[4]);
-            L3  = Nh/rho;
+            L3  = double(Nh)/rho;
             L2  = pow(L3, 2./3.);
             L1  = pow(L3, 1./3.);
             master->setSystem(new MP(master, m, L3, L2, L1));

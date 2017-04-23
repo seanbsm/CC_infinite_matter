@@ -3298,6 +3298,14 @@ Eigen::MatrixXd MakeAmpMat::D10c_makemat(int channel1, int channel2){    //makes
             c = m_intClass->blockArrays_ppm_hhp(3,i1);
 
             id = m_intClass->Identity_hhhppp(i,k,l,c,a,b);
+
+            /*id = m_intClass->Identity_hhhppp(m_intClass->blockArrays_ppm_pph(3,i2),
+                                             m_intClass->blockArrays_ppm_hhp(1,i1),
+                                             m_intClass->blockArrays_ppm_hhp(2,i1),
+                                             m_intClass->blockArrays_ppm_hhp(3,i1),
+                                             m_intClass->blockArrays_ppm_pph(1,i2),
+                                             m_intClass->blockArrays_ppm_pph(2,i2));*/
+
             index = T3_elements_IV[thread][id];
             returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
         }
@@ -4528,6 +4536,14 @@ void MakeAmpMat::T1a_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
             a = m_intClass->blockArrays_ppm_hhp(3,i1);
 
             id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
+
+            /*id = m_intClass->Identity_hhhppp(m_intClass->blockArrays_ppm_hhp(1,i1),
+                                             m_intClass->blockArrays_ppm_hhp(2,i1),
+                                             m_intClass->blockArrays_ppm_pph(3,i2),
+                                             m_intClass->blockArrays_ppm_hhp(3,i1),
+                                             m_intClass->blockArrays_ppm_pph(1,i2),
+                                             m_intClass->blockArrays_ppm_pph(2,i2));*/
+
             index = T3_elements_IV[thread][id];
             T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
         }
@@ -4560,6 +4576,14 @@ void MakeAmpMat::T1b_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
             c = m_intClass->blockArrays_ppm_hhp(3,i1);
 
             id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
+
+            /*id = m_intClass->Identity_hhhppp(m_intClass->blockArrays_ppm_pph(3,i2),
+                                             m_intClass->blockArrays_ppm_hhp(1,i1),
+                                             m_intClass->blockArrays_ppm_hhp(2,i1),
+                                             m_intClass->blockArrays_ppm_pph(1,i2),
+                                             m_intClass->blockArrays_ppm_pph(2,i2),
+                                             m_intClass->blockArrays_ppm_hhp(3,i1));*/
+
             index = T3_elements_IV[thread][id];
             T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
         }

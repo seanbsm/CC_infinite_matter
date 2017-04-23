@@ -17,6 +17,7 @@
 //#include <mpi.h>
 #include <omp.h>
 #include <sparsepp/spp.h>
+#include <sparsepp/spp_utils.h>
 //#include <stdio.h>
 #include "testclass.h"
 
@@ -72,18 +73,47 @@ int main(int argc, char** argv)
     std::vector<spp::sparse_hash_map<int, int>> VP;
     VP.resize(threads);
     spp::sparse_hash_map<int, int> VS;
+    std::unordered_map<int, int> VSS;
 
-    int lim = 1e6; int in;
+    int lim = 1e7; int in;
     for(int i=0;i<lim;i++){
         in = i;
         VS[in] = i;
+        VSS[in] = i;
     }
+    cout << VS.size() << " " << VSS.size() << endl;
+    int something=0;
+    auto T1 = Clock::now(); auto T2=Clock::now();
+    T1 = Clock::now();
+
+    for(int i=0;i<lim;i++){
+        something=VS[i];
+    }
+    T2=Clock::now();
+
+    std::cout << "time: "
+              << std::chrono::duration_cast<std::chrono::nanoseconds>(T2 - T1).count()
+              << " nanoseconds."
+              << std::endl;
+    T1 = Clock::now();
+
+    for(int i=0;i<lim;i++){
+        something=VSS[i];
+    }
+    T2=Clock::now();
+
+    std::cout << "time: "
+              << std::chrono::duration_cast<std::chrono::nanoseconds>(T2 - T1).count()
+              << " nanoseconds."
+              << std::endl;
+
+
 
     for (int j=0;j<threads;j++){
         VP[j] = VS;
     }
 
-    int x=500; int y=80;
+    int x=10; int y=10;
     Eigen::MatrixXi MatR;
     MatR.conservativeResize(x,y);
     MatR.setRandom();

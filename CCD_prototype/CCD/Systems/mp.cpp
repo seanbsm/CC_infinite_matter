@@ -120,7 +120,7 @@ double MP::f(int p){
 
 double MP::h0(int p){
     double energy = m_states(0,p);
-    return energy*2*pi*pi*m_hbarc*m_hbarc/(m_m*m_L2);
+    return energy*pi*pi*m_hbarc*m_hbarc/(2*m_m*m_L2);
 }
 
 /*
@@ -189,13 +189,13 @@ double MP::assym(int p, int q, int r, int s){
 
    // cout << q2_ex << endl;
 
-    double VR_dir = V_0R_fac*exp(-q2_dir/(4*kappa_R));
-    double VT_dir = V_0T_fac*exp(-q2_dir/(4*kappa_T));
-    double VS_dir = V_0S_fac*exp(-q2_dir/(4*kappa_S));
+    double VR_dir = V_0R_fac*exp(-q2_dir/(4.0*kappa_R));
+    double VT_dir = V_0T_fac*exp(-q2_dir/(4.0*kappa_T));
+    double VS_dir = V_0S_fac*exp(-q2_dir/(4.0*kappa_S));
 
-    double VR_ex = V_0R_fac*exp(-q2_ex/(4*kappa_R));
-    double VT_ex = V_0T_fac*exp(-q2_ex/(4*kappa_T));
-    double VS_ex = V_0S_fac*exp(-q2_ex/(4*kappa_S));
+    double VR_ex = V_0R_fac*exp(-q2_ex/(4.0*kappa_R));
+    double VT_ex = V_0T_fac*exp(-q2_ex/(4.0*kappa_T));
+    double VS_ex = V_0S_fac*exp(-q2_ex/(4.0*kappa_S));
 
 
     bool Ps_dir = (sp==ss)*(sq==sr);    //exchange spins

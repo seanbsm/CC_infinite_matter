@@ -1912,13 +1912,22 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
 
     m_system = system;
-    m_Nh = Nh;
-    m_Ns = Ns;
-    m_Np = Ns-Nh;
+    m_Nh     = Nh;
+    m_Ns     = Ns;
+    m_Np     = Ns-Nh;
 
+    //we use these in the indentity functions (less calculations)
+    m_Nh2    = Nh*Nh;
+    m_Nh3    = Nh*Nh*Nh;
+    m_Nh4    = Nh*Nh*Nh*Nh;
+    m_Nh5    = Nh*Nh*Nh*Nh*Nh;
+    m_NhNs2  = Nh*Ns*Ns;
+    m_Nh2Ns  = Nh*Nh*Ns;
+    m_Nh3Ns  = Nh*Nh*Nh*Ns;
+    m_Nh3Ns2 = Nh*Nh*Nh*Ns*Ns;
 
-    //The mapper functions take ascending values, i.e. they won't accept (1,0,1) as argument, but (0,1,1) works
-    //I did this for several reasons, none of which I see the point in jotting down here
+    //I only bothered to let the mapper functions take on the values shown here
+    //Any other blockArrays you want to make will have to be implemented by yourself (it's not hard)
 
     mapper_1(sortVec_p_h, blockArrays_p_h, 0, 1);        //h
     mapper_1(sortVec_p_p, blockArrays_p_p, 1, 1);        //p
@@ -2535,12 +2544,23 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     if (world_rank==0){cout << "made indexHolders" << endl;}
 
     //make Vhhpp map
-    for (int h=0; h<boundsHolder_hhpp_hh.cols(); h++){
+    /*for (int h=0; h<boundsHolder_hhpp_hh.cols(); h++){
         range_lower_hh = boundsHolder_hhpp_hh(0,h);
         range_upper_hh = boundsHolder_hhpp_hh(1,h);
         range_lower_pp = boundsHolder_hhpp_pp(0,h);
         range_upper_pp = boundsHolder_hhpp_pp(1,h);
         makeMatMap_hhpp(blockArrays_pp_hh, blockArrays_pp_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp);
+    }*/
+    for (int hh=0; hh<sortVec_pp_hh.size(); hh++){
+        for (int pp=0; pp<sortVec_pp_pp.size(); pp++){
+            if (sortVec_pp_hh[hh] == sortVec_pp_pp[pp] ){
+                range_lower_hh = indexHolder_pp_hh(0,hh);
+                range_upper_hh = indexHolder_pp_hh(1,hh);
+                range_lower_pp = indexHolder_pp_pp(0,pp);
+                range_upper_pp = indexHolder_pp_pp(1,pp);
+                makeMatMap_hhpp(blockArrays_pp_hh, blockArrays_pp_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp);
+            }
+        }
     }
     if (world_rank==0){cout << "made Vhhpp" << endl;}
 
@@ -2604,6 +2624,14 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
 
 
     if (world_rank==0){cout << "made Vpppp" << endl;}
+
+
+    /*double Eref = 0;
+    for (int i = 0; i<m_Nh;i++){
+        Eref += m_system->f(i);
+    }
+    std::cout << Eref << std::endl;*/
+
 }
 
 
@@ -2760,20 +2788,30 @@ int MakeIntMat::Identity_ppph(int p1, int p2, int p3, int h1){
     //return h1 + p1*m_Nh + p2*m_Nh*(m_Ns-m_Nh) + p3*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
 }
 
+//there are 3 ways to calculate "out" here, but when running the program, I found no difference between them
 unsigned long int MakeIntMat::Identity_hhhppp(int h1, int h2, int h3, int p1, int p2, int p3){
-    //unsigned long int out = h1 + h2*m_Nh + h3*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh + p2*m_Nh*m_Nh*m_Nh*(m_Ns) + p3*m_Nh*m_Nh*m_Nh*(m_Ns)*(m_Ns);
-    unsigned long int out  = (unsigned long int)h1
+    /*unsigned long int out  = (unsigned long int)h1
                                 + (unsigned long int)h2*m_Nh
                                 + (unsigned long int)h3*m_Nh*m_Nh
                                 + (unsigned long int)p1*m_Nh*m_Nh*m_Nh
                                 + (unsigned long int)p2*m_Nh*m_Nh*m_Nh*(m_Ns)
-                                + (unsigned long int)p3*m_Nh*m_Nh*m_Nh*(m_Ns)*(m_Ns);
+                                + (unsigned long int)p3*m_Nh*m_Nh*m_Nh*(m_Ns)*(m_Ns);*/
 
-    //unsigned long int out = h1 + (h2+m_Nh) + (h3+2*m_Nh) + (p1+3*m_Nh) + p2*m_Nh*m_Nh*m_Nh*(m_Ns) + p3*m_Nh*m_Nh*m_Nh*(m_Ns)*(m_Ns);
-    //if(out<0){std::cout << out << std::endl;}
-    //std::cout  <<" " <<out << " " << h1<<", "<< h2<<", "<< h3<<", "<< p1<<", "<< p2<<", "<< p3<<", " << std::endl;
+    unsigned long int out  = (unsigned long int)h1
+                                + (unsigned long int)h2*m_Nh
+                                + (unsigned long int)h3*m_Nh2
+                                + (unsigned long int)p1*m_Nh3
+                                + (unsigned long int)p2*m_Nh3Ns
+                                + (unsigned long int)p3*m_Nh3Ns2;
+
+    /*unsigned long int out  = (unsigned long int)h1
+                                + m_Nh*((unsigned long int)h2
+                                + m_Nh*((unsigned long int)h3
+                                + m_Nh*((unsigned long int)p1
+                                + m_Ns*((unsigned long int)p2
+                                + m_Ns*((unsigned long int)p3)))));*/
+
     return out;
-    //return h1 + h2*m_Nh + h3*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh + p2*m_Nh*m_Nh*m_Nh*(m_Ns-m_Nh) + p3*m_Nh*m_Nh*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
 }
 
 int MakeIntMat::Identity_hhhhhp(int h1, int h2, int h3, int h4, int h5, int p1){

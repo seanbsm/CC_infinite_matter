@@ -26,9 +26,17 @@ private:
 
     //bool contractor(int i, int j){ return i==j; } //contracts repeated elements to a single edit
 public:
-    int m_Nh = 0;
-    int m_Ns = 0;
-    int m_Np = 0;
+    int m_Nh        = 0;
+    int m_Ns        = 0;
+    int m_Np        = 0;
+    int m_Nh2       = 0;
+    int m_Nh3       = 0;
+    int m_Nh4       = 0;
+    int m_Nh5       = 0;
+    int m_NhNs2     = 0;
+    unsigned long int m_Nh2Ns     = 0;
+    unsigned long int m_Nh3Ns     = 0;
+    unsigned long int m_Nh3Ns2    = 0;
 
     /* Due to the momentum-conservation relation (kp+kq = kr+ks for <pq||rs>),
      * and due to alignment of matrices, we need several blockArrays, and corresponding
