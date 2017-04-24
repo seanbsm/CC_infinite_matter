@@ -5,6 +5,7 @@
 #include <omp.h>
 #include <mpi.h>
 #include <iostream>
+#include <iomanip>
 
 using namespace std;
 
@@ -2626,11 +2627,11 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     if (world_rank==0){cout << "made Vpppp" << endl;}
 
 
-    /*double Eref = 0;
+    double Eref = 0;
     for (int i = 0; i<m_Nh;i++){
         Eref += m_system->f(i);
     }
-    std::cout << Eref << std::endl;*/
+    std::cout << std::fixed << std::setprecision (16) << Eref << std::endl;
 
 }
 
