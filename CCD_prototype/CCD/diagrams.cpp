@@ -655,6 +655,19 @@ void Diagrams::T1b(){
         m_ampClass->T1b_inverse(product, i2, i3);
     }
 
+
+    /*int i1; int i2; int i3; int cols = matches_recv.cols();
+#pragma omp parallel for private(i1,i2,i3) firstprivate(cols)
+    for (int i=0; i<cols; i++){
+        i1 = matches_recv(0,i); i2 = matches_recv(1,i); i3 = matches_recv(2,i);
+
+        Eigen::MatrixXd mat1 = m_intClass->T1b_makemat(i2, i1);
+        Eigen::MatrixXd mat2 = m_ampClass->T1b_makemat(i3, i1);
+        Eigen::MatrixXd product = -1*(mat1*mat2.transpose());
+
+        m_ampClass->T1b_inverse(product, i2, i3);
+    }*/
+
     std::vector<double> TempVec;
     if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
     MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);

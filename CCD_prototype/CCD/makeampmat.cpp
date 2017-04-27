@@ -3556,7 +3556,7 @@ Eigen::MatrixXd MakeAmpMat::T3b_makemat_2(int channel1, int channel2){    //make
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+    unsigned long int id;
     int e; int b;
     int a; int i;
 
@@ -3567,7 +3567,7 @@ Eigen::MatrixXd MakeAmpMat::T3b_makemat_2(int channel1, int channel2){    //make
         for (int i2 = range_lower2; i2<range_upper2; i2++){
             e = m_intClass->blockArrays_p_p(1,i2);
 
-            id = m_intClass->Identity_ppph(e,b,a,i);
+            id = (unsigned long int)m_intClass->Identity_ppph(e,b,a,i);
             returnMat(i1-range_lower1, i2-range_lower2) = T3D_remap[id];
         }
     }
@@ -3646,7 +3646,7 @@ Eigen::MatrixXd MakeAmpMat::T3c_makemat_2(int channel1, int channel2){    //make
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+    unsigned long int id;
     int i; int a;
     int m; int j;
 
@@ -3657,7 +3657,7 @@ Eigen::MatrixXd MakeAmpMat::T3c_makemat_2(int channel1, int channel2){    //make
         for (int i2 = range_lower2; i2<range_upper2; i2++){
             m = m_intClass->blockArrays_p_h(1,i2);
 
-            id = m_intClass->Identity_hhhp(m,j,i,a);
+            id = (unsigned long int)m_intClass->Identity_hhhp(m,j,i,a);
             returnMat(i1-range_lower1, i2-range_lower2) = T3D_remap[id];
         }
     }
@@ -3736,7 +3736,7 @@ Eigen::MatrixXd MakeAmpMat::T3d_makemat_2(int channel1, int channel2){    //make
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+    unsigned long int id;
     int j; int k;
     int c; int l;
 
@@ -3747,7 +3747,7 @@ Eigen::MatrixXd MakeAmpMat::T3d_makemat_2(int channel1, int channel2){    //make
         for (int i2 = range_lower2; i2<range_upper2; i2++){
             l = m_intClass->blockArrays_p_h(1,i2);
 
-            id = m_intClass->Identity_hhhp(j,k,l,c);
+            id = (unsigned long int)m_intClass->Identity_hhhp(j,k,l,c);
             returnMat(i1-range_lower1, i2-range_lower2) = T3D_remap[id];
         }
     }
@@ -3826,7 +3826,7 @@ Eigen::MatrixXd MakeAmpMat::T3e_makemat_2(int channel1, int channel2){    //make
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+    unsigned long int id;
     int i; int j; int a;
     int l; int m; int k;
 
@@ -4416,7 +4416,7 @@ void MakeAmpMat::T3b_Inverse_temp(Eigen::MatrixXd &inMat, int channel1, int chan
     int range_upper2 = m_intClass->indexHolder_pm_ph(1, channel2);
 
 
-    int id;
+    unsigned long int id;
     int e; int b;
     int a; int i;
 
@@ -4427,7 +4427,7 @@ void MakeAmpMat::T3b_Inverse_temp(Eigen::MatrixXd &inMat, int channel1, int chan
             a = m_intClass->blockArrays_pm_ph(1,i2);
             i = m_intClass->blockArrays_pm_ph(2,i2);
 
-            id = m_intClass->Identity_ppph(e,b,a,i);
+            id = (unsigned long int)m_intClass->Identity_ppph(e,b,a,i);
             T3D_remap[id] =  inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -4441,7 +4441,7 @@ void MakeAmpMat::T3c_Inverse_temp(Eigen::MatrixXd inMat, int channel1, int chann
     int range_upper2 = m_intClass->indexHolder_pm_hp(1, channel2);
 
 
-    int id;
+    unsigned long int id;
     int i; int a;
     int m; int j;
 
@@ -4452,7 +4452,7 @@ void MakeAmpMat::T3c_Inverse_temp(Eigen::MatrixXd inMat, int channel1, int chann
             i = m_intClass->blockArrays_pm_hp(1,i2);
             a = m_intClass->blockArrays_pm_hp(2,i2);
 
-            id = m_intClass->Identity_hhhp(m,j,i,a);
+            id = (unsigned long int)m_intClass->Identity_hhhp(m,j,i,a);
             T3D_remap[id] =  inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -4466,7 +4466,7 @@ void MakeAmpMat::T3d_Inverse_temp(Eigen::MatrixXd &inMat, int channel1, int chan
     int range_upper2 = m_intClass->indexHolder_pp_ph(1, channel2);
 
 
-    int id;
+    unsigned long int id;
     int j; int k;
     int c; int l;
 
@@ -4477,7 +4477,7 @@ void MakeAmpMat::T3d_Inverse_temp(Eigen::MatrixXd &inMat, int channel1, int chan
             c = m_intClass->blockArrays_pp_ph(1,i2);
             l = m_intClass->blockArrays_pp_ph(2,i2);
 
-            id = m_intClass->Identity_hhhp(j,k,l,c);
+            id = (unsigned long int)m_intClass->Identity_hhhp(j,k,l,c);
             T3D_remap[id] =  inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -4491,7 +4491,7 @@ void MakeAmpMat::T3e_Inverse_temp(Eigen::MatrixXd &inMat, int channel1, int chan
     int range_upper2 = m_intClass->indexHolder_ppm_hhh(1, channel2);
 
 
-    int id;
+    unsigned long int id;
     int i; int j; int a;
     int l; int m; int k;
 

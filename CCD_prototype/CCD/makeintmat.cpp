@@ -2625,14 +2625,6 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
 
 
     if (world_rank==0){cout << "made Vpppp" << endl;}
-
-
-    double Eref = 0;
-    for (int i = 0; i<m_Nh;i++){
-        Eref += m_system->f(i);
-    }
-    std::cout << std::fixed << std::setprecision (16) << Eref << std::endl;
-
 }
 
 
@@ -2783,7 +2775,7 @@ int MakeIntMat::Identity_hhpp(int h1, int h2, int p1, int p2){
 
 int MakeIntMat::Identity_ppph(int p1, int p2, int p3, int h1){
     int out = h1 + p1*m_Nh + p2*m_Nh*(m_Ns) + p3*m_Nh*(m_Ns)*(m_Ns);
-    //if(out<0){std::cout << out << std::endl;}
+    if(out<0){std::cout << "id_ppph " << out << std::endl;}
     //std::cout << out << std::endl;
     return out;
     //return h1 + p1*m_Nh + p2*m_Nh*(m_Ns-m_Nh) + p3*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
@@ -2815,9 +2807,14 @@ unsigned long int MakeIntMat::Identity_hhhppp(int h1, int h2, int h3, int p1, in
     return out;
 }
 
-int MakeIntMat::Identity_hhhhhp(int h1, int h2, int h3, int h4, int h5, int p1){
-    int out = h1 + h2*m_Nh + h3*m_Nh*m_Nh + h4*m_Nh*m_Nh*m_Nh + h5*m_Nh*m_Nh*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh*m_Nh*m_Nh;
-    if(out<0){std::cout << out << std::endl;}
+unsigned long int MakeIntMat::Identity_hhhhhp(int h1, int h2, int h3, int h4, int h5, int p1){
+    unsigned long int out = (unsigned long int)h1
+                            + (unsigned long int)h2*m_Nh
+                            + (unsigned long int)h3*m_Nh*m_Nh
+                            + (unsigned long int)h4*m_Nh*m_Nh*m_Nh
+                            + (unsigned long int)h5*m_Nh*m_Nh*m_Nh*m_Nh
+                            + (unsigned long int)p1*m_Nh*m_Nh*m_Nh*m_Nh*m_Nh;
+    //if(out<0){std::cout << "id_hhhhhp " << out << std::endl;}
     return out;
     //return h1 + h2*m_Nh + h3*m_Nh*m_Nh + h4*m_Nh*m_Nh*m_Nh + h5*m_Nh*m_Nh*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh*m_Nh*m_Nh;
 }

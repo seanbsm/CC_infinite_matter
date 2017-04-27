@@ -296,8 +296,12 @@ double MP::assym(int p, int q, int r, int s){
                + (VR_ex + 0.5*VT_ex + 0.5*VS_ex)*Ps_ex*Pt_ex
                + 0.5*(VT_ex - VS_ex)*Cs_ex*Pt_ex;
 
+    //use to compare with morten's code
+    /*double temp = assym_test(p,q,r,s);
+    double diff = abs(temp - 0.5*returnVal);
+    if (diff > 1e-14){std::cout << diff << std::endl;}*/
+
     return 0.5*returnVal;
-    //return assym_test(p,q,r,s);
 }
 
 double MP::assym_single(int p, int q){

@@ -75,7 +75,7 @@ int main(int argc, char** argv)
     spp::sparse_hash_map<int, int> VS;
     std::unordered_map<int, int> VSS;
 
-    int lim = 1e7; int in;
+    int lim = 1e4; int in;
     for(int i=0;i<lim;i++){
         in = i;
         VS[in] = i;
@@ -160,12 +160,13 @@ int main(int argc, char** argv)
               << " nanoseconds."
               << std::endl;
 
-    /*unsigned long int i1= 1e9;
-    unsigned long int i2= 1e6;
-    while (i2<i1){
-        i1 *= 10;
-        cout << i1 << endl;
-    }*/
+    int A= 10;
+    int counter = 0;
+    while (A>0 && counter < 20){
+        A *= 10;
+        counter += 1;
+        cout << A << endl;
+    }
 
 
     /*int max = 1e6;

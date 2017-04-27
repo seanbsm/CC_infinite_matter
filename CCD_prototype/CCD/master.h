@@ -38,6 +38,7 @@ public:
     void setClasses();
     void setCCType(int type);
 
+    double CC_Eref();
     double CC_master(double eps, double conFac);
     double Iterator(double eps, double conFac, double E_MBPT2);
 };

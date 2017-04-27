@@ -89,6 +89,14 @@ void Master::setClasses(){
     m_ampClass->emptyFockMaps();
 }
 
+double Master::CC_Eref(){
+    double Eref = 0;
+    for (int i = 0; i<m_Nh;i++){
+        Eref += m_system->f(i);
+    }
+    return Eref;
+}
+
 double Master::CC_master(double eps, double conFac){
 
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
@@ -313,6 +321,11 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
                 }
             }
 
+            /*int zeros = 0;
+            for (auto& T: m_ampClass->T3_elements_A)
+                if (T == 0.){zeros ++;}
+
+            std::cout << zeros << std::endl;*/
 
             MPI_Bcast(m_ampClass->T3_elements_A.data(), m_ampClass->T3_elements_A.size(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
 

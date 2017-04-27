@@ -137,7 +137,7 @@ public:
     void                            T2e_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2);
 
     //since the T3b-e diagrams are more finicky than the rest, we need a remapper for the first product
-    spp::sparse_hash_map<int, double> T3D_remap;
+    spp::sparse_hash_map<unsigned long int, double> T3D_remap;
     void                            T3b_Inverse_temp(Eigen::MatrixXd& inMat, int channel1, int channel2);
     void                            T3c_Inverse_temp(Eigen::MatrixXd inMat, int channel1, int channel2);
     void                            T3d_Inverse_temp(Eigen::MatrixXd& inMat, int channel1, int channel2);

@@ -175,18 +175,27 @@ int main(int argc, char** argv)
 
         cout << "C++ code" << endl;
 
+        double Eref; double Ecc;
+
         auto t1 = Clock::now();
 
         if (CCDT){
             double ECCDT = master->CC_master(eps, conFac);
-            if (world_rank==0){cout << "Delta ECCDT: "<< ECCDT << endl;}
+            if (world_rank==0){cout << "Delta ECCDT: "<< std::right << std::setw(21) << ECCDT << endl;}
+            Ecc = ECCDT;
         }
         else{
             double ECCD = master->CC_master(eps, conFac);
-            if (world_rank==0){cout << "Delta ECCD: "<< ECCD << endl;}
+            if (world_rank==0){cout << "Delta ECCD: "<< std::right << std::setw(21) << ECCD << endl;}
+            Ecc = ECCD;
         }
 
         auto t2 = Clock::now();
+
+        Eref = master->CC_Eref();
+
+        std::cout << "Eref:       " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << Eref << std::endl;
+        std::cout << "E/Nh:       " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (Eref+Ecc)/Nh << std::endl;
 
         if (world_rank == 0){
             if (intermediates){
@@ -200,6 +209,7 @@ int main(int argc, char** argv)
                           << " seconds, with intermediates OFF" << std::endl;
             }
         }
+
 
     }
     else if (makeData == true){
