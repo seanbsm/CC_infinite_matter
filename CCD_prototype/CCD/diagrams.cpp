@@ -485,7 +485,7 @@ void Diagrams::makeT3(){
     m_ampClass->T3_elements_A_new.resize(m_ampClass->T3_elements_I.size(), 0);
     m_ampClass->T3_elements_A_temp.resize(m_ampClass->T3_elements_I.size(), 0);
 
-    //std::cout << m_ampClass->T3_elements_A.size() << std::endl;
+    std::cout << "Number of T3 elements: " << m_ampClass->T3_elements_A.size() << std::endl;
 
     m_ampClass->T3_makeDirectMat();
 }
@@ -720,12 +720,24 @@ void Diagrams::T2c(){
 
     matches_recv = distributeChannels(matches_root, 2);
 
-    int i1; int i2;
+    /*int i1; int i2;
     for (int i=0; i<matches_recv.cols(); i++){
         i1 = matches_recv(0,i); i2 = matches_recv(1,i);
 
         Eigen::MatrixXd mat1 = m_intClass->Vpppp[i1];
         Eigen::MatrixXd mat2 = m_ampClass->T2c_makemat(i2, i1);
+        Eigen::MatrixXd product = 0.5*mat2*mat1; //mathematically I need to transpose mat1, but it's symmetric
+
+        m_ampClass->T2c_inverse(product, i2, i1);
+    }*/
+
+    int i1; int i2; int cols = matches_recv.cols();
+#pragma omp parallel for num_threads(4) private(i1,i2) firstprivate(cols)
+    for (int i=0; i<cols; i++){
+        i1 = matches_recv(0,i); i2 = matches_recv(1,i);
+
+        Eigen::MatrixXd mat1 = m_intClass->Vpppp[i1];
+        Eigen::MatrixXd mat2 = m_ampClass->T2c_makemat(i2, i1, m_ampClass->T3_elements_IV[omp_get_thread_num()]);
         Eigen::MatrixXd product = 0.5*mat2*mat1; //mathematically I need to transpose mat1, but it's symmetric
 
         m_ampClass->T2c_inverse(product, i2, i1);

@@ -80,7 +80,7 @@ public:
     Eigen::MatrixXd                 T1b_makemat(int channel1, int channel2);
 
     //linear T3 terms in T3
-    Eigen::MatrixXd                 T2c_makemat(int channel1, int channel2);
+    Eigen::MatrixXd                 T2c_makemat(int channel1, int channel2, spp::sparse_hash_map<unsigned long, int>& map);
     Eigen::MatrixXd                 T2d_makemat(int channel1, int channel2);
     Eigen::MatrixXd                 T2e_makemat(int channel1, int channel2);
 
