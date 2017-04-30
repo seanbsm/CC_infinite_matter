@@ -75,7 +75,7 @@ int main(int argc, char** argv)
     spp::sparse_hash_map<int, int> VS;
     std::unordered_map<int, int> VSS;
 
-    int lim = 1e4; int in;
+    int lim = 1e7; int in;
     for(int i=0;i<lim;i++){
         in = i;
         VS[in] = i;
@@ -160,13 +160,22 @@ int main(int argc, char** argv)
               << " nanoseconds."
               << std::endl;
 
-    int A= 10;
+#pragma omp parallel for num_threads(4)
+    for (int c=0;c<MatW1.cols();c++){
+        for(int r=0;r<MatW1.rows();r++){
+            MatW1(r,c) = VSS[MatR(r,c)];
+        }
+    }
+    cout << "success" << endl;
+
+
+    /*int A= 10;
     int counter = 0;
     while (A>0 && counter < 20){
         A *= 10;
         counter += 1;
         cout << A << endl;
-    }
+    }*/
 
 
     /*int max = 1e6;

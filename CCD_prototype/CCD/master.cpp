@@ -238,14 +238,15 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
                 m_diagrams->T1a();
                 //std::cout << "T1a, world: "<< world_rank<< std::endl;
                 m_diagrams->T1b();
+                //std::cout << "WHAT NOW" << std::endl;
                 //std::cout << "T1b, world: "<< world_rank<< std::endl;
             }
             if (m_CC_type == 3 ){
-                m_diagrams->T2c();
+                //m_diagrams->T2c();
                 //std::cout << "T2c, world: "<< world_rank<< std::endl;
                 //m_diagrams->T2d();
                 //std::cout << "T2d, world: "<< world_rank<< std::endl;
-                //m_diagrams->T2e();
+                m_diagrams->T2e();
                 //std::cout << "T2e, world: "<< world_rank<< std::endl;
             }
             /*if (m_CC_type >= 2){
@@ -268,8 +269,8 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
                     m_diagrams->T3e();  //this is slower than the others because the remap is bigger
                     //std::cout << "T3e, world: "<< world_rank<< std::endl;
                 }
-            }
-            if (m_CC_type == 3){
+            }*/
+            /*if (m_CC_type == 3){
                 m_diagrams->T5a();      //slow?
                 if (world_rank == 0){
                     //These two diagrams are very mem heavy in the blockArray approach, so they're done differently (see thesis)
