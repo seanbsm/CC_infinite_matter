@@ -43,8 +43,8 @@ public:
     //std::unordered_map<int, int>              T2_elements_I;
     //std::vector<double>                       T2_elements_A;
     //std::map<unsigned long int, int> T3_elements_I_um;
-    spp::sparse_hash_map<unsigned long int, int>         T3_elements_I;        //holds indices to T3_elements_A, same for _new and _temp
-    std::vector<spp::sparse_hash_map<unsigned long int, int>> T3_elements_IV;
+    std::map<unsigned long int, int>        T3_elements_I;        //holds indices to T3_elements_A, same for _new and _temp
+    //std::vector<spp::sparse_hash_map<unsigned long int, int>> T3_elements_IV;
     std::vector<double>                       T3_elements_A;        //holds T3 amplitudes
     std::vector<double>                       T3_elements_A_new;    //holds new T3 amplitudes
     std::vector<double>                       T3_elements_A_temp;   //holds temporary diagram contributions
@@ -73,17 +73,17 @@ public:
     Eigen::MatrixXd                 I4_makemat_2(int channel1, int channel2);
 
     //T3 contributions to T2
-    Eigen::MatrixXd                 D10b_makemat(int channel1, int channel2, spp::sparse_hash_map<unsigned long, int> &map);
-    Eigen::MatrixXd                 D10c_makemat(int channel1, int channel2, spp::sparse_hash_map<unsigned long, int> &map);
+    Eigen::MatrixXd                 D10b_makemat(int channel1, int channel2);
+    Eigen::MatrixXd                 D10c_makemat(int channel1, int channel2);
 
     //linear T2 terms in T3
     Eigen::MatrixXd                 T1a_makemat(int channel1, int channel2);
     Eigen::MatrixXd                 T1b_makemat(int channel1, int channel2);
 
     //linear T3 terms in T3
-    Eigen::MatrixXd                 T2c_makemat(int channel1, int channel2, spp::sparse_hash_map<unsigned long, int>& map);
-    Eigen::MatrixXd                 T2d_makemat(int channel1, int channel2, spp::sparse_hash_map<unsigned long, int>& map);
-    Eigen::MatrixXd                 T2e_makemat(int channel1, int channel2, spp::sparse_hash_map<unsigned long, int>& map);
+    Eigen::MatrixXd                 T2c_makemat(int channel1, int channel2);
+    Eigen::MatrixXd                 T2d_makemat(int channel1, int channel2);
+    Eigen::MatrixXd                 T2e_makemat(int channel1, int channel2);
 
 
     //quadratic T2 terms in T3
@@ -102,7 +102,7 @@ public:
 
     //T2*T3 terms in T3
     Eigen::MatrixXd                 T5a_makemat_1(int channel1, int channel2);
-    Eigen::MatrixXd                 T5a_makemat_2(int channel1, int channel2, spp::sparse_hash_map<unsigned long, int>& map);
+    Eigen::MatrixXd                 T5a_makemat_2(int channel1, int channel2);
     Eigen::MatrixXd                 T5b_makemat_1(int channel1, int channel2);
     Eigen::MatrixXd                 T5b_makemat_2(int channel1, int channel2);
     Eigen::MatrixXi                 T5b_makemat_2_I(int channel1, int channel2); //index, not double
@@ -110,13 +110,13 @@ public:
     Eigen::MatrixXd                 T5c_makemat_2(int channel1, int channel2);
     Eigen::MatrixXi                 T5c_makemat_2_I(int channel1, int channel2); //index, not double
     Eigen::MatrixXd                 T5d_makemat_1(int channel1, int channel2);
-    Eigen::MatrixXd                 T5d_makemat_2(int channel1, int channel2, spp::sparse_hash_map<unsigned long, int>& map);
+    Eigen::MatrixXd                 T5d_makemat_2(int channel1, int channel2);
     Eigen::MatrixXd                 T5e_makemat_1(int channel1, int channel2);
-    Eigen::MatrixXd                 T5e_makemat_2(int channel1, int channel2, spp::sparse_hash_map<unsigned long, int>& map);
+    Eigen::MatrixXd                 T5e_makemat_2(int channel1, int channel2);
     Eigen::MatrixXd                 T5f_makemat_1(int channel1, int channel2);
-    Eigen::MatrixXd                 T5f_makemat_2(int channel1, int channel2, spp::sparse_hash_map<unsigned long, int>& map);
+    Eigen::MatrixXd                 T5f_makemat_2(int channel1, int channel2);
     Eigen::MatrixXd                 T5g_makemat_1(int channel1, int channel2);
-    Eigen::MatrixXd                 T5g_makemat_2(int channel1, int channel2, spp::sparse_hash_map<unsigned long, int>& map);
+    Eigen::MatrixXd                 T5g_makemat_2(int channel1, int channel2);
 
     //CCD terms
     void                            I1_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2);
@@ -129,13 +129,13 @@ public:
     void                            D10c_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2);
 
     //linear T2 terms in T3
-    void                            T1a_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2, spp::sparse_hash_map<unsigned long, int>& map);
-    void                            T1b_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2, spp::sparse_hash_map<unsigned long, int>& map);
+    void                            T1a_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2);
+    void                            T1b_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2);
 
     //linear T3 terms in T3
-    void                            T2c_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2, spp::sparse_hash_map<unsigned long, int>& map);
-    void                            T2d_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2, spp::sparse_hash_map<unsigned long, int>& map);
-    void                            T2e_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2, spp::sparse_hash_map<unsigned long, int>& map);
+    void                            T2c_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2);
+    void                            T2d_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2);
+    void                            T2e_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2);
 
     //since the T3b-e diagrams are more finicky than the rest, we need a remapper for the first product
     spp::sparse_hash_map<unsigned long int, double> T3D_remap;
@@ -151,15 +151,15 @@ public:
     void                            T3e_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2);
 
     //T2*T3 terms in T3
-    void                            T5a_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2, spp::sparse_hash_map<unsigned long, int>& map);
+    void                            T5a_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2);
     void                            T5b_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2);
     void                            T5c_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2);
     void                            T5b_inverse_I(Eigen::MatrixXd& inMat, int channel);
     void                            T5c_inverse_I(Eigen::MatrixXd& inMat, int channel);
-    void                            T5d_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2, spp::sparse_hash_map<unsigned long, int>& map);
-    void                            T5e_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2, spp::sparse_hash_map<unsigned long, int>& map);
-    void                            T5f_inverse(Eigen::MatrixXd inMat, int channel1, int channel2, spp::sparse_hash_map<unsigned long, int>& map);
-    void                            T5g_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2, spp::sparse_hash_map<unsigned long, int>& map);
+    void                            T5d_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2);
+    void                            T5e_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2);
+    void                            T5f_inverse(Eigen::MatrixXd inMat, int channel1, int channel2);
+    void                            T5g_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2);
 
 
 

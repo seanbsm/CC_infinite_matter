@@ -410,7 +410,7 @@ void Diagrams::D10b(){
                 Eigen::MatrixXd mat2 = m_intClass->D10b_makemat(i2, i1);
                 Eigen::MatrixXd product = -0.5*(mat1*mat2);*/
 
-        Eigen::MatrixXd mat1 = m_ampClass->D10b_makemat(i3, i2, m_ampClass->T3_elements_IV[omp_get_thread_num()]);
+        Eigen::MatrixXd mat1 = m_ampClass->D10b_makemat(i3, i2);
 
         productv[i] = -0.5*(mat1*mat2v[i]);
 
@@ -456,7 +456,7 @@ void Diagrams::D10c(){
                 Eigen::MatrixXd mat2 = m_intClass->D10c_makemat(i2, i1);
                 Eigen::MatrixXd product = -0.5*(mat1.transpose()*mat2);*/
 
-        Eigen::MatrixXd mat1 = m_ampClass->D10c_makemat(i2, i3, m_ampClass->T3_elements_IV[omp_get_thread_num()]);
+        Eigen::MatrixXd mat1 = m_ampClass->D10c_makemat(i2, i3);
 
         productv[i] = -0.5*(mat1.transpose()*mat2v[i]);
 
@@ -483,8 +483,8 @@ void Diagrams::makeT3(){
     int i; int j; int k;
     int a; int b; int c;
     int n = 4;//omp_get_max_threads();
-    std::cout << n << std::endl;
-    m_ampClass->T3_elements_IV.resize(n);
+    //std::cout << n << std::endl;
+    //m_ampClass->T3_elements_IV.resize(n);
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         //ku = m_intClass->Vhhhppp_i[channel];
 
@@ -506,9 +506,9 @@ void Diagrams::makeT3(){
                 m_ampClass->T3_elements_I[id] = index;
                 //m_ampClass->T3_elements_I_um[id] = index;
 
-                for (int j=0; j<n; j++){
+                /*for (int j=0; j<n; j++){
                     m_ampClass->T3_elements_IV[j][id] = index;
-                }
+                }*/
 
                 index ++;
             }
@@ -633,7 +633,7 @@ void Diagrams::T1a(){
 
         Eigen::MatrixXd product = mat2v[i]*mat1v[i].transpose();
 
-        m_ampClass->T1a_inverse(product, i3, i2, m_ampClass->T3_elements_IV[omp_get_thread_num()]);
+        m_ampClass->T1a_inverse(product, i3, i2);
     }
     auto t2 = Clock::now();
 
@@ -698,7 +698,7 @@ void Diagrams::T1b(){
 
         Eigen::MatrixXd product = -1*(mat1v[i]*mat2v[i].transpose());
 
-        m_ampClass->T1b_inverse(product, i2, i3, m_ampClass->T3_elements_IV[omp_get_thread_num()]);
+        m_ampClass->T1b_inverse(product, i2, i3);
     }
 
     std::vector<double> TempVec;
@@ -751,10 +751,10 @@ void Diagrams::T2c(){
         i1 = matches(0,i); i2 = matches(1,i);
 
         Eigen::MatrixXd mat1 = m_intClass->Vpppp[i1];
-        Eigen::MatrixXd mat2 = m_ampClass->T2c_makemat(i2, i1, m_ampClass->T3_elements_IV[omp_get_thread_num()]);
+        Eigen::MatrixXd mat2 = m_ampClass->T2c_makemat(i2, i1);
         Eigen::MatrixXd product = 0.5*mat2*mat1; //mathematically I need to transpose mat1, but it's symmetric
 
-        m_ampClass->T2c_inverse(product, i2, i1, m_ampClass->T3_elements_IV[omp_get_thread_num()]);
+        m_ampClass->T2c_inverse(product, i2, i1);
     }
 
     std::vector<double> TempVec;
@@ -810,10 +810,10 @@ void Diagrams::T2d(){
         i1 = matches(0,i); i2 = matches(1,i);
 
         Eigen::MatrixXd mat1 = m_intClass->Vhhhh[i1];
-        Eigen::MatrixXd mat2 = m_ampClass->T2d_makemat(i2, i1, m_ampClass->T3_elements_IV[omp_get_thread_num()]);
+        Eigen::MatrixXd mat2 = m_ampClass->T2d_makemat(i2, i1);
         Eigen::MatrixXd product = 0.5*mat2*mat1; //mathematically I need to transpose mat1, but it's symmetric
 
-        m_ampClass->T2d_inverse(product, i2, i1, m_ampClass->T3_elements_IV[omp_get_thread_num()]);
+        m_ampClass->T2d_inverse(product, i2, i1);
     }
 
     std::vector<double> TempVec;
@@ -856,8 +856,8 @@ void Diagrams::T2e(){
 
     if (world_rank == 0){
         for (int i1=0; i1<m_intClass->sortVec_pm_hp.size(); i1++){
-                for (int i2=0; i2<m_intClass->sortVec_ppmm_hhpp.size(); i2++){  //THIS IS WRONG (17/03/17)
-                    if ( m_intClass->sortVec_pm_hp[i1] == m_intClass->sortVec_ppmm_hhpp[i2]){
+                for (int i2=0; i2<m_intClass->sortVec_ppmm_pphh.size(); i2++){  //THIS IS WRONG (17/03/17)
+                    if ( m_intClass->sortVec_pm_hp[i1] == m_intClass->sortVec_ppmm_pphh[i2]){
                     matches.conservativeResize(2, matches.cols()+1);
                     matches.col(matches.cols()-1) << i1,i2;
                 }
@@ -873,11 +873,11 @@ void Diagrams::T2e(){
     for (int i=0; i<cols; i++){
         i1 = matches(0,i); i2 = matches(1,i);
         Eigen::MatrixXd mat1 = m_intClass->Vhphp[i1]; //I think hphp was made with sign index +- on rows and columns
-        Eigen::MatrixXd mat2 = m_ampClass->T2e_makemat(i2, i1, m_ampClass->T3_elements_IV[omp_get_thread_num()]);
+        Eigen::MatrixXd mat2 = m_ampClass->T2e_makemat(i2, i1);
         Eigen::MatrixXd product = mat2*mat1; //mathematically I need to transpose mat1, but it's symmetric
-        m_ampClass->T2e_inverse(product, i2, i1, m_ampClass->T3_elements_IV[omp_get_thread_num()]);
+        //std::cout << "ARGH" << std::endl;
+        m_ampClass->T2e_inverse(product, i2, i1);
     }
-
     auto t4 = Clock::now();
     auto t5 = Clock::now();
 
@@ -1180,11 +1180,11 @@ void Diagrams::T5a(){
         Eigen::MatrixXd mat3 = m_ampClass->T5a_makemat_2(i3, i2);
         Eigen::MatrixXd product = mat3*mat2.transpose()*mat1;*/
 
-        Eigen::MatrixXd mat3 = m_ampClass->T5a_makemat_2(i3, i2, m_ampClass->T3_elements_IV[omp_get_thread_num()]);
+        Eigen::MatrixXd mat3 = m_ampClass->T5a_makemat_2(i3, i2);
 
         Eigen::MatrixXd product = mat3*mat2v[i].transpose()*mat1v[i];
 
-        m_ampClass->T5a_inverse(product, i3, i2, m_ampClass->T3_elements_IV[omp_get_thread_num()]);
+        m_ampClass->T5a_inverse(product, i3, i2);
     }
 
     std::vector<double> TempVec;
@@ -1472,11 +1472,11 @@ void Diagrams::T5d(){
         Eigen::MatrixXd mat3 = m_ampClass->T5d_makemat_2(i2, i3);
         Eigen::MatrixXd product = -0.5*mat1*mat2.transpose()*mat3;*/
 
-        Eigen::MatrixXd mat3 = m_ampClass->T5d_makemat_2(i2, i3, m_ampClass->T3_elements_IV[omp_get_thread_num()]);
+        Eigen::MatrixXd mat3 = m_ampClass->T5d_makemat_2(i2, i3);
 
         Eigen::MatrixXd product = -0.5*mat1v[i]*mat2v[i].transpose()*mat3;
 
-        m_ampClass->T5d_inverse(product, i2, i3, m_ampClass->T3_elements_IV[omp_get_thread_num()]);
+        m_ampClass->T5d_inverse(product, i2, i3);
     }
 
     std::vector<double> TempVec;
@@ -1548,10 +1548,10 @@ void Diagrams::T5e(){
         Eigen::MatrixXd mat3 = m_ampClass->T5e_makemat_2(i2, i3);
         Eigen::MatrixXd product = -0.5*mat3*mat2*mat1.transpose();*/
 
-        Eigen::MatrixXd mat3 = m_ampClass->T5e_makemat_2(i2, i3, m_ampClass->T3_elements_IV[omp_get_thread_num()]);
+        Eigen::MatrixXd mat3 = m_ampClass->T5e_makemat_2(i2, i3);
         Eigen::MatrixXd product = -0.5*mat3*mat2v[i]*mat1v[i].transpose();
 
-        m_ampClass->T5e_inverse(product, i2, i3, m_ampClass->T3_elements_IV[omp_get_thread_num()]);
+        m_ampClass->T5e_inverse(product, i2, i3);
     }
 
     std::vector<double> TempVec;
@@ -1623,10 +1623,10 @@ void Diagrams::T5f(){
         Eigen::MatrixXd mat3 = m_ampClass->T5f_makemat_2(i3, i1);
         Eigen::MatrixXd product = 0.25*mat1*mat2.transpose()*mat3.transpose();*/
 
-        Eigen::MatrixXd mat3 = m_ampClass->T5f_makemat_2(i3, i1, m_ampClass->T3_elements_IV[omp_get_thread_num()]);
+        Eigen::MatrixXd mat3 = m_ampClass->T5f_makemat_2(i3, i1);
         Eigen::MatrixXd product = 0.25*mat1v[i]*mat2v[i].transpose()*mat3.transpose();
 
-        m_ampClass->T5f_inverse(product.transpose(), i3, i1, m_ampClass->T3_elements_IV[omp_get_thread_num()]);
+        m_ampClass->T5f_inverse(product.transpose(), i3, i1);
     }
 
     std::vector<double> TempVec;
@@ -1698,11 +1698,11 @@ void Diagrams::T5g(){
         Eigen::MatrixXd mat3 = m_ampClass->T5g_makemat_2(i3, i2);
         Eigen::MatrixXd product = 0.25*mat3*mat2.transpose()*mat1;*/
 
-        Eigen::MatrixXd mat3 = m_ampClass->T5g_makemat_2(i3, i2, m_ampClass->T3_elements_IV[omp_get_thread_num()]);
+        Eigen::MatrixXd mat3 = m_ampClass->T5g_makemat_2(i3, i2);
 
         Eigen::MatrixXd product = 0.25*mat3*mat2v[i].transpose()*mat1v[i];
 
-        m_ampClass->T5g_inverse(product, i3, i2, m_ampClass->T3_elements_IV[omp_get_thread_num()]);
+        m_ampClass->T5g_inverse(product, i3, i2);
     }
 
     std::vector<double> TempVec;

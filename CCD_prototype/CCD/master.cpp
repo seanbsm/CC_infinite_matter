@@ -246,6 +246,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
                 //std::cout << "T2c, world: "<< world_rank<< std::endl;
                 //m_diagrams->T2d();
                 //std::cout << "T2d, world: "<< world_rank<< std::endl;
+                //std::cout << "ARGH" << std::endl;
                 m_diagrams->T2e();
                 //std::cout << "T2e, world: "<< world_rank<< std::endl;
             }

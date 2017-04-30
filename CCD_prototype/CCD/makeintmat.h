@@ -67,6 +67,7 @@ public:
     Eigen::MatrixXi blockArrays_ppp_ppp;
     Eigen::MatrixXi blockArrays_pppm_hhhp;
     Eigen::MatrixXi blockArrays_ppmm_hhpp;
+    Eigen::MatrixXi blockArrays_ppmm_pphh;
     Eigen::MatrixXi blockArrays_pppm_ppph;
     Eigen::MatrixXi blockArrays_pppmm_hhhpp;
     Eigen::MatrixXi blockArrays_pppmm_ppphh;
@@ -106,6 +107,7 @@ public:
     std::vector<int> sortVec_ppp_ppp;
     std::vector<int> sortVec_pppm_hhhp;
     std::vector<int> sortVec_ppmm_hhpp;
+    std::vector<int> sortVec_ppmm_pphh;
     std::vector<int> sortVec_pppm_ppph;
     std::vector<int> sortVec_pppmm_hhhpp;
     std::vector<int> sortVec_pppmm_ppphh;
@@ -129,6 +131,7 @@ public:
     Eigen::MatrixXi indexHolder_ppp_ppp;
     Eigen::MatrixXi indexHolder_pppm_hhhp;
     Eigen::MatrixXi indexHolder_ppmm_hhpp;
+    Eigen::MatrixXi indexHolder_ppmm_pphh;
     Eigen::MatrixXi indexHolder_pppm_ppph;
     Eigen::MatrixXi indexHolder_pppmm_hhhpp;
     Eigen::MatrixXi indexHolder_pppmm_ppphh;

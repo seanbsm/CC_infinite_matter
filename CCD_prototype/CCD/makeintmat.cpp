@@ -617,7 +617,7 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
     int colSize     = 0;
 
     bool cond_hhpp = (i1 == 0 && i2 == 0 && i3==1 && i4==1);
-    //bool cond_pphh = (i1 == 1 && i2 == 1 && i3==0 && i4==0);
+    bool cond_pphh = (i1 == 1 && i2 == 1 && i3==0 && i4==0);
     bool cond_hhhp = (i1 == 0 && i2 == 0 && i3==0 && i4==1);
     bool cond_ppph = (i1 == 1 && i2 == 1 && i3==1 && i4==0);
 
@@ -686,6 +686,54 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
                         auto it = std::find(sortVec_pm_ph.begin(), sortVec_pm_ph.end(), ku);
                         if (it != sortVec_pm_ph.end()){
                             blockArrays_temp1.col(index) << ku,i,j,a,b;
+                            index += 1;
+
+                            if (index >= colSize){
+                                colSize += 10000;
+                                blockArrays_temp1.conservativeResize(5, colSize);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        std::cout << "made blockArrays_ppmm_hhpp" << std::endl;
+
+        blockArrays_temp2.conservativeResize(5, index);
+        for (int c=0; c<index; c++){
+            blockArrays_temp2.col(c) = blockArrays_temp1.col(c);
+        }
+
+        blockArrays_temp1.resize(0,0);
+
+        /*for (int i=0; i<m_Nh; i++){
+            for (int j=0; j<m_Nh; j++){
+                for (int a=m_Nh; a<m_Ns; a++){
+                    for (int b=m_Nh; b<m_Ns; b++){
+                        blockArrays_temp.col(index) << m_system->kUnique4(i,j,a,b,s1,s2,s3,s4),i,j,a,b;
+                        index += 1;
+                    }
+                }
+            }
+        }*/
+    }
+    // 1 1 0 0
+    if (cond_pphh){
+        std::cout << "pphh" << std::endl;
+        colSize = 10000;//m_Nh*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
+        blockArrays_temp1.conservativeResize(5, colSize);
+
+        int ku;
+
+        for (int a=m_Nh; a<m_Ns; a++){
+            for (int b=m_Nh; b<m_Ns; b++){
+                for (int i=0; i<m_Nh; i++){
+                    for (int j=0; j<m_Nh; j++){
+                        ku = m_system->kUnique4(a,b,i,j,s1,s2,s3,s4);
+                        auto it = std::find(sortVec_pm_hp.begin(), sortVec_pm_hp.end(), ku);
+                        if (it != sortVec_pm_hp.end()){
+                            blockArrays_temp1.col(index) << ku,a,b,i,j;
                             index += 1;
 
                             if (index >= colSize){
@@ -1955,6 +2003,8 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         if (world_rank==0){"finished hhhp";}
         mapper_4(sortVec_ppmm_hhpp, blockArrays_ppmm_hhpp, 0,0,1,1, 1,1,-1,-1);    //hhpp
         if (world_rank==0){"finished hhpp";}
+        mapper_4(sortVec_ppmm_pphh, blockArrays_ppmm_pphh, 1,1,0,0, 1,1,-1,-1);    //pphh
+        if (world_rank==0){"finished pphh";}
         mapper_4(sortVec_pppm_ppph, blockArrays_pppm_ppph, 1,1,1,0, 1,1,1,-1);     //ppph
         if (world_rank==0){"finished ppph";}
 
@@ -2391,6 +2441,29 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             range_lower = range_upper - counter;
             counter = 0;
             indexHolder_ppmm_hhpp.col(hhpp) << range_lower, range_upper; //this now has same indices as sortVec
+        }
+
+            counter     = 0;
+            range_lower = 0;
+            range_upper = 0;
+            indexHolder_ppmm_pphh.conservativeResize(2,sortVec_ppmm_pphh.size());
+            for (int pphh=0; pphh<sortVec_ppmm_pphh.size(); pphh++){
+                int val_pphh = sortVec_ppmm_pphh[pphh];
+                auto it = std::find(sortVec_pm_hp.begin(), sortVec_pm_hp.end(), val_pphh);
+                if (it != sortVec_pm_hp.end()){
+                    for (int bA_pphh=range_upper; bA_pphh<blockArrays_ppmm_pphh.cols(); bA_pphh++){
+                        if (val_pphh == blockArrays_ppmm_pphh(0,bA_pphh)){
+                            range_upper = bA_pphh+1;
+                            counter += 1;
+                        }
+                        else if (val_pphh < blockArrays_ppmm_pphh(0,bA_pphh)){
+                            break;
+                        }
+                    }
+                }
+                range_lower = range_upper - counter;
+                counter = 0;
+                indexHolder_ppmm_pphh.col(pphh) << range_lower, range_upper; //this now has same indices as sortVec
         }
 
         counter     = 0;
