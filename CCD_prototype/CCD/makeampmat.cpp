@@ -1495,7 +1495,7 @@ void MakeAmpMat::addElementsT2(bool Pij, bool Pab){
 
 void MakeAmpMat::addElementsT3_T1a(){
     int ku;
-
+#pragma omp parallel for num_threads(4) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -1699,7 +1699,7 @@ void MakeAmpMat::addElementsT3_T1a(){
 void MakeAmpMat::addElementsT3_T1b(){
 
     int ku;
-
+#pragma omp parallel for num_threads(4) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -1900,7 +1900,7 @@ void MakeAmpMat::addElementsT3_T1b(){
 void MakeAmpMat::addElementsT3_T2c(){
 
     int ku;
-
+#pragma omp parallel for num_threads(4) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -1942,7 +1942,7 @@ void MakeAmpMat::addElementsT3_T2c(){
 void MakeAmpMat::addElementsT3_T2d(){
 
     int ku;
-
+#pragma omp parallel for num_threads(4) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -1985,6 +1985,7 @@ void MakeAmpMat::addElementsT3_T2e(){
 
     int ku;
 
+#pragma omp parallel for num_threads(4) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -2044,7 +2045,7 @@ void MakeAmpMat::addElementsT3_T2e(){
 void MakeAmpMat::addElementsT3_T3b(){
 
     int ku;
-
+#pragma omp parallel for num_threads(4) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -2110,7 +2111,7 @@ void MakeAmpMat::addElementsT3_T3b(){
 void MakeAmpMat::addElementsT3_T3c(){
 
     int ku;
-
+#pragma omp parallel for num_threads(4) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -2176,7 +2177,7 @@ void MakeAmpMat::addElementsT3_T3c(){
 void MakeAmpMat::addElementsT3_T3d(){
 
     int ku;
-
+#pragma omp parallel for num_threads(4) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -2236,7 +2237,7 @@ void MakeAmpMat::addElementsT3_T3d(){
 void MakeAmpMat::addElementsT3_T3e(){
 
     int ku;
-
+#pragma omp parallel for num_threads(4) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -2296,7 +2297,7 @@ void MakeAmpMat::addElementsT3_T3e(){
 void MakeAmpMat::addElementsT3_T5a(){
 
     int ku;
-
+#pragma omp parallel for num_threads(4) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -2356,7 +2357,7 @@ void MakeAmpMat::addElementsT3_T5a(){
 void MakeAmpMat::addElementsT3_T5b(){
 
     int ku;
-
+#pragma omp parallel for num_threads(4) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -2398,7 +2399,7 @@ void MakeAmpMat::addElementsT3_T5b(){
 void MakeAmpMat::addElementsT3_T5c(){
 
     int ku;
-
+#pragma omp parallel for num_threads(4) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -2440,7 +2441,7 @@ void MakeAmpMat::addElementsT3_T5c(){
 void MakeAmpMat::addElementsT3_T5d(){
 
     int ku;
-
+#pragma omp parallel for num_threads(4) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -2498,7 +2499,7 @@ void MakeAmpMat::addElementsT3_T5d(){
 void MakeAmpMat::addElementsT3_T5e(){
 
     int ku;
-
+#pragma omp parallel for num_threads(4) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -2556,7 +2557,7 @@ void MakeAmpMat::addElementsT3_T5e(){
 void MakeAmpMat::addElementsT3_T5f(){
 
     int ku;
-
+#pragma omp parallel for num_threads(4) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -2598,7 +2599,7 @@ void MakeAmpMat::addElementsT3_T5f(){
 void MakeAmpMat::addElementsT3_T5g(){
 
     int ku;
-
+#pragma omp parallel for num_threads(4) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 

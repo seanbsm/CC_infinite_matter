@@ -894,10 +894,10 @@ void Diagrams::T2e(){
     }
     auto t8 = Clock::now();
 
-    std::cout << "Init matrices: " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << std::endl;
+    /*std::cout << "Init matrices: " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << std::endl;
     std::cout << "Sum:           " << std::chrono::duration_cast<std::chrono::milliseconds>(t4 - t3).count() << std::endl;
     std::cout << "Send elements: " << std::chrono::duration_cast<std::chrono::milliseconds>(t6 - t5).count() << std::endl;
-    std::cout << "Inverse map:   " << std::chrono::duration_cast<std::chrono::milliseconds>(t8 - t7).count() << std::endl;
+    std::cout << "Inverse map:   " << std::chrono::duration_cast<std::chrono::milliseconds>(t8 - t7).count() << std::endl;*/
 
     /*for (int i1=0; i1<m_intClass->sortVec_pm_hp.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppmm_hhpp.size(); i2++){  //THIS IS WRONG (17/03/17)

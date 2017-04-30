@@ -43,7 +43,8 @@ public:
     //std::unordered_map<int, int>              T2_elements_I;
     //std::vector<double>                       T2_elements_A;
     //std::map<unsigned long int, int> T3_elements_I_um;
-    std::map<unsigned long int, int>        T3_elements_I;        //holds indices to T3_elements_A, same for _new and _temp
+    //std::map<unsigned long int, int>        T3_elements_I;        //holds indices to T3_elements_A, same for _new and _temp
+    spp::sparse_hash_map<unsigned long int, int>        T3_elements_I;
     //std::vector<spp::sparse_hash_map<unsigned long int, int>> T3_elements_IV;
     std::vector<double>                       T3_elements_A;        //holds T3 amplitudes
     std::vector<double>                       T3_elements_A_new;    //holds new T3 amplitudes
