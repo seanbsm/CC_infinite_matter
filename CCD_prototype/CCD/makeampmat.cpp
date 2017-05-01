@@ -1,8 +1,13 @@
 #include "makeampmat.h"
 #include <iostream>
 #include <stdlib.h>
+#include <chrono>
+#include <time.h>
+#include <unistd.h>
 
 #include <omp.h>
+
+typedef std::chrono::high_resolution_clock Clock;   //needed for timing
 
 MakeAmpMat::MakeAmpMat()
 {
@@ -1935,7 +1940,13 @@ void MakeAmpMat::addElementsT3_T2c(){
 
         tempAMat1 = tempAMat - Pac - Pbc;
 
-        make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat1(row, col);
+            }
+        }
+
+        //make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
@@ -1977,7 +1988,13 @@ void MakeAmpMat::addElementsT3_T2d(){
 
         tempAMat1 = tempAMat - Pik - Pjk;
 
-        make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat1(row, col);
+            }
+        }
+
+        //make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
@@ -2036,9 +2053,13 @@ void MakeAmpMat::addElementsT3_T2e(){
 
         tempAMat2 = tempAMat1 - Pij - Pik;
 
-        //std::cout << tempAMat2 << std::endl;
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat2(row, col);
+            }
+        }
 
-        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        //make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
@@ -2102,9 +2123,13 @@ void MakeAmpMat::addElementsT3_T3b(){
 
         tempAMat2 = tempAMat1 - Pik - Pij;
 
-        //std::cout << tempAMat2 << std::endl;
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat2(row, col);
+            }
+        }
 
-        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        //make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
@@ -2168,9 +2193,13 @@ void MakeAmpMat::addElementsT3_T3c(){
 
         tempAMat2 = tempAMat1 - Pik - Pij - Pjk + Pijik + Pijjk;
 
-        //std::cout << tempAMat2 << std::endl;
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat2(row, col);
+            }
+        }
 
-        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        //make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
@@ -2228,9 +2257,13 @@ void MakeAmpMat::addElementsT3_T3d(){
 
         tempAMat2 = tempAMat1 - Pij - Pik;
 
-        //std::cout << tempAMat2 << std::endl;
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat2(row, col);
+            }
+        }
 
-        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        //make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
@@ -2288,9 +2321,13 @@ void MakeAmpMat::addElementsT3_T3e(){
 
         tempAMat2 = tempAMat1 - Pik - Pjk;
 
-        //std::cout << tempAMat2 << std::endl;
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat2(row, col);
+            }
+        }
 
-        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        //make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
@@ -2348,9 +2385,13 @@ void MakeAmpMat::addElementsT3_T5a(){
 
         tempAMat2 = tempAMat1 - Pij - Pik;
 
-        //std::cout << tempAMat2 << std::endl;
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat2(row, col);
+            }
+        }
 
-        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        //make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
@@ -2392,7 +2433,13 @@ void MakeAmpMat::addElementsT3_T5b(){
 
         tempAMat1 = tempAMat - Pij - Pik;
 
-        make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat1(row, col);
+            }
+        }
+
+        //make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
@@ -2434,7 +2481,13 @@ void MakeAmpMat::addElementsT3_T5c(){
 
         tempAMat1 = tempAMat - Pab - Pac;
 
-        make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat1(row, col);
+            }
+        }
+
+        //make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
@@ -2492,7 +2545,13 @@ void MakeAmpMat::addElementsT3_T5d(){
 
         tempAMat2 = tempAMat1 - Pik - Pjk;
 
-        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat2(row, col);
+            }
+        }
+
+        //make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
@@ -2550,7 +2609,13 @@ void MakeAmpMat::addElementsT3_T5e(){
 
         tempAMat2 = tempAMat1 - Pij - Pik;
 
-        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat2(row, col);
+            }
+        }
+
+        //make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
@@ -2592,7 +2657,13 @@ void MakeAmpMat::addElementsT3_T5f(){
 
         tempAMat1 = tempAMat - Pik - Pjk;
 
-        make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat1(row, col);
+            }
+        }
+
+        //make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
@@ -2634,7 +2705,13 @@ void MakeAmpMat::addElementsT3_T5g(){
 
         tempAMat1 = tempAMat - Pac - Pbc;
 
-        make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat1(row, col);
+            }
+        }
+
+        //make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 

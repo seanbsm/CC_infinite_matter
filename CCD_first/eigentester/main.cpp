@@ -169,13 +169,13 @@ int main(int argc, char** argv)
     cout << "success" << endl;
 
 
-    /*int A= 10;
+    int A= 10;
     int counter = 0;
     while (A>0 && counter < 20){
         A *= 10;
         counter += 1;
         cout << A << endl;
-    }*/
+    }
 
 
     /*int max = 1e6;

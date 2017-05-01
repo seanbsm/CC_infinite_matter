@@ -479,7 +479,7 @@ void Diagrams::D10c(){
 // ##################################################
 
 void Diagrams::makeT3(){
-    int index = 0; unsigned long int id;
+    unsigned long int index = 0; unsigned long int id;
     int i; int j; int k;
     int a; int b; int c;
     int n = 4;//omp_get_max_threads();
@@ -637,15 +637,15 @@ void Diagrams::T1a(){
     }
     auto t2 = Clock::now();
 
-    auto t3 = Clock::now();
+    /*auto t3 = Clock::now();
     std::vector<double> TempVec;
     if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
     MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-    auto t4 = Clock::now();
+    auto t4 = Clock::now();*/
 
     auto t5 = Clock::now();
     if (world_rank == 0){
-        m_ampClass->T3_elements_A_temp = TempVec;
+        //m_ampClass->T3_elements_A_temp = TempVec;
         m_ampClass->addElementsT3_T1a();
     }
     auto t6 = Clock::now();
@@ -653,7 +653,7 @@ void Diagrams::T1a(){
 
     /*std::cout << "Init matrices: " << std::chrono::duration_cast<std::chrono::milliseconds>(t8 - t7).count() << std::endl;
     std::cout << "Sum:           " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << std::endl;
-    std::cout << "Send elements: " << std::chrono::duration_cast<std::chrono::milliseconds>(t4 - t3).count() << std::endl;
+    //std::cout << "Send elements: " << std::chrono::duration_cast<std::chrono::milliseconds>(t4 - t3).count() << std::endl;
     std::cout << "Inverse map:   " << std::chrono::duration_cast<std::chrono::milliseconds>(t6 - t5).count() << std::endl;*/
 }
 
@@ -701,12 +701,12 @@ void Diagrams::T1b(){
         m_ampClass->T1b_inverse(product, i2, i3);
     }
 
-    std::vector<double> TempVec;
+    /*std::vector<double> TempVec;
     if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
-    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);*/
 
     if (world_rank == 0){
-        m_ampClass->T3_elements_A_temp = TempVec;
+        //m_ampClass->T3_elements_A_temp = TempVec;
         m_ampClass->addElementsT3_T1b();
     }
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
@@ -757,12 +757,12 @@ void Diagrams::T2c(){
         m_ampClass->T2c_inverse(product, i2, i1);
     }
 
-    std::vector<double> TempVec;
+    /*std::vector<double> TempVec;
     if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
-    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);*/
 
     if (world_rank == 0){
-        m_ampClass->T3_elements_A_temp = TempVec;
+        //m_ampClass->T3_elements_A_temp = TempVec;
         m_ampClass->addElementsT3_T2c();
     }
 
@@ -816,12 +816,12 @@ void Diagrams::T2d(){
         m_ampClass->T2d_inverse(product, i2, i1);
     }
 
-    std::vector<double> TempVec;
+    /*std::vector<double> TempVec;
     if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
-    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);*/
 
     if (world_rank == 0){
-        m_ampClass->T3_elements_A_temp = TempVec;
+        //m_ampClass->T3_elements_A_temp = TempVec;
         m_ampClass->addElementsT3_T2d();
     }
 
@@ -879,25 +879,25 @@ void Diagrams::T2e(){
         m_ampClass->T2e_inverse(product, i2, i1);
     }
     auto t4 = Clock::now();
-    auto t5 = Clock::now();
+    /*auto t5 = Clock::now();
 
     std::vector<double> TempVec;
     if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
     MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
-    auto t6 = Clock::now();
+    auto t6 = Clock::now();*/
     auto t7 = Clock::now();
 
     if (world_rank == 0){
-        m_ampClass->T3_elements_A_temp = TempVec;
+        //m_ampClass->T3_elements_A_temp = TempVec;
         m_ampClass->addElementsT3_T2e();
     }
     auto t8 = Clock::now();
 
-    /*std::cout << "Init matrices: " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << std::endl;
+    std::cout << "Init matrices: " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << std::endl;
     std::cout << "Sum:           " << std::chrono::duration_cast<std::chrono::milliseconds>(t4 - t3).count() << std::endl;
-    std::cout << "Send elements: " << std::chrono::duration_cast<std::chrono::milliseconds>(t6 - t5).count() << std::endl;
-    std::cout << "Inverse map:   " << std::chrono::duration_cast<std::chrono::milliseconds>(t8 - t7).count() << std::endl;*/
+    //std::cout << "Send elements: " << std::chrono::duration_cast<std::chrono::milliseconds>(t6 - t5).count() << std::endl;
+    std::cout << "Inverse map:   " << std::chrono::duration_cast<std::chrono::milliseconds>(t8 - t7).count() << std::endl;
 
     /*for (int i1=0; i1<m_intClass->sortVec_pm_hp.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppmm_hhpp.size(); i2++){  //THIS IS WRONG (17/03/17)
@@ -1187,12 +1187,12 @@ void Diagrams::T5a(){
         m_ampClass->T5a_inverse(product, i3, i2);
     }
 
-    std::vector<double> TempVec;
+    /*std::vector<double> TempVec;
     if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
-    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);*/
 
     if (world_rank == 0){
-        m_ampClass->T3_elements_A_temp = TempVec;
+        //m_ampClass->T3_elements_A_temp = TempVec;
         m_ampClass->addElementsT3_T5a();
     }
 
@@ -1479,12 +1479,12 @@ void Diagrams::T5d(){
         m_ampClass->T5d_inverse(product, i2, i3);
     }
 
-    std::vector<double> TempVec;
+    /*std::vector<double> TempVec;
     if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
-    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);*/
 
     if (world_rank == 0){
-        m_ampClass->T3_elements_A_temp = TempVec;
+        //m_ampClass->T3_elements_A_temp = TempVec;
         m_ampClass->addElementsT3_T5d();
     }
 
@@ -1554,12 +1554,12 @@ void Diagrams::T5e(){
         m_ampClass->T5e_inverse(product, i2, i3);
     }
 
-    std::vector<double> TempVec;
+    /*std::vector<double> TempVec;
     if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
-    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);*/
 
     if (world_rank == 0){
-        m_ampClass->T3_elements_A_temp = TempVec;
+        //m_ampClass->T3_elements_A_temp = TempVec;
         m_ampClass->addElementsT3_T5e();
     }
 
@@ -1629,12 +1629,12 @@ void Diagrams::T5f(){
         m_ampClass->T5f_inverse(product.transpose(), i3, i1);
     }
 
-    std::vector<double> TempVec;
+    /*std::vector<double> TempVec;
     if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
-    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);*/
 
     if (world_rank == 0){
-        m_ampClass->T3_elements_A_temp = TempVec;
+        //m_ampClass->T3_elements_A_temp = TempVec;
         m_ampClass->addElementsT3_T5f();
     }
 
@@ -1705,12 +1705,12 @@ void Diagrams::T5g(){
         m_ampClass->T5g_inverse(product, i3, i2);
     }
 
-    std::vector<double> TempVec;
+    /*std::vector<double> TempVec;
     if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
-    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);*/
 
     if (world_rank == 0){
-        m_ampClass->T3_elements_A_temp = TempVec;
+        //m_ampClass->T3_elements_A_temp = TempVec;
         m_ampClass->addElementsT3_T5g();
     }
 

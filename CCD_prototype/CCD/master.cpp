@@ -242,14 +242,14 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
                 //std::cout << "T1b, world: "<< world_rank<< std::endl;
             }
             if (m_CC_type == 3 ){
-                m_diagrams->T2c();
+                //m_diagrams->T2c();
                 //std::cout << "T2c, world: "<< world_rank<< std::endl;
-                m_diagrams->T2d();
+                //m_diagrams->T2d();
                 //std::cout << "T2d, world: "<< world_rank<< std::endl;
-                m_diagrams->T2e();
+                //m_diagrams->T2e();
                 //std::cout << "T2e, world: "<< world_rank<< std::endl;
             }
-            if (m_CC_type >= 2){
+            /*if (m_CC_type >= 2){
                 // These diagrams require a re-alignment, done through a temporary map
                 // I have been unable to figure out how to send maps through MPI
                 // So this has to be done in serial for now (although we can do one for each proc, given there are 4 running)
@@ -289,7 +289,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
                 //std::cout << "T5f, world: "<< world_rank<< std::endl;
                 m_diagrams->T5g();
                 //std::cout << "T5g, world: "<< world_rank<< std::endl;
-            }
+            }*/
 
             //update T3 amplitudes
             if (world_rank == 0){

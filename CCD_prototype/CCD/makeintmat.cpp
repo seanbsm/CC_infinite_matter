@@ -2577,6 +2577,33 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     numOfKu = boundsHolder_hhpp_hh.cols();
     //cout << numOfKu <<" "<< sortVec_pp_hh.size() << endl;
 
+
+    /*std::vector<int> temps;
+    for (int i1=0; i1<sortVec_p_p.size(); i1++){
+        for (int i2=0; i2<sortVec_ppm_pph.size(); i2++){
+            for (int i3=0; i3<sortVec_ppm_hhp.size(); i3++){
+                if ( sortVec_p_p[i1] == sortVec_ppm_pph[i2] && sortVec_p_p[i1] == sortVec_ppm_hhp[i3]){
+                    if (std::find(temps.begin(), temps.end(), sortVec_p_p[i1]) == temps.end()){
+                        temps.push_back( sortVec_p_p[i1] );
+                    }
+                }
+            }
+        }
+    }
+    for (int i1=0; i1<sortVec_p_h.size(); i1++){
+        for (int i2=0; i2<sortVec_ppm_hhp.size(); i2++){
+            for (int i3=0; i3<sortVec_ppm_pph.size(); i3++){
+                if ( sortVec_p_h[i1] == sortVec_ppm_hhp[i2] && sortVec_p_h[i1] == sortVec_ppm_pph[i3]){
+                    if (std::find(temps.begin(), temps.end(), sortVec_p_h[i1]) == temps.end()){
+                        temps.push_back( sortVec_p_h[i1] );
+                    }
+                }
+            }
+        }
+    }*/
+
+
+
     if (m_triplesOn){
         counter     = 0;
         range_lower = 0;
@@ -2585,7 +2612,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             for (int ppp=0; ppp<sortVec_ppp_ppp.size(); ppp++){
                 int val_hhh = sortVec_ppp_hhh[hhh];
                 int val_ppp = sortVec_ppp_ppp[ppp];
-                if (val_hhh == val_ppp){      //ensures I only work on cases where hhh and ppp have equal kunique
+                if (val_hhh == val_ppp /*&& std::find(temps.begin(), temps.end(), val_hhh) != temps.end()*/ ){      //ensures I only work on cases where hhh and ppp have equal kunique
                     for (int hhh2=0; hhh2<blockArrays_ppp_hhh.cols(); hhh2++){
                         if ( val_hhh == blockArrays_ppp_hhh(0,hhh2) ){
                             range_upper_hhh = hhh2+1;
