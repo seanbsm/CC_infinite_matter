@@ -45,11 +45,10 @@ int main(int argc, char** argv)
     //bool    CCDT          = true;                   //turn on/off CCDT-1
     bool    timer         = true;                   //turn on/off timer
     bool    relaxation    = true;                   //turn on/off relaxation when updating amplitudes
-    double  alpha         = 0.8;                    //relaxation parameter
+    double  alpha         = 0.875;                  //relaxation parameter (I found 0.875 to be best)
     int     threads       = 4;                      //number of threads, default is whatever you put here
 
     bool    makeData      = false;                  //choose to write to file for a range of shells
-
     bool    threadsOn     = false;
     if (atoi(argv[7]) > 1){
         threadsOn = true;
@@ -97,7 +96,7 @@ int main(int argc, char** argv)
         }
         else{        //default size
             Nh = 14;                        //number of particles
-            Nb = 4;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
+            Nb = 3;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
         }
         double  rs;     //Wigner Seitz radius
         double  rho;    //Density
@@ -156,7 +155,7 @@ int main(int argc, char** argv)
         master->setIntermediates(intermediates);
         master->setRelaxation(relaxation, alpha);
         master->setTimer(timer);
-        master->setThreads(threadsOn, threads/*atoi(argv[7])*/);
+        master->setThreads_forMaster(threadsOn, threads/*atoi(argv[7])*/);
         if (argc == 8){
             master->setCCType(atoi(argv[6]));
             if (atoi(argv[6])==0){

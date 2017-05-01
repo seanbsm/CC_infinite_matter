@@ -29,7 +29,8 @@ public:
 
     void setSize();
     void setSystem(class System* system);
-    void setThreads(bool argument, int num);
+    void setThreads_forMaster(bool argument, int num);
+    void setThreads();
     void setSize(int Nh, int Nb);
     void setIntermediates(bool argument);
     void setTriples(bool argument);

@@ -20,14 +20,17 @@ void Master::setSize(int Nh, int Nb){
     m_Nb = Nb;
 }
 
-void Master::setThreads(bool argument, int num){
+void Master::setThreads_forMaster(bool argument, int num){
     m_threadsOn = argument;
     if (argument){
         m_threads = num;
-        m_intClass->setThreads(num);
-        m_ampClass->setThreads(num);
-        m_diagrams->setThreads(num);
     }
+}
+
+void Master::setThreads(){
+    m_intClass->setThreads(m_threads);
+    m_ampClass->setThreads(m_threads);
+    m_diagrams->setThreads(m_threads);
 }
 
 void Master::setSystem(class System* system){
@@ -62,6 +65,7 @@ void Master::setClasses(){
 
     cout << m_Ns << endl;
 
+    setThreads();
     m_intClass->setTriples(m_triplesOn);
     m_diagrams->setAmpClass(m_ampClass);
     m_diagrams->setIntClass(m_intClass);
