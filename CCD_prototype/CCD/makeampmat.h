@@ -22,6 +22,9 @@ public:
 
     int m_Counter = 0; //a test counter, used for debugging sessions
 
+    void setThreads(int numthreads);
+    int m_numThreads;
+
     MakeIntMat*  m_intClass = nullptr;
     System*      m_system   = nullptr;
     std::vector<Eigen::MatrixXd>  Amplitudes;

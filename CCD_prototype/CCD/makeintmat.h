@@ -153,6 +153,9 @@ public:
     //Eigen::MatrixXi indexHolder_ph;
     //Eigen::MatrixXi boundsHolder_pppp_pp;
 
+    void setThreads(int numthreads);
+    int m_numThreads;
+
     MakeIntMat();
     System* m_system = nullptr;
     void                            mapper_1(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArraysIn, int i1, int s1);

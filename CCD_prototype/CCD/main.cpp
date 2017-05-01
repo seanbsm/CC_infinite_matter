@@ -46,6 +46,7 @@ int main(int argc, char** argv)
     bool    timer         = true;                   //turn on/off timer
     bool    relaxation    = true;                   //turn on/off relaxation when updating amplitudes
     double  alpha         = 0.8;                    //relaxation parameter
+    int     threads       = 4;                      //number of threads, default is whatever you put here
 
     bool    makeData      = false;                  //choose to write to file for a range of shells
 
@@ -54,7 +55,7 @@ int main(int argc, char** argv)
         threadsOn = true;
 
         Eigen::initParallel();
-        int threads = atoi(argv[7]);
+        threads = atoi(argv[7]);
         omp_set_dynamic(0);
         omp_set_num_threads(threads);
         Eigen::setNbThreads(threads);
@@ -63,7 +64,7 @@ int main(int argc, char** argv)
     }
     else{
         omp_set_dynamic(0);
-        omp_set_num_threads(8);
+        omp_set_num_threads(threads);
         if (world_rank==0){
             std::cout << "Threading is turned off, meaning:" << std::endl;
             std::cout << "- Eigen won't run parallel matrix products" << std::endl;
@@ -96,7 +97,7 @@ int main(int argc, char** argv)
         }
         else{        //default size
             Nh = 14;                        //number of particles
-            Nb = 7;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
+            Nb = 4;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
         }
         double  rs;     //Wigner Seitz radius
         double  rho;    //Density
@@ -155,7 +156,7 @@ int main(int argc, char** argv)
         master->setIntermediates(intermediates);
         master->setRelaxation(relaxation, alpha);
         master->setTimer(timer);
-        master->setThreads(threadsOn, atoi(argv[7]));
+        master->setThreads(threadsOn, threads/*atoi(argv[7])*/);
         if (argc == 8){
             master->setCCType(atoi(argv[6]));
             if (atoi(argv[6])==0){

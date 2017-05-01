@@ -27,6 +27,9 @@ vector<size_t> sort_indexes(const vector<T> &v) {
     return idx;
 }
 
+void MakeIntMat::setThreads(int numthreads){
+    m_numThreads = numthreads;
+}
 
 void MakeIntMat::makePermutations(){
 
@@ -101,7 +104,7 @@ void MakeIntMat::makePermutations(){
             }*/
 
             //int n = omp_get_max_threads();
-            #pragma omp parallel for /*num_threads(2)*/ private(i2,j2,k2, val_ij2,val_ik2,val_jk2,val_ijik2,val_ijjk2)
+            #pragma omp parallel for num_threads(m_numThreads) private(i2,j2,k2, val_ij2,val_ik2,val_jk2,val_ijik2,val_ijjk2)
             for (int it2 = range_lower_h; it2<range_upper_h; it2++){
                 i2 = blockArrays_ppp_hhh(1,it2);
                 j2 = blockArrays_ppp_hhh(2,it2);
@@ -170,7 +173,7 @@ void MakeIntMat::makePermutations(){
             }*/
 
             //int n = omp_get_max_threads();
-            #pragma omp parallel for /*num_threads(2)*/ private(a2,b2,c2, val_ab2,val_ac2,val_bc2,val_abac2,val_abbc2)
+            #pragma omp parallel for num_threads(m_numThreads) private(a2,b2,c2, val_ab2,val_ac2,val_bc2,val_abac2,val_abbc2)
             for (int it2 = range_lower_p; it2<range_upper_p; it2++){  //starting at it1+1 means I'll never do the same permutation twice
                 a2 = blockArrays_ppp_ppp(1,it2);
                 b2 = blockArrays_ppp_ppp(2,it2);
@@ -671,7 +674,7 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
         }*/
     }
     // 0 0 1 1
-    if (cond_hhpp){
+    if (cond_hhpp){ //this isn't used anymore after fix of T5a
         std::cout << "hhpp" << std::endl;
         colSize = 10000;//m_Nh*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
         blockArrays_temp1.conservativeResize(5, colSize);
@@ -746,7 +749,7 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
             }
         }
 
-        std::cout << "made blockArrays_ppmm_hhpp" << std::endl;
+        std::cout << "made blockArrays_ppmm_pphh" << std::endl;
 
         blockArrays_temp2.conservativeResize(5, index);
         for (int c=0; c<index; c++){
@@ -1451,11 +1454,11 @@ Eigen::MatrixXd MakeIntMat::T5a_makemat(int channel1, int channel2){    //makes 
     int d; int e;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
-        l = blockArrays_pm_hp(1,i1);
-        d = blockArrays_pm_hp(2,i1);
+        m = blockArrays_pm_hp(1,i1);
+        e = blockArrays_pm_hp(2,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-            e = blockArrays_pm_ph(1,i2);
-            m = blockArrays_pm_ph(2,i2);
+            d = blockArrays_pm_ph(1,i2);
+            l = blockArrays_pm_ph(2,i2);
 
             id = Identity_hhpp(l,m,d,e);
             returnMat(i1-range_lower1, i2-range_lower2) = Vhhpp_elements[id];
@@ -2001,8 +2004,8 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         if (world_rank==0){"finished ppp";}
         mapper_4(sortVec_pppm_hhhp, blockArrays_pppm_hhhp, 0,0,0,1, 1,1,1,-1);     //hhhp
         if (world_rank==0){"finished hhhp";}
-        mapper_4(sortVec_ppmm_hhpp, blockArrays_ppmm_hhpp, 0,0,1,1, 1,1,-1,-1);    //hhpp
-        if (world_rank==0){"finished hhpp";}
+        //mapper_4(sortVec_ppmm_hhpp, blockArrays_ppmm_hhpp, 0,0,1,1, 1,1,-1,-1);    //hhpp
+        //if (world_rank==0){"finished hhpp";}
         mapper_4(sortVec_ppmm_pphh, blockArrays_ppmm_pphh, 1,1,0,0, 1,1,-1,-1);    //pphh
         if (world_rank==0){"finished pphh";}
         mapper_4(sortVec_pppm_ppph, blockArrays_pppm_ppph, 1,1,1,0, 1,1,1,-1);     //ppph
@@ -2420,7 +2423,8 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             indexHolder_pppm_hhhp.col(hhhp) << range_lower, range_upper; //this now has same indices as sortVec
         }
 
-        counter     = 0;
+        //this isn't used anymore after T5a fix
+        /*counter     = 0;
         range_lower = 0;
         range_upper = 0;
         indexHolder_ppmm_hhpp.conservativeResize(2,sortVec_ppmm_hhpp.size());
@@ -2441,7 +2445,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             range_lower = range_upper - counter;
             counter = 0;
             indexHolder_ppmm_hhpp.col(hhpp) << range_lower, range_upper; //this now has same indices as sortVec
-        }
+        }*/
 
             counter     = 0;
             range_lower = 0;

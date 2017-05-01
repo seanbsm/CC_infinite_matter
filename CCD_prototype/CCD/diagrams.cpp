@@ -32,6 +32,10 @@ void Diagrams::setAmpClass(class MakeAmpMat* ampClass){
     m_ampClass = ampClass;
 }
 
+void Diagrams::setThreads(int numthreads){
+    m_numThreads = numthreads;
+}
+
 
 // ##################################################
 // ##                                              ##
@@ -402,7 +406,7 @@ void Diagrams::D10b(){
     productv.resize(matches.cols());
 
     int i1; int i2; int i3; int cols = matches.cols();
-#pragma omp parallel for num_threads(4) private(i1,i2,i3) firstprivate(cols)
+#pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
     for (int i=0; i<cols; i++){
         i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
 
@@ -448,7 +452,7 @@ void Diagrams::D10c(){
     productv.resize(matches.cols());
 
     int i1; int i2; int i3; int cols = matches.cols();
-#pragma omp parallel for num_threads(4) private(i1,i2,i3) firstprivate(cols)
+#pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
     for (int i=0; i<cols; i++){
         i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
 
@@ -623,7 +627,7 @@ void Diagrams::T1a(){
 
     int i1; int i2; int i3; int cols = matches.cols();
     auto t1 = Clock::now();
-#pragma omp parallel for num_threads(4) private(i1,i2,i3) firstprivate(cols)
+#pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
     for (int i=0; i<cols; i++){
         i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
 
@@ -689,7 +693,7 @@ void Diagrams::T1b(){
     }
 
     int i1; int i2; int i3; int cols=matches.cols();
-#pragma omp parallel for num_threads(4) private(i1,i2,i3) firstprivate(cols)
+#pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
     for (int i=0; i<cols; i++){
         i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
         /*Eigen::MatrixXd mat1 = mat1v[i];
@@ -746,7 +750,7 @@ void Diagrams::T2c(){
     }*/
 
     int i1; int i2; int cols = matches.cols();
-#pragma omp parallel for num_threads(4) private(i1,i2) firstprivate(cols)
+#pragma omp parallel for num_threads(m_numThreads) private(i1,i2) firstprivate(cols)
     for (int i=0; i<cols; i++){
         i1 = matches(0,i); i2 = matches(1,i);
 
@@ -805,7 +809,7 @@ void Diagrams::T2d(){
     }
 
     int i1; int i2; int cols = matches.cols();
-#pragma omp parallel for num_threads(4) private(i1,i2) firstprivate(cols)
+#pragma omp parallel for num_threads(m_numThreads) private(i1,i2) firstprivate(cols)
     for (int i=0; i<cols; i++){
         i1 = matches(0,i); i2 = matches(1,i);
 
@@ -852,7 +856,7 @@ void Diagrams::T2e(){
 
     Eigen::MatrixXi matches;
 
-    auto t1 = Clock::now();
+    //auto t1 = Clock::now();
 
     if (world_rank == 0){
         for (int i1=0; i1<m_intClass->sortVec_pm_hp.size(); i1++){
@@ -865,11 +869,11 @@ void Diagrams::T2e(){
         }
     }
 
-    auto t2 = Clock::now();
-    auto t3 = Clock::now();
+    //auto t2 = Clock::now();
+    //auto t3 = Clock::now();
 
     int i1; int i2; int cols = matches.cols();
-#pragma omp parallel for num_threads(4) private(i1,i2) firstprivate(cols)
+#pragma omp parallel for num_threads(m_numThreads) private(i1,i2) firstprivate(cols)
     for (int i=0; i<cols; i++){
         i1 = matches(0,i); i2 = matches(1,i);
         Eigen::MatrixXd mat1 = m_intClass->Vhphp[i1]; //I think hphp was made with sign index +- on rows and columns
@@ -878,7 +882,7 @@ void Diagrams::T2e(){
         //std::cout << "ARGH" << std::endl;
         m_ampClass->T2e_inverse(product, i2, i1);
     }
-    auto t4 = Clock::now();
+    //auto t4 = Clock::now();
     /*auto t5 = Clock::now();
 
     std::vector<double> TempVec;
@@ -886,18 +890,18 @@ void Diagrams::T2e(){
     MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
     auto t6 = Clock::now();*/
-    auto t7 = Clock::now();
+    //auto t7 = Clock::now();
 
     if (world_rank == 0){
         //m_ampClass->T3_elements_A_temp = TempVec;
         m_ampClass->addElementsT3_T2e();
     }
-    auto t8 = Clock::now();
+    //auto t8 = Clock::now();
 
-    std::cout << "Init matrices: " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << std::endl;
+    /*std::cout << "Init matrices: " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << std::endl;
     std::cout << "Sum:           " << std::chrono::duration_cast<std::chrono::milliseconds>(t4 - t3).count() << std::endl;
     //std::cout << "Send elements: " << std::chrono::duration_cast<std::chrono::milliseconds>(t6 - t5).count() << std::endl;
-    std::cout << "Inverse map:   " << std::chrono::duration_cast<std::chrono::milliseconds>(t8 - t7).count() << std::endl;
+    std::cout << "Inverse map:   " << std::chrono::duration_cast<std::chrono::milliseconds>(t8 - t7).count() << std::endl;*/
 
     /*for (int i1=0; i1<m_intClass->sortVec_pm_hp.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppmm_hhpp.size(); i2++){  //THIS IS WRONG (17/03/17)
@@ -1156,8 +1160,8 @@ void Diagrams::T5a(){
     if (world_rank == 0){
         for (int i1=0; i1<m_intClass->sortVec_pm_hp.size(); i1++){
                 for (int i2=0; i2<m_intClass->sortVec_pm_ph.size(); i2++){
-                    for (int i3=0; i3<m_intClass->sortVec_ppmm_hhpp.size(); i3++){
-                        if ( m_intClass->sortVec_pm_hp[i1] == m_intClass->sortVec_ppmm_hhpp[i3] && m_intClass->sortVec_pm_hp[i1] == m_intClass->sortVec_pm_ph[i2]){
+                    for (int i3=0; i3<m_intClass->sortVec_ppmm_pphh.size(); i3++){
+                        if ( m_intClass->sortVec_pm_hp[i1] == m_intClass->sortVec_ppmm_pphh[i3] && m_intClass->sortVec_pm_hp[i1] == m_intClass->sortVec_pm_ph[i2]){
                         matches.conservativeResize(3, matches.cols()+1);
                         matches.col(matches.cols()-1) << i1,i2,i3;
 
@@ -1171,7 +1175,7 @@ void Diagrams::T5a(){
 
 
     int i1; int i2; int i3; int cols = matches.cols();
-#pragma omp parallel for num_threads(4) private(i1,i2,i3) firstprivate(cols)
+#pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
     for (int i=0; i<cols; i++){
         i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
 
@@ -1180,11 +1184,11 @@ void Diagrams::T5a(){
         Eigen::MatrixXd mat3 = m_ampClass->T5a_makemat_2(i3, i2);
         Eigen::MatrixXd product = mat3*mat2.transpose()*mat1;*/
 
-        Eigen::MatrixXd mat3 = m_ampClass->T5a_makemat_2(i3, i2);
+        Eigen::MatrixXd mat3 = m_ampClass->T5a_makemat_2(i3, i1);
 
-        Eigen::MatrixXd product = mat3*mat2v[i].transpose()*mat1v[i];
+        Eigen::MatrixXd product = mat3*mat2v[i]*mat1v[i].transpose();
 
-        m_ampClass->T5a_inverse(product, i3, i2);
+        m_ampClass->T5a_inverse(product, i3, i1);
     }
 
     /*std::vector<double> TempVec;
@@ -1247,7 +1251,7 @@ Eigen::MatrixXd Diagrams::contructMatT5b(int index){
     int cols = m_ampClass->T3_T5b_indices[index].cols();
     Eigen::MatrixXd returnMat;
     returnMat.conservativeResize(rows, cols);
-    #pragma omp parallel for num_threads(4) firstprivate(rows, cols)
+    #pragma omp parallel for num_threads(m_numThreads) firstprivate(rows, cols)
     for (int row=0; row<rows; row++){
         for (int col=0; col<cols; col++){
             returnMat(row,col) = m_ampClass->T3_elements_A[m_ampClass->T3_T5b_indices[index](row, col) ];
@@ -1261,7 +1265,7 @@ Eigen::MatrixXd Diagrams::contructMatT5c(int index){
     int cols = m_ampClass->T3_T5c_indices[index].cols();
     Eigen::MatrixXd returnMat;
     returnMat.conservativeResize(rows, cols);
-    #pragma omp parallel for num_threads(4) firstprivate(rows, cols)
+    #pragma omp parallel for num_threads(m_numThreads) firstprivate(rows, cols)
     for (int row=0; row<rows; row++){
         for (int col=0; col<cols; col++){
             returnMat(row,col) = m_ampClass->T3_elements_A[m_ampClass->T3_T5c_indices[index](row, col) ];
@@ -1341,7 +1345,6 @@ void Diagrams::T5b(){
                     tempMat = mat2.transpose()*mat1;
                     mat3 = contructMatT5b(index);
                     product = -0.5*mat3*tempMat;
-
 
                     //m_ampClass->T5b_inverse(product, i3, i1);
                     m_ampClass->T5b_inverse_I(product, index);
@@ -1451,11 +1454,11 @@ void Diagrams::T5d(){
                 for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
                     for (int i3=0; i3<m_intClass->sortVec_ppm_pph.size(); i3++){
                         if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_pph[i3] && m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i2]){
-                        matches.conservativeResize(3, matches.cols()+1);
-                        matches.col(matches.cols()-1) << i1,i2,i3;
+                            matches.conservativeResize(3, matches.cols()+1);
+                            matches.col(matches.cols()-1) << i1,i2,i3;
 
-                        mat1v.push_back( m_ampClass->T5d_makemat_1(i2, i1) );
-                        mat2v.push_back( m_intClass->T5d_makemat(i2, i1) );
+                            mat1v.push_back( m_ampClass->T5d_makemat_1(i2, i1) );
+                            mat2v.push_back( m_intClass->T5d_makemat(i2, i1) );
                     }
                 }
             }
@@ -1463,7 +1466,7 @@ void Diagrams::T5d(){
     }
 
     int i1; int i2; int i3; int cols = matches.cols();
-#pragma omp parallel for num_threads(4) private(i1,i2,i3) firstprivate(cols)
+#pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
     for (int i=0; i<cols; i++){
         i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
 
@@ -1539,7 +1542,7 @@ void Diagrams::T5e(){
     }
 
     int i1; int i2; int i3; int cols = matches.cols();
-    #pragma omp parallel for num_threads(4) private(i1,i2,i3) firstprivate(cols)
+    #pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
     for (int i=0; i<cols; i++){
         i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
 
@@ -1614,7 +1617,7 @@ void Diagrams::T5f(){
     }
 
     int i1; int i2; int i3; int cols = matches.cols();
-    #pragma omp parallel for num_threads(4) private(i1,i2,i3) firstprivate(cols)
+    #pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
     for (int i=0; i<cols; i++){
         i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
 
@@ -1689,7 +1692,7 @@ void Diagrams::T5g(){
     }
 
     int i1; int i2; int i3; int cols = matches.cols();
-    #pragma omp parallel for num_threads(4) private(i1,i2,i3) firstprivate(cols)
+    #pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
     for (int i=0; i<cols; i++){
         i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
 
