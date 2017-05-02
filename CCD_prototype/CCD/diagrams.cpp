@@ -937,8 +937,39 @@ void Diagrams::T3b(){
     }
 
     //now use remapped function
+    //we now parallellize since we are mapping back T3 amplitudes (demanding)
+
+    Eigen::MatrixXi matches;
+
+    std::vector<Eigen::MatrixXd> mat1v;
+    std::vector<Eigen::MatrixXd> mat2v;
 
     for (int i1=0; i1<m_intClass->sortVec_ppm_pph.size(); i1++){
+        for (int i2=0; i2<m_intClass->sortVec_p_p.size(); i2++){
+            for (int i3=0; i3<m_intClass->sortVec_ppm_hhp.size(); i3++){
+                if ( m_intClass->sortVec_ppm_pph[i1] == m_intClass->sortVec_p_p[i2] && m_intClass->sortVec_ppm_pph[i1] == m_intClass->sortVec_ppm_hhp[i3]){
+                    matches.conservativeResize(3, matches.cols()+1);
+                    matches.col(matches.cols()-1) << i1,i2,i3;
+
+                    mat1v.push_back( m_ampClass->T3b_makemat_2(i1, i2) );
+                    mat2v.push_back( m_ampClass->T3b_makemat_3(i3, i2) );
+                }
+            }
+        }
+    }
+
+
+    int i1; int i2; int i3; int cols = matches.cols();
+#pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
+    for (int i=0; i<cols; i++){
+        i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
+
+        Eigen::MatrixXd product = -mat2v[i]*mat1v[i].transpose();
+
+        m_ampClass->T3b_inverse(product, i3, i1);
+    }
+
+    /*for (int i1=0; i1<m_intClass->sortVec_ppm_pph.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_p_p.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_ppm_hhp.size(); i3++){
                 if ( m_intClass->sortVec_ppm_pph[i1] == m_intClass->sortVec_p_p[i2] && m_intClass->sortVec_ppm_pph[i1] == m_intClass->sortVec_ppm_hhp[i3]){
@@ -951,7 +982,7 @@ void Diagrams::T3b(){
                 }
             }
         }
-    }
+    }*/
 
     m_ampClass->addElementsT3_T3b();
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
@@ -986,8 +1017,39 @@ void Diagrams::T3c(){
         }
 
         //now use remapped function
+        //we now parallellize since we are mapping back T3 amplitudes (demanding)
+
+        Eigen::MatrixXi matches;
+
+        std::vector<Eigen::MatrixXd> mat1v;
+        std::vector<Eigen::MatrixXd> mat2v;
 
         for (int i1=0; i1<m_intClass->sortVec_ppm_pph.size(); i1++){
+            for (int i2=0; i2<m_intClass->sortVec_p_h.size(); i2++){
+                for (int i3=0; i3<m_intClass->sortVec_ppm_hhp.size(); i3++){
+                    if ( m_intClass->sortVec_ppm_pph[i1] == m_intClass->sortVec_p_h[i2] && m_intClass->sortVec_ppm_pph[i1] == m_intClass->sortVec_ppm_hhp[i3]){
+                        matches.conservativeResize(3, matches.cols()+1);
+                        matches.col(matches.cols()-1) << i1,i2,i3;
+
+                        mat1v.push_back( m_ampClass->T3c_makemat_2(i3, i2) );
+                        mat2v.push_back( m_ampClass->T3c_makemat_3(i1, i2) );
+                    }
+                }
+            }
+        }
+
+
+        int i1; int i2; int i3; int cols = matches.cols();
+    #pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
+        for (int i=0; i<cols; i++){
+            i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
+
+            Eigen::MatrixXd product = mat1v[i]*mat2v[i].transpose();
+
+            m_ampClass->T3c_inverse(product, i3, i1);
+        }
+
+        /*for (int i1=0; i1<m_intClass->sortVec_ppm_pph.size(); i1++){
             for (int i2=0; i2<m_intClass->sortVec_p_h.size(); i2++){
                 for (int i3=0; i3<m_intClass->sortVec_ppm_hhp.size(); i3++){
                     if ( m_intClass->sortVec_ppm_pph[i1] == m_intClass->sortVec_p_h[i2] && m_intClass->sortVec_ppm_pph[i1] == m_intClass->sortVec_ppm_hhp[i3]){
@@ -1000,7 +1062,7 @@ void Diagrams::T3c(){
                     }
                 }
             }
-        }
+        }*/
     }
 
     if (world_size>=2){
@@ -1046,9 +1108,39 @@ void Diagrams::T3d(){
         }
 
         //now use remapped function
-        //std::cout << m_intClass->blockArrays_ppp_ppp.size() << std::endl;
+        //we now parallellize since we are mapping back T3 amplitudes (demanding)
+
+        Eigen::MatrixXi matches;
+
+        std::vector<Eigen::MatrixXd> mat1v;
+        std::vector<Eigen::MatrixXd> mat2v;
 
         for (int i1=0; i1<m_intClass->sortVec_ppm_pph.size(); i1++){
+                    for (int i2=0; i2<m_intClass->sortVec_p_h.size(); i2++){
+                        for (int i3=0; i3<m_intClass->sortVec_ppm_hhp.size(); i3++){
+                            if ( m_intClass->sortVec_ppm_pph[i1] == m_intClass->sortVec_p_h[i2] && m_intClass->sortVec_ppm_pph[i1] == m_intClass->sortVec_ppm_hhp[i3]){
+                        matches.conservativeResize(3, matches.cols()+1);
+                        matches.col(matches.cols()-1) << i1,i2,i3;
+
+                        mat1v.push_back( m_ampClass->T3d_makemat_2(i3, i2) );
+                        mat2v.push_back( m_ampClass->T3d_makemat_3(i1, i2) );
+                    }
+                }
+            }
+        }
+
+
+        int i1; int i2; int i3; int cols = matches.cols();
+    #pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
+        for (int i=0; i<cols; i++){
+            i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
+
+            Eigen::MatrixXd product = 0.5*mat1v[i]*mat2v[i].transpose();
+
+            m_ampClass->T3d_inverse(product, i3, i1);
+        }
+
+        /*for (int i1=0; i1<m_intClass->sortVec_ppm_pph.size(); i1++){
             for (int i2=0; i2<m_intClass->sortVec_p_h.size(); i2++){
                 for (int i3=0; i3<m_intClass->sortVec_ppm_hhp.size(); i3++){
                     if ( m_intClass->sortVec_ppm_pph[i1] == m_intClass->sortVec_p_h[i2] && m_intClass->sortVec_ppm_pph[i1] == m_intClass->sortVec_ppm_hhp[i3]){
@@ -1061,7 +1153,7 @@ void Diagrams::T3d(){
                     }
                 }
             }
-        }
+        }*/
     }
 
     if (world_size >= 3 ){
@@ -1108,8 +1200,39 @@ void Diagrams::T3e(){
         }
 
         //now use remapped function
+        //we now parallellize since we are mapping back T3 amplitudes (demanding)
+
+        Eigen::MatrixXi matches;
+
+        std::vector<Eigen::MatrixXd> mat1v;
+        std::vector<Eigen::MatrixXd> mat2v;
 
         for (int i1=0; i1<m_intClass->sortVec_pp_pp.size(); i1++){
+            for (int i2=0; i2<m_intClass->sortVec_pp_hh.size(); i2++){
+                for (int i3=0; i3<m_intClass->sortVec_pppm_hhhp.size(); i3++){
+                    if ( m_intClass->sortVec_pp_pp[i1] == m_intClass->sortVec_pp_hh[i2] && m_intClass->sortVec_pp_pp[i1] == m_intClass->sortVec_pppm_hhhp[i3]){
+                        matches.conservativeResize(3, matches.cols()+1);
+                        matches.col(matches.cols()-1) << i1,i2,i3;
+
+                        mat1v.push_back( m_ampClass->T3e_makemat_2(i3, i2) );
+                        mat2v.push_back( m_ampClass->T3e_makemat_3(i2, i1) );
+                    }
+                }
+            }
+        }
+
+
+        int i1; int i2; int i3; int cols = matches.cols();
+    #pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
+        for (int i=0; i<cols; i++){
+            i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
+
+            Eigen::MatrixXd product = -0.5*mat1v[i]*mat2v[i];
+
+            m_ampClass->T3e_inverse(product, i3, i1);
+        }
+
+        /*for (int i1=0; i1<m_intClass->sortVec_pp_pp.size(); i1++){
             for (int i2=0; i2<m_intClass->sortVec_pp_hh.size(); i2++){
                 for (int i3=0; i3<m_intClass->sortVec_pppm_hhhp.size(); i3++){
                     if ( m_intClass->sortVec_pp_pp[i1] == m_intClass->sortVec_pp_hh[i2] && m_intClass->sortVec_pp_pp[i1] == m_intClass->sortVec_pppm_hhhp[i3]){
@@ -1122,7 +1245,7 @@ void Diagrams::T3e(){
                     }
                 }
             }
-        }
+        }*/
     }
 
     if (world_size >= 4){

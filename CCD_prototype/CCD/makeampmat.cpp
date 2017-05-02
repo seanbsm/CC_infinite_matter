@@ -161,7 +161,7 @@ void MakeAmpMat::makeDenomMat3(){
     }
 }
 
-void MakeAmpMat::make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<int, double> &T_list, bool add){
+void MakeAmpMat::make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<unsigned long int, double> &T_list, bool add){
 
     bool cond_hhp = (i1 == 0 && i2 == 0 && i3==1);
     bool cond_pph = (i1 == 1 && i2 == 1 && i3==0);
@@ -283,7 +283,7 @@ void MakeAmpMat::make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
     }
 }
 
-void MakeAmpMat::make3x1Block_inverse_D10b(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<int, double> &T_list, bool add){
+void MakeAmpMat::make3x1Block_inverse_D10b(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<unsigned long int, double> &T_list, bool add){
 
     bool cond_hhp = (i1 == 0 && i2 == 0 && i3==1);
     bool cond_pph = (i1 == 1 && i2 == 1 && i3==0);
@@ -405,7 +405,7 @@ void MakeAmpMat::make3x1Block_inverse_D10b(Eigen::MatrixXd inMat, int ku, int i1
     }
 }
 
-void MakeAmpMat::make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<int, double> &T_list, bool add){
+void MakeAmpMat::make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<unsigned long int, double> &T_list, bool add){
 
     //std::cout << "hey" << std::endl;
     bool cond_hh1 = (i1 == 0 && i2 == 0);
@@ -574,7 +574,7 @@ void MakeAmpMat::make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int
     }
 }
 
-void MakeAmpMat::make3x3Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, spp::sparse_hash_map<int, double> &T_list, bool add){
+void MakeAmpMat::make3x3Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, spp::sparse_hash_map<unsigned long int, double> &T_list, bool add){
 
     bool cond_hhh1 = (i1 == 0 && i2 == 0 && i3==0);
     bool cond_pph1 = (i1 == 1 && i2 == 1 && i3==0);
@@ -5188,7 +5188,7 @@ Eigen::MatrixXd MakeAmpMat::make3x3Block_I_D10c(int ku, int i1, int i2, int i3, 
 
 //returns a block matrix of dimensions 3x1, currently only made for Vhhpp
 // i1,i2,i3,i4 specify whether there is a hole or particle (by a 0 or 1)  index at index ij, for j=1-4
-Eigen::MatrixXd MakeAmpMat::make3x3Block(int ku, int i1, int i2, int i3, int i4, int i5, int i6, spp::sparse_hash_map<int, double> &T_list){
+Eigen::MatrixXd MakeAmpMat::make3x3Block(int ku, int i1, int i2, int i3, int i4, int i5, int i6, spp::sparse_hash_map<unsigned long, double> &T_list){
 
     bool cond_hhh1 = (i1 == 0 && i2 == 0 && i3==0);
     bool cond_pph1 = (i1 == 1 && i2 == 1 && i3==0);
@@ -5324,7 +5324,7 @@ Eigen::MatrixXd MakeAmpMat::make3x3Block(int ku, int i1, int i2, int i3, int i4,
     return returnMat;
 }
 
-Eigen::MatrixXd MakeAmpMat::make3x1Block(int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<int, double> &T_list){
+Eigen::MatrixXd MakeAmpMat::make3x1Block(int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<unsigned long, double> &T_list){
 
     bool cond_hhp = (i1 == 0 && i2 == 0 && i3==1);
     bool cond_pph = (i1 == 1 && i2 == 1 && i3==0);
@@ -5429,7 +5429,7 @@ Eigen::MatrixXd MakeAmpMat::make3x1Block(int ku, int i1, int i2, int i3, int i4,
 
 //returns a block matrix of dimensions 2x2, currently only made for Vhhpp
 // i1,i2,i3,i4 specify whether there is a hole or particle (by a 0 or 1) index at index ij, for j=1-4
-Eigen::MatrixXd MakeAmpMat::make2x2Block(int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<int, double> &T_list){
+Eigen::MatrixXd MakeAmpMat::make2x2Block(int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<unsigned long, double> &T_list){
 
     //std::cout << "hey" << std::endl;
     bool cond_hh1 = (i1 == 0 && i2 == 0);

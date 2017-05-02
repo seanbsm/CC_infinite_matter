@@ -31,9 +31,9 @@ public:
 
     typedef Eigen::Matrix<unsigned long int, Eigen::Dynamic, Eigen::Dynamic> MatrixXuli;
 
-    spp::sparse_hash_map<int, double>           T2_elements;
-    spp::sparse_hash_map<int, double>           T2_temp;
-    spp::sparse_hash_map<int, double>           T2_elements_new;
+    spp::sparse_hash_map<unsigned long int, double>           T2_elements;
+    spp::sparse_hash_map<unsigned long int, double>           T2_temp;
+    spp::sparse_hash_map<unsigned long int, double>           T2_elements_new;
 
     spp::sparse_hash_map<int, double>           T3_elements;
     spp::sparse_hash_map<int, double>           T3_temp;
@@ -59,10 +59,10 @@ public:
     Eigen::MatrixXd                           T3_buildDirectMat(int channel, std::vector<double>& T_vec);
     std::vector<MatrixXuli>              T3_directMat;     //holds indices for T3_elements_A to make t_ijk^abc
 
-    Eigen::MatrixXd                 make3x1Block(int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<int, double> &T_list);
-    Eigen::MatrixXd                 make2x2Block(int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<int, double>& T_list);
+    Eigen::MatrixXd                 make3x1Block(int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<unsigned long int, double> &T_list);
+    Eigen::MatrixXd                 make2x2Block(int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<unsigned long int, double>& T_list);
 
-    Eigen::MatrixXd                 make3x3Block(int ku, int i1, int i2, int i3, int i4, int i5, int i6, spp::sparse_hash_map<int, double>& T_list);
+    Eigen::MatrixXd                 make3x3Block(int ku, int i1, int i2, int i3, int i4, int i5, int i6, spp::sparse_hash_map<unsigned long int, double>& T_list);
     Eigen::MatrixXd                 make3x3Block_I(int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<double>& T_vec);
     Eigen::MatrixXd                 make3x3Block_I_D10c(int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<double>& T_vec);
 
@@ -169,11 +169,11 @@ public:
 
 
 
-    void                            make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<int, double>& T_list, bool add);
-    void                            make3x1Block_inverse_D10b(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<int, double>& T_list, bool add);
-    void                            make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<int, double>& T_list, bool add);
+    void                            make3x1Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<unsigned long, double> &T_list, bool add);
+    void                            make3x1Block_inverse_D10b(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<unsigned long, double> &T_list, bool add);
+    void                            make2x2Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<unsigned long, double> &T_list, bool add);
 
-    void                            make3x3Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, spp::sparse_hash_map<int, double>& T_list, bool add);
+    void                            make3x3Block_inverse(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, spp::sparse_hash_map<unsigned long int, double>& T_list, bool add);
     void                            make3x3Block_inverse_I(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<double>& T_vec, bool add);
     void                            make3x3Block_inverse_I_T1a(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<double>& T_vec, bool add);
     void                            make3x3Block_inverse_I_T1b(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<double>& T_vec, bool add);

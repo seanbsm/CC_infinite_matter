@@ -367,7 +367,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             counter += 1;
 
             if (m_relaxation){
-                spp::sparse_hash_map<int, double> T2_temp = m_ampClass->T2_elements;
+                spp::sparse_hash_map<unsigned long int, double> T2_temp = m_ampClass->T2_elements;
                 m_ampClass->T2_elements.clear();
                 for(auto const& it : m_ampClass->T2_elements_new) {
                     m_ampClass->T2_elements[it.first] = m_alpha*it.second + (1-m_alpha)*T2_temp[it.first];
