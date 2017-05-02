@@ -39,6 +39,10 @@ public:
     Eigen::VectorXi above_fermi;
     Eigen::MatrixXi m_states;
 
+    double assym_test(int p, int q, int r, int s);
+    int kroneckerDelta(const int &i, const int &j);
+    int spinExchangeTerm(const int &i, const int &j, const int &k, const int &l);
+
     MP(class Master* master, double m, double L3, double L2, double L1);
     class   Master* m_master = nullptr;
     void    makeStateSpace  ();

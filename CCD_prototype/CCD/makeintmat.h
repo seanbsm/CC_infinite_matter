@@ -33,6 +33,7 @@ public:
     int m_Nh3       = 0;
     int m_Nh4       = 0;
     int m_Nh5       = 0;
+    int m_NhNs      = 0;
     int m_NhNs2     = 0;
     unsigned long int m_Nh2Ns     = 0;
     unsigned long int m_Nh3Ns     = 0;
@@ -217,9 +218,9 @@ public:
     void                            makeMatMap_ppph(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
 
     void                            makeMatVec(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
-    int                             Identity_hhhp(int h1, int h2, int h3, int p1);
-    int                             Identity_hhpp(int h1, int h2, int p1, int p2);
-    int                             Identity_ppph(int p1, int p2, int p3, int h1);
+    unsigned long int               Identity_hhhp(int h1, int h2, int h3, int p1);
+    unsigned long int               Identity_hhpp(int h1, int h2, int p1, int p2);
+    unsigned long int               Identity_ppph(int p1, int p2, int p3, int h1);
     unsigned long int               Identity_hhhppp(int h1, int h2, int h3, int p1, int p2, int p3);
     unsigned long int               Identity_hhhhhp(int h1, int h2, int h3, int h4, int h5, int p1); //this is a special function for T3e alone
     spp::sparse_hash_map<int, double>           Vhhhp_elements; //needed for T3

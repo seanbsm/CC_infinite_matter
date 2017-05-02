@@ -20,11 +20,17 @@ void Master::setSize(int Nh, int Nb){
     m_Nb = Nb;
 }
 
-void Master::setThreads(bool argument, int num){
+void Master::setThreads_forMaster(bool argument, int num){
     m_threadsOn = argument;
     if (argument){
         m_threads = num;
     }
+}
+
+void Master::setThreads(){
+    m_intClass->setThreads(m_threads);
+    m_ampClass->setThreads(m_threads);
+    m_diagrams->setThreads(m_threads);
 }
 
 void Master::setSystem(class System* system){
@@ -59,6 +65,7 @@ void Master::setClasses(){
 
     cout << m_Ns << endl;
 
+    setThreads();
     m_intClass->setTriples(m_triplesOn);
     m_diagrams->setAmpClass(m_ampClass);
     m_diagrams->setIntClass(m_intClass);
@@ -87,6 +94,14 @@ void Master::setClasses(){
         }
     }
     m_ampClass->emptyFockMaps();
+}
+
+double Master::CC_Eref(){
+    double Eref = 0;
+    for (int i = 0; i<m_Nh;i++){
+        Eref += m_system->f(i);
+    }
+    return Eref;
 }
 
 double Master::CC_master(double eps, double conFac){
@@ -230,6 +245,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
                 m_diagrams->T1a();
                 //std::cout << "T1a, world: "<< world_rank<< std::endl;
                 m_diagrams->T1b();
+                //std::cout << "WHAT NOW" << std::endl;
                 //std::cout << "T1b, world: "<< world_rank<< std::endl;
             }
             if (m_CC_type == 3 ){
@@ -313,6 +329,11 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
                 }
             }
 
+            /*int zeros = 0;
+            for (auto& T: m_ampClass->T3_elements_A)
+                if (T == 0.){zeros ++;}
+
+            std::cout << zeros << std::endl;*/
 
             MPI_Bcast(m_ampClass->T3_elements_A.data(), m_ampClass->T3_elements_A.size(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
 

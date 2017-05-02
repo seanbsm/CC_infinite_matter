@@ -1225,7 +1225,7 @@ void Diagrams::makeT5bIndexMat(){
         for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_pppmm_ppphh.size(); i3++){
                 if ( m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_pppmm_ppphh[i3] && m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_pph[i2]){
-                    Eigen::MatrixXi mat = m_ampClass->T5b_makemat_2_I( i3,i1 );
+                    MatrixXuli mat = m_ampClass->T5b_makemat_2_I( i3,i1 );
                     m_ampClass->T3_T5b_indices.push_back( mat );
                 }
             }
@@ -1238,7 +1238,7 @@ void Diagrams::makeT5cIndexMat(){
         for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_pppmm_hhhpp.size(); i3++){
                 if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_pppmm_hhhpp[i3] && m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i2]){
-                    Eigen::MatrixXi mat = m_ampClass->T5c_makemat_2_I( i3,i1 );
+                    MatrixXuli mat = m_ampClass->T5c_makemat_2_I( i3,i1 );
                     m_ampClass->T3_T5c_indices.push_back( mat );
                 }
             }

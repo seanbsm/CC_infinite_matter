@@ -26,9 +26,17 @@ private:
 
     //bool contractor(int i, int j){ return i==j; } //contracts repeated elements to a single edit
 public:
-    int m_Nh = 0;
-    int m_Ns = 0;
-    int m_Np = 0;
+    int m_Nh        = 0;
+    int m_Ns        = 0;
+    int m_Np        = 0;
+    int m_Nh2       = 0;
+    int m_Nh3       = 0;
+    int m_Nh4       = 0;
+    int m_Nh5       = 0;
+    int m_NhNs2     = 0;
+    unsigned long int m_Nh2Ns     = 0;
+    unsigned long int m_Nh3Ns     = 0;
+    unsigned long int m_Nh3Ns2    = 0;
 
     /* Due to the momentum-conservation relation (kp+kq = kr+ks for <pq||rs>),
      * and due to alignment of matrices, we need several blockArrays, and corresponding
@@ -59,6 +67,7 @@ public:
     Eigen::MatrixXi blockArrays_ppp_ppp;
     Eigen::MatrixXi blockArrays_pppm_hhhp;
     Eigen::MatrixXi blockArrays_ppmm_hhpp;
+    Eigen::MatrixXi blockArrays_ppmm_pphh;
     Eigen::MatrixXi blockArrays_pppm_ppph;
     Eigen::MatrixXi blockArrays_pppmm_hhhpp;
     Eigen::MatrixXi blockArrays_pppmm_ppphh;
@@ -98,6 +107,7 @@ public:
     std::vector<int> sortVec_ppp_ppp;
     std::vector<int> sortVec_pppm_hhhp;
     std::vector<int> sortVec_ppmm_hhpp;
+    std::vector<int> sortVec_ppmm_pphh;
     std::vector<int> sortVec_pppm_ppph;
     std::vector<int> sortVec_pppmm_hhhpp;
     std::vector<int> sortVec_pppmm_ppphh;
@@ -121,6 +131,7 @@ public:
     Eigen::MatrixXi indexHolder_ppp_ppp;
     Eigen::MatrixXi indexHolder_pppm_hhhp;
     Eigen::MatrixXi indexHolder_ppmm_hhpp;
+    Eigen::MatrixXi indexHolder_ppmm_pphh;
     Eigen::MatrixXi indexHolder_pppm_ppph;
     Eigen::MatrixXi indexHolder_pppmm_hhhpp;
     Eigen::MatrixXi indexHolder_pppmm_ppphh;
@@ -141,6 +152,9 @@ public:
     //Eigen::MatrixXi indexHolder_hp;
     //Eigen::MatrixXi indexHolder_ph;
     //Eigen::MatrixXi boundsHolder_pppp_pp;
+
+    void setThreads(int numthreads);
+    int m_numThreads;
 
     MakeIntMat();
     System* m_system = nullptr;
@@ -206,8 +220,8 @@ public:
     int                             Identity_hhhp(int h1, int h2, int h3, int p1);
     int                             Identity_hhpp(int h1, int h2, int p1, int p2);
     int                             Identity_ppph(int p1, int p2, int p3, int h1);
-    unsigned long int          Identity_hhhppp(int h1, int h2, int h3, int p1, int p2, int p3);
-    int                             Identity_hhhhhp(int h1, int h2, int h3, int h4, int h5, int p1); //this is a special function for T3e alone
+    unsigned long int               Identity_hhhppp(int h1, int h2, int h3, int p1, int p2, int p3);
+    unsigned long int               Identity_hhhhhp(int h1, int h2, int h3, int h4, int h5, int p1); //this is a special function for T3e alone
     spp::sparse_hash_map<int, double>           Vhhhp_elements; //needed for T3
     spp::sparse_hash_map<int, double>           Vhhpp_elements;
     spp::sparse_hash_map<int, double>           Vppph_elements; //needed for T3

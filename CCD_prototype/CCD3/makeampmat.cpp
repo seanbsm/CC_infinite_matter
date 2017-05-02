@@ -1,11 +1,20 @@
 #include "makeampmat.h"
 #include <iostream>
 #include <stdlib.h>
+#include <chrono>
+#include <time.h>
+#include <unistd.h>
 
 #include <omp.h>
 
+typedef std::chrono::high_resolution_clock Clock;   //needed for timing
+
 MakeAmpMat::MakeAmpMat()
 {
+}
+
+void MakeAmpMat::setThreads(int numthreads){
+    m_numThreads = numthreads;
 }
 
 void MakeAmpMat::setIntClass(class MakeIntMat* intClass){
@@ -758,7 +767,7 @@ void MakeAmpMat::T3_makeDirectMat(){
                 id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
                 //id = ii + jj*N1 + kk*N2 + aa*N3 + bb*N4 + cc*N5;
 
-                index = T3_elements_I[id];
+                index = T3_elements_I.find(id)->second;
                 //if (index == 0){std::cout << index << std::endl;}
                 insertMat(hhh-range_lower1, ppp-range_lower2) = index;
             }
@@ -882,11 +891,11 @@ void MakeAmpMat::T3_makeMap(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i
                     id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
 
                     //remember to remove first loops in make T3 in diagrams if you want to use this
-                    //T3_elements_I[id] = index;
+                    //T3_elements_I.find(id)->second = index;
                     //T3_elements_A.push_back(val);
 
                     if (T3_elements_I.find(id) != T3_elements_I.end() ){
-                        index = T3_elements_I[id];
+                        index = T3_elements_I.find(id)->second;
                         T3_elements_A[index] += val;
                     }
                 }
@@ -907,7 +916,7 @@ void MakeAmpMat::T3_makeMap(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i
                     id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
 
                     if (T3_elements_I.find(id) != T3_elements_I.end() ){
-                        index = T3_elements_I[id];
+                        index = T3_elements_I.find(id)->second;
                         T3_elements_A[index] += val;
                     }
                 }
@@ -1033,7 +1042,7 @@ void MakeAmpMat::make3x3Block_inverse_I(Eigen::MatrixXd inMat, int ku, int i1, i
                         cc = (blockArrays1_pointer)(3,i);
                         id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
 
-                        index = T3_elements_I[id];
+                        index = T3_elements_I.find(id)->second;
 
                         //std::cout << T3_temp[id] << std::endl;
 
@@ -1057,7 +1066,7 @@ void MakeAmpMat::make3x3Block_inverse_I(Eigen::MatrixXd inMat, int ku, int i1, i
                         cc = (blockArrays2_pointer)(3,j);
                         id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
 
-                        index = T3_elements_I[id];
+                        index = T3_elements_I.find(id)->second;
 
                         //std::cout << id << std::endl;
                         //std::cout << index << std::endl;
@@ -1074,7 +1083,7 @@ void MakeAmpMat::make3x3Block_inverse_I(Eigen::MatrixXd inMat, int ku, int i1, i
                     val = inMat(i-range_lower1,j-range_lower2);
                     id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(3,j), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j),  (blockArrays1_pointer)(3,i));
 
-                    index = T3_elements_I[id];
+                    index = T3_elements_I.find(id)->second;
                     T_vec[index] = val;
                 }
             }
@@ -1085,7 +1094,7 @@ void MakeAmpMat::make3x3Block_inverse_I(Eigen::MatrixXd inMat, int ku, int i1, i
                     val = inMat(i-range_lower1,j-range_lower2);
                     id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j), (blockArrays2_pointer)(3,j));
 
-                    index = T3_elements_I[id];
+                    index = T3_elements_I.find(id)->second;
                     T_vec[index] = val;
                     //m_Counter ++;
                 }
@@ -1212,7 +1221,7 @@ void MakeAmpMat::make3x3Block_inverse_I_T1a(Eigen::MatrixXd inMat, int ku, int i
                         kk = (blockArrays2_pointer)(3,j);
                         id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
 
-                        index = T3_elements_I[id];
+                        index = T3_elements_I.find(id)->second;
 
                         //std::cout << T3_temp[id] << std::endl;
 
@@ -1236,7 +1245,7 @@ void MakeAmpMat::make3x3Block_inverse_I_T1a(Eigen::MatrixXd inMat, int ku, int i
                         cc = (blockArrays2_pointer)(3,j);
                         id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
 
-                        index = T3_elements_I[id];
+                        index = T3_elements_I.find(id)->second;
                         T_vec[index] += val;
                     //}
                 }
@@ -1250,7 +1259,7 @@ void MakeAmpMat::make3x3Block_inverse_I_T1a(Eigen::MatrixXd inMat, int ku, int i
                     val = inMat(i-range_lower1,j-range_lower2);
                     id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(3,j), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j),  (blockArrays1_pointer)(3,i));
 
-                    index = T3_elements_I[id];
+                    index = T3_elements_I.find(id)->second;
                     T_vec[index] = val;
                 }
             }
@@ -1261,7 +1270,7 @@ void MakeAmpMat::make3x3Block_inverse_I_T1a(Eigen::MatrixXd inMat, int ku, int i
                     val = inMat(i-range_lower1,j-range_lower2);
                     id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j), (blockArrays2_pointer)(3,j));
 
-                    index = T3_elements_I[id];
+                    index = T3_elements_I.find(id)->second;
                     T_vec[index] = val;
                     //m_Counter ++;
                 }
@@ -1388,7 +1397,7 @@ void MakeAmpMat::make3x3Block_inverse_I_T1b(Eigen::MatrixXd inMat, int ku, int i
                         ii = (blockArrays2_pointer)(3,j);
                         id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
 
-                        index = T3_elements_I[id];
+                        index = T3_elements_I.find(id)->second;
 
                         //std::cout << T3_temp[id] << std::endl;
 
@@ -1412,7 +1421,7 @@ void MakeAmpMat::make3x3Block_inverse_I_T1b(Eigen::MatrixXd inMat, int ku, int i
                         cc = (blockArrays2_pointer)(3,j);
                         id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
 
-                        index = T3_elements_I[id];
+                        index = T3_elements_I.find(id)->second;
                         T_vec[index] += val;
                     //}
                 }
@@ -1426,7 +1435,7 @@ void MakeAmpMat::make3x3Block_inverse_I_T1b(Eigen::MatrixXd inMat, int ku, int i
                     val = inMat(i-range_lower1,j-range_lower2);
                     id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(3,j), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j),  (blockArrays1_pointer)(3,i));
 
-                    index = T3_elements_I[id];
+                    index = T3_elements_I.find(id)->second;
                     T_vec[index] = val;
                 }
             }
@@ -1437,7 +1446,7 @@ void MakeAmpMat::make3x3Block_inverse_I_T1b(Eigen::MatrixXd inMat, int ku, int i
                     val = inMat(i-range_lower1,j-range_lower2);
                     id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j), (blockArrays2_pointer)(3,j));
 
-                    index = T3_elements_I[id];
+                    index = T3_elements_I.find(id)->second;
                     T_vec[index] = val;
                     //m_Counter ++;
                 }
@@ -1495,7 +1504,7 @@ void MakeAmpMat::addElementsT2(bool Pij, bool Pab){
 
 void MakeAmpMat::addElementsT3_T1a(){
     int ku;
-
+#pragma omp parallel for num_threads(m_numThreads) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -1607,7 +1616,7 @@ void MakeAmpMat::addElementsT3_T1a(){
                 id = ii + jj*N1 + kk*N2 + bb*N3 + aa*N4 + cc*N5; // Pab
                 //val -= T3_temp[id];
                 if (T3_elements_I.find(id) != T3_elements_I.end() ){
-                    index2 = T3_elements_I[id];
+                    index2 = T3_elements_I.find(id)->second;
                     val -= T3_elements_A_temp[index2];
                 }
 
@@ -1615,7 +1624,7 @@ void MakeAmpMat::addElementsT3_T1a(){
                 id = ii + jj*N1 + kk*N2 + cc*N3 + bb*N4 + aa*N5; // Pac
                 //val -= T3_temp[id];
                 if (T3_elements_I.find(id) != T3_elements_I.end() ){
-                    index2 = T3_elements_I[id];
+                    index2 = T3_elements_I.find(id)->second;
                     val -= T3_elements_A_temp[index2];
                 }
 
@@ -1623,7 +1632,7 @@ void MakeAmpMat::addElementsT3_T1a(){
                 id = kk + jj*N1 + ii*N2 + aa*N3 + bb*N4 + cc*N5; // Pki
                 //val -= T3_temp[id];
                 if (T3_elements_I.find(id) != T3_elements_I.end() ){
-                    index2 = T3_elements_I[id];
+                    index2 = T3_elements_I.find(id)->second;
                     val -= T3_elements_A_temp[index2];
                 }
 
@@ -1631,28 +1640,28 @@ void MakeAmpMat::addElementsT3_T1a(){
                 id = ii + kk*N1 + jj*N2 + aa*N3 + bb*N4 + cc*N5; // Pkj
                 //val -= T3_temp[id];
                 if (T3_elements_I.find(id) != T3_elements_I.end() ){
-                    index2 = T3_elements_I[id];
+                    index2 = T3_elements_I.find(id)->second;
                     val -= T3_elements_A_temp[index2];
                 }
 
                 id = kk + jj*N1 + ii*N2 + bb*N3 + aa*N4 + cc*N5; // Pab Pki
                 //val += T3_temp[id];
                 if (T3_elements_I.find(id) != T3_elements_I.end() ){
-                    index2 = T3_elements_I[id];
+                    index2 = T3_elements_I.find(id)->second;
                     val += T3_elements_A_temp[index2];
                 }
 
                 id = ii + kk*N1 + jj*N2 + bb*N3 + aa*N4 + cc*N5; // Pab Pkj
                 //val += T3_temp[id];
                 if (T3_elements_I.find(id) != T3_elements_I.end() ){
-                    index2 = T3_elements_I[id];
+                    index2 = T3_elements_I.find(id)->second;
                     val += T3_elements_A_temp[index2];
                 }
 
                 id = kk + jj*N1 + ii*N2 + cc*N3 + bb*N4 + aa*N5; // Pac Pki
                 //val += T3_temp[id];
                 if (T3_elements_I.find(id) != T3_elements_I.end() ){
-                    index2 = T3_elements_I[id];
+                    index2 = T3_elements_I.find(id)->second;
                     //std::cout << "sup" << std::endl;
                     val += T3_elements_A_temp[index2];
                 }
@@ -1660,14 +1669,14 @@ void MakeAmpMat::addElementsT3_T1a(){
                 id = ii + kk*N1 + jj*N2 + cc*N3 + bb*N4 + aa*N5; // Pac Pkj
                 //val += T3_temp[id];
                 if (T3_elements_I.find(id) != T3_elements_I.end() ){
-                    index2 = T3_elements_I[id];
+                    index2 = T3_elements_I.find(id)->second;
                     val += T3_elements_A_temp[index2];
                 }
 
                 id = ii + jj*N1 + kk*N2 + aa*N3 + bb*N4 + cc*N5; // direct
                 //val += T3_temp[id];
                 if (T3_elements_I.find(id) != T3_elements_I.end() ){
-                    index2 = T3_elements_I[id];
+                    index2 = T3_elements_I.find(id)->second;
                     val += T3_elements_A_temp[index2];
                 }
                 //std::cout << T3_elements_I.size() << std::endl;
@@ -1688,7 +1697,7 @@ void MakeAmpMat::addElementsT3_T1a(){
             //std::cout << th << " " << index << std::endl;
             val = mat_VAL(thread,index);
             id  = mat_ID(thread,index);
-            index2 = T3_elements_I[id];
+            index2 = T3_elements_I.find(id)->second;
             //std::cout << index2 << std::endl;
             //val -= T3_elements_A_temp[index2];
             T3_elements_A_new[index2] += val;
@@ -1699,7 +1708,7 @@ void MakeAmpMat::addElementsT3_T1a(){
 void MakeAmpMat::addElementsT3_T1b(){
 
     int ku;
-
+#pragma omp parallel for num_threads(m_numThreads) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -1811,7 +1820,7 @@ void MakeAmpMat::addElementsT3_T1b(){
                 id = ii + jj*N1 + kk*N2 + cc*N3 + bb*N4 + aa*N5; // Pca
                 //val -= T3_temp[id];
                 if (T3_elements_I.find(id) != T3_elements_I.end() ){
-                    index2 = T3_elements_I[id];
+                    index2 = T3_elements_I.find(id)->second;
                     val -= T3_elements_A_temp[index2];
                 }
 
@@ -1819,7 +1828,7 @@ void MakeAmpMat::addElementsT3_T1b(){
                 id = ii + jj*N1 + kk*N2 + aa*N3 + cc*N4 + bb*N5; // Pcb
                 //val -= T3_temp[id];
                 if (T3_elements_I.find(id) != T3_elements_I.end() ){
-                    index2 = T3_elements_I[id];
+                    index2 = T3_elements_I.find(id)->second;
                     val -= T3_elements_A_temp[index2];
                 }
 
@@ -1827,7 +1836,7 @@ void MakeAmpMat::addElementsT3_T1b(){
                 id = jj + ii*N1 + kk*N2 + aa*N3 + bb*N4 + cc*N5; // Pij
                 //val -= T3_temp[id];
                 if (T3_elements_I.find(id) != T3_elements_I.end() ){
-                    index2 = T3_elements_I[id];
+                    index2 = T3_elements_I.find(id)->second;
                     val -= T3_elements_A_temp[index2];
                 }
 
@@ -1835,42 +1844,42 @@ void MakeAmpMat::addElementsT3_T1b(){
                 id = kk + jj*N1 + ii*N2 + aa*N3 + bb*N4 + cc*N5; // Pik
                 //val -= T3_temp[id];
                 if (T3_elements_I.find(id) != T3_elements_I.end() ){
-                    index2 = T3_elements_I[id];
+                    index2 = T3_elements_I.find(id)->second;
                     val -= T3_elements_A_temp[index2];
                 }
 
                 id = jj + ii*N1 + kk*N2 + cc*N3 + bb*N4 + aa*N5; // Pca Pij
                 //val += T3_temp[id];
                 if (T3_elements_I.find(id) != T3_elements_I.end() ){
-                    index2 = T3_elements_I[id];
+                    index2 = T3_elements_I.find(id)->second;
                     val += T3_elements_A_temp[index2];
                 }
 
                 id = kk + jj*N1 + ii*N2 + cc*N3 + bb*N4 + aa*N5; // Pca Pik
                 //val += T3_temp[id];
                 if (T3_elements_I.find(id) != T3_elements_I.end() ){
-                    index2 = T3_elements_I[id];
+                    index2 = T3_elements_I.find(id)->second;
                     val += T3_elements_A_temp[index2];
                 }
 
                 id = jj + ii*N1 + kk*N2 + aa*N3 + cc*N4 + bb*N5; // Pcb Pij
                 //val += T3_temp[id];
                 if (T3_elements_I.find(id) != T3_elements_I.end() ){
-                    index2 = T3_elements_I[id];
+                    index2 = T3_elements_I.find(id)->second;
                     val += T3_elements_A_temp[index2];
                 }
 
                 id = kk + jj*N1 + ii*N2 + aa*N3 + cc*N4 + bb*N5; // Pcb Pik
                 //val += T3_temp[id];
                 if (T3_elements_I.find(id) != T3_elements_I.end() ){
-                    index2 = T3_elements_I[id];
+                    index2 = T3_elements_I.find(id)->second;
                     val += T3_elements_A_temp[index2];
                 }
 
                 id = ii + jj*N1 + kk*N2 + aa*N3 + bb*N4 + cc*N5; // direct
                 //val += T3_temp[id];
                 if (T3_elements_I.find(id) != T3_elements_I.end() ){
-                    index2 = T3_elements_I[id];
+                    index2 = T3_elements_I.find(id)->second;
                     val += T3_elements_A_temp[index2];
                 }
 
@@ -1889,7 +1898,7 @@ void MakeAmpMat::addElementsT3_T1b(){
             //std::cout << th << " " << index << std::endl;
             val = mat_VAL(thread,index);
             id  = mat_ID(thread,index);
-            index2 = T3_elements_I[id];
+            index2 = T3_elements_I.find(id)->second;
             //std::cout << index2 << std::endl;
             //val -= T3_elements_A_temp[index2];
             T3_elements_A_new[index2] += val;
@@ -1900,7 +1909,7 @@ void MakeAmpMat::addElementsT3_T1b(){
 void MakeAmpMat::addElementsT3_T2c(){
 
     int ku;
-
+#pragma omp parallel for num_threads(m_numThreads) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -1935,14 +1944,20 @@ void MakeAmpMat::addElementsT3_T2c(){
 
         tempAMat1 = tempAMat - Pac - Pbc;
 
-        make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat1(row, col);
+            }
+        }
+
+        //make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
 void MakeAmpMat::addElementsT3_T2d(){
 
     int ku;
-
+#pragma omp parallel for num_threads(m_numThreads) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -1977,7 +1992,13 @@ void MakeAmpMat::addElementsT3_T2d(){
 
         tempAMat1 = tempAMat - Pik - Pjk;
 
-        make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat1(row, col);
+            }
+        }
+
+        //make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
@@ -1985,6 +2006,7 @@ void MakeAmpMat::addElementsT3_T2e(){
 
     int ku;
 
+#pragma omp parallel for num_threads(m_numThreads) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -2035,16 +2057,20 @@ void MakeAmpMat::addElementsT3_T2e(){
 
         tempAMat2 = tempAMat1 - Pij - Pik;
 
-        //std::cout << tempAMat2 << std::endl;
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat2(row, col);
+            }
+        }
 
-        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        //make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
 void MakeAmpMat::addElementsT3_T3b(){
 
     int ku;
-
+#pragma omp parallel for num_threads(m_numThreads) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -2101,16 +2127,20 @@ void MakeAmpMat::addElementsT3_T3b(){
 
         tempAMat2 = tempAMat1 - Pik - Pij;
 
-        //std::cout << tempAMat2 << std::endl;
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat2(row, col);
+            }
+        }
 
-        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        //make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
 void MakeAmpMat::addElementsT3_T3c(){
 
     int ku;
-
+#pragma omp parallel for num_threads(m_numThreads) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -2167,16 +2197,20 @@ void MakeAmpMat::addElementsT3_T3c(){
 
         tempAMat2 = tempAMat1 - Pik - Pij - Pjk + Pijik + Pijjk;
 
-        //std::cout << tempAMat2 << std::endl;
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat2(row, col);
+            }
+        }
 
-        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        //make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
 void MakeAmpMat::addElementsT3_T3d(){
 
     int ku;
-
+#pragma omp parallel for num_threads(m_numThreads) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -2227,16 +2261,20 @@ void MakeAmpMat::addElementsT3_T3d(){
 
         tempAMat2 = tempAMat1 - Pij - Pik;
 
-        //std::cout << tempAMat2 << std::endl;
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat2(row, col);
+            }
+        }
 
-        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        //make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
 void MakeAmpMat::addElementsT3_T3e(){
 
     int ku;
-
+#pragma omp parallel for num_threads(m_numThreads) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -2287,16 +2325,20 @@ void MakeAmpMat::addElementsT3_T3e(){
 
         tempAMat2 = tempAMat1 - Pik - Pjk;
 
-        //std::cout << tempAMat2 << std::endl;
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat2(row, col);
+            }
+        }
 
-        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        //make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
 void MakeAmpMat::addElementsT3_T5a(){
 
     int ku;
-
+#pragma omp parallel for num_threads(m_numThreads) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -2347,16 +2389,20 @@ void MakeAmpMat::addElementsT3_T5a(){
 
         tempAMat2 = tempAMat1 - Pij - Pik;
 
-        //std::cout << tempAMat2 << std::endl;
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat2(row, col);
+            }
+        }
 
-        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        //make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
 void MakeAmpMat::addElementsT3_T5b(){
 
     int ku;
-
+#pragma omp parallel for num_threads(m_numThreads) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -2391,14 +2437,20 @@ void MakeAmpMat::addElementsT3_T5b(){
 
         tempAMat1 = tempAMat - Pij - Pik;
 
-        make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat1(row, col);
+            }
+        }
+
+        //make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
 void MakeAmpMat::addElementsT3_T5c(){
 
     int ku;
-
+#pragma omp parallel for num_threads(m_numThreads) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -2433,14 +2485,20 @@ void MakeAmpMat::addElementsT3_T5c(){
 
         tempAMat1 = tempAMat - Pab - Pac;
 
-        make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat1(row, col);
+            }
+        }
+
+        //make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
 void MakeAmpMat::addElementsT3_T5d(){
 
     int ku;
-
+#pragma omp parallel for num_threads(m_numThreads) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -2491,14 +2549,20 @@ void MakeAmpMat::addElementsT3_T5d(){
 
         tempAMat2 = tempAMat1 - Pik - Pjk;
 
-        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat2(row, col);
+            }
+        }
+
+        //make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
 void MakeAmpMat::addElementsT3_T5e(){
 
     int ku;
-
+#pragma omp parallel for num_threads(m_numThreads) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -2549,14 +2613,20 @@ void MakeAmpMat::addElementsT3_T5e(){
 
         tempAMat2 = tempAMat1 - Pij - Pik;
 
-        make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat2(row, col);
+            }
+        }
+
+        //make3x3Block_inverse_I(tempAMat2, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
 void MakeAmpMat::addElementsT3_T5f(){
 
     int ku;
-
+#pragma omp parallel for num_threads(m_numThreads) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -2591,14 +2661,20 @@ void MakeAmpMat::addElementsT3_T5f(){
 
         tempAMat1 = tempAMat - Pik - Pjk;
 
-        make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat1(row, col);
+            }
+        }
+
+        //make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
 void MakeAmpMat::addElementsT3_T5g(){
 
     int ku;
-
+#pragma omp parallel for num_threads(m_numThreads) private(ku)
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         ku = m_intClass->Vhhhppp_i[channel];
 
@@ -2633,7 +2709,13 @@ void MakeAmpMat::addElementsT3_T5g(){
 
         tempAMat1 = tempAMat - Pac - Pbc;
 
-        make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
+        for (int col=0; col<cols; col++){
+            for (int row=0; row<rows; row++){
+                 T3_elements_A_new[ tempIMat(row, col) ] += tempAMat1(row, col);
+            }
+        }
+
+        //make3x3Block_inverse_I(tempAMat1, ku, 0,0,0,1,1,1, T3_elements_A_new, true);
     }
 }
 
@@ -2750,7 +2832,7 @@ Eigen::MatrixXd MakeAmpMat::make3x3Block_I(int ku, int i1, int i2, int i3, int i
         for (int i = range_lower1; i<range_upper1; i++){
             for (int j = range_lower2; j<range_upper2; j++){
                 id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(3,j), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j), (blockArrays1_pointer)(3,i));
-                index = T3_elements_I[id];
+                index = T3_elements_I.find(id)->second;
                 returnMat(i-range_lower1, j-range_lower2) = T_vec[index];
             }
         }
@@ -2759,7 +2841,7 @@ Eigen::MatrixXd MakeAmpMat::make3x3Block_I(int ku, int i1, int i2, int i3, int i
         for (int i = range_lower1; i<range_upper1; i++){
             for (int j = range_lower2; j<range_upper2; j++){
                 id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j), (blockArrays2_pointer)(3,j));
-                index = T3_elements_I[id];
+                index = T3_elements_I.find(id)->second;
                 returnMat(i-range_lower1, j-range_lower2) = T_vec[index];
             }
         }
@@ -3215,10 +3297,7 @@ Eigen::MatrixXd MakeAmpMat::D10b_makemat(int channel1, int channel2){    //makes
     int i; int j; int k;
     int c; int d; int b;
 
-    int thread;
-    #pragma omp parallel for num_threads(4) private(i,j,k,c,d,b,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
     for (int i2 = range_lower2; i2<range_upper2; i2++){
-        thread = omp_get_thread_num();
         c = m_intClass->blockArrays_ppm_pph(1,i2);
         d = m_intClass->blockArrays_ppm_pph(2,i2);
         k = m_intClass->blockArrays_ppm_pph(3,i2);
@@ -3236,7 +3315,7 @@ Eigen::MatrixXd MakeAmpMat::D10b_makemat(int channel1, int channel2){    //makes
                                              m_intClass->blockArrays_ppm_pph(2,i2),
                                              m_intClass->blockArrays_ppm_hhp(3,i1));*/
 
-            index = T3_elements_IV[thread][id];
+            index = T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
             returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
         }
     }
@@ -3257,10 +3336,10 @@ void MakeAmpMat::D10b_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2
     int a; int b;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
+        i = m_intClass->blockArrays_ppm_hhp(1,i1);
+        j = m_intClass->blockArrays_ppm_hhp(2,i1);
+        b = m_intClass->blockArrays_ppm_hhp(3,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-            i = m_intClass->blockArrays_ppm_hhp(1,i1);
-            j = m_intClass->blockArrays_ppm_hhp(2,i1);
-            b = m_intClass->blockArrays_ppm_hhp(3,i1);
             a = m_intClass->blockArrays_p_p(1,i2);
 
             id = m_intClass->Identity_hhpp(i,j,a,b);
@@ -3284,10 +3363,7 @@ Eigen::MatrixXd MakeAmpMat::D10c_makemat(int channel1, int channel2){    //makes
     int i; int k; int l;
     int c; int a; int b;
 
-    int thread;
-#pragma omp parallel for num_threads(4) private(i,k,l,c,a,b,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
     for (int i2 = range_lower2; i2<range_upper2; i2++){
-        thread = omp_get_thread_num();
         a = m_intClass->blockArrays_ppm_pph(1,i2);
         b = m_intClass->blockArrays_ppm_pph(2,i2);
         i = m_intClass->blockArrays_ppm_pph(3,i2);
@@ -3298,7 +3374,15 @@ Eigen::MatrixXd MakeAmpMat::D10c_makemat(int channel1, int channel2){    //makes
             c = m_intClass->blockArrays_ppm_hhp(3,i1);
 
             id = m_intClass->Identity_hhhppp(i,k,l,c,a,b);
-            index = T3_elements_IV[thread][id];
+
+            /*id = m_intClass->Identity_hhhppp(m_intClass->blockArrays_ppm_pph(3,i2),
+                                             m_intClass->blockArrays_ppm_hhp(1,i1),
+                                             m_intClass->blockArrays_ppm_hhp(2,i1),
+                                             m_intClass->blockArrays_ppm_hhp(3,i1),
+                                             m_intClass->blockArrays_ppm_pph(1,i2),
+                                             m_intClass->blockArrays_ppm_pph(2,i2));*/
+
+            index = T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
             returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
         }
     }
@@ -3348,7 +3432,6 @@ Eigen::MatrixXd MakeAmpMat::T1a_makemat(int channel1, int channel2){    //makes 
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-            //std::cout << "sup" << std::endl;
 
             i = m_intClass->blockArrays_ppm_hhp(1,i1);
             j = m_intClass->blockArrays_ppm_hhp(2,i1);
@@ -3380,7 +3463,6 @@ Eigen::MatrixXd MakeAmpMat::T1b_makemat(int channel1, int channel2){    //makes 
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-            //std::cout << "sup" << std::endl;
 
             a = m_intClass->blockArrays_ppm_pph(1,i1);
             b = m_intClass->blockArrays_ppm_pph(2,i1);
@@ -3396,7 +3478,7 @@ Eigen::MatrixXd MakeAmpMat::T1b_makemat(int channel1, int channel2){    //makes 
 }
 
 Eigen::MatrixXd MakeAmpMat::T2c_makemat(int channel1, int channel2){    //makes a 4x2 matrix
-
+    //std::cout << "sup" << std::endl;
     int range_lower1 = m_intClass->indexHolder_pppm_hhhp(0, channel1);
     int range_upper1 = m_intClass->indexHolder_pppm_hhhp(1, channel1);
     int range_lower2 = m_intClass->indexHolder_pp_pp(0, channel2);
@@ -3409,10 +3491,7 @@ Eigen::MatrixXd MakeAmpMat::T2c_makemat(int channel1, int channel2){    //makes 
     int i; int j; int k;
     int d; int e; int c;
 
-    int thread;
-#pragma omp parallel for num_threads(4) private(i,j,k,d,e,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
     for (int i1 = range_lower1; i1<range_upper1; i1++){
-        thread = omp_get_thread_num();
         i = m_intClass->blockArrays_pppm_hhhp(1,i1);
         j = m_intClass->blockArrays_pppm_hhhp(2,i1);
         k = m_intClass->blockArrays_pppm_hhhp(3,i1);
@@ -3424,7 +3503,7 @@ Eigen::MatrixXd MakeAmpMat::T2c_makemat(int channel1, int channel2){    //makes 
 
             id = m_intClass->Identity_hhhppp(i,j,k,d,e,c);
 
-            index = T3_elements_IV[thread][id];
+            index = T3_elements_I.find(id)->second;
             returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
         }
     }
@@ -3447,10 +3526,7 @@ Eigen::MatrixXd MakeAmpMat::T2d_makemat(int channel1, int channel2){    //makes 
     int l; int m; int k;
     int a; int b; int c;
 
-    int thread;
-    #pragma omp parallel for num_threads(4) private(l,m,k,a,b,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
     for (int i1 = range_lower1; i1<range_upper1; i1++){
-        thread = omp_get_thread_num();
         a = m_intClass->blockArrays_pppm_ppph(1,i1);
         b = m_intClass->blockArrays_pppm_ppph(2,i1);
         c = m_intClass->blockArrays_pppm_ppph(3,i1);
@@ -3461,7 +3537,7 @@ Eigen::MatrixXd MakeAmpMat::T2d_makemat(int channel1, int channel2){    //makes 
             m = m_intClass->blockArrays_pp_hh(2,i2);
 
             id = m_intClass->Identity_hhhppp(l,m,k,a,b,c);
-            index = T3_elements_IV[thread][id];
+            index = T3_elements_I.find(id)->second;
             returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
         }
     }
@@ -3471,8 +3547,8 @@ Eigen::MatrixXd MakeAmpMat::T2d_makemat(int channel1, int channel2){    //makes 
 
 Eigen::MatrixXd MakeAmpMat::T2e_makemat(int channel1, int channel2){    //makes a 4x2 matrix
 
-    int range_lower1 = m_intClass->indexHolder_ppmm_hhpp(0, channel1);
-    int range_upper1 = m_intClass->indexHolder_ppmm_hhpp(1, channel1);
+    int range_lower1 = m_intClass->indexHolder_ppmm_pphh(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppmm_pphh(1, channel1);
     int range_lower2 = m_intClass->indexHolder_pm_hp(0, channel2);
     int range_upper2 = m_intClass->indexHolder_pm_hp(1, channel2);
 
@@ -3484,23 +3560,24 @@ Eigen::MatrixXd MakeAmpMat::T2e_makemat(int channel1, int channel2){    //makes 
     int l; int j; int k;
     int d; int b; int c;
 
-    int thread;
-    #pragma omp parallel for num_threads(4) private(l,j,k,d,b,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
     for (int i1 = range_lower1; i1<range_upper1; i1++){
-        thread = omp_get_thread_num();
-        j = m_intClass->blockArrays_ppmm_hhpp(1,i1);
-        k = m_intClass->blockArrays_ppmm_hhpp(2,i1);
-        b = m_intClass->blockArrays_ppmm_hhpp(3,i1);
-        c = m_intClass->blockArrays_ppmm_hhpp(4,i1);
+        b = m_intClass->blockArrays_ppmm_pphh(1,i1);
+        c = m_intClass->blockArrays_ppmm_pphh(2,i1);
+        j = m_intClass->blockArrays_ppmm_pphh(3,i1);
+        k = m_intClass->blockArrays_ppmm_pphh(4,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-            //std::cout << "sup" << std::endl;
 
             l = m_intClass->blockArrays_pm_hp(1,i2);
             d = m_intClass->blockArrays_pm_hp(2,i2);
 
+            //std::cout << l << " " << j << " " << k << " " << d << " " << b << " " << c << std::endl;
+;
             id = m_intClass->Identity_hhhppp(l,j,k,d,b,c);
-            index = T3_elements_IV[thread][id];
+            index = T3_elements_I.find(id)->second;//T3_elements_I_um.find(id)->second;
+            //std::cout << id << " " << T3_elements_I.find(id)->first <<std::endl;
+            //std::cout << index << std::endl;
             returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
+            //std::cout << "ARGH" << std::endl;
         }
     }
 
@@ -3548,7 +3625,7 @@ Eigen::MatrixXd MakeAmpMat::T3b_makemat_2(int channel1, int channel2){    //make
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+    unsigned long int id;
     int e; int b;
     int a; int i;
 
@@ -3559,7 +3636,7 @@ Eigen::MatrixXd MakeAmpMat::T3b_makemat_2(int channel1, int channel2){    //make
         for (int i2 = range_lower2; i2<range_upper2; i2++){
             e = m_intClass->blockArrays_p_p(1,i2);
 
-            id = m_intClass->Identity_ppph(e,b,a,i);
+            id = (unsigned long int)m_intClass->Identity_ppph(e,b,a,i);
             returnMat(i1-range_lower1, i2-range_lower2) = T3D_remap[id];
         }
     }
@@ -3638,7 +3715,7 @@ Eigen::MatrixXd MakeAmpMat::T3c_makemat_2(int channel1, int channel2){    //make
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+    unsigned long int id;
     int i; int a;
     int m; int j;
 
@@ -3649,7 +3726,7 @@ Eigen::MatrixXd MakeAmpMat::T3c_makemat_2(int channel1, int channel2){    //make
         for (int i2 = range_lower2; i2<range_upper2; i2++){
             m = m_intClass->blockArrays_p_h(1,i2);
 
-            id = m_intClass->Identity_hhhp(m,j,i,a);
+            id = (unsigned long int)m_intClass->Identity_hhhp(m,j,i,a);
             returnMat(i1-range_lower1, i2-range_lower2) = T3D_remap[id];
         }
     }
@@ -3728,7 +3805,7 @@ Eigen::MatrixXd MakeAmpMat::T3d_makemat_2(int channel1, int channel2){    //make
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+    unsigned long int id;
     int j; int k;
     int c; int l;
 
@@ -3739,7 +3816,7 @@ Eigen::MatrixXd MakeAmpMat::T3d_makemat_2(int channel1, int channel2){    //make
         for (int i2 = range_lower2; i2<range_upper2; i2++){
             l = m_intClass->blockArrays_p_h(1,i2);
 
-            id = m_intClass->Identity_hhhp(j,k,l,c);
+            id = (unsigned long int)m_intClass->Identity_hhhp(j,k,l,c);
             returnMat(i1-range_lower1, i2-range_lower2) = T3D_remap[id];
         }
     }
@@ -3818,7 +3895,7 @@ Eigen::MatrixXd MakeAmpMat::T3e_makemat_2(int channel1, int channel2){    //make
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+    unsigned long int id;
     int i; int j; int a;
     int l; int m; int k;
 
@@ -3886,11 +3963,11 @@ Eigen::MatrixXd MakeAmpMat::T5a_makemat_1(int channel1, int channel2){    //make
     int a; int d;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
-        l = m_intClass->blockArrays_pp_hp(1,i1);
-        d = m_intClass->blockArrays_pp_hp(2,i1);
+        i = m_intClass->blockArrays_pp_hp(1,i1);
+        a = m_intClass->blockArrays_pp_hp(2,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-            a = m_intClass->blockArrays_pp_ph(1,i2);
-            i = m_intClass->blockArrays_pp_ph(2,i2);
+            d = m_intClass->blockArrays_pp_ph(1,i2);
+            l = m_intClass->blockArrays_pp_ph(2,i2);
 
             id = m_intClass->Identity_hhpp(i,l,a,d);
             returnMat(i1-range_lower1, i2-range_lower2) = T2_elements[id];
@@ -3902,10 +3979,10 @@ Eigen::MatrixXd MakeAmpMat::T5a_makemat_1(int channel1, int channel2){    //make
 
 Eigen::MatrixXd MakeAmpMat::T5a_makemat_2(int channel1, int channel2){    //makes a 4x2 matrix
 
-    int range_lower1 = m_intClass->indexHolder_ppmm_hhpp(0, channel1);
-    int range_upper1 = m_intClass->indexHolder_ppmm_hhpp(1, channel1);
-    int range_lower2 = m_intClass->indexHolder_pm_ph(0, channel2);
-    int range_upper2 = m_intClass->indexHolder_pm_ph(1, channel2);
+    int range_lower1 = m_intClass->indexHolder_ppmm_pphh(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppmm_pphh(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_pm_hp(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pm_hp(1, channel2);
 
     Eigen::MatrixXd returnMat;
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
@@ -3915,20 +3992,17 @@ Eigen::MatrixXd MakeAmpMat::T5a_makemat_2(int channel1, int channel2){    //make
     int m; int j; int k;
     int e; int b; int c;
 
-    int thread;
-    #pragma omp parallel for num_threads(4) private(m,j,k,e,b,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
     for (int i1 = range_lower1; i1<range_upper1; i1++){
-        thread = omp_get_thread_num();
-        j = m_intClass->blockArrays_ppmm_hhpp(1,i1);
-        k = m_intClass->blockArrays_ppmm_hhpp(2,i1);
-        b = m_intClass->blockArrays_ppmm_hhpp(3,i1);
-        c = m_intClass->blockArrays_ppmm_hhpp(4,i1);
+        b = m_intClass->blockArrays_ppmm_pphh(1,i1);
+        c = m_intClass->blockArrays_ppmm_pphh(2,i1);
+        j = m_intClass->blockArrays_ppmm_pphh(3,i1);
+        k = m_intClass->blockArrays_ppmm_pphh(4,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-            e = m_intClass->blockArrays_pm_ph(1,i2);
-            m = m_intClass->blockArrays_pm_ph(2,i2);
+            m = m_intClass->blockArrays_pm_hp(1,i2);
+            e = m_intClass->blockArrays_pm_hp(2,i2);
 
             id = m_intClass->Identity_hhhppp(m,j,k,e,b,c);
-            index = T3_elements_IV[thread][id];
+            index = T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
             returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
         }
     }
@@ -3982,18 +4056,16 @@ Eigen::MatrixXd MakeAmpMat::T5b_makemat_2(int channel1, int channel2){    //make
     int a; int b; int c;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
+        a = m_intClass->blockArrays_pppmm_ppphh(1,i1);
+        b = m_intClass->blockArrays_pppmm_ppphh(2,i1);
+        c = m_intClass->blockArrays_pppmm_ppphh(3,i1);
+        j = m_intClass->blockArrays_pppmm_ppphh(4,i1);
+        k = m_intClass->blockArrays_pppmm_ppphh(5,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-            //std::cout << "sup" << std::endl;
-
-            a = m_intClass->blockArrays_pppmm_ppphh(1,i1);
-            b = m_intClass->blockArrays_pppmm_ppphh(2,i1);
-            c = m_intClass->blockArrays_pppmm_ppphh(3,i1);
-            j = m_intClass->blockArrays_pppmm_ppphh(4,i1);
-            k = m_intClass->blockArrays_pppmm_ppphh(5,i1);
             m = m_intClass->blockArrays_p_h(1,i2);
 
             id = m_intClass->Identity_hhhppp(m,j,k,a,b,c);
-            index = T3_elements_I[id];
+            index = T3_elements_I.find(id)->second;
             returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
         }
     }
@@ -4017,18 +4089,16 @@ Eigen::MatrixXi MakeAmpMat::T5b_makemat_2_I(int channel1, int channel2){    //ma
     int a; int b; int c;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
+        a = m_intClass->blockArrays_pppmm_ppphh(1,i1);
+        b = m_intClass->blockArrays_pppmm_ppphh(2,i1);
+        c = m_intClass->blockArrays_pppmm_ppphh(3,i1);
+        j = m_intClass->blockArrays_pppmm_ppphh(4,i1);
+        k = m_intClass->blockArrays_pppmm_ppphh(5,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-            //std::cout << "sup" << std::endl;
-
-            a = m_intClass->blockArrays_pppmm_ppphh(1,i1);
-            b = m_intClass->blockArrays_pppmm_ppphh(2,i1);
-            c = m_intClass->blockArrays_pppmm_ppphh(3,i1);
-            j = m_intClass->blockArrays_pppmm_ppphh(4,i1);
-            k = m_intClass->blockArrays_pppmm_ppphh(5,i1);
             m = m_intClass->blockArrays_p_h(1,i2);
 
             id = m_intClass->Identity_hhhppp(m,j,k,a,b,c);
-            index = T3_elements_I[id];
+            index = T3_elements_I.find(id)->second;
             returnMat(i1-range_lower1, i2-range_lower2) = index;
         }
     }
@@ -4082,18 +4152,16 @@ Eigen::MatrixXd MakeAmpMat::T5c_makemat_2(int channel1, int channel2){    //make
     int e; int b; int c;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
+        i = m_intClass->blockArrays_pppmm_hhhpp(1,i1);
+        j = m_intClass->blockArrays_pppmm_hhhpp(2,i1);
+        k = m_intClass->blockArrays_pppmm_hhhpp(3,i1);
+        b = m_intClass->blockArrays_pppmm_hhhpp(4,i1);
+        c = m_intClass->blockArrays_pppmm_hhhpp(5,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-            //std::cout << "sup" << std::endl;
-
-            i = m_intClass->blockArrays_pppmm_hhhpp(1,i1);
-            j = m_intClass->blockArrays_pppmm_hhhpp(2,i1);
-            k = m_intClass->blockArrays_pppmm_hhhpp(3,i1);
-            b = m_intClass->blockArrays_pppmm_hhhpp(4,i1);
-            c = m_intClass->blockArrays_pppmm_hhhpp(5,i1);
             e = m_intClass->blockArrays_p_p(1,i2);
 
             id = m_intClass->Identity_hhhppp(i,j,k,e,b,c);
-            index = T3_elements_I[id];
+            index = T3_elements_I.find(id)->second;
             returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
         }
     }
@@ -4117,18 +4185,16 @@ Eigen::MatrixXi MakeAmpMat::T5c_makemat_2_I(int channel1, int channel2){    //ma
     int e; int b; int c;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
+        i = m_intClass->blockArrays_pppmm_hhhpp(1,i1);
+        j = m_intClass->blockArrays_pppmm_hhhpp(2,i1);
+        k = m_intClass->blockArrays_pppmm_hhhpp(3,i1);
+        b = m_intClass->blockArrays_pppmm_hhhpp(4,i1);
+        c = m_intClass->blockArrays_pppmm_hhhpp(5,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-            //std::cout << "sup" << std::endl;
-
-            i = m_intClass->blockArrays_pppmm_hhhpp(1,i1);
-            j = m_intClass->blockArrays_pppmm_hhhpp(2,i1);
-            k = m_intClass->blockArrays_pppmm_hhhpp(3,i1);
-            b = m_intClass->blockArrays_pppmm_hhhpp(4,i1);
-            c = m_intClass->blockArrays_pppmm_hhhpp(5,i1);
             e = m_intClass->blockArrays_p_p(1,i2);
 
             id = m_intClass->Identity_hhhppp(i,j,k,e,b,c);
-            index = T3_elements_I[id];
+            index = T3_elements_I.find(id)->second;
             returnMat(i1-range_lower1, i2-range_lower2) = index;
         }
     }
@@ -4181,10 +4247,7 @@ Eigen::MatrixXd MakeAmpMat::T5d_makemat_2(int channel1, int channel2){    //make
     int l; int m; int k;
     int b; int e; int c;
 
-    int thread;
-    #pragma omp parallel for num_threads(4) private(l,m,k,b,e,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
     for (int i2 = range_lower2; i2<range_upper2; i2++){
-        thread = omp_get_thread_num();
         b = m_intClass->blockArrays_ppm_pph(1,i2);
         c = m_intClass->blockArrays_ppm_pph(2,i2);
         k = m_intClass->blockArrays_ppm_pph(3,i2);
@@ -4194,7 +4257,7 @@ Eigen::MatrixXd MakeAmpMat::T5d_makemat_2(int channel1, int channel2){    //make
             e = m_intClass->blockArrays_ppm_hhp(3,i1);
 
             id = m_intClass->Identity_hhhppp(l,m,k,b,e,c);
-            index = T3_elements_IV[thread][id];
+            index = T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
             returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
         }
     }
@@ -4247,10 +4310,7 @@ Eigen::MatrixXd MakeAmpMat::T5e_makemat_2(int channel1, int channel2){    //make
     int j; int m; int k;
     int d; int e; int c;
 
-    int thread;
-    #pragma omp parallel for num_threads(4) private(j,m,k,d,e,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
     for (int i2 = range_lower2; i2<range_upper2; i2++){
-        thread = omp_get_thread_num();
         d = m_intClass->blockArrays_ppm_pph(1,i2);
         e = m_intClass->blockArrays_ppm_pph(2,i2);
         m = m_intClass->blockArrays_ppm_pph(3,i2);
@@ -4260,7 +4320,7 @@ Eigen::MatrixXd MakeAmpMat::T5e_makemat_2(int channel1, int channel2){    //make
             c = m_intClass->blockArrays_ppm_hhp(3,i1);
 
             id = m_intClass->Identity_hhhppp(j,m,k,d,e,c);
-            index = T3_elements_IV[thread][id];
+            index = T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
             returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
         }
     }
@@ -4313,10 +4373,7 @@ Eigen::MatrixXd MakeAmpMat::T5f_makemat_2(int channel1, int channel2){    //make
     int l; int m; int k;
     int a; int b; int c;
 
-    int thread;
-    #pragma omp parallel for num_threads(4) private(l,m,k,a,b,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
     for (int i1 = range_lower1; i1<range_upper1; i1++){
-        thread = omp_get_thread_num();
         a = m_intClass->blockArrays_pppm_ppph(1,i1);
         b = m_intClass->blockArrays_pppm_ppph(2,i1);
         c = m_intClass->blockArrays_pppm_ppph(3,i1);
@@ -4326,7 +4383,7 @@ Eigen::MatrixXd MakeAmpMat::T5f_makemat_2(int channel1, int channel2){    //make
             m = m_intClass->blockArrays_pp_hh(2,i2);
 
             id = m_intClass->Identity_hhhppp(l,m,k,a,b,c);
-            index = T3_elements_IV[thread][id];
+            index = T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
             returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
         }
     }
@@ -4379,10 +4436,7 @@ Eigen::MatrixXd MakeAmpMat::T5g_makemat_2(int channel1, int channel2){    //make
     int i; int j; int k;
     int d; int e; int c;
 
-    int thread;
-    #pragma omp parallel for num_threads(4) private(i,j,k,d,e,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
     for (int i1 = range_lower1; i1<range_upper1; i1++){
-        thread = omp_get_thread_num();
         i = m_intClass->blockArrays_pppm_hhhp(1,i1);
         j = m_intClass->blockArrays_pppm_hhhp(2,i1);
         k = m_intClass->blockArrays_pppm_hhhp(3,i1);
@@ -4392,7 +4446,7 @@ Eigen::MatrixXd MakeAmpMat::T5g_makemat_2(int channel1, int channel2){    //make
             e = m_intClass->blockArrays_pp_pp(2,i2);
 
             id = m_intClass->Identity_hhhppp(i,j,k,d,e,c);
-            index = T3_elements_IV[thread][id];
+            index = T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
             returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
         }
     }
@@ -4408,7 +4462,7 @@ void MakeAmpMat::T3b_Inverse_temp(Eigen::MatrixXd &inMat, int channel1, int chan
     int range_upper2 = m_intClass->indexHolder_pm_ph(1, channel2);
 
 
-    int id;
+    unsigned long int id;
     int e; int b;
     int a; int i;
 
@@ -4419,7 +4473,7 @@ void MakeAmpMat::T3b_Inverse_temp(Eigen::MatrixXd &inMat, int channel1, int chan
             a = m_intClass->blockArrays_pm_ph(1,i2);
             i = m_intClass->blockArrays_pm_ph(2,i2);
 
-            id = m_intClass->Identity_ppph(e,b,a,i);
+            id = (unsigned long int)m_intClass->Identity_ppph(e,b,a,i);
             T3D_remap[id] =  inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -4433,7 +4487,7 @@ void MakeAmpMat::T3c_Inverse_temp(Eigen::MatrixXd inMat, int channel1, int chann
     int range_upper2 = m_intClass->indexHolder_pm_hp(1, channel2);
 
 
-    int id;
+    unsigned long int id;
     int i; int a;
     int m; int j;
 
@@ -4444,7 +4498,7 @@ void MakeAmpMat::T3c_Inverse_temp(Eigen::MatrixXd inMat, int channel1, int chann
             i = m_intClass->blockArrays_pm_hp(1,i2);
             a = m_intClass->blockArrays_pm_hp(2,i2);
 
-            id = m_intClass->Identity_hhhp(m,j,i,a);
+            id = (unsigned long int)m_intClass->Identity_hhhp(m,j,i,a);
             T3D_remap[id] =  inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -4458,7 +4512,7 @@ void MakeAmpMat::T3d_Inverse_temp(Eigen::MatrixXd &inMat, int channel1, int chan
     int range_upper2 = m_intClass->indexHolder_pp_ph(1, channel2);
 
 
-    int id;
+    unsigned long int id;
     int j; int k;
     int c; int l;
 
@@ -4469,7 +4523,7 @@ void MakeAmpMat::T3d_Inverse_temp(Eigen::MatrixXd &inMat, int channel1, int chan
             c = m_intClass->blockArrays_pp_ph(1,i2);
             l = m_intClass->blockArrays_pp_ph(2,i2);
 
-            id = m_intClass->Identity_hhhp(j,k,l,c);
+            id = (unsigned long int)m_intClass->Identity_hhhp(j,k,l,c);
             T3D_remap[id] =  inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -4483,7 +4537,7 @@ void MakeAmpMat::T3e_Inverse_temp(Eigen::MatrixXd &inMat, int channel1, int chan
     int range_upper2 = m_intClass->indexHolder_ppm_hhh(1, channel2);
 
 
-    int id;
+    unsigned long int id;
     int i; int j; int a;
     int l; int m; int k;
 
@@ -4515,10 +4569,7 @@ void MakeAmpMat::T1a_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
     int i; int j; int k;
     int a; int b; int c;
 
-    int thread;
-    #pragma omp parallel for num_threads(4) private(i,j,k,a,b,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
     for (int i2 = range_lower2; i2<range_upper2; i2++){
-        thread = omp_get_thread_num();
         b = m_intClass->blockArrays_ppm_pph(1,i2);
         c = m_intClass->blockArrays_ppm_pph(2,i2);
         k = m_intClass->blockArrays_ppm_pph(3,i2);
@@ -4528,7 +4579,15 @@ void MakeAmpMat::T1a_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
             a = m_intClass->blockArrays_ppm_hhp(3,i1);
 
             id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
-            index = T3_elements_IV[thread][id];
+
+            /*id = m_intClass->Identity_hhhppp(m_intClass->blockArrays_ppm_hhp(1,i1),
+                                             m_intClass->blockArrays_ppm_hhp(2,i1),
+                                             m_intClass->blockArrays_ppm_pph(3,i2),
+                                             m_intClass->blockArrays_ppm_hhp(3,i1),
+                                             m_intClass->blockArrays_ppm_pph(1,i2),
+                                             m_intClass->blockArrays_ppm_pph(2,i2));*/
+
+            index = T3_elements_I.find(id)->second;//T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
             T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -4547,10 +4606,7 @@ void MakeAmpMat::T1b_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
     int i; int j; int k;
     int a; int b; int c;
 
-    int thread;
-#pragma omp parallel for num_threads(4) private(i,j,k,a,b,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
     for (int i2 = range_lower2; i2<range_upper2; i2++){
-        thread = omp_get_thread_num();
         a = m_intClass->blockArrays_ppm_pph(1,i2);
         b = m_intClass->blockArrays_ppm_pph(2,i2);
         i = m_intClass->blockArrays_ppm_pph(3,i2);
@@ -4560,7 +4616,15 @@ void MakeAmpMat::T1b_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
             c = m_intClass->blockArrays_ppm_hhp(3,i1);
 
             id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
-            index = T3_elements_IV[thread][id];
+
+            /*id = m_intClass->Identity_hhhppp(m_intClass->blockArrays_ppm_pph(3,i2),
+                                             m_intClass->blockArrays_ppm_hhp(1,i1),
+                                             m_intClass->blockArrays_ppm_hhp(2,i1),
+                                             m_intClass->blockArrays_ppm_pph(1,i2),
+                                             m_intClass->blockArrays_ppm_pph(2,i2),
+                                             m_intClass->blockArrays_ppm_hhp(3,i1));*/
+
+            index = T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
             T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -4577,10 +4641,7 @@ void MakeAmpMat::T2c_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
     int i; int j; int k;
     int a; int b; int c;
 
-    int thread;
-    #pragma omp parallel for num_threads(4) private(i,j,k,a,b,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
     for (int i1 = range_lower1; i1<range_upper1; i1++){
-        thread = omp_get_thread_num();
         i = m_intClass->blockArrays_pppm_hhhp(1,i1);
         j = m_intClass->blockArrays_pppm_hhhp(2,i1);
         k = m_intClass->blockArrays_pppm_hhhp(3,i1);
@@ -4591,7 +4652,7 @@ void MakeAmpMat::T2c_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
             b = m_intClass->blockArrays_pp_pp(2,i2);
 
             id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
-            index = T3_elements_IV[thread][id];
+            index = T3_elements_I.find(id)->second;//T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
             T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -4608,10 +4669,7 @@ void MakeAmpMat::T2d_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
     int i; int j; int k;
     int a; int b; int c;
 
-    int thread;
-    #pragma omp parallel for num_threads(4) private(i,j,k,a,b,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
     for (int i1 = range_lower1; i1<range_upper1; i1++){
-        thread = omp_get_thread_num();
         a = m_intClass->blockArrays_pppm_ppph(1,i1);
         b = m_intClass->blockArrays_pppm_ppph(2,i1);
         c = m_intClass->blockArrays_pppm_ppph(3,i1);
@@ -4622,7 +4680,7 @@ void MakeAmpMat::T2d_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
             j = m_intClass->blockArrays_pp_hh(2,i2);
 
             id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
-            index = T3_elements_IV[thread][id];
+            index = T3_elements_I.find(id)->second;//T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
             T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -4630,30 +4688,27 @@ void MakeAmpMat::T2d_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
 
 void MakeAmpMat::T2e_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2){
 
-    int range_lower1 = m_intClass->indexHolder_ppmm_hhpp(0, channel1);
-    int range_upper1 = m_intClass->indexHolder_ppmm_hhpp(1, channel1);
-    int range_lower2 = m_intClass->indexHolder_pm_ph(0, channel2);
-    int range_upper2 = m_intClass->indexHolder_pm_ph(1, channel2);
+    int range_lower1 = m_intClass->indexHolder_ppmm_pphh(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppmm_pphh(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_pm_hp(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pm_hp(1, channel2);
 
     unsigned long int id; int index;
     int i; int j; int k;
     int a; int b; int c;
 
-    int thread;
-    #pragma omp parallel for num_threads(4) private(i,j,k,a,b,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
     for (int i1 = range_lower1; i1<range_upper1; i1++){
-        thread = omp_get_thread_num();
-        j = m_intClass->blockArrays_ppmm_hhpp(1,i1);
-        k = m_intClass->blockArrays_ppmm_hhpp(2,i1);
-        b = m_intClass->blockArrays_ppmm_hhpp(3,i1);
-        c = m_intClass->blockArrays_ppmm_hhpp(4,i1);
+        b = m_intClass->blockArrays_ppmm_pphh(1,i1);
+        c = m_intClass->blockArrays_ppmm_pphh(2,i1);
+        j = m_intClass->blockArrays_ppmm_pphh(3,i1);
+        k = m_intClass->blockArrays_ppmm_pphh(4,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
 
-            a = m_intClass->blockArrays_pm_ph(1,i2);
-            i = m_intClass->blockArrays_pm_ph(2,i2);
+            i = m_intClass->blockArrays_pm_hp(1,i2);
+            a = m_intClass->blockArrays_pm_hp(2,i2);
 
             id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
-            index = T3_elements_IV[thread][id];
+            index = T3_elements_I.find(id)->second;//T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
             T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -4671,7 +4726,7 @@ void MakeAmpMat::T3b_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
     int a; int b; int c;
 
     int thread;
-    #pragma omp parallel for num_threads(4) private(i,j,k,a,b,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
+    #pragma omp parallel for num_threads(m_numThreads) private(i,j,k,a,b,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
     for (int i2 = range_lower2; i2<range_upper2; i2++){
         thread = omp_get_thread_num();
         b = m_intClass->blockArrays_ppm_pph(1,i2);
@@ -4683,7 +4738,7 @@ void MakeAmpMat::T3b_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
             c = m_intClass->blockArrays_ppm_hhp(3,i1);
 
             id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
-            index = T3_elements_IV[thread][id];
+            index = T3_elements_I.find(id)->second;
             T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -4701,7 +4756,7 @@ void MakeAmpMat::T3c_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
     int a; int b; int c;
 
     int thread;
-    #pragma omp parallel for num_threads(4) private(i,j,k,a,b,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
+    #pragma omp parallel for num_threads(m_numThreads) private(i,j,k,a,b,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
     for (int i2 = range_lower2; i2<range_upper2; i2++){
         thread = omp_get_thread_num();
         b = m_intClass->blockArrays_ppm_pph(1,i2);
@@ -4713,7 +4768,7 @@ void MakeAmpMat::T3c_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
             a = m_intClass->blockArrays_ppm_hhp(3,i1);
 
             id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
-            index = T3_elements_IV[thread][id];
+            index = T3_elements_I.find(id)->second;
             T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -4731,7 +4786,7 @@ void MakeAmpMat::T3d_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
     int a; int b; int c;
 
     int thread;
-    #pragma omp parallel for num_threads(4) private(i,j,k,a,b,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
+    #pragma omp parallel for num_threads(m_numThreads) private(i,j,k,a,b,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
     for (int i2 = range_lower2; i2<range_upper2; i2++){
         thread = omp_get_thread_num();
         a = m_intClass->blockArrays_ppm_pph(1,i2);
@@ -4743,7 +4798,7 @@ void MakeAmpMat::T3d_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
             c = m_intClass->blockArrays_ppm_hhp(3,i1);
 
             id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
-            index = T3_elements_IV[thread][id];
+            index = T3_elements_I.find(id)->second;
             T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -4761,7 +4816,7 @@ void MakeAmpMat::T3e_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
     int a; int b; int c;
 
     int thread;
-    #pragma omp parallel for num_threads(4) private(i,j,k,a,b,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
+    #pragma omp parallel for num_threads(m_numThreads) private(i,j,k,a,b,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
     for (int i1 = range_lower1; i1<range_upper1; i1++){
         thread = omp_get_thread_num();
         i = m_intClass->blockArrays_pppm_hhhp(1,i1);
@@ -4773,7 +4828,7 @@ void MakeAmpMat::T3e_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
             c = m_intClass->blockArrays_pp_pp(2,i2);
 
             id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
-            index = T3_elements_IV[thread][id];
+            index = T3_elements_I.find(id)->second;
             T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -4781,29 +4836,26 @@ void MakeAmpMat::T3e_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
 
 void MakeAmpMat::T5a_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2){
 
-    int range_lower1 = m_intClass->indexHolder_ppmm_hhpp(0, channel1);
-    int range_upper1 = m_intClass->indexHolder_ppmm_hhpp(1, channel1);
-    int range_lower2 = m_intClass->indexHolder_pm_ph(0, channel2);
-    int range_upper2 = m_intClass->indexHolder_pm_ph(1, channel2);
+    int range_lower1 = m_intClass->indexHolder_ppmm_pphh(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_ppmm_pphh(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_pm_hp(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_pm_hp(1, channel2);
 
     unsigned long int id; int index;
     int i; int j; int k;
     int a; int b; int c;
 
-    int thread;
-    #pragma omp parallel for num_threads(4) private(i,j,k,a,b,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
     for (int i1 = range_lower1; i1<range_upper1; i1++){
-        thread = omp_get_thread_num();
-        j = m_intClass->blockArrays_ppmm_hhpp(1,i1);
-        k = m_intClass->blockArrays_ppmm_hhpp(2,i1);
-        b = m_intClass->blockArrays_ppmm_hhpp(3,i1);
-        c = m_intClass->blockArrays_ppmm_hhpp(4,i1);
+        b = m_intClass->blockArrays_ppmm_pphh(1,i1);
+        c = m_intClass->blockArrays_ppmm_pphh(2,i1);
+        j = m_intClass->blockArrays_ppmm_pphh(3,i1);
+        k = m_intClass->blockArrays_ppmm_pphh(4,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-            a = m_intClass->blockArrays_pm_ph(1,i2);
-            i = m_intClass->blockArrays_pm_ph(2,i2);
+            i = m_intClass->blockArrays_pm_hp(1,i2);
+            a = m_intClass->blockArrays_pm_hp(2,i2);
 
             id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
-            index = T3_elements_IV[thread][id];
+            index = T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
             T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -4831,7 +4883,7 @@ void MakeAmpMat::T5b_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
             i = m_intClass->blockArrays_p_h(1,i2);
 
             id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
-            index = T3_elements_I[id];
+            index = T3_elements_I.find(id)->second;
             T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -4859,7 +4911,7 @@ void MakeAmpMat::T5c_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
             a = m_intClass->blockArrays_p_p(1,i2);
 
             id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
-            index = T3_elements_I[id];
+            index = T3_elements_I.find(id)->second;
             T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -4871,7 +4923,7 @@ void MakeAmpMat::T5b_inverse_I(Eigen::MatrixXd &inMat, int channel){
     int cols = T3_T5b_indices[channel].cols();
     int index;
 
-    #pragma omp parallel for /*num_threads(2)*/ private(index)
+    #pragma omp parallel for num_threads(m_numThreads) private(index) firstprivate(rows, cols, channel)
     for (int i1 = 0; i1<rows; i1++){
         for (int i2 = 0; i2<cols; i2++){
             index = T3_T5b_indices[channel](i1,i2);
@@ -4886,7 +4938,7 @@ void MakeAmpMat::T5c_inverse_I(Eigen::MatrixXd &inMat, int channel){
     int cols = T3_T5c_indices[channel].cols();
     int index;
 
-    #pragma omp parallel for /*num_threads(2)*/ private(index)
+    #pragma omp parallel for num_threads(m_numThreads) private(index) firstprivate(rows, cols, channel)
     for (int i1 = 0; i1<rows; i1++){
         for (int i2 = 0; i2<cols; i2++){
             index = T3_T5c_indices[channel](i1,i2);
@@ -4906,10 +4958,7 @@ void MakeAmpMat::T5d_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
     int i; int j; int k;
     int a; int b; int c;
 
-    int thread;
-    #pragma omp parallel for num_threads(4) private(i,j,k,a,b,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
     for (int i2 = range_lower2; i2<range_upper2; i2++){
-        thread = omp_get_thread_num();
         b = m_intClass->blockArrays_ppm_pph(1,i2);
         c = m_intClass->blockArrays_ppm_pph(2,i2);
         k = m_intClass->blockArrays_ppm_pph(3,i2);
@@ -4920,7 +4969,7 @@ void MakeAmpMat::T5d_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
             a = m_intClass->blockArrays_ppm_hhp(3,i1);
 
             id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
-            index = T3_elements_IV[thread][id];
+            index = T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
             T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -4937,10 +4986,7 @@ void MakeAmpMat::T5e_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
     int i; int j; int k;
     int a; int b; int c;
 
-    int thread;
-    #pragma omp parallel for num_threads(4) private(i,j,k,a,b,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
     for (int i2 = range_lower2; i2<range_upper2; i2++){
-        thread = omp_get_thread_num();
         a = m_intClass->blockArrays_ppm_pph(1,i2);
         b = m_intClass->blockArrays_ppm_pph(2,i2);
         i = m_intClass->blockArrays_ppm_pph(3,i2);
@@ -4950,7 +4996,7 @@ void MakeAmpMat::T5e_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
             c = m_intClass->blockArrays_ppm_hhp(3,i1);
 
             id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
-            index = T3_elements_IV[thread][id];
+            index = T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
             T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -4967,8 +5013,6 @@ void MakeAmpMat::T5f_inverse(Eigen::MatrixXd inMat, int channel1, int channel2){
     int i; int j; int k;
     int a; int b; int c;
 
-    int thread;
-    #pragma omp parallel for num_threads(4) private(i,j,k,a,b,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
     for (int i1 = range_lower1; i1<range_upper1; i1++){
         a = m_intClass->blockArrays_pppm_ppph(1,i1);
         b = m_intClass->blockArrays_pppm_ppph(2,i1);
@@ -4979,7 +5023,7 @@ void MakeAmpMat::T5f_inverse(Eigen::MatrixXd inMat, int channel1, int channel2){
             j = m_intClass->blockArrays_pp_hh(2,i2);
 
             id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
-            index = T3_elements_IV[thread][id];
+            index = T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
             T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -4996,10 +5040,7 @@ void MakeAmpMat::T5g_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
     int i; int j; int k;
     int a; int b; int c;
 
-    int thread;
-    #pragma omp parallel for num_threads(4) private(i,j,k,a,b,c,id,index,thread) firstprivate(range_lower1, range_upper1, range_lower2, range_upper2)
     for (int i1 = range_lower1; i1<range_upper1; i1++){
-        thread = omp_get_thread_num();
         i = m_intClass->blockArrays_pppm_hhhp(1,i1);
         j = m_intClass->blockArrays_pppm_hhhp(2,i1);
         k = m_intClass->blockArrays_pppm_hhhp(3,i1);
@@ -5009,7 +5050,7 @@ void MakeAmpMat::T5g_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
             b = m_intClass->blockArrays_pp_pp(2,i2);
 
             id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
-            index = T3_elements_IV[thread][id];
+            index = T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
             T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -5128,7 +5169,7 @@ Eigen::MatrixXd MakeAmpMat::make3x3Block_I_D10c(int ku, int i1, int i2, int i3, 
         for (int i = range_lower1; i<range_upper1; i++){
             for (int j = range_lower2; j<range_upper2; j++){
                 id = m_intClass->Identity_hhhppp((blockArrays2_pointer)(3,j), (blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j));
-                index = T3_elements_I[id];
+                index = T3_elements_I.find(id)->second;
                 returnMat(i-range_lower1, j-range_lower2) = T_vec[index];
             }
         }
@@ -5137,7 +5178,7 @@ Eigen::MatrixXd MakeAmpMat::make3x3Block_I_D10c(int ku, int i1, int i2, int i3, 
         for (int i = range_lower1; i<range_upper1; i++){
             for (int j = range_lower2; j<range_upper2; j++){
                 id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j), (blockArrays2_pointer)(3,j));
-                index = T3_elements_I[id];
+                index = T3_elements_I.find(id)->second;
                 returnMat(i-range_lower1, j-range_lower2) = T_vec[index];
             }
         }

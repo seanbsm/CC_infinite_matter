@@ -32,6 +32,10 @@ void Diagrams::setAmpClass(class MakeAmpMat* ampClass){
     m_ampClass = ampClass;
 }
 
+void Diagrams::setThreads(int numthreads){
+    m_numThreads = numthreads;
+}
+
 
 // ##################################################
 // ##                                              ##
@@ -380,50 +384,91 @@ void Diagrams::I4_term(){
 // ##################################################
 
 void Diagrams::D10b(){
+
+    Eigen::MatrixXi matches;
+
+    std::vector<Eigen::MatrixXd> mat2v;
+    std::vector<Eigen::MatrixXd> productv;
+
     for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_ppm_hhp.size(); i3++){
-            if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_pph[i2] && m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i3]){
+                if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_pph[i2] && m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i3]){
+                    matches.conservativeResize(3, matches.cols()+1);
+                    matches.col(matches.cols()-1) << i1,i2,i3;
 
-                //int ku = m_intClass->sortVec_p_p[i1];
-                //Eigen::MatrixXd mat1 = m_ampClass->make3x3Block(ku,0,0,1,1,1,0, m_ampClass->T3_elements);    // t_ijb^d
-                //Eigen::MatrixXd mat1 = m_ampClass->make3x3Block_I(ku,0,0,1,1,1,0, m_ampClass->T3_elements_A);    // t_ijb^d
-                //Eigen::MatrixXd mat2 = m_intClass->make3x1Block(ku,1,1,0,1);                            // v_klc^d
-                //m_ampClass->make3x1Block_inverse_D10b(product, ku, 0,0,1,1, m_ampClass->T2_elements_new, true);
-
-                Eigen::MatrixXd mat1 = m_ampClass->D10b_makemat(i3, i2);
-                Eigen::MatrixXd mat2 = m_intClass->D10b_makemat(i2, i1);
-                Eigen::MatrixXd product = -0.5*(mat1*mat2);                              // (t_ijb^d)(v_d^klc)(t_klc^a)
-
-                m_ampClass->D10b_inverse(product, i3, i1);
-            }
+                    mat2v.push_back( m_intClass->D10b_makemat(i2, i1) );
+                }
             }
         }
     }
+
+    productv.resize(matches.cols());
+
+    int i1; int i2; int i3; int cols = matches.cols();
+#pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
+    for (int i=0; i<cols; i++){
+        i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
+
+        /*Eigen::MatrixXd mat1 = m_ampClass->D10b_makemat(i3, i2, m_ampClass->T3_elements_I);
+                Eigen::MatrixXd mat2 = m_intClass->D10b_makemat(i2, i1);
+                Eigen::MatrixXd product = -0.5*(mat1*mat2);*/
+
+        Eigen::MatrixXd mat1 = m_ampClass->D10b_makemat(i3, i2);
+
+        productv[i] = -0.5*(mat1*mat2v[i]);
+
+    }
+
+    for (int i=0; i<cols; i++){
+        i1 = matches(0,i); i3 = matches(2,i);
+        m_ampClass->D10b_inverse(productv[i], i3, i1);
+    }
+
     m_ampClass->addElementsT2(0,1);
     m_ampClass->T2_temp.clear();
 }
 
 void Diagrams::D10c(){
+
+    Eigen::MatrixXi matches;
+
+    std::vector<Eigen::MatrixXd> mat2v;
+    std::vector<Eigen::MatrixXd> productv;
+
     for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_ppm_pph.size(); i3++){
             if ( m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_hhp[i2] && m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_pph[i3]){
+                    matches.conservativeResize(3, matches.cols()+1);
+                    matches.col(matches.cols()-1) << i1,i2,i3;
 
-                //int ku = m_intClass->sortVec_p_h[i1];
-                //Eigen::MatrixXd mat1 = m_ampClass->make3x3Block(ku,0,0,1,1,1,0, m_ampClass->T3_elements);    // t_ijb^d
-                //Eigen::MatrixXd mat1 = m_ampClass->make3x3Block_I_D10c(ku,0,0,1,1,1,0, m_ampClass->T3_elements_A);    // t_ijb^d
-                //Eigen::MatrixXd mat2 = m_intClass->make3x1Block(ku,0,0,1,0);                            // v_klc^d
-                //m_ampClass->make3x1Block_inverse(product, ku, 1,1,0,0, m_ampClass->T2_elements_new, true);
-
-                Eigen::MatrixXd mat1 = m_ampClass->D10c_makemat(i2, i3);
-                Eigen::MatrixXd mat2 = m_intClass->D10c_makemat(i2, i1);
-                Eigen::MatrixXd product = -0.5*(mat1.transpose()*mat2);                              // (t_ijb^d)(v_d^klc)(t_klc^a)
-
-                m_ampClass->D10c_inverse(product, i3, i1);
-            }
+                    mat2v.push_back( m_intClass->D10c_makemat(i2, i1) );
+                }
             }
         }
+    }
+
+    productv.resize(matches.cols());
+
+    int i1; int i2; int i3; int cols = matches.cols();
+#pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
+    for (int i=0; i<cols; i++){
+        i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
+
+        /*Eigen::MatrixXd mat1 = m_ampClass->D10c_makemat(i2, i3);
+                Eigen::MatrixXd mat2 = m_intClass->D10c_makemat(i2, i1);
+                Eigen::MatrixXd product = -0.5*(mat1.transpose()*mat2);*/
+
+        Eigen::MatrixXd mat1 = m_ampClass->D10c_makemat(i2, i3);
+
+        productv[i] = -0.5*(mat1.transpose()*mat2v[i]);
+
+    }
+
+    for (int i=0; i<cols; i++){
+        i1 = matches(0,i); i3 = matches(2,i);
+        m_ampClass->D10c_inverse(productv[i], i3, i1);
     }
     m_ampClass->addElementsT2(1,0);
     m_ampClass->T2_temp.clear();
@@ -438,12 +483,12 @@ void Diagrams::D10c(){
 // ##################################################
 
 void Diagrams::makeT3(){
-    int index = 0; unsigned long int id;
+    unsigned long int index = 0; unsigned long int id;
     int i; int j; int k;
     int a; int b; int c;
     int n = 4;//omp_get_max_threads();
-    std::cout << n << std::endl;
-    m_ampClass->T3_elements_IV.resize(n);
+    //std::cout << n << std::endl;
+    //m_ampClass->T3_elements_IV.resize(n);
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
         //ku = m_intClass->Vhhhppp_i[channel];
 
@@ -453,22 +498,21 @@ void Diagrams::makeT3(){
         int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
 
         for (int hhh=range_lower1; hhh<range_upper1; hhh++){
+            i = (m_intClass->blockArrays_ppp_hhh)(1,hhh);
+            j = (m_intClass->blockArrays_ppp_hhh)(2,hhh);
+            k = (m_intClass->blockArrays_ppp_hhh)(3,hhh);
             for (int ppp=range_lower2; ppp<range_upper2; ppp++){
-
-                i = (m_intClass->blockArrays_ppp_hhh)(1,hhh);
-                j = (m_intClass->blockArrays_ppp_hhh)(2,hhh);
-                k = (m_intClass->blockArrays_ppp_hhh)(3,hhh);
                 a = (m_intClass->blockArrays_ppp_ppp)(1,ppp);
                 b = (m_intClass->blockArrays_ppp_ppp)(2,ppp);
                 c = (m_intClass->blockArrays_ppp_ppp)(3,ppp);
                 id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
 
-                //if (m_ampClass->T3_elements_I.find(id) != m_ampClass->T3_elements_I.end()){std::cout << id << std::endl;}
                 m_ampClass->T3_elements_I[id] = index;
+                //m_ampClass->T3_elements_I_um[id] = index;
 
-                for (int j=0; j<n; j++){
+                /*for (int j=0; j<n; j++){
                     m_ampClass->T3_elements_IV[j][id] = index;
-                }
+                }*/
 
                 index ++;
             }
@@ -485,7 +529,7 @@ void Diagrams::makeT3(){
     m_ampClass->T3_elements_A_new.resize(m_ampClass->T3_elements_I.size(), 0);
     m_ampClass->T3_elements_A_temp.resize(m_ampClass->T3_elements_I.size(), 0);
 
-    //std::cout << m_ampClass->T3_elements_A.size() << std::endl;
+    std::cout << "Number of T3 elements: " << m_ampClass->T3_elements_A.size() << std::endl;
 
     m_ampClass->T3_makeDirectMat();
 }
@@ -558,62 +602,63 @@ void Diagrams::T1a(){
     MPI_Status status;
 
 
-    Eigen::MatrixXi matches_root;
-    Eigen::MatrixXi matches_recv;
+    Eigen::MatrixXi matches;
 
+    std::vector<Eigen::MatrixXd> mat1v;
+    std::vector<Eigen::MatrixXd> mat2v;
+
+    auto t7 = Clock::now();
     if (world_rank == 0){
         for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
             for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
                 for (int i3=0; i3<m_intClass->sortVec_ppm_hhp.size(); i3++){
                     if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_pph[i2] && m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i3]){
-                        matches_root.conservativeResize(3, matches_root.cols()+1);
-                        matches_root.col(matches_root.cols()-1) << i1,i2,i3;
+                        matches.conservativeResize(3, matches.cols()+1);
+                        matches.col(matches.cols()-1) << i1,i2,i3;
+
+                        mat1v.push_back( m_intClass->T1a_makemat(i2, i1) );
+                        mat2v.push_back( m_ampClass->T1a_makemat(i3, i1) );
                     }
                 }
             }
         }
     }
+    auto t8 = Clock::now();
 
-    matches_recv = distributeChannels(matches_root, 3);
+    int i1; int i2; int i3; int cols = matches.cols();
+    auto t1 = Clock::now();
+#pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
+    for (int i=0; i<cols; i++){
+        i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
 
-    int i1; int i2; int i3;
-    for (int i=0; i<matches_recv.cols(); i++){
-        i1 = matches_recv(0,i); i2 = matches_recv(1,i); i3 = matches_recv(2,i);
-
-        Eigen::MatrixXd mat1 = m_intClass->T1a_makemat(i2, i1);
+        /*Eigen::MatrixXd mat1 = m_intClass->T1a_makemat(i2, i1);
         Eigen::MatrixXd mat2 = m_ampClass->T1a_makemat(i3, i1);
-        Eigen::MatrixXd product = mat2*mat1.transpose();
+        Eigen::MatrixXd product = mat2*mat1.transpose();*/
 
-        //std::cout << product.cols() << " " << product.rows() << std::endl;
+        Eigen::MatrixXd product = mat2v[i]*mat1v[i].transpose();
 
         m_ampClass->T1a_inverse(product, i3, i2);
     }
+    auto t2 = Clock::now();
 
+    /*auto t3 = Clock::now();
     std::vector<double> TempVec;
     if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
     MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    auto t4 = Clock::now();*/
 
-    if (world_rank == 0){ m_ampClass->T3_elements_A_temp = TempVec ;}
-
-    /*for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
-        for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
-            for (int i3=0; i3<m_intClass->sortVec_ppm_hhp.size(); i3++){
-                if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_pph[i2] && m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i3]){
-
-                    Eigen::MatrixXd mat1 = m_intClass->T1a_makemat(i2, i1);
-                    Eigen::MatrixXd mat2 = m_ampClass->T1a_makemat(i3, i1);
-                    Eigen::MatrixXd product = mat2*mat1.transpose();
-
-                    m_ampClass->T1a_inverse(product, i3, i2);
-                }
-            }
-        }
-    }*/
-
+    auto t5 = Clock::now();
     if (world_rank == 0){
+        //m_ampClass->T3_elements_A_temp = TempVec;
         m_ampClass->addElementsT3_T1a();
     }
+    auto t6 = Clock::now();
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
+
+    /*std::cout << "Init matrices: " << std::chrono::duration_cast<std::chrono::milliseconds>(t8 - t7).count() << std::endl;
+    std::cout << "Sum:           " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << std::endl;
+    //std::cout << "Send elements: " << std::chrono::duration_cast<std::chrono::milliseconds>(t4 - t3).count() << std::endl;
+    std::cout << "Inverse map:   " << std::chrono::duration_cast<std::chrono::milliseconds>(t6 - t5).count() << std::endl;*/
 }
 
 
@@ -626,57 +671,46 @@ void Diagrams::T1b(){
     MPI_Status status;
 
 
-    Eigen::MatrixXi matches_root;
-    Eigen::MatrixXi matches_recv;
+    Eigen::MatrixXi matches;
+
+    std::vector<Eigen::MatrixXd> mat1v;
+    std::vector<Eigen::MatrixXd> mat2v;
 
     if (world_rank == 0){
         for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
             for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
                 for (int i3=0; i3<m_intClass->sortVec_ppm_pph.size(); i3++){
                     if ( m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_hhp[i2] && m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_pph[i3]){
-                        matches_root.conservativeResize(3, matches_root.cols()+1);
-                        matches_root.col(matches_root.cols()-1) << i1,i2,i3;
+                        matches.conservativeResize(3, matches.cols()+1);
+                        matches.col(matches.cols()-1) << i1,i2,i3;
+
+                        mat1v.push_back( m_intClass->T1b_makemat(i2, i1) );
+                        mat2v.push_back( m_ampClass->T1b_makemat(i3, i1) );
                     }
                 }
             }
         }
     }
 
-    matches_recv = distributeChannels(matches_root, 3);
+    int i1; int i2; int i3; int cols=matches.cols();
+#pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
+    for (int i=0; i<cols; i++){
+        i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
+        /*Eigen::MatrixXd mat1 = mat1v[i];
+        Eigen::MatrixXd mat2 = mat2v[i];
+        Eigen::MatrixXd product = -1*(mat1*mat2.transpose());*/
 
-    int i1; int i2; int i3;
-    for (int i=0; i<matches_recv.cols(); i++){
-        i1 = matches_recv(0,i); i2 = matches_recv(1,i); i3 = matches_recv(2,i);
-
-        Eigen::MatrixXd mat1 = m_intClass->T1b_makemat(i2, i1);
-        Eigen::MatrixXd mat2 = m_ampClass->T1b_makemat(i3, i1);
-        Eigen::MatrixXd product = -1*(mat1*mat2.transpose());
+        Eigen::MatrixXd product = -1*(mat1v[i]*mat2v[i].transpose());
 
         m_ampClass->T1b_inverse(product, i2, i3);
     }
 
-    std::vector<double> TempVec;
+    /*std::vector<double> TempVec;
     if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
-    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-
-    if (world_rank == 0){ m_ampClass->T3_elements_A_temp = TempVec ;}
-
-    /*for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
-        for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
-            for (int i3=0; i3<m_intClass->sortVec_ppm_pph.size(); i3++){
-                if ( m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_hhp[i2] && m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_pph[i3]){
-
-                    Eigen::MatrixXd mat1 = m_intClass->T1b_makemat(i2, i1);
-                    Eigen::MatrixXd mat2 = m_ampClass->T1b_makemat(i3, i1);
-                    Eigen::MatrixXd product = -1*(mat1*mat2.transpose());
-
-                    m_ampClass->T1b_inverse(product, i2, i3);
-                }
-            }
-        }
-    }*/
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);*/
 
     if (world_rank == 0){
+        //m_ampClass->T3_elements_A_temp = TempVec;
         m_ampClass->addElementsT3_T1b();
     }
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
@@ -691,23 +725,20 @@ void Diagrams::T2c(){
     MPI_Status status;
 
 
-    Eigen::MatrixXi matches_root;
-    Eigen::MatrixXi matches_recv;
+    Eigen::MatrixXi matches;
 
     if (world_rank == 0){
         for (int i1=0; i1<m_intClass->sortVec_pp_pp.size(); i1++){
             for (int i2=0; i2<m_intClass->sortVec_pppm_hhhp.size(); i2++){
                 if ( m_intClass->sortVec_pp_pp[i1] == m_intClass->sortVec_pppm_hhhp[i2]){
-                    matches_root.conservativeResize(2, matches_root.cols()+1);
-                    matches_root.col(matches_root.cols()-1) << i1,i2;
+                    matches.conservativeResize(2, matches.cols()+1);
+                    matches.col(matches.cols()-1) << i1,i2;
                 }
             }
         }
     }
 
-    matches_recv = distributeChannels(matches_root, 2);
-
-    int i1; int i2;
+    /*int i1; int i2;
     for (int i=0; i<matches_recv.cols(); i++){
         i1 = matches_recv(0,i); i2 = matches_recv(1,i);
 
@@ -716,15 +747,26 @@ void Diagrams::T2c(){
         Eigen::MatrixXd product = 0.5*mat2*mat1; //mathematically I need to transpose mat1, but it's symmetric
 
         m_ampClass->T2c_inverse(product, i2, i1);
+    }*/
+
+    int i1; int i2; int cols = matches.cols();
+#pragma omp parallel for num_threads(m_numThreads) private(i1,i2) firstprivate(cols)
+    for (int i=0; i<cols; i++){
+        i1 = matches(0,i); i2 = matches(1,i);
+
+        Eigen::MatrixXd mat1 = m_intClass->Vpppp[i1];
+        Eigen::MatrixXd mat2 = m_ampClass->T2c_makemat(i2, i1);
+        Eigen::MatrixXd product = 0.5*mat2*mat1; //mathematically I need to transpose mat1, but it's symmetric
+
+        m_ampClass->T2c_inverse(product, i2, i1);
     }
 
-    std::vector<double> TempVec;
+    /*std::vector<double> TempVec;
     if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
-    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-
-    if (world_rank == 0){ m_ampClass->T3_elements_A_temp = TempVec ;}
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);*/
 
     if (world_rank == 0){
+        //m_ampClass->T3_elements_A_temp = TempVec;
         m_ampClass->addElementsT3_T2c();
     }
 
@@ -753,25 +795,23 @@ void Diagrams::T2d(){
     MPI_Status status;
 
 
-    Eigen::MatrixXi matches_root;
-    Eigen::MatrixXi matches_recv;
+    Eigen::MatrixXi matches;
 
     if (world_rank == 0){
         for (int i1=0; i1<m_intClass->sortVec_pp_hh.size(); i1++){
                 for (int i2=0; i2<m_intClass->sortVec_pppm_ppph.size(); i2++){
                     if ( m_intClass->sortVec_pp_hh[i1] == m_intClass->sortVec_pppm_ppph[i2]){
-                    matches_root.conservativeResize(2, matches_root.cols()+1);
-                    matches_root.col(matches_root.cols()-1) << i1,i2;
+                    matches.conservativeResize(2, matches.cols()+1);
+                    matches.col(matches.cols()-1) << i1,i2;
                 }
             }
         }
     }
 
-    matches_recv = distributeChannels(matches_root, 2);
-
-    int i1; int i2;
-    for (int i=0; i<matches_recv.cols(); i++){
-        i1 = matches_recv(0,i); i2 = matches_recv(1,i);
+    int i1; int i2; int cols = matches.cols();
+#pragma omp parallel for num_threads(m_numThreads) private(i1,i2) firstprivate(cols)
+    for (int i=0; i<cols; i++){
+        i1 = matches(0,i); i2 = matches(1,i);
 
         Eigen::MatrixXd mat1 = m_intClass->Vhhhh[i1];
         Eigen::MatrixXd mat2 = m_ampClass->T2d_makemat(i2, i1);
@@ -780,13 +820,12 @@ void Diagrams::T2d(){
         m_ampClass->T2d_inverse(product, i2, i1);
     }
 
-    std::vector<double> TempVec;
+    /*std::vector<double> TempVec;
     if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
-    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-
-    if (world_rank == 0){ m_ampClass->T3_elements_A_temp = TempVec ;}
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);*/
 
     if (world_rank == 0){
+        //m_ampClass->T3_elements_A_temp = TempVec;
         m_ampClass->addElementsT3_T2d();
     }
 
@@ -815,42 +854,54 @@ void Diagrams::T2e(){
     MPI_Status status;
 
 
-    Eigen::MatrixXi matches_root;
-    Eigen::MatrixXi matches_recv;
+    Eigen::MatrixXi matches;
+
+    //auto t1 = Clock::now();
 
     if (world_rank == 0){
         for (int i1=0; i1<m_intClass->sortVec_pm_hp.size(); i1++){
-                for (int i2=0; i2<m_intClass->sortVec_ppmm_hhpp.size(); i2++){  //THIS IS WRONG (17/03/17)
-                    if ( m_intClass->sortVec_pm_hp[i1] == m_intClass->sortVec_ppmm_hhpp[i2]){
-                    matches_root.conservativeResize(2, matches_root.cols()+1);
-                    matches_root.col(matches_root.cols()-1) << i1,i2;
+                for (int i2=0; i2<m_intClass->sortVec_ppmm_pphh.size(); i2++){  //THIS IS WRONG (17/03/17)
+                    if ( m_intClass->sortVec_pm_hp[i1] == m_intClass->sortVec_ppmm_pphh[i2]){
+                    matches.conservativeResize(2, matches.cols()+1);
+                    matches.col(matches.cols()-1) << i1,i2;
                 }
             }
         }
     }
 
-    matches_recv = distributeChannels(matches_root, 2);
+    //auto t2 = Clock::now();
+    //auto t3 = Clock::now();
 
-    int i1; int i2;
-    for (int i=0; i<matches_recv.cols(); i++){
-        i1 = matches_recv(0,i); i2 = matches_recv(1,i);
-
+    int i1; int i2; int cols = matches.cols();
+#pragma omp parallel for num_threads(m_numThreads) private(i1,i2) firstprivate(cols)
+    for (int i=0; i<cols; i++){
+        i1 = matches(0,i); i2 = matches(1,i);
         Eigen::MatrixXd mat1 = m_intClass->Vhphp[i1]; //I think hphp was made with sign index +- on rows and columns
         Eigen::MatrixXd mat2 = m_ampClass->T2e_makemat(i2, i1);
         Eigen::MatrixXd product = mat2*mat1; //mathematically I need to transpose mat1, but it's symmetric
-
+        //std::cout << "ARGH" << std::endl;
         m_ampClass->T2e_inverse(product, i2, i1);
     }
+    //auto t4 = Clock::now();
+    /*auto t5 = Clock::now();
 
     std::vector<double> TempVec;
     if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
     MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
-    if (world_rank == 0){ m_ampClass->T3_elements_A_temp = TempVec ;}
+    auto t6 = Clock::now();*/
+    //auto t7 = Clock::now();
 
     if (world_rank == 0){
+        //m_ampClass->T3_elements_A_temp = TempVec;
         m_ampClass->addElementsT3_T2e();
     }
+    //auto t8 = Clock::now();
+
+    /*std::cout << "Init matrices: " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << std::endl;
+    std::cout << "Sum:           " << std::chrono::duration_cast<std::chrono::milliseconds>(t4 - t3).count() << std::endl;
+    //std::cout << "Send elements: " << std::chrono::duration_cast<std::chrono::milliseconds>(t6 - t5).count() << std::endl;
+    std::cout << "Inverse map:   " << std::chrono::duration_cast<std::chrono::milliseconds>(t8 - t7).count() << std::endl;*/
 
     /*for (int i1=0; i1<m_intClass->sortVec_pm_hp.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppmm_hhpp.size(); i2++){  //THIS IS WRONG (17/03/17)
@@ -1101,43 +1152,51 @@ void Diagrams::T5a(){
     MPI_Status status;
 
 
-    Eigen::MatrixXi matches_root;
-    Eigen::MatrixXi matches_recv;
+    Eigen::MatrixXi matches;
+
+    std::vector<Eigen::MatrixXd> mat1v;
+    std::vector<Eigen::MatrixXd> mat2v;
 
     if (world_rank == 0){
         for (int i1=0; i1<m_intClass->sortVec_pm_hp.size(); i1++){
                 for (int i2=0; i2<m_intClass->sortVec_pm_ph.size(); i2++){
-                    for (int i3=0; i3<m_intClass->sortVec_ppmm_hhpp.size(); i3++){
-                        if ( m_intClass->sortVec_pm_hp[i1] == m_intClass->sortVec_ppmm_hhpp[i3] && m_intClass->sortVec_pm_hp[i1] == m_intClass->sortVec_pm_ph[i2]){
-                        matches_root.conservativeResize(3, matches_root.cols()+1);
-                        matches_root.col(matches_root.cols()-1) << i1,i2,i3;
+                    for (int i3=0; i3<m_intClass->sortVec_ppmm_pphh.size(); i3++){
+                        if ( m_intClass->sortVec_pm_hp[i1] == m_intClass->sortVec_ppmm_pphh[i3] && m_intClass->sortVec_pm_hp[i1] == m_intClass->sortVec_pm_ph[i2]){
+                        matches.conservativeResize(3, matches.cols()+1);
+                        matches.col(matches.cols()-1) << i1,i2,i3;
+
+                        mat1v.push_back( m_ampClass->T5a_makemat_1(i1, i2) );
+                        mat2v.push_back( m_intClass->T5a_makemat(i1, i2) );
                     }
                 }
             }
         }
     }
 
-    matches_recv = distributeChannels(matches_root, 3);
 
-    int i1; int i2; int i3;
-    for (int i=0; i<matches_recv.cols(); i++){
-        i1 = matches_recv(0,i); i2 = matches_recv(1,i); i3 = matches_recv(2,i);
+    int i1; int i2; int i3; int cols = matches.cols();
+#pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
+    for (int i=0; i<cols; i++){
+        i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
 
-        Eigen::MatrixXd mat1 = m_ampClass->T5a_makemat_1(i1, i2);
+        /*Eigen::MatrixXd mat1 = m_ampClass->T5a_makemat_1(i1, i2);
         Eigen::MatrixXd mat2 = m_intClass->T5a_makemat(i1, i2);
         Eigen::MatrixXd mat3 = m_ampClass->T5a_makemat_2(i3, i2);
-        Eigen::MatrixXd product = mat3*mat2.transpose()*mat1;
+        Eigen::MatrixXd product = mat3*mat2.transpose()*mat1;*/
 
-        m_ampClass->T5a_inverse(product, i3, i2);
+        Eigen::MatrixXd mat3 = m_ampClass->T5a_makemat_2(i3, i1);
+
+        Eigen::MatrixXd product = mat3*mat2v[i]*mat1v[i].transpose();
+
+        m_ampClass->T5a_inverse(product, i3, i1);
     }
 
-    std::vector<double> TempVec;
+    /*std::vector<double> TempVec;
     if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
-    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-
-    if (world_rank == 0){ m_ampClass->T3_elements_A_temp = TempVec ;}
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);*/
 
     if (world_rank == 0){
+        //m_ampClass->T3_elements_A_temp = TempVec;
         m_ampClass->addElementsT3_T5a();
     }
 
@@ -1192,7 +1251,7 @@ Eigen::MatrixXd Diagrams::contructMatT5b(int index){
     int cols = m_ampClass->T3_T5b_indices[index].cols();
     Eigen::MatrixXd returnMat;
     returnMat.conservativeResize(rows, cols);
-    #pragma omp parallel for /*num_threads(2)*/
+    #pragma omp parallel for num_threads(m_numThreads) firstprivate(rows, cols)
     for (int row=0; row<rows; row++){
         for (int col=0; col<cols; col++){
             returnMat(row,col) = m_ampClass->T3_elements_A[m_ampClass->T3_T5b_indices[index](row, col) ];
@@ -1206,7 +1265,7 @@ Eigen::MatrixXd Diagrams::contructMatT5c(int index){
     int cols = m_ampClass->T3_T5c_indices[index].cols();
     Eigen::MatrixXd returnMat;
     returnMat.conservativeResize(rows, cols);
-    #pragma omp parallel for /*num_threads(2)*/
+    #pragma omp parallel for num_threads(m_numThreads) firstprivate(rows, cols)
     for (int row=0; row<rows; row++){
         for (int col=0; col<cols; col++){
             returnMat(row,col) = m_ampClass->T3_elements_A[m_ampClass->T3_T5c_indices[index](row, col) ];
@@ -1286,7 +1345,6 @@ void Diagrams::T5b(){
                     tempMat = mat2.transpose()*mat1;
                     mat3 = contructMatT5b(index);
                     product = -0.5*mat3*tempMat;
-
 
                     //m_ampClass->T5b_inverse(product, i3, i1);
                     m_ampClass->T5b_inverse_I(product, index);
@@ -1386,43 +1444,50 @@ void Diagrams::T5d(){
     MPI_Status status;
 
 
-    Eigen::MatrixXi matches_root;
-    Eigen::MatrixXi matches_recv;
+    Eigen::MatrixXi matches;
+
+    std::vector<Eigen::MatrixXd> mat1v;
+    std::vector<Eigen::MatrixXd> mat2v;
 
     if (world_rank == 0){
         for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
                 for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
                     for (int i3=0; i3<m_intClass->sortVec_ppm_pph.size(); i3++){
                         if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_pph[i3] && m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i2]){
-                        matches_root.conservativeResize(3, matches_root.cols()+1);
-                        matches_root.col(matches_root.cols()-1) << i1,i2,i3;
+                            matches.conservativeResize(3, matches.cols()+1);
+                            matches.col(matches.cols()-1) << i1,i2,i3;
+
+                            mat1v.push_back( m_ampClass->T5d_makemat_1(i2, i1) );
+                            mat2v.push_back( m_intClass->T5d_makemat(i2, i1) );
                     }
                 }
             }
         }
     }
 
-    matches_recv = distributeChannels(matches_root, 3);
+    int i1; int i2; int i3; int cols = matches.cols();
+#pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
+    for (int i=0; i<cols; i++){
+        i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
 
-    int i1; int i2; int i3;
-    for (int i=0; i<matches_recv.cols(); i++){
-        i1 = matches_recv(0,i); i2 = matches_recv(1,i); i3 = matches_recv(2,i);
-
-        Eigen::MatrixXd mat1 = m_ampClass->T5d_makemat_1(i2, i1);
+        /*Eigen::MatrixXd mat1 = m_ampClass->T5d_makemat_1(i2, i1);
         Eigen::MatrixXd mat2 = m_intClass->T5d_makemat(i2, i1);
         Eigen::MatrixXd mat3 = m_ampClass->T5d_makemat_2(i2, i3);
-        Eigen::MatrixXd product = -0.5*mat1*mat2.transpose()*mat3;
+        Eigen::MatrixXd product = -0.5*mat1*mat2.transpose()*mat3;*/
+
+        Eigen::MatrixXd mat3 = m_ampClass->T5d_makemat_2(i2, i3);
+
+        Eigen::MatrixXd product = -0.5*mat1v[i]*mat2v[i].transpose()*mat3;
 
         m_ampClass->T5d_inverse(product, i2, i3);
     }
 
-    std::vector<double> TempVec;
+    /*std::vector<double> TempVec;
     if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
-    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-
-    if (world_rank == 0){ m_ampClass->T3_elements_A_temp = TempVec ;}
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);*/
 
     if (world_rank == 0){
+        //m_ampClass->T3_elements_A_temp = TempVec;
         m_ampClass->addElementsT3_T5d();
     }
 
@@ -1455,43 +1520,49 @@ void Diagrams::T5e(){
     MPI_Status status;
 
 
-    Eigen::MatrixXi matches_root;
-    Eigen::MatrixXi matches_recv;
+    Eigen::MatrixXi matches;
+
+    std::vector<Eigen::MatrixXd> mat1v;
+    std::vector<Eigen::MatrixXd> mat2v;
 
     if (world_rank == 0){
         for (int i1=0; i1<m_intClass->sortVec_p_h.size(); i1++){
                 for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
                     for (int i3=0; i3<m_intClass->sortVec_ppm_pph.size(); i3++){
                         if ( m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_pph[i3] && m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_hhp[i2]){
-                        matches_root.conservativeResize(3, matches_root.cols()+1);
-                        matches_root.col(matches_root.cols()-1) << i1,i2,i3;
+                        matches.conservativeResize(3, matches.cols()+1);
+                        matches.col(matches.cols()-1) << i1,i2,i3;
+
+                        mat1v.push_back( m_ampClass->T5e_makemat_1(i3, i1) );
+                        mat2v.push_back( m_intClass->T5e_makemat(i3, i1) );
                     }
                 }
             }
         }
     }
 
-    matches_recv = distributeChannels(matches_root, 3);
+    int i1; int i2; int i3; int cols = matches.cols();
+    #pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
+    for (int i=0; i<cols; i++){
+        i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
 
-    int i1; int i2; int i3;
-    for (int i=0; i<matches_recv.cols(); i++){
-        i1 = matches_recv(0,i); i2 = matches_recv(1,i); i3 = matches_recv(2,i);
-
-        Eigen::MatrixXd mat1 = m_ampClass->T5e_makemat_1(i3, i1);
+        /*Eigen::MatrixXd mat1 = m_ampClass->T5e_makemat_1(i3, i1);
         Eigen::MatrixXd mat2 = m_intClass->T5e_makemat(i3, i1);
         Eigen::MatrixXd mat3 = m_ampClass->T5e_makemat_2(i2, i3);
-        Eigen::MatrixXd product = -0.5*mat3*mat2*mat1.transpose();
+        Eigen::MatrixXd product = -0.5*mat3*mat2*mat1.transpose();*/
+
+        Eigen::MatrixXd mat3 = m_ampClass->T5e_makemat_2(i2, i3);
+        Eigen::MatrixXd product = -0.5*mat3*mat2v[i]*mat1v[i].transpose();
 
         m_ampClass->T5e_inverse(product, i2, i3);
     }
 
-    std::vector<double> TempVec;
+    /*std::vector<double> TempVec;
     if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
-    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-
-    if (world_rank == 0){ m_ampClass->T3_elements_A_temp = TempVec ;}
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);*/
 
     if (world_rank == 0){
+        //m_ampClass->T3_elements_A_temp = TempVec;
         m_ampClass->addElementsT3_T5e();
     }
 
@@ -1524,43 +1595,49 @@ void Diagrams::T5f(){
     MPI_Status status;
 
 
-    Eigen::MatrixXi matches_root;
-    Eigen::MatrixXi matches_recv;
+    Eigen::MatrixXi matches;
+
+    std::vector<Eigen::MatrixXd> mat1v;
+    std::vector<Eigen::MatrixXd> mat2v;
 
     if (world_rank == 0){
         for (int i1=0; i1<m_intClass->sortVec_pp_hh.size(); i1++){
                 for (int i2=0; i2<m_intClass->sortVec_pp_pp.size(); i2++){
                     for (int i3=0; i3<m_intClass->sortVec_pppm_ppph.size(); i3++){
                         if ( m_intClass->sortVec_pp_hh[i1] == m_intClass->sortVec_pp_pp[i2] && m_intClass->sortVec_pp_hh[i1] == m_intClass->sortVec_pppm_ppph[i3]){
-                        matches_root.conservativeResize(3, matches_root.cols()+1);
-                        matches_root.col(matches_root.cols()-1) << i1,i2,i3;
+                        matches.conservativeResize(3, matches.cols()+1);
+                        matches.col(matches.cols()-1) << i1,i2,i3;
+
+                        mat1v.push_back( m_ampClass->T5f_makemat_1(i1, i2) );
+                        mat2v.push_back( m_intClass->T5f_makemat(i1, i2) );
                     }
                 }
             }
         }
     }
 
-    matches_recv = distributeChannels(matches_root, 3);
+    int i1; int i2; int i3; int cols = matches.cols();
+    #pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
+    for (int i=0; i<cols; i++){
+        i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
 
-    int i1; int i2; int i3;
-    for (int i=0; i<matches_recv.cols(); i++){
-        i1 = matches_recv(0,i); i2 = matches_recv(1,i); i3 = matches_recv(2,i);
-
-        Eigen::MatrixXd mat1 = m_ampClass->T5f_makemat_1(i1, i2);
+        /*Eigen::MatrixXd mat1 = m_ampClass->T5f_makemat_1(i1, i2);
         Eigen::MatrixXd mat2 = m_intClass->T5f_makemat(i1, i2);
         Eigen::MatrixXd mat3 = m_ampClass->T5f_makemat_2(i3, i1);
-        Eigen::MatrixXd product = 0.25*mat1*mat2.transpose()*mat3.transpose();
+        Eigen::MatrixXd product = 0.25*mat1*mat2.transpose()*mat3.transpose();*/
+
+        Eigen::MatrixXd mat3 = m_ampClass->T5f_makemat_2(i3, i1);
+        Eigen::MatrixXd product = 0.25*mat1v[i]*mat2v[i].transpose()*mat3.transpose();
 
         m_ampClass->T5f_inverse(product.transpose(), i3, i1);
     }
 
-    std::vector<double> TempVec;
+    /*std::vector<double> TempVec;
     if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
-    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-
-    if (world_rank == 0){ m_ampClass->T3_elements_A_temp = TempVec ;}
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);*/
 
     if (world_rank == 0){
+        //m_ampClass->T3_elements_A_temp = TempVec;
         m_ampClass->addElementsT3_T5f();
     }
 
@@ -1593,43 +1670,50 @@ void Diagrams::T5g(){
     MPI_Status status;
 
 
-    Eigen::MatrixXi matches_root;
-    Eigen::MatrixXi matches_recv;
+    Eigen::MatrixXi matches;
+
+    std::vector<Eigen::MatrixXd> mat1v;
+    std::vector<Eigen::MatrixXd> mat2v;
 
     if (world_rank == 0){
         for (int i1=0; i1<m_intClass->sortVec_pp_hh.size(); i1++){
                 for (int i2=0; i2<m_intClass->sortVec_pp_pp.size(); i2++){
                     for (int i3=0; i3<m_intClass->sortVec_pppm_hhhp.size(); i3++){
                         if ( m_intClass->sortVec_pp_hh[i1] == m_intClass->sortVec_pp_pp[i2] && m_intClass->sortVec_pp_hh[i1] == m_intClass->sortVec_pppm_hhhp[i3]){
-                        matches_root.conservativeResize(3, matches_root.cols()+1);
-                        matches_root.col(matches_root.cols()-1) << i1,i2,i3;
+                        matches.conservativeResize(3, matches.cols()+1);
+                        matches.col(matches.cols()-1) << i1,i2,i3;
+
+                        mat1v.push_back( m_ampClass->T5g_makemat_1(i1, i2) );
+                        mat2v.push_back( m_intClass->T5g_makemat(i1, i2) );
                     }
                 }
             }
         }
     }
 
-    matches_recv = distributeChannels(matches_root, 3);
+    int i1; int i2; int i3; int cols = matches.cols();
+    #pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
+    for (int i=0; i<cols; i++){
+        i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
 
-    int i1; int i2; int i3;
-    for (int i=0; i<matches_recv.cols(); i++){
-        i1 = matches_recv(0,i); i2 = matches_recv(1,i); i3 = matches_recv(2,i);
-
-        Eigen::MatrixXd mat1 = m_ampClass->T5g_makemat_1(i1, i2);
+        /*Eigen::MatrixXd mat1 = m_ampClass->T5g_makemat_1(i1, i2);
         Eigen::MatrixXd mat2 = m_intClass->T5g_makemat(i1, i2);
         Eigen::MatrixXd mat3 = m_ampClass->T5g_makemat_2(i3, i2);
-        Eigen::MatrixXd product = 0.25*mat3*mat2.transpose()*mat1;
+        Eigen::MatrixXd product = 0.25*mat3*mat2.transpose()*mat1;*/
+
+        Eigen::MatrixXd mat3 = m_ampClass->T5g_makemat_2(i3, i2);
+
+        Eigen::MatrixXd product = 0.25*mat3*mat2v[i].transpose()*mat1v[i];
 
         m_ampClass->T5g_inverse(product, i3, i2);
     }
 
-    std::vector<double> TempVec;
+    /*std::vector<double> TempVec;
     if (world_rank == 0){TempVec.resize(m_ampClass->T3_elements_A_temp.size()); }
-    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-
-    if (world_rank == 0){ m_ampClass->T3_elements_A_temp = TempVec ;}
+    MPI_Reduce(m_ampClass->T3_elements_A_temp.data(), TempVec.data(), m_ampClass->T3_elements_A_temp.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);*/
 
     if (world_rank == 0){
+        //m_ampClass->T3_elements_A_temp = TempVec;
         m_ampClass->addElementsT3_T5g();
     }
 

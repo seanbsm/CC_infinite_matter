@@ -29,6 +29,8 @@ public:
     System*      m_system   = nullptr;
     std::vector<Eigen::MatrixXd>  Amplitudes;
 
+    typedef Eigen::Matrix<unsigned long int, Eigen::Dynamic, Eigen::Dynamic> MatrixXuli;
+
     spp::sparse_hash_map<int, double>           T2_elements;
     spp::sparse_hash_map<int, double>           T2_temp;
     spp::sparse_hash_map<int, double>           T2_elements_new;
@@ -40,8 +42,8 @@ public:
     //The T5b and T5c use very demanding remappings, so it's far more efficient, both in CPU and memory,
     //to have matrices storing the indices, rather than finding them on the go.
     //These matrices are made in mapper_5 in the intClass, because this is a late fix
-    std::vector<Eigen::MatrixXi>              T3_T5b_indices;
-    std::vector<Eigen::MatrixXi>              T3_T5c_indices;
+    std::vector<MatrixXuli>              T3_T5b_indices;
+    std::vector<MatrixXuli>              T3_T5c_indices;
 
     //std::unordered_map<int, int>              T2_elements_I;
     //std::vector<double>                       T2_elements_A;
@@ -55,7 +57,7 @@ public:
     void                                      T3_makeMap(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6);
     void                                      T3_makeDirectMat();
     Eigen::MatrixXd                           T3_buildDirectMat(int channel, std::vector<double>& T_vec);
-    std::vector<Eigen::MatrixXi>              T3_directMat;     //holds indices for T3_elements_A to make t_ijk^abc
+    std::vector<MatrixXuli>              T3_directMat;     //holds indices for T3_elements_A to make t_ijk^abc
 
     Eigen::MatrixXd                 make3x1Block(int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<int, double> &T_list);
     Eigen::MatrixXd                 make2x2Block(int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<int, double>& T_list);
@@ -109,10 +111,10 @@ public:
     Eigen::MatrixXd                 T5a_makemat_2(int channel1, int channel2);
     Eigen::MatrixXd                 T5b_makemat_1(int channel1, int channel2);
     Eigen::MatrixXd                 T5b_makemat_2(int channel1, int channel2);
-    Eigen::MatrixXi                 T5b_makemat_2_I(int channel1, int channel2); //index, not double
+    MatrixXuli                      T5b_makemat_2_I(int channel1, int channel2); //index, not double
     Eigen::MatrixXd                 T5c_makemat_1(int channel1, int channel2);
     Eigen::MatrixXd                 T5c_makemat_2(int channel1, int channel2);
-    Eigen::MatrixXi                 T5c_makemat_2_I(int channel1, int channel2); //index, not double
+    MatrixXuli                      T5c_makemat_2_I(int channel1, int channel2); //index, not double
     Eigen::MatrixXd                 T5d_makemat_1(int channel1, int channel2);
     Eigen::MatrixXd                 T5d_makemat_2(int channel1, int channel2);
     Eigen::MatrixXd                 T5e_makemat_1(int channel1, int channel2);

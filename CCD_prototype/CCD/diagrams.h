@@ -20,6 +20,8 @@ public:
 
     Eigen::MatrixXi distributeChannels(Eigen::MatrixXi channels, int elements);
 
+    typedef Eigen::Matrix<unsigned long int, Eigen::Dynamic, Eigen::Dynamic> MatrixXuli;
+
     void setThreads(int numthreads);
     int m_numThreads;
 

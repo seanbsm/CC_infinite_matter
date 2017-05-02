@@ -22,6 +22,9 @@ public:
 
     int m_Counter = 0; //a test counter, used for debugging sessions
 
+    void setThreads(int numthreads);
+    int m_numThreads;
+
     MakeIntMat*  m_intClass = nullptr;
     System*      m_system   = nullptr;
     std::vector<Eigen::MatrixXd>  Amplitudes;
@@ -42,8 +45,10 @@ public:
 
     //std::unordered_map<int, int>              T2_elements_I;
     //std::vector<double>                       T2_elements_A;
-    spp::sparse_hash_map<unsigned long int, int>         T3_elements_I;        //holds indices to T3_elements_A, same for _new and _temp
-    std::vector<spp::sparse_hash_map<unsigned long int, int>> T3_elements_IV;
+    //std::map<unsigned long int, int> T3_elements_I_um;
+    //std::map<unsigned long int, int>        T3_elements_I;        //holds indices to T3_elements_A, same for _new and _temp
+    spp::sparse_hash_map<unsigned long int, unsigned long int>        T3_elements_I;
+    //std::vector<spp::sparse_hash_map<unsigned long int, int>> T3_elements_IV;
     std::vector<double>                       T3_elements_A;        //holds T3 amplitudes
     std::vector<double>                       T3_elements_A_new;    //holds new T3 amplitudes
     std::vector<double>                       T3_elements_A_temp;   //holds temporary diagram contributions
@@ -137,7 +142,7 @@ public:
     void                            T2e_inverse(Eigen::MatrixXd& inMat, int channel1, int channel2);
 
     //since the T3b-e diagrams are more finicky than the rest, we need a remapper for the first product
-    spp::sparse_hash_map<int, double> T3D_remap;
+    spp::sparse_hash_map<unsigned long int, double> T3D_remap;
     void                            T3b_Inverse_temp(Eigen::MatrixXd& inMat, int channel1, int channel2);
     void                            T3c_Inverse_temp(Eigen::MatrixXd inMat, int channel1, int channel2);
     void                            T3d_Inverse_temp(Eigen::MatrixXd& inMat, int channel1, int channel2);

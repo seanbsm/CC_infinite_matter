@@ -306,7 +306,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
                     Eigen::MatrixXd D_contributions = m_ampClass->T3_buildDirectMat(channel, m_ampClass->T3_elements_A_new);
                     Eigen::MatrixXd temp = (D_contributions).array()*m_ampClass->denomMat3[channel].array();
 
-                    Eigen::MatrixXi tempIMat = m_ampClass->T3_directMat[channel]; //this holds indices for T3_elements_A (as well as _new and _temp)
+                    MatrixXuli tempIMat = m_ampClass->T3_directMat[channel]; //this holds indices for T3_elements_A (as well as _new and _temp)
                     int rows = tempIMat.rows();
                     int cols = tempIMat.cols();
 

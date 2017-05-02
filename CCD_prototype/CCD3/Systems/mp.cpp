@@ -113,7 +113,7 @@ int MP::kUnique5(int k, int p, int q, int s, int t, int s1, int s2, int s3, int 
 double MP::f(int p){
     double returnVal = h0(p);
     for (int i=0; i<m_Nh; i++){
-        returnVal += assym_single(p, i);
+        returnVal += 0.5*assym_single(p, i);
     };
     return returnVal;
 }
@@ -169,6 +169,82 @@ double MP::assym(int p, int q, int r, int s){
     return 0.5*returnVal;
 }*/
 
+
+// TEST FUNCTIONS START
+double MP::assym_test(int i, int j, int r, int s){
+      double VRfactor = V_0R/(m_L3)*pow(M_PI/kappa_R,1.5);
+      double VTfactor = -V_0T/(m_L3)*pow(M_PI/kappa_T,1.5);
+      double VSfactor = -V_0S/(m_L3)*pow(M_PI/kappa_S,1.5);
+
+      double V_R1, V_T1, V_S1, V_R2, V_T2, V_S2;
+      double kX1, kY1, kZ1, kX2, kY2, kZ2;
+      double qSquared1, spinEx1, isoSpinEx1, qSquared2, spinEx2, isoSpinEx2;
+      double IsIt1, PsIt1, PsPt1, IsPt1, IsIt2, PsIt2, PsPt2, IsPt2;
+
+      if(m_states(1,i) + m_states(1,j) != m_states(1,r) + m_states(1,s)){ return 0.0; }
+      if(m_states(2,i) + m_states(2,j) != m_states(2,r) + m_states(2,s)){ return 0.0; }
+      if(m_states(3,i) + m_states(3,j) != m_states(3,r) + m_states(3,s)){ return 0.0; }
+      if(m_states(4,i) + m_states(4,j) != m_states(4,r) + m_states(4,s)){ return 0.0; }
+      if(m_states(5,i) + m_states(5,j) != m_states(5,r) + m_states(5,s)){ return 0.0; }
+
+      kX1 = piOverL * (m_states(1,i) - m_states(1,j) - m_states(1,r) + m_states(1,s));
+      kY1 = piOverL * (m_states(2,i) - m_states(2,j) - m_states(2,r) + m_states(2,s));
+      kZ1 = piOverL * (m_states(3,i) - m_states(3,j) - m_states(3,r) + m_states(3,s));
+
+      kX2 = piOverL * (m_states(1,i) - m_states(1,j) - m_states(1,s) + m_states(1,r));
+      kY2 = piOverL * (m_states(2,i) - m_states(2,j) - m_states(2,s) + m_states(2,r));
+      kZ2 = piOverL * (m_states(3,i) - m_states(3,j) - m_states(3,s) + m_states(3,r));
+
+      qSquared1 = kX1 * kX1 + kY1 * kY1 + kZ1 * kZ1;
+      qSquared2 = kX2 * kX2 + kY2 * kY2 + kZ2 * kZ2;
+
+      V_R1 = VRfactor * exp(-qSquared1/(4*kappa_R));
+      V_T1 = VTfactor * exp(-qSquared1/(4*kappa_T));
+      V_S1 = VSfactor * exp(-qSquared1/(4*kappa_S));
+
+      V_R2 = VRfactor * exp(-qSquared2/(4*kappa_R));
+      V_T2 = VTfactor * exp(-qSquared2/(4*kappa_T));
+      V_S2 = VSfactor * exp(-qSquared2/(4*kappa_S));
+
+      spinEx1 = spinExchangeTerm(m_states(4,i), m_states(4,j), m_states(4,r), m_states(4,s));
+      isoSpinEx1 = spinExchangeTerm(m_states(5,i), m_states(5,j), m_states(5,r), m_states(5,s));
+
+      spinEx2 = spinExchangeTerm(m_states(4,i), m_states(4,j), m_states(4,s), m_states(4,r));
+      isoSpinEx2 = spinExchangeTerm(m_states(5,i), m_states(5,j), m_states(5,s), m_states(5,r));
+
+      IsIt1 = kroneckerDelta(m_states(4,i), m_states(4,r)) * kroneckerDelta(m_states(4,j), m_states(4,s)) *
+              kroneckerDelta(m_states(5,i), m_states(5,r)) * kroneckerDelta(m_states(5,j), m_states(5,s));
+      PsIt1 = spinEx1 * kroneckerDelta(m_states(5,i), m_states(5,r)) * kroneckerDelta(m_states(5,j), m_states(5,s));
+      PsPt1 = spinEx1 * isoSpinEx1;
+      IsPt1 = kroneckerDelta(m_states(4,i), m_states(4,r))*kroneckerDelta(m_states(4,j), m_states(4,s)) * isoSpinEx1;
+
+      IsIt2 = kroneckerDelta(m_states(4,i), m_states(4,s)) * kroneckerDelta(m_states(4,j), m_states(4,r)) *
+              kroneckerDelta(m_states(5,i), m_states(5,s)) * kroneckerDelta(m_states(5,j), m_states(5,r));
+      PsIt2 = spinEx2 * kroneckerDelta(m_states(5,i), m_states(5,s)) * kroneckerDelta(m_states(5,j), m_states(5,r));
+      PsPt2 = spinEx2 * isoSpinEx2;
+      IsPt2 = kroneckerDelta(m_states(4,i), m_states(4,s)) * kroneckerDelta(m_states(4,j), m_states(4,r)) * isoSpinEx2;
+
+      return 0.5 * (V_R1 + 0.5*V_T1 + 0.5*V_S1) * IsIt1 +
+              0.25 * (V_T1 - V_S1) * PsIt1 -
+              0.5 * (V_R1 + 0.5*V_T1 + 0.5*V_S1) * PsPt1 -
+              0.25 * (V_T1 - V_S1) * IsPt1 -
+              0.5 * (V_R2 + 0.5*V_T2 + 0.5*V_S2) * IsIt2 -
+              0.25 * (V_T2 - V_S2) * PsIt2 +
+              0.5 * (V_R2 + 0.5*V_T2 + 0.5*V_S2) * PsPt2 +
+              0.25 * (V_T2 - V_S2) * IsPt2;
+}
+
+int MP::kroneckerDelta(const int &i, const int &j) {
+  if(i != j){ return 0; }
+  return 1;
+}
+
+int MP::spinExchangeTerm(const int &i, const int &j, const int &k, const int &l) {
+  if(i == l && j == k){ return 1; }
+  else{ return 0; }
+}
+//TEST FUNCTIONS END
+
 double MP::assym(int p, int q, int r, int s){
     Eigen::Vector3i kp( m_states(1,p), m_states(2,p), m_states(3,p) );
     Eigen::Vector3i kq( m_states(1,q), m_states(2,q), m_states(3,q) );
@@ -184,18 +260,18 @@ double MP::assym(int p, int q, int r, int s){
     if ( sp+sq != sr+ss){ return 0; }               //spin conservation
     if ( tp+tq != tr+ts){ return 0; }               //isospin conservation
 
-    double q2_dir = 0.25*piOverL*piOverL*(kp-kq-kr+ks).squaredNorm();   // <pq||rs> (direct)
-    double q2_ex = 0.25*piOverL*piOverL*(kp-kq+kr-ks).squaredNorm();    // <pq||sr> (exchange)
+    double q2_dir = piOverL*piOverL*(kp-kq-kr+ks).squaredNorm();   // <pq||rs> (direct)
+    double q2_ex = piOverL*piOverL*(kp-kq+kr-ks).squaredNorm();    // <pq||sr> (exchange)
 
    // cout << q2_ex << endl;
 
-    double VR_dir = V_0R_fac*exp(-q2_dir/(4*kappa_R));
-    double VT_dir = V_0T_fac*exp(-q2_dir/(4*kappa_T));
-    double VS_dir = V_0S_fac*exp(-q2_dir/(4*kappa_S));
+    double VR_dir = V_0R_fac*exp(-q2_dir/(4.0*kappa_R));
+    double VT_dir = V_0T_fac*exp(-q2_dir/(4.0*kappa_T));
+    double VS_dir = V_0S_fac*exp(-q2_dir/(4.0*kappa_S));
 
-    double VR_ex = V_0R_fac*exp(-q2_ex/(4*kappa_R));
-    double VT_ex = V_0T_fac*exp(-q2_ex/(4*kappa_T));
-    double VS_ex = V_0S_fac*exp(-q2_ex/(4*kappa_S));
+    double VR_ex = V_0R_fac*exp(-q2_ex/(4.0*kappa_R));
+    double VT_ex = V_0T_fac*exp(-q2_ex/(4.0*kappa_T));
+    double VS_ex = V_0S_fac*exp(-q2_ex/(4.0*kappa_S));
 
 
     bool Ps_dir = (sp==ss)*(sq==sr);    //exchange spins
@@ -219,6 +295,11 @@ double MP::assym(int p, int q, int r, int s){
                - 0.5*(VT_ex - VS_ex)*Ps_ex*Ct_ex
                + (VR_ex + 0.5*VT_ex + 0.5*VS_ex)*Ps_ex*Pt_ex
                + 0.5*(VT_ex - VS_ex)*Cs_ex*Pt_ex;
+
+    //use to compare with morten's code
+    /*double temp = assym_test(p,q,r,s);
+    double diff = abs(temp - 0.5*returnVal);
+    if (diff > 1e-14){std::cout << diff << std::endl;}*/
 
     return 0.5*returnVal;
 }

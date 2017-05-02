@@ -1055,7 +1055,7 @@ Eigen::MatrixXd MakeIntMat::I1_makemat(int channel1, int channel2){    //makes a
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+  unsigned long int id;
     int k; int l;
     int c; int d;
 
@@ -1092,7 +1092,7 @@ Eigen::MatrixXd MakeIntMat::I2_makemat(int channel1, int channel2){    //makes a
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+  unsigned long int id;
     int k; int l;
     int c; int d;
 
@@ -1130,7 +1130,7 @@ Eigen::MatrixXd MakeIntMat::I3_makemat(int channel1, int channel2){    //makes a
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+  unsigned long int id;
     int k; int l;
     int c; int d;
 
@@ -1168,7 +1168,7 @@ Eigen::MatrixXd MakeIntMat::I4_makemat(int channel1, int channel2){    //makes a
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+    unsigned long int id;
     int k; int l;
     int c; int d;
 
@@ -1206,7 +1206,7 @@ Eigen::MatrixXd MakeIntMat::D10b_makemat(int channel1, int channel2){    //makes
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+    unsigned long int id;
     int a; int k;
     int c; int d;
 
@@ -1237,7 +1237,7 @@ Eigen::MatrixXd MakeIntMat::D10c_makemat(int channel1, int channel2){
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+    unsigned long int id;
     int k; int l;
     int c; int j;
 
@@ -1268,7 +1268,7 @@ Eigen::MatrixXd MakeIntMat::T1a_makemat(int channel1, int channel2){    //makes 
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+    unsigned long int id;
     int b; int c;
     int d; int k;
 
@@ -1298,7 +1298,7 @@ Eigen::MatrixXd MakeIntMat::T1b_makemat(int channel1, int channel2){    //makes 
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+    unsigned long int id;
     int j; int k;
     int l; int c;
 
@@ -1329,7 +1329,7 @@ Eigen::MatrixXd MakeIntMat::T3b_makemat(int channel1, int channel2){    //makes 
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+    unsigned long int id;
     int d; int e;
     int b; int l;
 
@@ -1359,7 +1359,7 @@ Eigen::MatrixXd MakeIntMat::T3c_makemat(int channel1, int channel2){    //makes 
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+    unsigned long int id;
     int l; int m;
     int j; int d;
 
@@ -1389,7 +1389,7 @@ Eigen::MatrixXd MakeIntMat::T3d_makemat(int channel1, int channel2){    //makes 
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+    unsigned long int id;
     int d; int e;
     int c; int l;
 
@@ -1419,7 +1419,7 @@ Eigen::MatrixXd MakeIntMat::T3e_makemat(int channel1, int channel2){    //makes 
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+    unsigned long int id;
     int l; int m;
     int k; int d;
 
@@ -1449,7 +1449,7 @@ Eigen::MatrixXd MakeIntMat::T5a_makemat(int channel1, int channel2){    //makes 
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+    unsigned long int id;
     int l; int m;
     int d; int e;
 
@@ -1479,7 +1479,7 @@ Eigen::MatrixXd MakeIntMat::T5b_makemat(int channel1, int channel2){    //makes 
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+    unsigned long int id;
     int l; int m;
     int d; int e;
 
@@ -1509,7 +1509,7 @@ Eigen::MatrixXd MakeIntMat::T5c_makemat(int channel1, int channel2){    //makes 
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+    unsigned long int id;
     int l; int m;
     int d; int e;
 
@@ -1539,7 +1539,7 @@ Eigen::MatrixXd MakeIntMat::T5d_makemat(int channel1, int channel2){    //makes 
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+    unsigned long int id;
     int l; int m;
     int d; int e;
 
@@ -1569,7 +1569,7 @@ Eigen::MatrixXd MakeIntMat::T5e_makemat(int channel1, int channel2){    //makes 
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+    unsigned long int id;
     int l; int m;
     int d; int e;
 
@@ -1599,7 +1599,7 @@ Eigen::MatrixXd MakeIntMat::T5f_makemat(int channel1, int channel2){    //makes 
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+    unsigned long int id;
     int l; int m;
     int d; int e;
 
@@ -1629,7 +1629,7 @@ Eigen::MatrixXd MakeIntMat::T5g_makemat(int channel1, int channel2){    //makes 
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    int id;
+    unsigned long int id;
     int l; int m;
     int d; int e;
 
@@ -1731,7 +1731,7 @@ Eigen::MatrixXd MakeIntMat::make3x1Block(int ku, int i1, int i2, int i3, int i4)
     //cout << indexHolder1_pointer.cols() << endl;
 
     returnMat.conservativeResize(dim1, dim2);
-    int id;
+    unsigned long int id;
     if (cond_hhp && cond_p){
         for (int i = range_lower1; i<range_upper1; i++){
             for (int j = range_lower2; j<range_upper2; j++){
@@ -1973,6 +1973,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     m_Nh3    = Nh*Nh*Nh;
     m_Nh4    = Nh*Nh*Nh*Nh;
     m_Nh5    = Nh*Nh*Nh*Nh*Nh;
+    m_NhNs   = Nh*Ns;
     m_NhNs2  = Nh*Ns*Ns;
     m_Nh2Ns  = Nh*Nh*Ns;
     m_Nh3Ns  = Nh*Nh*Nh*Ns;
@@ -2869,17 +2870,33 @@ void MakeIntMat::makeMatVec(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, in
 // ##                                              ##
 // ##################################################
 
-int MakeIntMat::Identity_hhhp(int h1, int h2, int h3, int p1){
-    return h1 + h2*m_Nh + h3*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh;
+unsigned long MakeIntMat::Identity_hhhp(int h1, int h2, int h3, int p1){
+    //return h1 + h2*m_Nh + h3*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh;
+    //return h1 + h2*m_Nh + h3*m_Nh2 + p1*m_Nh3;
+    unsigned long int out = (unsigned long int)h1
+                                + (unsigned long int)h2*m_Nh
+                                + (unsigned long int)h3*m_Nh2
+                                + (unsigned long int)p1*m_Nh3;
+    return out;
 }
 
-int MakeIntMat::Identity_hhpp(int h1, int h2, int p1, int p2){
-    return h1 + h2*m_Nh + p1*m_Nh*m_Nh + p2*m_Nh*m_Nh*(m_Ns);
+unsigned long MakeIntMat::Identity_hhpp(int h1, int h2, int p1, int p2){
+    //return h1 + h2*m_Nh + p1*m_Nh*m_Nh + p2*m_Nh*m_Nh*(m_Ns);
+    //return h1 + h2*m_Nh + p1*m_Nh2 + p2*m_Nh2Ns;
+    unsigned long int out = (unsigned long int)h1
+                                + (unsigned long int)h2*m_Nh
+                                + (unsigned long int)p1*m_Nh2
+                                + (unsigned long int)p2*m_Nh2Ns;
+    return out;
 }
 
-int MakeIntMat::Identity_ppph(int p1, int p2, int p3, int h1){
-    int out = h1 + p1*m_Nh + p2*m_Nh*(m_Ns) + p3*m_Nh*(m_Ns)*(m_Ns);
-    if(out<0){std::cout << "id_ppph " << out << std::endl;}
+unsigned long int MakeIntMat::Identity_ppph(int p1, int p2, int p3, int h1){
+    //int out = h1 + p1*m_Nh + p2*m_Nh*(m_Ns) + p3*m_Nh*(m_Ns)*(m_Ns);
+    unsigned long int out = (unsigned long int)h1
+                                + (unsigned long int)p1*m_Nh
+                                + (unsigned long int)p2*m_NhNs
+                                + (unsigned long int)p3*m_NhNs2;
+    //if(out<0){std::cout << "id_ppph " << out << std::endl;}
     //std::cout << out << std::endl;
     return out;
     //return h1 + p1*m_Nh + p2*m_Nh*(m_Ns-m_Nh) + p3*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
@@ -2914,10 +2931,10 @@ unsigned long int MakeIntMat::Identity_hhhppp(int h1, int h2, int h3, int p1, in
 unsigned long int MakeIntMat::Identity_hhhhhp(int h1, int h2, int h3, int h4, int h5, int p1){
     unsigned long int out = (unsigned long int)h1
                             + (unsigned long int)h2*m_Nh
-                            + (unsigned long int)h3*m_Nh*m_Nh
-                            + (unsigned long int)h4*m_Nh*m_Nh*m_Nh
-                            + (unsigned long int)h5*m_Nh*m_Nh*m_Nh*m_Nh
-                            + (unsigned long int)p1*m_Nh*m_Nh*m_Nh*m_Nh*m_Nh;
+                            + (unsigned long int)h3*m_Nh2   //*m_Nh
+                            + (unsigned long int)h4*m_Nh3   //*m_Nh*m_Nh
+                            + (unsigned long int)h5*m_Nh4   //*m_Nh*m_Nh*m_Nh
+                            + (unsigned long int)p1*m_Nh5;  //*m_Nh*m_Nh*m_Nh*m_Nh*m_Nh;
     //if(out<0){std::cout << "id_hhhhhp " << out << std::endl;}
     return out;
     //return h1 + h2*m_Nh + h3*m_Nh*m_Nh + h4*m_Nh*m_Nh*m_Nh + h5*m_Nh*m_Nh*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh*m_Nh*m_Nh;

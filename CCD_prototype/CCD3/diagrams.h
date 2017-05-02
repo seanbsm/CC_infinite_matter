@@ -20,6 +20,9 @@ public:
 
     Eigen::MatrixXi distributeChannels(Eigen::MatrixXi channels, int elements);
 
+    void setThreads(int numthreads);
+    int m_numThreads;
+
     //because screw general solvers
     void makeT5bIndexMat();
     void makeT5cIndexMat();

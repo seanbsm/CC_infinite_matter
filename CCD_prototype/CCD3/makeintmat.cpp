@@ -5,6 +5,7 @@
 #include <omp.h>
 #include <mpi.h>
 #include <iostream>
+#include <iomanip>
 
 using namespace std;
 
@@ -26,6 +27,9 @@ vector<size_t> sort_indexes(const vector<T> &v) {
     return idx;
 }
 
+void MakeIntMat::setThreads(int numthreads){
+    m_numThreads = numthreads;
+}
 
 void MakeIntMat::makePermutations(){
 
@@ -100,7 +104,7 @@ void MakeIntMat::makePermutations(){
             }*/
 
             //int n = omp_get_max_threads();
-            #pragma omp parallel for /*num_threads(2)*/ private(i2,j2,k2, val_ij2,val_ik2,val_jk2,val_ijik2,val_ijjk2)
+            #pragma omp parallel for num_threads(m_numThreads) private(i2,j2,k2, val_ij2,val_ik2,val_jk2,val_ijik2,val_ijjk2)
             for (int it2 = range_lower_h; it2<range_upper_h; it2++){
                 i2 = blockArrays_ppp_hhh(1,it2);
                 j2 = blockArrays_ppp_hhh(2,it2);
@@ -169,7 +173,7 @@ void MakeIntMat::makePermutations(){
             }*/
 
             //int n = omp_get_max_threads();
-            #pragma omp parallel for /*num_threads(2)*/ private(a2,b2,c2, val_ab2,val_ac2,val_bc2,val_abac2,val_abbc2)
+            #pragma omp parallel for num_threads(m_numThreads) private(a2,b2,c2, val_ab2,val_ac2,val_bc2,val_abac2,val_abbc2)
             for (int it2 = range_lower_p; it2<range_upper_p; it2++){  //starting at it1+1 means I'll never do the same permutation twice
                 a2 = blockArrays_ppp_ppp(1,it2);
                 b2 = blockArrays_ppp_ppp(2,it2);
@@ -616,7 +620,7 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
     int colSize     = 0;
 
     bool cond_hhpp = (i1 == 0 && i2 == 0 && i3==1 && i4==1);
-    //bool cond_pphh = (i1 == 1 && i2 == 1 && i3==0 && i4==0);
+    bool cond_pphh = (i1 == 1 && i2 == 1 && i3==0 && i4==0);
     bool cond_hhhp = (i1 == 0 && i2 == 0 && i3==0 && i4==1);
     bool cond_ppph = (i1 == 1 && i2 == 1 && i3==1 && i4==0);
 
@@ -670,7 +674,7 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
         }*/
     }
     // 0 0 1 1
-    if (cond_hhpp){
+    if (cond_hhpp){ //this isn't used anymore after fix of T5a
         std::cout << "hhpp" << std::endl;
         colSize = 10000;//m_Nh*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
         blockArrays_temp1.conservativeResize(5, colSize);
@@ -698,6 +702,54 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
         }
 
         std::cout << "made blockArrays_ppmm_hhpp" << std::endl;
+
+        blockArrays_temp2.conservativeResize(5, index);
+        for (int c=0; c<index; c++){
+            blockArrays_temp2.col(c) = blockArrays_temp1.col(c);
+        }
+
+        blockArrays_temp1.resize(0,0);
+
+        /*for (int i=0; i<m_Nh; i++){
+            for (int j=0; j<m_Nh; j++){
+                for (int a=m_Nh; a<m_Ns; a++){
+                    for (int b=m_Nh; b<m_Ns; b++){
+                        blockArrays_temp.col(index) << m_system->kUnique4(i,j,a,b,s1,s2,s3,s4),i,j,a,b;
+                        index += 1;
+                    }
+                }
+            }
+        }*/
+    }
+    // 1 1 0 0
+    if (cond_pphh){
+        std::cout << "pphh" << std::endl;
+        colSize = 10000;//m_Nh*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
+        blockArrays_temp1.conservativeResize(5, colSize);
+
+        int ku;
+
+        for (int a=m_Nh; a<m_Ns; a++){
+            for (int b=m_Nh; b<m_Ns; b++){
+                for (int i=0; i<m_Nh; i++){
+                    for (int j=0; j<m_Nh; j++){
+                        ku = m_system->kUnique4(a,b,i,j,s1,s2,s3,s4);
+                        auto it = std::find(sortVec_pm_hp.begin(), sortVec_pm_hp.end(), ku);
+                        if (it != sortVec_pm_hp.end()){
+                            blockArrays_temp1.col(index) << ku,a,b,i,j;
+                            index += 1;
+
+                            if (index >= colSize){
+                                colSize += 10000;
+                                blockArrays_temp1.conservativeResize(5, colSize);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        std::cout << "made blockArrays_ppmm_pphh" << std::endl;
 
         blockArrays_temp2.conservativeResize(5, index);
         for (int c=0; c<index; c++){
@@ -1402,11 +1454,11 @@ Eigen::MatrixXd MakeIntMat::T5a_makemat(int channel1, int channel2){    //makes 
     int d; int e;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
-        l = blockArrays_pm_hp(1,i1);
-        d = blockArrays_pm_hp(2,i1);
+        m = blockArrays_pm_hp(1,i1);
+        e = blockArrays_pm_hp(2,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-            e = blockArrays_pm_ph(1,i2);
-            m = blockArrays_pm_ph(2,i2);
+            d = blockArrays_pm_ph(1,i2);
+            l = blockArrays_pm_ph(2,i2);
 
             id = Identity_hhpp(l,m,d,e);
             returnMat(i1-range_lower1, i2-range_lower2) = Vhhpp_elements[id];
@@ -1912,13 +1964,22 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
 
     m_system = system;
-    m_Nh = Nh;
-    m_Ns = Ns;
-    m_Np = Ns-Nh;
+    m_Nh     = Nh;
+    m_Ns     = Ns;
+    m_Np     = Ns-Nh;
 
+    //we use these in the indentity functions (less calculations)
+    m_Nh2    = Nh*Nh;
+    m_Nh3    = Nh*Nh*Nh;
+    m_Nh4    = Nh*Nh*Nh*Nh;
+    m_Nh5    = Nh*Nh*Nh*Nh*Nh;
+    m_NhNs2  = Nh*Ns*Ns;
+    m_Nh2Ns  = Nh*Nh*Ns;
+    m_Nh3Ns  = Nh*Nh*Nh*Ns;
+    m_Nh3Ns2 = Nh*Nh*Nh*Ns*Ns;
 
-    //The mapper functions take ascending values, i.e. they won't accept (1,0,1) as argument, but (0,1,1) works
-    //I did this for several reasons, none of which I see the point in jotting down here
+    //I only bothered to let the mapper functions take on the values shown here
+    //Any other blockArrays you want to make will have to be implemented by yourself (it's not hard)
 
     mapper_1(sortVec_p_h, blockArrays_p_h, 0, 1);        //h
     mapper_1(sortVec_p_p, blockArrays_p_p, 1, 1);        //p
@@ -1943,8 +2004,10 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         if (world_rank==0){"finished ppp";}
         mapper_4(sortVec_pppm_hhhp, blockArrays_pppm_hhhp, 0,0,0,1, 1,1,1,-1);     //hhhp
         if (world_rank==0){"finished hhhp";}
-        mapper_4(sortVec_ppmm_hhpp, blockArrays_ppmm_hhpp, 0,0,1,1, 1,1,-1,-1);    //hhpp
-        if (world_rank==0){"finished hhpp";}
+        //mapper_4(sortVec_ppmm_hhpp, blockArrays_ppmm_hhpp, 0,0,1,1, 1,1,-1,-1);    //hhpp
+        //if (world_rank==0){"finished hhpp";}
+        mapper_4(sortVec_ppmm_pphh, blockArrays_ppmm_pphh, 1,1,0,0, 1,1,-1,-1);    //pphh
+        if (world_rank==0){"finished pphh";}
         mapper_4(sortVec_pppm_ppph, blockArrays_pppm_ppph, 1,1,1,0, 1,1,1,-1);     //ppph
         if (world_rank==0){"finished ppph";}
 
@@ -2360,7 +2423,8 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             indexHolder_pppm_hhhp.col(hhhp) << range_lower, range_upper; //this now has same indices as sortVec
         }
 
-        counter     = 0;
+        //this isn't used anymore after T5a fix
+        /*counter     = 0;
         range_lower = 0;
         range_upper = 0;
         indexHolder_ppmm_hhpp.conservativeResize(2,sortVec_ppmm_hhpp.size());
@@ -2381,6 +2445,29 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             range_lower = range_upper - counter;
             counter = 0;
             indexHolder_ppmm_hhpp.col(hhpp) << range_lower, range_upper; //this now has same indices as sortVec
+        }*/
+
+            counter     = 0;
+            range_lower = 0;
+            range_upper = 0;
+            indexHolder_ppmm_pphh.conservativeResize(2,sortVec_ppmm_pphh.size());
+            for (int pphh=0; pphh<sortVec_ppmm_pphh.size(); pphh++){
+                int val_pphh = sortVec_ppmm_pphh[pphh];
+                auto it = std::find(sortVec_pm_hp.begin(), sortVec_pm_hp.end(), val_pphh);
+                if (it != sortVec_pm_hp.end()){
+                    for (int bA_pphh=range_upper; bA_pphh<blockArrays_ppmm_pphh.cols(); bA_pphh++){
+                        if (val_pphh == blockArrays_ppmm_pphh(0,bA_pphh)){
+                            range_upper = bA_pphh+1;
+                            counter += 1;
+                        }
+                        else if (val_pphh < blockArrays_ppmm_pphh(0,bA_pphh)){
+                            break;
+                        }
+                    }
+                }
+                range_lower = range_upper - counter;
+                counter = 0;
+                indexHolder_ppmm_pphh.col(pphh) << range_lower, range_upper; //this now has same indices as sortVec
         }
 
         counter     = 0;
@@ -2494,6 +2581,33 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     numOfKu = boundsHolder_hhpp_hh.cols();
     //cout << numOfKu <<" "<< sortVec_pp_hh.size() << endl;
 
+
+    /*std::vector<int> temps;
+    for (int i1=0; i1<sortVec_p_p.size(); i1++){
+        for (int i2=0; i2<sortVec_ppm_pph.size(); i2++){
+            for (int i3=0; i3<sortVec_ppm_hhp.size(); i3++){
+                if ( sortVec_p_p[i1] == sortVec_ppm_pph[i2] && sortVec_p_p[i1] == sortVec_ppm_hhp[i3]){
+                    if (std::find(temps.begin(), temps.end(), sortVec_p_p[i1]) == temps.end()){
+                        temps.push_back( sortVec_p_p[i1] );
+                    }
+                }
+            }
+        }
+    }
+    for (int i1=0; i1<sortVec_p_h.size(); i1++){
+        for (int i2=0; i2<sortVec_ppm_hhp.size(); i2++){
+            for (int i3=0; i3<sortVec_ppm_pph.size(); i3++){
+                if ( sortVec_p_h[i1] == sortVec_ppm_hhp[i2] && sortVec_p_h[i1] == sortVec_ppm_pph[i3]){
+                    if (std::find(temps.begin(), temps.end(), sortVec_p_h[i1]) == temps.end()){
+                        temps.push_back( sortVec_p_h[i1] );
+                    }
+                }
+            }
+        }
+    }*/
+
+
+
     if (m_triplesOn){
         counter     = 0;
         range_lower = 0;
@@ -2502,7 +2616,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             for (int ppp=0; ppp<sortVec_ppp_ppp.size(); ppp++){
                 int val_hhh = sortVec_ppp_hhh[hhh];
                 int val_ppp = sortVec_ppp_ppp[ppp];
-                if (val_hhh == val_ppp){      //ensures I only work on cases where hhh and ppp have equal kunique
+                if (val_hhh == val_ppp /*&& std::find(temps.begin(), temps.end(), val_hhh) != temps.end()*/ ){      //ensures I only work on cases where hhh and ppp have equal kunique
                     for (int hhh2=0; hhh2<blockArrays_ppp_hhh.cols(); hhh2++){
                         if ( val_hhh == blockArrays_ppp_hhh(0,hhh2) ){
                             range_upper_hhh = hhh2+1;
@@ -2535,12 +2649,23 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     if (world_rank==0){cout << "made indexHolders" << endl;}
 
     //make Vhhpp map
-    for (int h=0; h<boundsHolder_hhpp_hh.cols(); h++){
+    /*for (int h=0; h<boundsHolder_hhpp_hh.cols(); h++){
         range_lower_hh = boundsHolder_hhpp_hh(0,h);
         range_upper_hh = boundsHolder_hhpp_hh(1,h);
         range_lower_pp = boundsHolder_hhpp_pp(0,h);
         range_upper_pp = boundsHolder_hhpp_pp(1,h);
         makeMatMap_hhpp(blockArrays_pp_hh, blockArrays_pp_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp);
+    }*/
+    for (int hh=0; hh<sortVec_pp_hh.size(); hh++){
+        for (int pp=0; pp<sortVec_pp_pp.size(); pp++){
+            if (sortVec_pp_hh[hh] == sortVec_pp_pp[pp] ){
+                range_lower_hh = indexHolder_pp_hh(0,hh);
+                range_upper_hh = indexHolder_pp_hh(1,hh);
+                range_lower_pp = indexHolder_pp_pp(0,pp);
+                range_upper_pp = indexHolder_pp_pp(1,pp);
+                makeMatMap_hhpp(blockArrays_pp_hh, blockArrays_pp_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp);
+            }
+        }
     }
     if (world_rank==0){cout << "made Vhhpp" << endl;}
 
@@ -2754,31 +2879,46 @@ int MakeIntMat::Identity_hhpp(int h1, int h2, int p1, int p2){
 
 int MakeIntMat::Identity_ppph(int p1, int p2, int p3, int h1){
     int out = h1 + p1*m_Nh + p2*m_Nh*(m_Ns) + p3*m_Nh*(m_Ns)*(m_Ns);
-    //if(out<0){std::cout << out << std::endl;}
+    if(out<0){std::cout << "id_ppph " << out << std::endl;}
     //std::cout << out << std::endl;
     return out;
     //return h1 + p1*m_Nh + p2*m_Nh*(m_Ns-m_Nh) + p3*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
 }
 
+//there are 3 ways to calculate "out" here, but when running the program, I found no difference between them
 unsigned long int MakeIntMat::Identity_hhhppp(int h1, int h2, int h3, int p1, int p2, int p3){
-    //unsigned long int out = h1 + h2*m_Nh + h3*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh + p2*m_Nh*m_Nh*m_Nh*(m_Ns) + p3*m_Nh*m_Nh*m_Nh*(m_Ns)*(m_Ns);
-    unsigned long int out  = (unsigned long int)h1
+    /*unsigned long int out  = (unsigned long int)h1
                                 + (unsigned long int)h2*m_Nh
                                 + (unsigned long int)h3*m_Nh*m_Nh
                                 + (unsigned long int)p1*m_Nh*m_Nh*m_Nh
                                 + (unsigned long int)p2*m_Nh*m_Nh*m_Nh*(m_Ns)
-                                + (unsigned long int)p3*m_Nh*m_Nh*m_Nh*(m_Ns)*(m_Ns);
+                                + (unsigned long int)p3*m_Nh*m_Nh*m_Nh*(m_Ns)*(m_Ns);*/
 
-    //unsigned long int out = h1 + (h2+m_Nh) + (h3+2*m_Nh) + (p1+3*m_Nh) + p2*m_Nh*m_Nh*m_Nh*(m_Ns) + p3*m_Nh*m_Nh*m_Nh*(m_Ns)*(m_Ns);
-    //if(out<0){std::cout << out << std::endl;}
-    //std::cout  <<" " <<out << " " << h1<<", "<< h2<<", "<< h3<<", "<< p1<<", "<< p2<<", "<< p3<<", " << std::endl;
+    unsigned long int out  = (unsigned long int)h1
+                                + (unsigned long int)h2*m_Nh
+                                + (unsigned long int)h3*m_Nh2
+                                + (unsigned long int)p1*m_Nh3
+                                + (unsigned long int)p2*m_Nh3Ns
+                                + (unsigned long int)p3*m_Nh3Ns2;
+
+    /*unsigned long int out  = (unsigned long int)h1
+                                + m_Nh*((unsigned long int)h2
+                                + m_Nh*((unsigned long int)h3
+                                + m_Nh*((unsigned long int)p1
+                                + m_Ns*((unsigned long int)p2
+                                + m_Ns*((unsigned long int)p3)))));*/
+
     return out;
-    //return h1 + h2*m_Nh + h3*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh + p2*m_Nh*m_Nh*m_Nh*(m_Ns-m_Nh) + p3*m_Nh*m_Nh*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
 }
 
-int MakeIntMat::Identity_hhhhhp(int h1, int h2, int h3, int h4, int h5, int p1){
-    int out = h1 + h2*m_Nh + h3*m_Nh*m_Nh + h4*m_Nh*m_Nh*m_Nh + h5*m_Nh*m_Nh*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh*m_Nh*m_Nh;
-    if(out<0){std::cout << out << std::endl;}
+unsigned long int MakeIntMat::Identity_hhhhhp(int h1, int h2, int h3, int h4, int h5, int p1){
+    unsigned long int out = (unsigned long int)h1
+                            + (unsigned long int)h2*m_Nh
+                            + (unsigned long int)h3*m_Nh*m_Nh
+                            + (unsigned long int)h4*m_Nh*m_Nh*m_Nh
+                            + (unsigned long int)h5*m_Nh*m_Nh*m_Nh*m_Nh
+                            + (unsigned long int)p1*m_Nh*m_Nh*m_Nh*m_Nh*m_Nh;
+    //if(out<0){std::cout << "id_hhhhhp " << out << std::endl;}
     return out;
     //return h1 + h2*m_Nh + h3*m_Nh*m_Nh + h4*m_Nh*m_Nh*m_Nh + h5*m_Nh*m_Nh*m_Nh*m_Nh + p1*m_Nh*m_Nh*m_Nh*m_Nh*m_Nh;
 }

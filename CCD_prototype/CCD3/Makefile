@@ -56,7 +56,8 @@ SOURCES       = main.cpp \
 		Systems/system.cpp \
 		makeampmat.cpp \
 		makeintmat.cpp \
-		diagrams.cpp 
+		diagrams.cpp \
+		Systems/chiral.cpp 
 OBJECTS       = main.o \
 		heg.o \
 		mp.o \
@@ -65,7 +66,8 @@ OBJECTS       = main.o \
 		system.o \
 		makeampmat.o \
 		makeintmat.o \
-		diagrams.o
+		diagrams.o \
+		chiral.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/shell-unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
@@ -125,7 +127,8 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		Systems/system.h \
 		makeampmat.h \
 		makeintmat.h \
-		diagrams.h main.cpp \
+		diagrams.h \
+		Systems/chiral.h main.cpp \
 		Systems/heg.cpp \
 		Systems/mp.cpp \
 		Systems/pm.cpp \
@@ -133,7 +136,8 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		Systems/system.cpp \
 		makeampmat.cpp \
 		makeintmat.cpp \
-		diagrams.cpp
+		diagrams.cpp \
+		Systems/chiral.cpp
 QMAKE_TARGET  = CCD
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = CCD
@@ -2066,6 +2070,217 @@ diagrams.o: diagrams.cpp diagrams.h \
 		makeampmat.h \
 		Systems/pm.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o diagrams.o diagrams.cpp
+
+chiral.o: Systems/chiral.cpp Systems/chiral.h \
+		master.h \
+		Systems/system.h \
+		eigen3/Eigen/Dense \
+		eigen3/Eigen/Core \
+		eigen3/Eigen/src/Core/util/DisableStupidWarnings.h \
+		eigen3/Eigen/src/Core/util/Macros.h \
+		eigen3/Eigen/src/Core/util/MKL_support.h \
+		eigen3/Eigen/src/misc/blas.h \
+		eigen3/Eigen/src/Core/util/Constants.h \
+		eigen3/Eigen/src/Core/util/Meta.h \
+		eigen3/Eigen/src/Core/util/ForwardDeclarations.h \
+		eigen3/Eigen/src/Core/util/StaticAssert.h \
+		eigen3/Eigen/src/Core/util/XprHelper.h \
+		eigen3/Eigen/src/Core/util/Memory.h \
+		eigen3/Eigen/src/Core/NumTraits.h \
+		eigen3/Eigen/src/Core/MathFunctions.h \
+		eigen3/Eigen/src/Core/GenericPacketMath.h \
+		eigen3/Eigen/src/Core/MathFunctionsImpl.h \
+		eigen3/Eigen/src/Core/arch/SSE/PacketMath.h \
+		eigen3/Eigen/src/Core/arch/AVX/PacketMath.h \
+		eigen3/Eigen/src/Core/arch/AVX512/PacketMath.h \
+		eigen3/Eigen/src/Core/arch/AVX512/MathFunctions.h \
+		eigen3/Eigen/src/Core/arch/SSE/Complex.h \
+		eigen3/Eigen/src/Core/arch/SSE/MathFunctions.h \
+		eigen3/Eigen/src/Core/arch/AVX/MathFunctions.h \
+		eigen3/Eigen/src/Core/arch/AVX/Complex.h \
+		eigen3/Eigen/src/Core/arch/AVX/TypeCasting.h \
+		eigen3/Eigen/src/Core/arch/SSE/TypeCasting.h \
+		eigen3/Eigen/src/Core/arch/AltiVec/PacketMath.h \
+		eigen3/Eigen/src/Core/arch/AltiVec/MathFunctions.h \
+		eigen3/Eigen/src/Core/arch/AltiVec/Complex.h \
+		eigen3/Eigen/src/Core/arch/NEON/PacketMath.h \
+		eigen3/Eigen/src/Core/arch/NEON/MathFunctions.h \
+		eigen3/Eigen/src/Core/arch/NEON/Complex.h \
+		eigen3/Eigen/src/Core/arch/ZVector/PacketMath.h \
+		eigen3/Eigen/src/Core/arch/ZVector/MathFunctions.h \
+		eigen3/Eigen/src/Core/arch/ZVector/Complex.h \
+		eigen3/Eigen/src/Core/arch/CUDA/Half.h \
+		eigen3/Eigen/src/Core/arch/CUDA/PacketMathHalf.h \
+		eigen3/Eigen/src/Core/arch/CUDA/TypeCasting.h \
+		eigen3/Eigen/src/Core/arch/CUDA/PacketMath.h \
+		eigen3/Eigen/src/Core/arch/CUDA/MathFunctions.h \
+		eigen3/Eigen/src/Core/arch/Default/Settings.h \
+		eigen3/Eigen/src/Core/functors/TernaryFunctors.h \
+		eigen3/Eigen/src/Core/functors/BinaryFunctors.h \
+		eigen3/Eigen/src/Core/functors/UnaryFunctors.h \
+		eigen3/Eigen/src/Core/functors/NullaryFunctors.h \
+		eigen3/Eigen/src/Core/functors/StlFunctors.h \
+		eigen3/Eigen/src/Core/functors/AssignmentFunctors.h \
+		eigen3/Eigen/src/Core/arch/CUDA/Complex.h \
+		eigen3/Eigen/src/Core/IO.h \
+		eigen3/Eigen/src/Core/DenseCoeffsBase.h \
+		eigen3/Eigen/src/Core/DenseBase.h \
+		eigen3/Eigen/src/plugins/BlockMethods.h \
+		eigen3/Eigen/src/Core/MatrixBase.h \
+		eigen3/Eigen/src/plugins/CommonCwiseUnaryOps.h \
+		eigen3/Eigen/src/plugins/CommonCwiseBinaryOps.h \
+		eigen3/Eigen/src/plugins/MatrixCwiseUnaryOps.h \
+		eigen3/Eigen/src/plugins/MatrixCwiseBinaryOps.h \
+		eigen3/Eigen/src/Core/EigenBase.h \
+		eigen3/Eigen/src/Core/Product.h \
+		eigen3/Eigen/src/Core/CoreEvaluators.h \
+		eigen3/Eigen/src/Core/AssignEvaluator.h \
+		eigen3/Eigen/src/Core/Assign.h \
+		eigen3/Eigen/src/Core/ArrayBase.h \
+		eigen3/Eigen/src/plugins/ArrayCwiseUnaryOps.h \
+		eigen3/Eigen/src/plugins/ArrayCwiseBinaryOps.h \
+		eigen3/Eigen/src/Core/util/BlasUtil.h \
+		eigen3/Eigen/src/Core/DenseStorage.h \
+		eigen3/Eigen/src/Core/NestByValue.h \
+		eigen3/Eigen/src/Core/ReturnByValue.h \
+		eigen3/Eigen/src/Core/NoAlias.h \
+		eigen3/Eigen/src/Core/PlainObjectBase.h \
+		eigen3/Eigen/src/Core/Matrix.h \
+		eigen3/Eigen/src/Core/Array.h \
+		eigen3/Eigen/src/Core/CwiseTernaryOp.h \
+		eigen3/Eigen/src/Core/CwiseBinaryOp.h \
+		eigen3/Eigen/src/Core/CwiseUnaryOp.h \
+		eigen3/Eigen/src/Core/CwiseNullaryOp.h \
+		eigen3/Eigen/src/Core/CwiseUnaryView.h \
+		eigen3/Eigen/src/Core/SelfCwiseBinaryOp.h \
+		eigen3/Eigen/src/Core/Dot.h \
+		eigen3/Eigen/src/Core/StableNorm.h \
+		eigen3/Eigen/src/Core/Stride.h \
+		eigen3/Eigen/src/Core/MapBase.h \
+		eigen3/Eigen/src/Core/Map.h \
+		eigen3/Eigen/src/Core/Ref.h \
+		eigen3/Eigen/src/Core/Block.h \
+		eigen3/Eigen/src/Core/VectorBlock.h \
+		eigen3/Eigen/src/Core/Transpose.h \
+		eigen3/Eigen/src/Core/DiagonalMatrix.h \
+		eigen3/Eigen/src/Core/Diagonal.h \
+		eigen3/Eigen/src/Core/DiagonalProduct.h \
+		eigen3/Eigen/src/Core/Redux.h \
+		eigen3/Eigen/src/Core/Visitor.h \
+		eigen3/Eigen/src/Core/Fuzzy.h \
+		eigen3/Eigen/src/Core/Swap.h \
+		eigen3/Eigen/src/Core/CommaInitializer.h \
+		eigen3/Eigen/src/Core/GeneralProduct.h \
+		eigen3/Eigen/src/Core/Solve.h \
+		eigen3/Eigen/src/Core/Inverse.h \
+		eigen3/Eigen/src/Core/SolverBase.h \
+		eigen3/Eigen/src/Core/PermutationMatrix.h \
+		eigen3/Eigen/src/Core/Transpositions.h \
+		eigen3/Eigen/src/Core/TriangularMatrix.h \
+		eigen3/Eigen/src/Core/SelfAdjointView.h \
+		eigen3/Eigen/src/Core/products/GeneralBlockPanelKernel.h \
+		eigen3/Eigen/src/Core/products/Parallelizer.h \
+		eigen3/Eigen/src/Core/ProductEvaluators.h \
+		eigen3/Eigen/src/Core/products/GeneralMatrixVector.h \
+		eigen3/Eigen/src/Core/products/GeneralMatrixMatrix.h \
+		eigen3/Eigen/src/Core/SolveTriangular.h \
+		eigen3/Eigen/src/Core/products/GeneralMatrixMatrixTriangular.h \
+		eigen3/Eigen/src/Core/products/SelfadjointMatrixVector.h \
+		eigen3/Eigen/src/Core/products/SelfadjointMatrixMatrix.h \
+		eigen3/Eigen/src/Core/products/SelfadjointProduct.h \
+		eigen3/Eigen/src/Core/products/SelfadjointRank2Update.h \
+		eigen3/Eigen/src/Core/products/TriangularMatrixVector.h \
+		eigen3/Eigen/src/Core/products/TriangularMatrixMatrix.h \
+		eigen3/Eigen/src/Core/products/TriangularSolverMatrix.h \
+		eigen3/Eigen/src/Core/products/TriangularSolverVector.h \
+		eigen3/Eigen/src/Core/BandMatrix.h \
+		eigen3/Eigen/src/Core/CoreIterators.h \
+		eigen3/Eigen/src/Core/ConditionEstimator.h \
+		eigen3/Eigen/src/Core/BooleanRedux.h \
+		eigen3/Eigen/src/Core/Select.h \
+		eigen3/Eigen/src/Core/VectorwiseOp.h \
+		eigen3/Eigen/src/Core/Random.h \
+		eigen3/Eigen/src/Core/Replicate.h \
+		eigen3/Eigen/src/Core/Reverse.h \
+		eigen3/Eigen/src/Core/ArrayWrapper.h \
+		eigen3/Eigen/src/Core/products/GeneralMatrixMatrix_BLAS.h \
+		eigen3/Eigen/src/Core/products/GeneralMatrixVector_BLAS.h \
+		eigen3/Eigen/src/Core/products/GeneralMatrixMatrixTriangular_BLAS.h \
+		eigen3/Eigen/src/Core/products/SelfadjointMatrixMatrix_BLAS.h \
+		eigen3/Eigen/src/Core/products/SelfadjointMatrixVector_BLAS.h \
+		eigen3/Eigen/src/Core/products/TriangularMatrixMatrix_BLAS.h \
+		eigen3/Eigen/src/Core/products/TriangularMatrixVector_BLAS.h \
+		eigen3/Eigen/src/Core/products/TriangularSolverMatrix_BLAS.h \
+		eigen3/Eigen/src/Core/Assign_MKL.h \
+		eigen3/Eigen/src/Core/GlobalFunctions.h \
+		eigen3/Eigen/src/Core/util/ReenableStupidWarnings.h \
+		eigen3/Eigen/LU \
+		eigen3/Eigen/src/misc/Kernel.h \
+		eigen3/Eigen/src/misc/Image.h \
+		eigen3/Eigen/src/LU/FullPivLU.h \
+		eigen3/Eigen/src/LU/PartialPivLU.h \
+		eigen3/Eigen/src/misc/lapacke.h \
+		eigen3/Eigen/src/misc/lapacke_mangling.h \
+		eigen3/Eigen/src/LU/PartialPivLU_LAPACKE.h \
+		eigen3/Eigen/src/LU/Determinant.h \
+		eigen3/Eigen/src/LU/InverseImpl.h \
+		eigen3/Eigen/src/LU/arch/Inverse_SSE.h \
+		eigen3/Eigen/Cholesky \
+		eigen3/Eigen/src/Cholesky/LLT.h \
+		eigen3/Eigen/src/Cholesky/LDLT.h \
+		eigen3/Eigen/src/Cholesky/LLT_LAPACKE.h \
+		eigen3/Eigen/QR \
+		eigen3/Eigen/Jacobi \
+		eigen3/Eigen/src/Jacobi/Jacobi.h \
+		eigen3/Eigen/Householder \
+		eigen3/Eigen/src/Householder/Householder.h \
+		eigen3/Eigen/src/Householder/HouseholderSequence.h \
+		eigen3/Eigen/src/Householder/BlockHouseholder.h \
+		eigen3/Eigen/src/QR/HouseholderQR.h \
+		eigen3/Eigen/src/QR/FullPivHouseholderQR.h \
+		eigen3/Eigen/src/QR/ColPivHouseholderQR.h \
+		eigen3/Eigen/src/QR/CompleteOrthogonalDecomposition.h \
+		eigen3/Eigen/src/QR/HouseholderQR_LAPACKE.h \
+		eigen3/Eigen/src/QR/ColPivHouseholderQR_LAPACKE.h \
+		eigen3/Eigen/SVD \
+		eigen3/Eigen/src/misc/RealSvd2x2.h \
+		eigen3/Eigen/src/SVD/UpperBidiagonalization.h \
+		eigen3/Eigen/src/SVD/SVDBase.h \
+		eigen3/Eigen/src/SVD/JacobiSVD.h \
+		eigen3/Eigen/src/SVD/BDCSVD.h \
+		eigen3/Eigen/src/SVD/JacobiSVD_LAPACKE.h \
+		eigen3/Eigen/Geometry \
+		eigen3/Eigen/src/Geometry/OrthoMethods.h \
+		eigen3/Eigen/src/Geometry/EulerAngles.h \
+		eigen3/Eigen/src/Geometry/Homogeneous.h \
+		eigen3/Eigen/src/Geometry/RotationBase.h \
+		eigen3/Eigen/src/Geometry/Rotation2D.h \
+		eigen3/Eigen/src/Geometry/Quaternion.h \
+		eigen3/Eigen/src/Geometry/AngleAxis.h \
+		eigen3/Eigen/src/Geometry/Transform.h \
+		eigen3/Eigen/src/Geometry/Translation.h \
+		eigen3/Eigen/src/Geometry/Scaling.h \
+		eigen3/Eigen/src/Geometry/Hyperplane.h \
+		eigen3/Eigen/src/Geometry/ParametrizedLine.h \
+		eigen3/Eigen/src/Geometry/AlignedBox.h \
+		eigen3/Eigen/src/Geometry/Umeyama.h \
+		eigen3/Eigen/src/Geometry/arch/Geometry_SSE.h \
+		eigen3/Eigen/Eigenvalues \
+		eigen3/Eigen/src/Eigenvalues/Tridiagonalization.h \
+		eigen3/Eigen/src/Eigenvalues/RealSchur.h \
+		eigen3/Eigen/src/Eigenvalues/HessenbergDecomposition.h \
+		eigen3/Eigen/src/Eigenvalues/EigenSolver.h \
+		eigen3/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h \
+		eigen3/Eigen/src/Eigenvalues/GeneralizedSelfAdjointEigenSolver.h \
+		eigen3/Eigen/src/Eigenvalues/ComplexSchur.h \
+		eigen3/Eigen/src/Eigenvalues/ComplexEigenSolver.h \
+		eigen3/Eigen/src/Eigenvalues/RealQZ.h \
+		eigen3/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h \
+		eigen3/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h \
+		eigen3/Eigen/src/Eigenvalues/RealSchur_LAPACKE.h \
+		eigen3/Eigen/src/Eigenvalues/ComplexSchur_LAPACKE.h \
+		eigen3/Eigen/src/Eigenvalues/SelfAdjointEigenSolver_LAPACKE.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o chiral.o Systems/chiral.cpp
 
 ####### Install
 

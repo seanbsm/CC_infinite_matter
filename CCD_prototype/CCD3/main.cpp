@@ -45,16 +45,16 @@ int main(int argc, char** argv)
     //bool    CCDT          = true;                   //turn on/off CCDT-1
     bool    timer         = true;                   //turn on/off timer
     bool    relaxation    = true;                   //turn on/off relaxation when updating amplitudes
-    double  alpha         = 0.8;                    //relaxation parameter
+    double  alpha         = 0.875;                  //relaxation parameter (I found 0.875 to be best)
+    int     threads       = 4;                      //number of threads, default is whatever you put here
 
     bool    makeData      = false;                  //choose to write to file for a range of shells
-
     bool    threadsOn     = false;
     if (atoi(argv[7]) > 1){
         threadsOn = true;
 
         Eigen::initParallel();
-        int threads = atoi(argv[7]);
+        threads = atoi(argv[7]);
         omp_set_dynamic(0);
         omp_set_num_threads(threads);
         Eigen::setNbThreads(threads);
@@ -63,7 +63,7 @@ int main(int argc, char** argv)
     }
     else{
         omp_set_dynamic(0);
-        omp_set_num_threads(8);
+        omp_set_num_threads(threads);
         if (world_rank==0){
             std::cout << "Threading is turned off, meaning:" << std::endl;
             std::cout << "- Eigen won't run parallel matrix products" << std::endl;
@@ -96,7 +96,7 @@ int main(int argc, char** argv)
         }
         else{        //default size
             Nh = 14;                        //number of particles
-            Nb = 5;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
+            Nb = 3;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
         }
         double  rs;     //Wigner Seitz radius
         double  rho;    //Density
@@ -115,7 +115,7 @@ int main(int argc, char** argv)
                 std::cout << "Default setup: HEG for Nh=14, Nb=3, rs=1.0, 1e-16 precision, CCDT" << std::endl;
             }
             m          = 1;             //Electron mass [MeV?]
-            rs         = 2;
+            rs         = 1;
             double  rb = 1.;            //Bohr radius [MeV^-1]
             double  r1 = pow(rs*rb, 3);
             L3         = 4.*pi*Nh*r1/3.;
@@ -136,7 +136,7 @@ int main(int argc, char** argv)
         else if (std::string(argv[1]) == "MP"){
             m   = 939.565;              //Neutron mass [MeV]
             rho = atof(argv[4]);
-            L3  = Nh/rho;
+            L3  = double(Nh)/rho;
             L2  = pow(L3, 2./3.);
             L1  = pow(L3, 1./3.);
             master->setSystem(new MP(master, m, L3, L2, L1));
@@ -155,7 +155,7 @@ int main(int argc, char** argv)
         master->setIntermediates(intermediates);
         master->setRelaxation(relaxation, alpha);
         master->setTimer(timer);
-        master->setThreads(threadsOn, atoi(argv[7]));
+        master->setThreads_forMaster(threadsOn, threads/*atoi(argv[7])*/);
         if (argc == 8){
             master->setCCType(atoi(argv[6]));
             if (atoi(argv[6])==0){
@@ -175,18 +175,27 @@ int main(int argc, char** argv)
 
         cout << "C++ code" << endl;
 
+        double Eref; double Ecc;
+
         auto t1 = Clock::now();
 
         if (CCDT){
             double ECCDT = master->CC_master(eps, conFac);
-            if (world_rank==0){cout << "Delta ECCDT: "<< ECCDT << endl;}
+            if (world_rank==0){cout << "Delta ECCDT: "<< std::right << std::setw(21) << ECCDT << endl;}
+            Ecc = ECCDT;
         }
         else{
             double ECCD = master->CC_master(eps, conFac);
-            if (world_rank==0){cout << "Delta ECCD: "<< ECCD << endl;}
+            if (world_rank==0){cout << "Delta ECCD: "<< std::right << std::setw(21) << ECCD << endl;}
+            Ecc = ECCD;
         }
 
         auto t2 = Clock::now();
+
+        Eref = master->CC_Eref();
+
+        std::cout << "Eref:       " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << Eref << std::endl;
+        std::cout << "E/Nh:       " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (Eref+Ecc)/Nh << std::endl;
 
         if (world_rank == 0){
             if (intermediates){
@@ -200,6 +209,7 @@ int main(int argc, char** argv)
                           << " seconds, with intermediates OFF" << std::endl;
             }
         }
+
 
     }
     else if (makeData == true){

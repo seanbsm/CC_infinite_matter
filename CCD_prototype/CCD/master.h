@@ -3,6 +3,7 @@
 #define MASTER_H
 
 #include <Systems/system.h>
+#include "eigen3/Eigen/Dense"
 
 
 class Master
@@ -24,6 +25,8 @@ public:
     bool              m_threadsOn          = false;
     int               m_threads            = 1;
     double            m_alpha              = 1;
+
+    typedef Eigen::Matrix<unsigned long int, Eigen::Dynamic, Eigen::Dynamic> MatrixXuli;
 
     int world_rank;
 
