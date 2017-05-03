@@ -4578,7 +4578,19 @@ void MakeAmpMat::T1a_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
             j = m_intClass->blockArrays_ppm_hhp(2,i1);
             a = m_intClass->blockArrays_ppm_hhp(3,i1);
 
-            id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
+            id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);  /*unsigned long int in = T3_elements_I.find(id)->second;
+            unsigned long int id1 = m_intClass->Identity_hhhppp(j,i,k,a,b,c); unsigned long int in1 = T3_elements_I.find(id1)->second;
+            unsigned long int id2 = m_intClass->Identity_hhhppp(k,j,i,a,b,c); unsigned long int in2 = T3_elements_I.find(id2)->second;
+            unsigned long int id3 = m_intClass->Identity_hhhppp(i,j,k,b,a,c); unsigned long int in3 = T3_elements_I.find(id3)->second;
+            unsigned long int id4 = m_intClass->Identity_hhhppp(i,j,k,c,b,a); unsigned long int in4 = T3_elements_I.find(id4)->second;
+            unsigned long int id5 = m_intClass->Identity_hhhppp(i,j,k,a,c,b); unsigned long int in5 = T3_elements_I.find(id5)->second;
+
+            std::cout << T3_elements_A[in] << std::endl;
+            std::cout << T3_elements_A[in1] << std::endl;
+            std::cout << T3_elements_A[in2] << std::endl;
+            std::cout << T3_elements_A[in3] << std::endl;
+            std::cout << T3_elements_A[in4] << std::endl;
+            std::cout << T3_elements_A[in5] << std::endl;*/
 
             /*id = m_intClass->Identity_hhhppp(m_intClass->blockArrays_ppm_hhp(1,i1),
                                              m_intClass->blockArrays_ppm_hhp(2,i1),

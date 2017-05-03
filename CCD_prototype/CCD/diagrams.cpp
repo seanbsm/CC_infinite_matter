@@ -604,7 +604,7 @@ void Diagrams::T1a(){
 
     int i1; int i2; int i3; int cols = matches.cols();
     auto t1 = Clock::now();
-#pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
+#pragma omp parallel for num_threads(1)/*num_threads(m_numThreads)*/ private(i1,i2,i3) firstprivate(cols)
     for (int i=0; i<cols; i++){
         i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
 
