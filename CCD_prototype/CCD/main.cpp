@@ -87,7 +87,7 @@ int main(int argc, char** argv)
             }
             return 0;
         }
-
+        //sup
         //we use natural units
         int Nh; int Nb;
         if (argc==8){//user defined size
