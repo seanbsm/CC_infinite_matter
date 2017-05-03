@@ -3,7 +3,6 @@
 #include "Systems/heg.h"
 #include "eigen3/Eigen/Dense"
 #include <omp.h>
-#include <mpi.h>
 #include <iostream>
 #include <iomanip>
 
@@ -841,12 +840,6 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
 //this mapper is distinct form the previous because it otherwise completely hogs the RAM
 void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArraysIn, int i1, int i2, int i3, int i4, int i5, int s1, int s2, int s3, int s4, int s5){
 
-    int world_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
-    int world_size;
-    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
-    MPI_Status status;
-
     Eigen::MatrixXi   blockArrays_temp1;
     Eigen::MatrixXi   blockArrays_temp2;
     int index       = 0;
@@ -855,25 +848,18 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
     bool cond_hhhpp = (i1 == 0 && i2 == 0 && i3 == 0 && i4==1 && i5==1);
     bool cond_ppphh = (i1 == 1 && i2 == 1 && i3 == 1 && i4==0 && i5==0);
 
-    //std::cout << world_rank << std::endl;
-    //std::cout << "mapper 5 running with ";
-
     // 0 0 0 1 1
     if (cond_hhhpp){
-        if (world_rank==0){std::cout << "hhhpp" << std::endl;}
+        std::cout << "hhhpp" << std::endl;
         colSize = 10000;//m_Nh*m_Nh*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
         blockArrays_temp1.conservativeResize(6, colSize);
 
         int ku;
 
-        int dist = (m_Ns-m_Nh)/world_size;
-        int remains = (m_Ns-m_Nh) % world_size;
-        bool test = (world_rank == world_size-1);
-
         for (int i=0; i<m_Nh; i++){
             for (int j=0; j<m_Nh; j++){
                 for (int k=0; k<m_Nh; k++){
-                    for (int a=m_Nh + dist*world_rank; a<m_Nh + dist*(world_rank+1) + remains*test; a++){
+                    for (int a=m_Nh; a<m_Ns; a++){
                         for (int b=m_Nh; b<m_Ns; b++){
                             ku = m_system->kUnique5(i,j,k,a,b,s1,s2,s3,s4,s5);
                             auto it = std::find(sortVec_p_p.begin(), sortVec_p_p.end(), ku);
@@ -917,22 +903,13 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
     }
     // 1 1 1 0 0
     else if (cond_ppphh){
-        if (world_rank==0){std::cout << "ppphh" << std::endl;}
+        std::cout << "ppphh" << std::endl;
         colSize = 10000;//(m_Ns-m_Nh)*(m_Ns-m_Nh)*(m_Ns-m_Nh)*m_Nh*m_Nh;
         blockArrays_temp1.conservativeResize(6, colSize);
 
         int ku;
 
-        //std::cout << "ppphh iterator start" << std::endl;
-
-        int dist = (m_Ns-m_Nh)/world_size;
-        int remains = (m_Ns-m_Nh) % world_size;
-        bool test = (world_rank == world_size-1);
-
-        //int sumA = 0;
-
-        for (int a=m_Nh + dist*world_rank; a<m_Nh + dist*(world_rank+1) + remains*test; a++){
-            //sumA ++;
+        for (int a=m_Nh; a<m_Ns; a++){
             for (int b=m_Nh; b<m_Ns; b++){
                 for (int c=m_Nh; c<m_Ns; c++){
                     for (int i=0; i<m_Nh; i++){
@@ -940,7 +917,6 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
                             ku = m_system->kUnique5(a,b,c,i,j,s1,s2,s3,s4,s5);
                             auto it = std::find(sortVec_p_h.begin(), sortVec_p_h.end(), ku);
                             if (it != sortVec_p_h.end()){
-                                //std::cout << ku << std::endl;
                                 blockArrays_temp1.col(index) << ku,a,b,c,i,j;
                                 index += 1;
 
@@ -954,12 +930,6 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
                 }
             }
         }
-
-        //std::cout << sumA << std::endl;
-
-        //std::cout << "made blockArrays_pppmm_ppphh" << std::endl;
-
-        //std::cout << "ppphh iterator end" << std::endl;
 
         blockArrays_temp2.conservativeResize(6, index);
         for (int c=0; c<index; c++){
@@ -982,59 +952,24 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
         }*/
     }
 
-    int cols = blockArrays_temp2.cols();
-    int total_columns;
-    MPI_Reduce(&cols, &total_columns, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+    Eigen::MatrixXi blockArrays = blockArrays_temp2;
 
-    int displs[world_size];
-    int recvCount[world_size];
+    Eigen::VectorXi veryTempVec = blockArrays_temp2.row(0);
+    std::vector<int> sortVec(veryTempVec.data(), veryTempVec.row(0).data() + blockArrays_temp2.cols());
+    std::vector<int> tempVec = sortVec;
 
-    int sendCount = blockArrays_temp2.cols()*blockArrays_temp2.rows();
-
-
-    MPI_Gather(&sendCount, 1, MPI_INT, recvCount, 1, MPI_INT, 0, MPI_COMM_WORLD);
-
-    if (world_rank==0){
-        displs[0] = 0;
-        for (int rank = 1; rank < world_size; rank++){
-            displs[rank] = displs[rank-1]+recvCount[rank-1];
-        }
+    //std::cout << "making sortVec" << std::endl;
+    index = 0;
+    for (auto i: sort_indexes(tempVec)){
+        blockArrays.col(index) = blockArrays_temp2.col(i);
+        sortVec[index]         = tempVec[i];
+        index += 1;
     }
 
-    Eigen::MatrixXi blockArrays_recv;
-    if (world_rank==0){
-        blockArrays_recv.conservativeResize(6, total_columns);
-    }
+    sortVec.erase( unique( sortVec.begin(), sortVec.end() ), sortVec.end() ); //need this
 
-    MPI_Gatherv(blockArrays_temp2.data(), sendCount, MPI_INT, blockArrays_recv.data(), recvCount, displs, MPI_INT, 0, MPI_COMM_WORLD);
-
-
-    if(world_rank == 0){
-        Eigen::MatrixXi blockArrays = blockArrays_recv;
-
-        Eigen::VectorXi veryTempVec = blockArrays_recv.row(0);
-        std::vector<int> sortVec(veryTempVec.data(), veryTempVec.row(0).data() + blockArrays_recv.cols());
-        std::vector<int> tempVec = sortVec;
-
-        //std::cout << "making sortVec" << std::endl;
-        index = 0;
-        for (auto i: sort_indexes(tempVec)){
-            blockArrays.col(index) = blockArrays_recv.col(i);
-            sortVec[index]         = tempVec[i];
-            index += 1;
-        }
-
-        sortVec.erase( unique( sortVec.begin(), sortVec.end() ), sortVec.end() ); //need this
-
-        blockArraysIn = blockArrays;
-        sortVecIn     = sortVec;
-    }
-
-    //blockArrays.conservativeResize(0,0);
-
-    /*int size; if(world_rank==0){size = total_columns*5;}
-    MPI_Bcast( size, 1, MPI_INT, 0, MPI_COMM_WORLD );
-    MPI_Bcast( blockArrays.data(), size, MPI_INT, 0, MPI_COMM_WORLD );*/
+    blockArraysIn = blockArrays;
+    sortVecIn     = sortVec;
 }
 
 
@@ -1960,9 +1895,6 @@ Eigen::MatrixXd MakeIntMat::make2x2Block(int ku, int i1, int i2, int i3, int i4)
 
 void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
 
-    int world_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
-
     m_system = system;
     m_Nh     = Nh;
     m_Ns     = Ns;
@@ -2002,20 +1934,13 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         mapper_3(sortVec_ppp_hhh, blockArrays_ppp_hhh, 0,0,0, 1,1,1);     //hhh
         mapper_3(sortVec_ppm_hhh, blockArrays_ppm_hhh, 0,0,0, 1,1,-1);    //hhh
         mapper_3(sortVec_ppp_ppp, blockArrays_ppp_ppp, 1,1,1, 1,1,1);     //ppp
-        if (world_rank==0){"finished ppp";}
         mapper_4(sortVec_pppm_hhhp, blockArrays_pppm_hhhp, 0,0,0,1, 1,1,1,-1);     //hhhp
-        if (world_rank==0){"finished hhhp";}
         //mapper_4(sortVec_ppmm_hhpp, blockArrays_ppmm_hhpp, 0,0,1,1, 1,1,-1,-1);    //hhpp
-        //if (world_rank==0){"finished hhpp";}
         mapper_4(sortVec_ppmm_pphh, blockArrays_ppmm_pphh, 1,1,0,0, 1,1,-1,-1);    //pphh
-        if (world_rank==0){"finished pphh";}
         mapper_4(sortVec_pppm_ppph, blockArrays_pppm_ppph, 1,1,1,0, 1,1,1,-1);     //ppph
-        if (world_rank==0){"finished ppph";}
 
         mapper_5(sortVec_pppmm_hhhpp, blockArrays_pppmm_hhhpp, 0,0,0,1,1, 1,1,1,-1,-1);     //hhhpp
-        if (world_rank==0){"finished hhppp";}
         mapper_5(sortVec_pppmm_ppphh, blockArrays_pppmm_ppphh, 1,1,1,0,0, 1,1,1,-1,-1);     //ppphh
-        if (world_rank==0){"finished ppphh";}
 
     }
 
@@ -2086,7 +2011,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         indexHolder_p_p.col(p) << range_lower, range_upper; //this now has same indices as sortVec
     }
 
-    if (world_rank==0){cout << "made one-particle indexHolders" << endl;}
+    cout << "made one-particle indexHolders" << endl;
 
     counter     = 0;
     range_lower = 0;
@@ -2277,7 +2202,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         indexHolder_pp_pp.col(pp) << range_lower, range_upper; //this now has same indices as sortVec
     }
 
-    if (world_rank==0){cout << "made two-particle indexHolders" << endl;}
+    cout << "made two-particle indexHolders" << endl;
 
     counter     = 0;
     range_lower = 0;
@@ -2398,7 +2323,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         }
     }
 
-    if (world_rank==0){cout << "made three-particle indexHolders" << endl;}
+    cout << "made three-particle indexHolders" << endl;
 
     if (m_triplesOn){
         counter     = 0;
@@ -2495,7 +2420,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         }
     }
 
-    if (world_rank==0){cout << "made four-particle indexHolders" << endl;}
+    cout << "made four-particle indexHolders" << endl;
 
     if (m_triplesOn){
         counter     = 0;
@@ -2545,7 +2470,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         }
     }
 
-    if (world_rank==0){cout << "made five-particle indexHolders" << endl;}
+    cout << "made five-particle indexHolders" << endl;
 
     counter     = 0;
     range_lower = 0;
@@ -2647,7 +2572,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     }
 
 
-    if (world_rank==0){cout << "made indexHolders" << endl;}
+    cout << "made indexHolders" << endl;
 
     //make Vhhpp map
     /*for (int h=0; h<boundsHolder_hhpp_hh.cols(); h++){
@@ -2668,7 +2593,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             }
         }
     }
-    if (world_rank==0){cout << "made Vhhpp" << endl;}
+    cout << "made Vhhpp" << endl;
 
     if (m_triplesOn){
         for (int pp=0; pp<sortVec_pp_pp.size(); pp++){
@@ -2682,7 +2607,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
                 }
             }
         }
-        if (world_rank==0){cout << "made Vppph" << endl;}
+        cout << "made Vppph" << endl;
 
         for (int hh=0; hh<sortVec_pp_hh.size(); hh++){
             for (int hp=0; hp<sortVec_pp_hp.size(); hp++){
@@ -2695,7 +2620,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
                 }
             }
         }
-        if (world_rank==0){cout << "made Vhhhp" << endl;}
+        cout << "made Vhhhp" << endl;
     }
 
     //Below we make Vpppp, Vhhhh, and Vhphp, which are distinct from Vhhpp --> don't need any remapping of elements
@@ -2729,7 +2654,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     }
 
 
-    if (world_rank==0){cout << "made Vpppp" << endl;}
+    cout << "made Vpppp" << endl;
 }
 
 

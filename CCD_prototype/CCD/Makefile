@@ -10,12 +10,12 @@ MAKEFILE      = Makefile
 
 ####### Compiler, tools and options
 
-CC            = /usr/bin/mpicxx
-CXX           = mpicxx -O3
+CC            = gcc
+CXX           = g++
 DEFINES       = 
-CFLAGS        = -m64 -I/usr/local/include -pthread -O3 -Wall -W -fPIE $(DEFINES)
-CXXFLAGS      = -m64 -fopenmp -std=c++11 -I/usr/local/include -pthread -DMPICH_IGNORE_CXX_SEEK -I/usr/local/include -pthread -DMPICH_IGNORE_CXX_SEEK -O3 -Wall -W -fPIE $(DEFINES)
-INCPATH       = -I. -isystem /usr/include/openmpi-x86_64 -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64
+CFLAGS        = -m64 -O3 -Wall -W -fPIE $(DEFINES)
+CXXFLAGS      = -m64 -O3 -fopenmp -std=c++11 -O3 -Wall -W -fPIE $(DEFINES)
+INCPATH       = -I. -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64
 QMAKE         = /usr/lib/x86_64-linux-gnu/qt5/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -34,8 +34,8 @@ TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = CCD1.0.0
 DISTDIR = /home/sean/Projects/Project_Genesis/CCD_prototype/CCD/.tmp/CCD1.0.0
-LINK          = mpicxx -O3
-LFLAGS        = -m64 -fopenmp -O3 -pthread -Wl,-rpath -Wl,/usr/local/lib -Wl,--enable-new-dtags -L/usr/local/lib -lmpi -Wl,-O1
+LINK          = g++
+LFLAGS        = -m64 -fopenmp -O3 -Wl,-O1
 LIBS          = $(SUBLIBS)  
 AR            = ar cqs
 RANLIB        = 

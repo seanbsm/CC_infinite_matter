@@ -28,8 +28,6 @@ public:
 
     typedef Eigen::Matrix<unsigned long int, Eigen::Dynamic, Eigen::Dynamic> MatrixXuli;
 
-    int world_rank;
-
     void setSize();
     void setSystem(class System* system);
     void setThreads_forMaster(bool argument, int num);

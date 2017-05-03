@@ -18,7 +18,7 @@ public:
 
     Diagrams();
 
-    Eigen::MatrixXi distributeChannels(Eigen::MatrixXi channels, int elements);
+    //Eigen::MatrixXi distributeChannels(Eigen::MatrixXi channels, int elements);
 
     typedef Eigen::Matrix<unsigned long int, Eigen::Dynamic, Eigen::Dynamic> MatrixXuli;
 
