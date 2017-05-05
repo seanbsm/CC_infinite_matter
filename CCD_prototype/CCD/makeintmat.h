@@ -227,6 +227,9 @@ public:
     spp::sparse_hash_map<unsigned long int, double>           Vhhpp_elements;
     spp::sparse_hash_map<unsigned long int, double>           Vppph_elements; //needed for T3
 
+    /*std::pair<unsigned long, int> returnId_hhhp(const int i1, const int i2, const int i3, const int i4);
+    int returnId_hhpp(const int i1, const int i2, const int i3, const int i4);
+    int returnId_hppp(const int i1, const int i2, const int i3, const int i4);*/
 
     //Eigen::VectorXd                 Vhhpp_vector;
     std::vector<double>             Vhhpp_vector;

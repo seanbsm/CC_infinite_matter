@@ -30,6 +30,22 @@ void MakeIntMat::setThreads(int numthreads){
     m_numThreads = numthreads;
 }
 
+/*std::pair<unsigned long int, int> MakeIntMat::returnId_hhhp(const int i1, const int i2, const int i3, const int i4){
+    std::pair<unsigned long int, int> out;
+    if (i2<i3){
+        out.first = Identity_hhhp(i1,i2,i3,i4);
+        out.second = +1;
+    }
+    else if (i1>i2){
+        out.first = Identity_hhhp(i1,i3,i2,i4);
+        out.second = -1;
+    }
+    else{
+        out.second = 0;
+    }
+    return out;
+}*/
+
 void MakeIntMat::makePermutations(){
 
     int Nh  = m_Nh;
@@ -918,24 +934,47 @@ Eigen::MatrixXd MakeIntMat::I2_makemat(int channel1, int channel2){    //makes a
   unsigned long int id;
     int k; int l;
     int c; int d;
+    int prefac;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
+        k = blockArrays_pm_hp(1,i1);
+        c = blockArrays_pm_hp(2,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-
-            /*
-            k = blockArrays_pm_hp(1,i1);
-            c = blockArrays_pm_hp(2,i1);
             d = blockArrays_pm_ph(1,i2);
             l = blockArrays_pm_ph(2,i2);
-            id = Identity_hhpp(k,l,c,d);
-            */
 
-            id = Identity_hhpp(blockArrays_pm_hp(1,i1),
+            //id = Identity_hhpp(k,l,c,d);
+
+
+
+            /*id = Identity_hhpp(blockArrays_pm_hp(1,i1),
                                blockArrays_pm_ph(2,i2),
                                blockArrays_pm_hp(2,i1),
-                               blockArrays_pm_ph(1,i2));
+                               blockArrays_pm_ph(1,i2));*/
 
-            returnMat(i1-range_lower1, i2-range_lower2) = Vhhpp_elements[id];
+            if (k<l && c<d){
+                id = Identity_hhpp(k,l,c,d);
+                prefac = +1;
+            }
+            else if (k<l && c>d){
+                id = Identity_hhpp(k,l,d,c);
+                prefac = -1;
+            }
+            else if (k>l && c<d){
+                id = Identity_hhpp(l,k,c,d);
+                prefac = -1;
+            }
+            else if (k>l && c>d){
+                id = Identity_hhpp(l,k,d,c);
+                prefac = +1;
+            }
+            else{
+                returnMat(i1-range_lower1, i2-range_lower2) = 0;
+                continue;
+            }
+            returnMat(i1-range_lower1, i2-range_lower2) = prefac*Vhhpp_elements[id];
+
+            //returnMat(i1-range_lower1, i2-range_lower2) = Vhhpp_elements[id];
         }
     }
 

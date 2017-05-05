@@ -45,6 +45,8 @@ public:
     std::vector<MatrixXuli>              T3_T5b_indices;
     std::vector<MatrixXuli>              T3_T5c_indices;
 
+    int returnId(const int i1, const int i2, const int i3, const int i4);
+
     //std::unordered_map<int, int>              T2_elements_I;
     //std::vector<double>                       T2_elements_A;
     //std::map<unsigned long int, int> T3_elements_I_um;

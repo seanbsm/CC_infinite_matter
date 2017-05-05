@@ -206,17 +206,29 @@ void Diagrams::I1_term1(){
             if ( m_intClass->sortVec_pp_hh[i1] == m_intClass->sortVec_pp_pp[i2] ){
 
                 Eigen::MatrixXd mat1 = m_ampClass->I1_makemat_1(i1,i2);
-                Eigen::MatrixXd mat2 = m_intClass->I1_makemat(i1,i2);
+                Eigen::MatrixXd M1(mat1.rows(), 2*mat1.cols());
+                M1 << mat1, -mat1;
 
-                Eigen::MatrixXd I1   = 0.5*(mat1*mat2.transpose());
+                Eigen::MatrixXd mat2 = m_intClass->I1_makemat(i1,i2);
+                Eigen::MatrixXd M2(mat2.rows(), 2*mat2.cols());
+                M2 << mat2, -mat2;
+
+                //Eigen::MatrixXd I1   = 0.5*(mat1*mat2.transpose());
+                Eigen::MatrixXd I1   = 0.5*(M1*M2.transpose());
 
                 Eigen::MatrixXd mat3 = m_intClass->Vhhhh[i1];
 
                 I1.noalias() += mat3;
 
-                Eigen::MatrixXd mat4 = m_ampClass->I1_makemat_2(i1,i2);
+                Eigen::MatrixXd I1M(I1.rows(), 2*I1.cols());
+                I1M << I1, -I1;
 
-                Eigen::MatrixXd product = 0.5*(I1*mat4);
+                Eigen::MatrixXd mat4 = m_ampClass->I1_makemat_2(i1,i2);
+                Eigen::MatrixXd M4(2*mat4.rows(), mat4.cols());
+                M4 << mat4, -mat4;
+
+                //Eigen::MatrixXd product = 0.5*(I1*mat4);
+                Eigen::MatrixXd product = 0.5*(I1M*M4);
 
                 m_ampClass->I1_inverse(product, i1, i2);
             }
