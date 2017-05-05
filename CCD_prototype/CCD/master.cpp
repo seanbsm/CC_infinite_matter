@@ -302,7 +302,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             m_ampClass->make2x2Block_inverse(temp, ku, 0,0,1,1, m_ampClass->T2_elements_new, false);
 
             Eigen::MatrixXd Thhpp = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements_new);
-            ECCD += 0.25*((Vhhpp.transpose())*(Thhpp)).trace();
+            ECCD += ((Vhhpp.transpose())*(Thhpp)).trace();
         }
 
 
