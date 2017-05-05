@@ -62,6 +62,10 @@ void Diagrams::La(){
 
                 Eigen::MatrixXd mat1 = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements);            // t_ij^cd
                 Eigen::MatrixXd mat2 = m_intClass->Vpppp[i2];                                                    // v_ab^cd
+                Eigen::MatrixXd M1(mat1.rows(), 2*mat1.cols());
+                M1 << mat1, -mat1;
+                Eigen::MatrixXd M2(mat2.rows(), 2*mat2.cols());
+                M2 << mat2, -mat2;
                 Eigen::MatrixXd product = 0.5*(mat1*mat2);                                                        // (t_ij^cd)(t_cd^ab)
 
                 m_ampClass->make2x2Block_inverse(product,ku,0,0,1,1, m_ampClass->T2_elements_new, true);
