@@ -411,12 +411,8 @@ void  MakeIntMat::mapper_2(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockAr
     //bool cond_pp = (i1 == 1 && i2 == 1);
 
     blockArrays_temp2.conservativeResize(3, colSize);
-
     // 0 0
     if (cond_hh){
-        colSize = m_Nh*m_Nh;
-        blockArrays_temp.conservativeResize(3, colSize);
-
         for (int i=0; i<m_Nh; i++){
             for (int j=i+1; j<m_Nh; j++){
                 blockArrays_temp2.col(index) << m_system->kUnique2(i,j,s1,s2),i,j;
@@ -431,9 +427,6 @@ void  MakeIntMat::mapper_2(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockAr
     }
     // 0 1
     else if (cond_hp){
-        colSize = (m_Ns-m_Nh)*m_Nh;
-        blockArrays_temp.conservativeResize(3, colSize);
-
         for (int i=0; i<m_Nh; i++){
             for (int a=m_Nh; a<m_Ns; a++){
                 blockArrays_temp2.col(index) << m_system->kUnique2(i,a,s1,s2),i,a;
@@ -448,9 +441,6 @@ void  MakeIntMat::mapper_2(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockAr
     }
     // 1 0
     else if (cond_ph){
-        colSize = (m_Ns-m_Nh)*m_Nh;
-        blockArrays_temp.conservativeResize(3, colSize);
-
         for (int a=m_Nh; a<m_Ns; a++){
             for (int i=0; i<m_Nh; i++){
                 blockArrays_temp2.col(index) << m_system->kUnique2(a,i,s1,s2),a,i;
@@ -995,24 +985,37 @@ Eigen::MatrixXd MakeIntMat::I3_makemat(int channel1, int channel2){    //makes a
   unsigned long int id;
     int k; int l;
     int c; int d;
+    int prefac;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
+        c = blockArrays_ppm_pph(1,i1);
+        d = blockArrays_ppm_pph(2,i1);
+        k = blockArrays_ppm_pph(3,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-
-            /*
-            c = blockArrays_ppm_pph(1,i1);
-            d = blockArrays_ppm_pph(2,i1);
-            k = blockArrays_ppm_pph(3,i1);
             l = blockArrays_p_h(1,i2);
-            id = Identity_hhpp(k,l,c,d);
-            */
 
-            id = Identity_hhpp(blockArrays_ppm_pph(3,i1),
+            //id = Identity_hhpp(k,l,c,d);
+
+            if (k<l){
+                id = Identity_hhpp(k,l,c,d);
+                prefac = +1;
+            }
+            else if (k>l){
+                id = Identity_hhpp(l,k,c,d);
+                prefac = -1;
+            }
+            else{
+                returnMat(i1-range_lower1, i2-range_lower2) = 0;
+                continue;
+            }
+            returnMat(i1-range_lower1, i2-range_lower2) = prefac*Vhhpp_elements[id];
+
+            /*id = Identity_hhpp(blockArrays_ppm_pph(3,i1),
                                blockArrays_p_h(1,i2),
                                blockArrays_ppm_pph(1,i1),
-                               blockArrays_ppm_pph(2,i1));
+                               blockArrays_ppm_pph(2,i1));*/
 
-            returnMat(i1-range_lower1, i2-range_lower2) = Vhhpp_elements[id];
+            //returnMat(i1-range_lower1, i2-range_lower2) = Vhhpp_elements[id];
         }
     }
 
@@ -1033,24 +1036,37 @@ Eigen::MatrixXd MakeIntMat::I4_makemat(int channel1, int channel2){    //makes a
     unsigned long int id;
     int k; int l;
     int c; int d;
+    double prefac;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
+        k = blockArrays_ppm_hhp(1,i1);
+        l = blockArrays_ppm_hhp(2,i1);
+        c = blockArrays_ppm_hhp(3,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-
-            /*
-            k = blockArrays_ppm_hhp(1,i1);
-            l = blockArrays_ppm_hhp(2,i1);
-            c = blockArrays_ppm_hhp(3,i1);
             d = blockArrays_p_p(1,i2);
-            id = Identity_hhpp(k,l,c,d);
-            */
 
-            id = Identity_hhpp(blockArrays_ppm_hhp(1,i1),
+            //id = Identity_hhpp(k,l,c,d);
+
+            if (c<d){
+                id = Identity_hhpp(k,l,c,d);
+                prefac = +1;
+            }
+            else if (c>d){
+                id = Identity_hhpp(k,l,d,c);
+                prefac = -1;
+            }
+            else{
+                returnMat(i1-range_lower1, i2-range_lower2) = 0;
+                continue;
+            }
+            returnMat(i1-range_lower1, i2-range_lower2) = prefac*Vhhpp_elements[id];
+
+            /*id = Identity_hhpp(blockArrays_ppm_hhp(1,i1),
                                blockArrays_ppm_hhp(2,i1),
                                blockArrays_ppm_hhp(3,i1),
-                               blockArrays_p_p(1,i2));
+                               blockArrays_p_p(1,i2));*/
 
-            returnMat(i1-range_lower1, i2-range_lower2) = Vhhpp_elements[id];
+            //returnMat(i1-range_lower1, i2-range_lower2) = Vhhpp_elements[id];
         }
     }
 

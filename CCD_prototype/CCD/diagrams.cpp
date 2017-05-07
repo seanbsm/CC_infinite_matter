@@ -250,6 +250,8 @@ void Diagrams::I2_term1(){
 
                 Eigen::MatrixXd mat3 = m_intClass->Vhphp[i1];
 
+                //Eigen::MatrixXd I2 = mat3;
+
                 I2.noalias() += mat3; //the minus is intentional
 
                 Eigen::MatrixXd mat4 = m_ampClass->I2_makemat_2(i1,i2);
@@ -269,11 +271,17 @@ void Diagrams::I3_term1(){
         for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
             if ( m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_pph[i2] ){
                 Eigen::MatrixXd mat1 = m_ampClass->I3_makemat_1(i2,i1);
-                Eigen::MatrixXd mat2 = m_intClass->I3_makemat(i2,i1);
-                //std::cout << "sup" << std::endl;
-                Eigen::MatrixXd mat3 = m_ampClass->I3_makemat_2(i2,i1);
 
-                Eigen::MatrixXd product   = -0.5*(mat3.transpose()*mat2*mat1.transpose());
+                Eigen::MatrixXd mat2 = m_intClass->I3_makemat(i2,i1);
+                Eigen::MatrixXd M2(2*mat2.rows(), mat2.cols());
+                M2 << mat2, -mat2;
+
+                Eigen::MatrixXd mat3 = m_ampClass->I3_makemat_2(i2,i1);
+                Eigen::MatrixXd M3(2*mat3.rows(), mat3.cols());
+                M3 << mat3, -mat3;
+
+                //Eigen::MatrixXd product   = -0.5*(mat3.transpose()*mat2*mat1.transpose());
+                Eigen::MatrixXd product   = -0.5*(M3.transpose()*M2*mat1.transpose());
 
                 m_ampClass->I3_inverse(product.transpose(), i2, i1);
             }
@@ -289,12 +297,20 @@ void Diagrams::I4_term1(){
             if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i2] ){
 
                 Eigen::MatrixXd mat1 = m_ampClass->I4_makemat_1(i2,i1);
+                Eigen::MatrixXd M1(2*mat1.rows(), mat1.cols());
+                M1 << mat1, -mat1;
+
+
                 Eigen::MatrixXd mat2 = m_intClass->I4_makemat(i2,i1);
+                Eigen::MatrixXd M2(2*mat2.rows(), mat2.cols());
+                M2 << mat2, -mat2;
+
                 Eigen::MatrixXd mat3 = m_ampClass->I4_makemat_2(i2,i1);
 
-                Eigen::MatrixXd product   = -0.5*(mat3.transpose()*mat2*mat1.transpose());
+                //Eigen::MatrixXd product   = -0.5*(mat3.transpose()*mat2*mat1.transpose());
+                Eigen::MatrixXd product   = -0.5*(mat3*M2.transpose()*M1);
 
-                m_ampClass->I4_inverse(product.transpose(), i2, i1);
+                m_ampClass->I4_inverse(product, i2, i1);
             }
         }
     }
