@@ -400,27 +400,27 @@ void  MakeIntMat::mapper_hp(){
 
 void  MakeIntMat::mapper_2(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArraysIn, int i1, int i2, int s1, int s2){
 
-    Eigen::MatrixXi   blockArrays_temp;
-    Eigen::MatrixXi   blockArrays_temp2;
     int index       = 0;
     int colSize     = 10000;
+    Eigen::MatrixXi   blockArrays_temp(3,colSize);
+    //Eigen::MatrixXi   blockArrays_temp2;
 
     bool cond_hh = (i1 == 0 && i2 == 0);
     bool cond_hp = (i1 == 0 && i2 == 1);
     bool cond_ph = (i1 == 1 && i2 == 0);
     //bool cond_pp = (i1 == 1 && i2 == 1);
 
-    blockArrays_temp2.conservativeResize(3, colSize);
+    //blockArrays_temp2.conservativeResize(3, colSize);
     // 0 0
     if (cond_hh){
         for (int i=0; i<m_Nh; i++){
             for (int j=i+1; j<m_Nh; j++){
-                blockArrays_temp2.col(index) << m_system->kUnique2(i,j,s1,s2),i,j;
+                blockArrays_temp.col(index) << m_system->kUnique2(i,j,s1,s2),i,j;
                 index += 1;
 
                 if (index >= colSize){
                     colSize += 10000;
-                    blockArrays_temp2.conservativeResize(3, colSize);
+                    blockArrays_temp.conservativeResize(3, colSize);
                 }
             }
         }
@@ -429,12 +429,12 @@ void  MakeIntMat::mapper_2(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockAr
     else if (cond_hp){
         for (int i=0; i<m_Nh; i++){
             for (int a=m_Nh; a<m_Ns; a++){
-                blockArrays_temp2.col(index) << m_system->kUnique2(i,a,s1,s2),i,a;
+                blockArrays_temp.col(index) << m_system->kUnique2(i,a,s1,s2),i,a;
                 index += 1;
 
                 if (index >= colSize){
                     colSize += 10000;
-                    blockArrays_temp2.conservativeResize(3, colSize);
+                    blockArrays_temp.conservativeResize(3, colSize);
                 }
             }
         }
@@ -443,12 +443,12 @@ void  MakeIntMat::mapper_2(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockAr
     else if (cond_ph){
         for (int a=m_Nh; a<m_Ns; a++){
             for (int i=0; i<m_Nh; i++){
-                blockArrays_temp2.col(index) << m_system->kUnique2(a,i,s1,s2),a,i;
+                blockArrays_temp.col(index) << m_system->kUnique2(a,i,s1,s2),a,i;
                 index += 1;
 
                 if (index >= colSize){
                     colSize += 10000;
-                    blockArrays_temp2.conservativeResize(3, colSize);
+                    blockArrays_temp.conservativeResize(3, colSize);
                 }
             }
         }
@@ -457,22 +457,23 @@ void  MakeIntMat::mapper_2(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockAr
     else{
         for (int a=m_Nh; a<m_Ns; a++){
             for (int b=a+1; b<m_Ns; b++){
-                blockArrays_temp2.col(index) << m_system->kUnique2(a,b,s1,s2),a,b;
+                blockArrays_temp.col(index) << m_system->kUnique2(a,b,s1,s2),a,b;
                 index += 1;
 
                 if (index >= colSize){
                     colSize += 10000;
-                    blockArrays_temp2.conservativeResize(3, colSize);
+                    blockArrays_temp.conservativeResize(3, colSize);
                 }
             }
         }
     }
 
-    blockArrays_temp.conservativeResize(3, index);
+    /*blockArrays_temp.conservativeResize(3, index);
     for (int c=0; c<index; c++){
         blockArrays_temp.col(c) = blockArrays_temp2.col(c);
     }
-    blockArrays_temp2.resize(0,0);
+    blockArrays_temp2.resize(0,0);*/
+    blockArrays_temp.conservativeResize(3, index);
 
     Eigen::MatrixXi blockArrays = blockArrays_temp;     //need this
     Eigen::VectorXi veryTempVec = blockArrays_temp.row(0);
@@ -494,17 +495,17 @@ void  MakeIntMat::mapper_2(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockAr
 
 void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArraysIn, int i1, int i2, int i3, int s1, int s2, int s3){
 
-    Eigen::MatrixXi   blockArrays_temp;
     int index       = 0;
     int colSize     = 10000;
+    Eigen::MatrixXi   blockArrays_temp(4,colSize);
 
     bool cond_hhh = (i1 == 0 && i2 == 0 && i3==0);
     bool cond_hhp = (i1 == 0 && i2 == 0 && i3==1);
     bool cond_pph = (i1 == 1 && i2 == 1 && i3==0);
     bool cond_ppp = (i1 == 1 && i2 == 1 && i3==1);
 
-    Eigen::MatrixXi   blockArrays_temp2;
-    blockArrays_temp2.conservativeResize(4, colSize);
+    //Eigen::MatrixXi   blockArrays_temp2;
+    //blockArrays_temp.conservativeResize(4, colSize);
 
     // 0 0 0
     if (cond_hhh){
@@ -513,12 +514,12 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
         for (int i=0; i<m_Nh; i++){
             for (int j=i+1; j<m_Nh; j++){
                 for (int k=j+1; k<m_Nh; k++){
-                    blockArrays_temp2.col(index) << m_system->kUnique3(i,j,k,s1,s2,s3),i,j,k;
+                    blockArrays_temp.col(index) << m_system->kUnique3(i,j,k,s1,s2,s3),i,j,k;
                     index += 1;
 
                     if (index >= colSize){
                         colSize += 10000;
-                        blockArrays_temp2.conservativeResize(4, colSize);
+                        blockArrays_temp.conservativeResize(4, colSize);
                     }
                 }
             }
@@ -532,12 +533,12 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
         for (int i=0; i<m_Nh; i++){
             for (int j=i+1; j<m_Nh; j++){
                 for (int a=m_Nh; a<m_Ns; a++){
-                    blockArrays_temp2.col(index) << m_system->kUnique3(i,j,a,s1,s2,s3),i,j,a;
+                    blockArrays_temp.col(index) << m_system->kUnique3(i,j,a,s1,s2,s3),i,j,a;
                     index += 1;
 
                     if (index >= colSize){
                         colSize += 10000;
-                        blockArrays_temp2.conservativeResize(4, colSize);
+                        blockArrays_temp.conservativeResize(4, colSize);
                     }
                 }
             }
@@ -558,12 +559,12 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
                     auto it2 = std::find(sortVec_p_h.begin(), sortVec_p_h.end(), ku);
                     auto it3 = std::find(sortVec_p_p.begin(), sortVec_p_p.end(), ku);
                     if (it1 != sortVec_ppp_hhh.end() || it2 != sortVec_p_h.end() || it3 != sortVec_p_p.end()){
-                        blockArrays_temp2.col(index) << ku,a,b,i;
+                        blockArrays_temp.col(index) << ku,a,b,i;
                         index += 1;
 
                         if (index >= colSize){
                             colSize += 10000;
-                            blockArrays_temp2.conservativeResize(4, colSize);
+                            blockArrays_temp.conservativeResize(4, colSize);
                         }
                     }
                 }
@@ -583,12 +584,12 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
                     ku = m_system->kUnique3(a,b,c,s1,s2,s3);
                     auto it = std::find(sortVec_ppp_hhh.begin(), sortVec_ppp_hhh.end(), ku);
                     if (it != sortVec_ppp_hhh.end()){
-                        blockArrays_temp2.col(index) << ku,a,b,c;
+                        blockArrays_temp.col(index) << ku,a,b,c;
                         index += 1;
 
                         if (index >= colSize){
                             colSize += 10000;
-                            blockArrays_temp2.conservativeResize(4, colSize);
+                            blockArrays_temp.conservativeResize(4, colSize);
                         }
                     }
                 }
@@ -597,11 +598,12 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
         std::cout << "blockArrays_ppp_ppp: finished" << std::endl;
     }
 
-    blockArrays_temp.conservativeResize(4, index);
+    /*blockArrays_temp.conservativeResize(4, index);
     for (int c=0; c<index; c++){
         blockArrays_temp.col(c) = blockArrays_temp2.col(c);
     }
-    blockArrays_temp2.resize(0,0);
+    blockArrays_temp2.resize(0,0);*/
+    blockArrays_temp.conservativeResize(4, index);
 
 
     Eigen::MatrixXi blockArrays = blockArrays_temp;     //need this
@@ -624,17 +626,17 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
 
 void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArraysIn, int i1, int i2, int i3, int i4, int s1, int s2, int s3, int s4){
 
-    Eigen::MatrixXi   blockArrays_temp;
-    Eigen::MatrixXi   blockArrays_temp2;
     int index       = 0;
     int colSize     = 10000;
+    Eigen::MatrixXi   blockArrays_temp(5,colSize);
+    //Eigen::MatrixXi   blockArrays_temp2;
 
     bool cond_hhpp = (i1 == 0 && i2 == 0 && i3==1 && i4==1);
     bool cond_pphh = (i1 == 1 && i2 == 1 && i3==0 && i4==0);
     bool cond_hhhp = (i1 == 0 && i2 == 0 && i3==0 && i4==1);
     bool cond_ppph = (i1 == 1 && i2 == 1 && i3==1 && i4==0);
 
-    blockArrays_temp2.conservativeResize(5, colSize);
+    //blockArrays_temp2.conservativeResize(5, colSize);
 
     // 0 0 0 1
     if (cond_hhhp){
@@ -649,12 +651,12 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
                         ku = m_system->kUnique4(i,j,k,a,s1,s2,s3,s4);
                         auto it = std::find(sortVec_pp_pp.begin(), sortVec_pp_pp.end(), ku);
                         if (it != sortVec_pp_pp.end()){
-                            blockArrays_temp2.col(index) << ku,i,j,k,a;
+                            blockArrays_temp.col(index) << ku,i,j,k,a;
                             index += 1;
 
                             if (index >= colSize){
                                 colSize += 10000;
-                                blockArrays_temp2.conservativeResize(5, colSize);
+                                blockArrays_temp.conservativeResize(5, colSize);
                             }
                         }
                     }
@@ -676,12 +678,12 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
                         ku = m_system->kUnique4(i,j,a,b,s1,s2,s3,s4);
                         auto it = std::find(sortVec_pm_ph.begin(), sortVec_pm_ph.end(), ku);
                         if (it != sortVec_pm_ph.end()){
-                            blockArrays_temp2.col(index) << ku,i,j,a,b;
+                            blockArrays_temp.col(index) << ku,i,j,a,b;
                             index += 1;
 
                             if (index >= colSize){
                                 colSize += 10000;
-                                blockArrays_temp2.conservativeResize(5, colSize);
+                                blockArrays_temp.conservativeResize(5, colSize);
                             }
                         }
                     }
@@ -703,12 +705,12 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
                         ku = m_system->kUnique4(a,b,i,j,s1,s2,s3,s4);
                         auto it = std::find(sortVec_pm_hp.begin(), sortVec_pm_hp.end(), ku);
                         if (it != sortVec_pm_hp.end()){
-                            blockArrays_temp2.col(index) << ku,a,b,i,j;
+                            blockArrays_temp.col(index) << ku,a,b,i,j;
                             index += 1;
 
                             if (index >= colSize){
                                 colSize += 10000;
-                                blockArrays_temp2.conservativeResize(5, colSize);
+                                blockArrays_temp.conservativeResize(5, colSize);
                             }
                         }
                     }
@@ -730,12 +732,12 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
                         ku = m_system->kUnique4(a,b,c,i,s1,s2,s3,s4);
                         auto it = std::find(sortVec_pp_hh.begin(), sortVec_pp_hh.end(), ku);
                         if (it != sortVec_pp_hh.end()){
-                            blockArrays_temp2.col(index) << ku,a,b,c,i;
+                            blockArrays_temp.col(index) << ku,a,b,c,i;
                             index += 1;
 
                             if (index >= colSize){
                                 colSize += 10000;
-                                blockArrays_temp2.conservativeResize(5, colSize);
+                                blockArrays_temp.conservativeResize(5, colSize);
                             }
                         }
                     }
@@ -745,11 +747,12 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
         std::cout << "blockArrays_pppm_ppph: finished" << std::endl;
     }
 
-    blockArrays_temp.conservativeResize(5, index);
+    /*blockArrays_temp.conservativeResize(5, index);
     for (int c=0; c<index; c++){
         blockArrays_temp.col(c) = blockArrays_temp2.col(c);
     }
-    blockArrays_temp2.resize(0,0);
+    blockArrays_temp2.resize(0,0);*/
+    blockArrays_temp.conservativeResize(5, index);
 
     Eigen::MatrixXi blockArrays = blockArrays_temp;     //need this
     Eigen::VectorXi veryTempVec = blockArrays_temp.row(0);
@@ -772,15 +775,15 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
 
 void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArraysIn, int i1, int i2, int i3, int i4, int i5, int s1, int s2, int s3, int s4, int s5){
 
-    Eigen::MatrixXi   blockArrays_temp;
-    Eigen::MatrixXi   blockArrays_temp2;
     int index       = 0;
     int colSize     = 10000;
+    Eigen::MatrixXi   blockArrays_temp(6,colSize);
+    //Eigen::MatrixXi   blockArrays_temp2;
 
     bool cond_hhhpp = (i1 == 0 && i2 == 0 && i3 == 0 && i4==1 && i5==1);
     bool cond_ppphh = (i1 == 1 && i2 == 1 && i3 == 1 && i4==0 && i5==0);
 
-    blockArrays_temp2.conservativeResize(6, colSize);
+    //blockArrays_temp2.conservativeResize(6, colSize);
 
     // 0 0 0 1 1
     if (cond_hhhpp){
@@ -796,12 +799,12 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
                             ku = m_system->kUnique5(i,j,k,a,b,s1,s2,s3,s4,s5);
                             auto it = std::find(sortVec_p_p.begin(), sortVec_p_p.end(), ku);
                             if (it != sortVec_p_p.end()){
-                                blockArrays_temp2.col(index) << ku,i,j,k,a,b;
+                                blockArrays_temp.col(index) << ku,i,j,k,a,b;
                                 index += 1;
 
                                 if (index >= colSize){
                                     colSize += 10000;
-                                    blockArrays_temp2.conservativeResize(6, colSize);
+                                    blockArrays_temp.conservativeResize(6, colSize);
                                 }
                             }
                         }
@@ -825,12 +828,12 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
                             ku = m_system->kUnique5(a,b,c,i,j,s1,s2,s3,s4,s5);
                             auto it = std::find(sortVec_p_h.begin(), sortVec_p_h.end(), ku);
                             if (it != sortVec_p_h.end()){
-                                blockArrays_temp2.col(index) << ku,a,b,c,i,j;
+                                blockArrays_temp.col(index) << ku,a,b,c,i,j;
                                 index += 1;
 
                                 if (index >= colSize){
                                     colSize += 10000;
-                                    blockArrays_temp2.conservativeResize(6, colSize);
+                                    blockArrays_temp.conservativeResize(6, colSize);
                                 }
                             }
                         }
@@ -841,11 +844,12 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
         std::cout << "blockArrays_pppmm_ppphh: finished" << std::endl;
     }
 
-    blockArrays_temp.conservativeResize(6, index);
+    /*blockArrays_temp.conservativeResize(6, index);
     for (int c=0; c<index; c++){
         blockArrays_temp.col(c) = blockArrays_temp2.col(c);
     }
-    blockArrays_temp2.resize(0,0);
+    blockArrays_temp2.resize(0,0);*/
+    blockArrays_temp.conservativeResize(6, index);
 
     Eigen::MatrixXi blockArrays = blockArrays_temp;
 

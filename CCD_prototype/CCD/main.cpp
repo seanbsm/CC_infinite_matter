@@ -85,7 +85,7 @@ int main(int argc, char** argv)
             Nb = atoi(argv[3]);				//number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
         }
         else{        //default size
-            Nh = 54;                        //number of particles
+            Nh = 14;                        //number of particles
             Nb = 10;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
         }
         double  rs;     //Wigner Seitz radius
