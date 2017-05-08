@@ -208,8 +208,9 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
 
             if (m_CC_type >= 1 ){
                 m_diagrams->T1a();
+                std::cout << "what now" << std::endl;
                 //std::cout << "T1a, world: "<< world_rank<< std::endl;
-                m_diagrams->T1b();
+                //m_diagrams->T1b();
                 //std::cout << "WHAT NOW" << std::endl;
                 //std::cout << "T1b, world: "<< world_rank<< std::endl;
             }
@@ -287,7 +288,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
 
             //calculate T3 contributions to T2 using T3_current
             m_diagrams->D10b();
-            m_diagrams->D10c();
+            //m_diagrams->D10c();
 
         }
 

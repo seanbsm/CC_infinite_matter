@@ -30,6 +30,7 @@ public:
     std::vector<Eigen::MatrixXd>  Amplitudes;
 
     typedef Eigen::Matrix<unsigned long int, Eigen::Dynamic, Eigen::Dynamic> MatrixXuli;
+    typedef Eigen::Matrix<short int, Eigen::Dynamic, Eigen::Dynamic> MatrixXsi;
 
     spp::sparse_hash_map<unsigned long int, double>           T2_elements;
     spp::sparse_hash_map<unsigned long int, double>           T2_temp;
@@ -43,7 +44,9 @@ public:
     //to have matrices storing the indices, rather than finding them on the go.
     //These matrices are made in mapper_5 in the intClass, because this is a late fix
     std::vector<MatrixXuli>              T3_T5b_indices;
+    std::vector<MatrixXsi>               T3_T5b_indices_signs;
     std::vector<MatrixXuli>              T3_T5c_indices;
+    std::vector<MatrixXsi>               T3_T5c_indices_signs;
 
     int returnId(const int i1, const int i2, const int i3, const int i4);
 
@@ -114,9 +117,11 @@ public:
     Eigen::MatrixXd                 T5b_makemat_1(int channel1, int channel2);
     Eigen::MatrixXd                 T5b_makemat_2(int channel1, int channel2);
     MatrixXuli                      T5b_makemat_2_I(int channel1, int channel2); //index, not double
+    MatrixXsi                       T5b_makemat_2_I_signs(int channel1, int channel2); //signs of indices, not double
     Eigen::MatrixXd                 T5c_makemat_1(int channel1, int channel2);
     Eigen::MatrixXd                 T5c_makemat_2(int channel1, int channel2);
     MatrixXuli                      T5c_makemat_2_I(int channel1, int channel2); //index, not double
+    MatrixXsi                       T5c_makemat_2_I_signs(int channel1, int channel2); //signs of indices, not double
     Eigen::MatrixXd                 T5d_makemat_1(int channel1, int channel2);
     Eigen::MatrixXd                 T5d_makemat_2(int channel1, int channel2);
     Eigen::MatrixXd                 T5e_makemat_1(int channel1, int channel2);

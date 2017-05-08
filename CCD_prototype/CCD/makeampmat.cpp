@@ -3409,9 +3409,11 @@ Eigen::MatrixXd MakeAmpMat::D10b_makemat(int channel1, int channel2){    //makes
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-    unsigned long int id; unsigned long int index;
+    unsigned long int id1; unsigned long int id2;
+    unsigned long int index;
     int i; int j; int k;
     int c; int d; int b;
+    int prefac1; int prefac2;
 
     for (int i2 = range_lower2; i2<range_upper2; i2++){
         c = m_intClass->blockArrays_ppm_pph(1,i2);
@@ -3422,7 +3424,99 @@ Eigen::MatrixXd MakeAmpMat::D10b_makemat(int channel1, int channel2){    //makes
             j = m_intClass->blockArrays_ppm_hhp(2,i1);
             b = m_intClass->blockArrays_ppm_hhp(3,i1);
 
-            id = m_intClass->Identity_hhhppp(i,j,k,c,d,b);
+            //id = m_intClass->Identity_hhhppp(i,j,k,c,d,b);
+
+            /*if (j<k){
+                if (d<b){
+                    id = m_intClass->Identity_hhhppp(i,j,k,c,d,b);
+                    prefac = +1;
+                }
+                else if (d>b && c<b){
+                    id = m_intClass->Identity_hhhppp(i,j,k,c,b,d);
+                    prefac = -1;
+                }
+                else if (d>b && c>b){
+                    id = m_intClass->Identity_hhhppp(i,j,k,b,c,d);
+                    prefac = +1;
+                }
+                else{
+                    returnMat(i1-range_lower1, i2-range_lower2) = 0;
+                    continue;
+                }
+            }
+            else if (j>k && i<k){
+                if (d<b){
+                    id = m_intClass->Identity_hhhppp(i,k,j,c,d,b);
+                    prefac = -1;
+                }
+                else if (d>b && c<b){
+                    id = m_intClass->Identity_hhhppp(i,k,j,c,b,d);
+                    prefac = +1;
+                }
+                else if (d>b && c>b){
+                    id = m_intClass->Identity_hhhppp(i,k,j,b,c,d);
+                    prefac = -1;
+                }
+                else{
+                    returnMat(i1-range_lower1, i2-range_lower2) = 0;
+                    continue;
+                }
+            }
+            else if (j>k && i>k){
+                if (d<b){
+                    id = m_intClass->Identity_hhhppp(k,i,j,c,d,b);
+                    prefac = +1;
+                }
+                else if (d>b && c<b){
+                    id = m_intClass->Identity_hhhppp(k,i,j,c,b,d);
+                    prefac = -1;
+                }
+                else if (d>b && c>b){
+                    id = m_intClass->Identity_hhhppp(k,i,j,b,c,d);
+                    prefac = +1;
+                }
+                else{
+                    returnMat(i1-range_lower1, i2-range_lower2) = 0;
+                    continue;
+                }
+            }*/
+            //HOLES
+            if (j<k){
+                id1 = m_intClass->Identity_hhh(i,j,k);
+                prefac1 = +1;
+            }
+            else if (j>k && i<k){
+                id1 = m_intClass->Identity_hhh(i,k,j);
+                prefac1 = -1;
+            }
+            else if (j>k && i>k){
+                id1 = m_intClass->Identity_hhh(k,i,j);
+                prefac1 = +1;
+            }
+            else{
+                returnMat(i1-range_lower1, i2-range_lower2) = 0;
+                continue;
+            }
+            //PARTICLES
+            if (d<b){
+                id2 = m_intClass->Identity_ppp(c,d,b);
+                prefac2 = +1;
+            }
+            else if (d>b && c<b){
+                id2 = m_intClass->Identity_ppp(c,b,d);
+                prefac2 = -1;
+            }
+            else if (d>b && c>b){
+                id2 = m_intClass->Identity_ppp(b,c,d);
+                prefac2 = +1;
+            }
+            else{
+                returnMat(i1-range_lower1, i2-range_lower2) = 0;
+                continue;
+            }
+
+            index = T3_elements_I.find(id1+id2)->second;
+            returnMat(i1-range_lower1, i2-range_lower2) = prefac1*prefac2*T3_elements_A[index];
 
             /*id = m_intClass->Identity_hhhppp(m_intClass->blockArrays_ppm_hhp(1,i1),
                                              m_intClass->blockArrays_ppm_hhp(2,i1),
@@ -3431,8 +3525,8 @@ Eigen::MatrixXd MakeAmpMat::D10b_makemat(int channel1, int channel2){    //makes
                                              m_intClass->blockArrays_ppm_pph(2,i2),
                                              m_intClass->blockArrays_ppm_hhp(3,i1));*/
 
-            index = T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
-            returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
+            //index = T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
+            //returnMat(i1-range_lower1, i2-range_lower2) = T3_elements_A[index];
         }
     }
 
@@ -3542,20 +3636,35 @@ Eigen::MatrixXd MakeAmpMat::T1a_makemat(int channel1, int channel2){    //makes 
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
-  unsigned long int id;
+    unsigned long int id;
     int i; int j;
     int a; int d;
+    int prefac;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
+        i = m_intClass->blockArrays_ppm_hhp(1,i1);
+        j = m_intClass->blockArrays_ppm_hhp(2,i1);
+        a = m_intClass->blockArrays_ppm_hhp(3,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-
-            i = m_intClass->blockArrays_ppm_hhp(1,i1);
-            j = m_intClass->blockArrays_ppm_hhp(2,i1);
-            a = m_intClass->blockArrays_ppm_hhp(3,i1);
             d = m_intClass->blockArrays_p_p(1,i2);
 
-            id = m_intClass->Identity_hhpp(i,j,a,d);
-            returnMat(i1-range_lower1, i2-range_lower2) = T2_elements[id];
+            if (a<d){
+                id = m_intClass->Identity_hhpp(i,j,a,d);
+                prefac = +1;
+            }
+            else if (a>d){
+                id = m_intClass->Identity_hhpp(i,j,d,a);
+                prefac = -1;
+            }
+            else{
+                returnMat(i1-range_lower1, i2-range_lower2) = 0;
+                continue;
+            }
+            returnMat(i1-range_lower1, i2-range_lower2) = prefac*T2_elements[id];
+
+
+            //id = m_intClass->Identity_hhpp(i,j,a,d);
+            //returnMat(i1-range_lower1, i2-range_lower2) = T2_elements[id];
         }
     }
 
@@ -4213,9 +4322,60 @@ MakeAmpMat::MatrixXuli MakeAmpMat::T5b_makemat_2_I(int channel1, int channel2){ 
         for (int i2 = range_lower2; i2<range_upper2; i2++){
             m = m_intClass->blockArrays_p_h(1,i2);
 
-            id = m_intClass->Identity_hhhppp(m,j,k,a,b,c);
+            if (m<j){
+                id = m_intClass->Identity_hhhppp(m,j,k,a,b,c);
+            }
+            else if (m>j && m<k){
+                id = m_intClass->Identity_hhhppp(j,m,k,a,b,c);
+            }
+            else if (m>k){
+                id = m_intClass->Identity_hhhppp(j,k,m,a,b,c);
+            }
+            else{
+                returnMat(i1-range_lower1, i2-range_lower2) = 0; //signs will remove these elements
+                continue;
+            }
             index = T3_elements_I.find(id)->second;
             returnMat(i1-range_lower1, i2-range_lower2) = index;
+        }
+    }
+
+    return returnMat;
+}
+
+MakeAmpMat::MatrixXsi MakeAmpMat::T5b_makemat_2_I_signs(int channel1, int channel2){    //makes a 5x1 matrix
+
+    int range_lower1 = m_intClass->indexHolder_pppmm_ppphh(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_pppmm_ppphh(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_p_h(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_p_h(1, channel2);
+
+    MatrixXsi returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+    int m; int j; int k;
+    short int prefac;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        j = m_intClass->blockArrays_pppmm_ppphh(4,i1);
+        k = m_intClass->blockArrays_pppmm_ppphh(5,i1);
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+            m = m_intClass->blockArrays_p_h(1,i2);
+
+            if (m<j){
+                prefac = +1;
+            }
+            else if (m>j && m<k){
+                prefac = -1;
+            }
+            else if (m>k){
+                prefac = +1;
+            }
+            else{
+                returnMat(i1-range_lower1, i2-range_lower2) = 0;
+                continue;
+            }
+            returnMat(i1-range_lower1, i2-range_lower2) = prefac;
         }
     }
 
@@ -4309,9 +4469,60 @@ MakeAmpMat::MatrixXuli MakeAmpMat::T5c_makemat_2_I(int channel1, int channel2){ 
         for (int i2 = range_lower2; i2<range_upper2; i2++){
             e = m_intClass->blockArrays_p_p(1,i2);
 
-            id = m_intClass->Identity_hhhppp(i,j,k,e,b,c);
+            if (e<b){
+                id = m_intClass->Identity_hhhppp(i,j,k,e,b,c);
+            }
+            else if (e>b && e<c){
+                id = m_intClass->Identity_hhhppp(i,j,k,b,e,c);
+            }
+            else if (e>c){
+                id = m_intClass->Identity_hhhppp(i,j,k,b,c,e);
+            }
+            else{
+                returnMat(i1-range_lower1, i2-range_lower2) = 0; //sign matrix will remove these elements
+                continue;
+            }
             index = T3_elements_I.find(id)->second;
             returnMat(i1-range_lower1, i2-range_lower2) = index;
+        }
+    }
+
+    return returnMat;
+}
+
+MakeAmpMat::MatrixXsi MakeAmpMat::T5c_makemat_2_I_signs(int channel1, int channel2){
+    int range_lower1 = m_intClass->indexHolder_pppmm_hhhpp(0, channel1);
+    int range_upper1 = m_intClass->indexHolder_pppmm_hhhpp(1, channel1);
+    int range_lower2 = m_intClass->indexHolder_p_p(0, channel2);
+    int range_upper2 = m_intClass->indexHolder_p_p(1, channel2);
+
+    MatrixXsi returnMat;
+    returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
+
+
+    int e; int b; int c;
+    short int prefac;
+
+    for (int i1 = range_lower1; i1<range_upper1; i1++){
+        b = m_intClass->blockArrays_pppmm_hhhpp(4,i1);
+        c = m_intClass->blockArrays_pppmm_hhhpp(5,i1);
+        for (int i2 = range_lower2; i2<range_upper2; i2++){
+            e = m_intClass->blockArrays_p_p(1,i2);
+
+            if (e<b){
+                prefac = +1;
+            }
+            else if (e>b && e<c){
+                prefac = -1;
+            }
+            else if (e>c){
+                prefac = +1;
+            }
+            else{
+                returnMat(i1-range_lower1, i2-range_lower2) = 0;
+                continue;
+            }
+            returnMat(i1-range_lower1, i2-range_lower2) = prefac;
         }
     }
 
@@ -4694,7 +4905,10 @@ void MakeAmpMat::T1a_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
             j = m_intClass->blockArrays_ppm_hhp(2,i1);
             a = m_intClass->blockArrays_ppm_hhp(3,i1);
 
-            id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);  /*unsigned long int in = T3_elements_I.find(id)->second;
+            if (j<k && a<b){
+                id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
+
+                /*unsigned long int in = T3_elements_I.find(id)->second;
             unsigned long int id1 = m_intClass->Identity_hhhppp(j,i,k,a,b,c); unsigned long int in1 = T3_elements_I.find(id1)->second;
             unsigned long int id2 = m_intClass->Identity_hhhppp(k,j,i,a,b,c); unsigned long int in2 = T3_elements_I.find(id2)->second;
             unsigned long int id3 = m_intClass->Identity_hhhppp(i,j,k,b,a,c); unsigned long int in3 = T3_elements_I.find(id3)->second;
@@ -4708,15 +4922,16 @@ void MakeAmpMat::T1a_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
             std::cout << T3_elements_A[in4] << std::endl;
             std::cout << T3_elements_A[in5] << std::endl;*/
 
-            /*id = m_intClass->Identity_hhhppp(m_intClass->blockArrays_ppm_hhp(1,i1),
+                /*id = m_intClass->Identity_hhhppp(m_intClass->blockArrays_ppm_hhp(1,i1),
                                              m_intClass->blockArrays_ppm_hhp(2,i1),
                                              m_intClass->blockArrays_ppm_pph(3,i2),
                                              m_intClass->blockArrays_ppm_hhp(3,i1),
                                              m_intClass->blockArrays_ppm_pph(1,i2),
                                              m_intClass->blockArrays_ppm_pph(2,i2));*/
 
-            index = T3_elements_I.find(id)->second;//T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
-            T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
+                index = T3_elements_I.find(id)->second;//T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
+                T3_elements_A_temp[index] =  inMat(i1-range_lower1, i2-range_lower2);
+            }
         }
     }
 }

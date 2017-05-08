@@ -429,7 +429,12 @@ void Diagrams::D10b(){
                     matches.conservativeResize(3, matches.cols()+1);
                     matches.col(matches.cols()-1) << i1,i2,i3;
 
-                    mat2v.push_back( m_intClass->D10b_makemat(i2, i1) );
+                    Eigen::MatrixXd mat = m_intClass->D10b_makemat(i2, i1);
+                    Eigen::MatrixXd M(2*mat.rows(), mat.cols());
+                    M << mat, -mat;
+
+                    mat2v.push_back( M );
+                    //mat2v.push_back( m_intClass->D10b_makemat(i2, i1) );
                 }
             }
         }
@@ -447,8 +452,11 @@ void Diagrams::D10b(){
                 Eigen::MatrixXd product = -0.5*(mat1*mat2);*/
 
         Eigen::MatrixXd mat1 = m_ampClass->D10b_makemat(i3, i2);
+        Eigen::MatrixXd M1(mat1.rows(), 2*mat1.cols());
+        M1 << mat1, -mat1;
 
-        productv[i] = -0.5*(mat1*mat2v[i]);
+        //productv[i] = -0.5*(mat1*mat2v[i]);
+        productv[i] = -0.5*(M1*mat2v[i]);
 
     }
 
@@ -637,7 +645,7 @@ void Diagrams::T1a(){
 
     int i1; int i2; int i3; int cols = matches.cols();
     auto t1 = Clock::now();
-#pragma omp parallel for num_threads(1)/*num_threads(m_numThreads)*/ private(i1,i2,i3) firstprivate(cols)
+#pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
     for (int i=0; i<cols; i++){
         i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
 
@@ -1222,8 +1230,9 @@ void Diagrams::makeT5bIndexMat(){
         for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_pppmm_ppphh.size(); i3++){
                 if ( m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_pppmm_ppphh[i3] && m_intClass->sortVec_p_h[i1] == m_intClass->sortVec_ppm_pph[i2]){
-                    MatrixXuli mat = m_ampClass->T5b_makemat_2_I( i3,i1 );
-                    m_ampClass->T3_T5b_indices.push_back( mat );
+                    //MatrixXuli mat1 = m_ampClass->T5b_makemat_2_I( i3,i1 );
+                    m_ampClass->T3_T5b_indices.push_back( m_ampClass->T5b_makemat_2_I( i3,i1 ) );
+                    m_ampClass->T3_T5b_indices_signs.push_back( m_ampClass->T5b_makemat_2_I_signs( i3,i1 ) );
                 }
             }
         }
@@ -1235,8 +1244,9 @@ void Diagrams::makeT5cIndexMat(){
         for (int i2=0; i2<m_intClass->sortVec_ppm_hhp.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_pppmm_hhhpp.size(); i3++){
                 if ( m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_pppmm_hhhpp[i3] && m_intClass->sortVec_p_p[i1] == m_intClass->sortVec_ppm_hhp[i2]){
-                    MatrixXuli mat = m_ampClass->T5c_makemat_2_I( i3,i1 );
-                    m_ampClass->T3_T5c_indices.push_back( mat );
+                    //MatrixXuli mat = m_ampClass->T5c_makemat_2_I( i3,i1 );
+                    m_ampClass->T3_T5c_indices.push_back( m_ampClass->T5c_makemat_2_I( i3,i1 ) );
+                    m_ampClass->T3_T5c_indices_signs.push_back( m_ampClass->T5c_makemat_2_I_signs( i3,i1 ) );
                 }
             }
         }

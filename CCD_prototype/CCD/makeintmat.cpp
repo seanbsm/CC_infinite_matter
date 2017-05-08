@@ -1091,17 +1091,34 @@ Eigen::MatrixXd MakeIntMat::D10b_makemat(int channel1, int channel2){    //makes
     unsigned long int id;
     int a; int k;
     int c; int d;
+    int prefac;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
+        c = blockArrays_ppm_pph(1,i1);
+        d = blockArrays_ppm_pph(2,i1);
+        k = blockArrays_ppm_pph(3,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-
-            c = blockArrays_ppm_pph(1,i1);
-            d = blockArrays_ppm_pph(2,i1);
-            k = blockArrays_ppm_pph(3,i1);
             a = blockArrays_p_p(1,i2);
 
-            id = Identity_ppph(c,d,a,k);
-            returnMat(i1-range_lower1, i2-range_lower2) = Vppph_elements[id];
+            if (d<a){
+                id = Identity_ppph(c,d,a,k);
+                prefac = +1;
+            }
+            else if (d>a && c<a){
+                id = Identity_ppph(c,a,d,k);
+                prefac = -1;
+            }
+            else if (d>a && c>a){
+                id = Identity_ppph(a,c,d,k);
+                prefac = +1;
+            }
+            else{
+                returnMat(i1-range_lower1, i2-range_lower2) = 0;
+                continue;
+            }
+            returnMat(i1-range_lower1, i2-range_lower2) = prefac*Vppph_elements[id];
+            //id = Identity_ppph(c,d,a,k);
+            //returnMat(i1-range_lower1, i2-range_lower2) = Vppph_elements[id];
         }
     }
 
@@ -1124,11 +1141,10 @@ Eigen::MatrixXd MakeIntMat::D10c_makemat(int channel1, int channel2){
     int c; int j;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
+        k = blockArrays_ppm_hhp(1,i1);
+        l = blockArrays_ppm_hhp(2,i1);
+        c = blockArrays_ppm_hhp(3,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-
-            k = blockArrays_ppm_hhp(1,i1);
-            l = blockArrays_ppm_hhp(2,i1);
-            c = blockArrays_ppm_hhp(3,i1);
             j = blockArrays_p_h(1,i2);
 
             id = Identity_hhhp(k,l,j,c);
@@ -1155,10 +1171,10 @@ Eigen::MatrixXd MakeIntMat::T1a_makemat(int channel1, int channel2){    //makes 
     int d; int k;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
+        b = blockArrays_ppm_pph(1,i1);
+        c = blockArrays_ppm_pph(2,i1);
+        k = blockArrays_ppm_pph(3,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-            b = blockArrays_ppm_pph(1,i1);
-            c = blockArrays_ppm_pph(2,i1);
-            k = blockArrays_ppm_pph(3,i1);
             d = blockArrays_p_p(1,i2);
 
             id = Identity_ppph(b,c,d,k);
@@ -1185,11 +1201,10 @@ Eigen::MatrixXd MakeIntMat::T1b_makemat(int channel1, int channel2){    //makes 
     int l; int c;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
+        j = blockArrays_ppm_hhp(1,i1);
+        k = blockArrays_ppm_hhp(2,i1);
+        c = blockArrays_ppm_hhp(3,i1);
         for (int i2 = range_lower2; i2<range_upper2; i2++){
-
-            j = blockArrays_ppm_hhp(1,i1);
-            k = blockArrays_ppm_hhp(2,i1);
-            c = blockArrays_ppm_hhp(3,i1);
             l = blockArrays_p_h(1,i2);
 
             id = Identity_hhhp(j,k,l,c);
@@ -2772,6 +2787,20 @@ unsigned long int MakeIntMat::Identity_ppph(int p1, int p2, int p3, int h1){
     //std::cout << out << std::endl;
     return out;
     //return h1 + p1*m_Nh + p2*m_Nh*(m_Ns-m_Nh) + p3*m_Nh*(m_Ns-m_Nh)*(m_Ns-m_Nh);
+}
+
+unsigned long int MakeIntMat::Identity_hhh(int h1, int h2, int h3){
+    unsigned long int out  = (unsigned long int)h1
+                                + (unsigned long int)h2*m_Nh
+                                + (unsigned long int)h3*m_Nh2;
+    return out;
+}
+
+unsigned long int MakeIntMat::Identity_ppp(int p1, int p2, int p3){
+    unsigned long int out  = (unsigned long int)p1*m_Nh3
+                                + (unsigned long int)p2*m_Nh3Ns
+                                + (unsigned long int)p3*m_Nh3Ns2;
+    return out;
 }
 
 //there are 3 ways to calculate "out" here, but when running the program, I found no difference between them
