@@ -1089,9 +1089,8 @@ Eigen::MatrixXd MakeIntMat::D10b_makemat(int channel1, int channel2){    //makes
 
 
     unsigned long int id;
-    int a; int k;
     int c; int d;
-    int prefac;
+    int a; int k;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
         c = blockArrays_ppm_pph(1,i1);
@@ -1100,7 +1099,7 @@ Eigen::MatrixXd MakeIntMat::D10b_makemat(int channel1, int channel2){    //makes
         for (int i2 = range_lower2; i2<range_upper2; i2++){
             a = blockArrays_p_p(1,i2);
 
-            if (d<a){
+            /*if (d<a){
                 id = Identity_ppph(c,d,a,k);
                 prefac = +1;
             }
@@ -1115,8 +1114,10 @@ Eigen::MatrixXd MakeIntMat::D10b_makemat(int channel1, int channel2){    //makes
             else{
                 returnMat(i1-range_lower1, i2-range_lower2) = 0;
                 continue;
-            }
-            returnMat(i1-range_lower1, i2-range_lower2) = prefac*Vppph_elements[id];
+            }*/
+            id = Identity_ppph(c,d,a,k);
+            returnMat(i1-range_lower1, i2-range_lower2) = Vppph_elements[id];
+            //std::cout << Vppph_elements[id] << std::endl;
             //id = Identity_ppph(c,d,a,k);
             //returnMat(i1-range_lower1, i2-range_lower2) = Vppph_elements[id];
         }

@@ -432,6 +432,7 @@ void Diagrams::D10b(){
                     Eigen::MatrixXd mat = m_intClass->D10b_makemat(i2, i1);
                     Eigen::MatrixXd M(2*mat.rows(), mat.cols());
                     M << mat, -mat;
+                    //std::cout << m_intClass->Vppph_elements.size() << std::endl;
 
                     mat2v.push_back( M );
                     //mat2v.push_back( m_intClass->D10b_makemat(i2, i1) );
@@ -457,6 +458,7 @@ void Diagrams::D10b(){
 
         //productv[i] = -0.5*(mat1*mat2v[i]);
         productv[i] = -0.5*(M1*mat2v[i]);
+        //std::cout << M1 << std::endl;
 
     }
 
@@ -626,7 +628,6 @@ void Diagrams::T1a(){
     std::vector<Eigen::MatrixXd> mat1v;
     std::vector<Eigen::MatrixXd> mat2v;
 
-    auto t7 = Clock::now();
     for (int i1=0; i1<m_intClass->sortVec_p_p.size(); i1++){
         for (int i2=0; i2<m_intClass->sortVec_ppm_pph.size(); i2++){
             for (int i3=0; i3<m_intClass->sortVec_ppm_hhp.size(); i3++){
@@ -641,33 +642,17 @@ void Diagrams::T1a(){
         }
     }
 
-    auto t8 = Clock::now();
-
     int i1; int i2; int i3; int cols = matches.cols();
-    auto t1 = Clock::now();
 #pragma omp parallel for num_threads(m_numThreads) private(i1,i2,i3) firstprivate(cols)
     for (int i=0; i<cols; i++){
         i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
-
-        /*Eigen::MatrixXd mat1 = m_intClass->T1a_makemat(i2, i1);
-        Eigen::MatrixXd mat2 = m_ampClass->T1a_makemat(i3, i1);
-        Eigen::MatrixXd product = mat2*mat1.transpose();*/
 
         Eigen::MatrixXd product = mat2v[i]*mat1v[i].transpose();
 
         m_ampClass->T1a_inverse(product, i3, i2);
     }
-    auto t2 = Clock::now();
-
-    auto t5 = Clock::now();
-        m_ampClass->addElementsT3_T1a();
-    auto t6 = Clock::now();
+    //m_ampClass->addElementsT3_T1a();
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
-
-    /*std::cout << "Init matrices: " << std::chrono::duration_cast<std::chrono::milliseconds>(t8 - t7).count() << std::endl;
-    std::cout << "Sum:           " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << std::endl;
-    //std::cout << "Send elements: " << std::chrono::duration_cast<std::chrono::milliseconds>(t4 - t3).count() << std::endl;
-    std::cout << "Inverse map:   " << std::chrono::duration_cast<std::chrono::milliseconds>(t6 - t5).count() << std::endl;*/
 }
 
 

@@ -208,7 +208,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
 
             if (m_CC_type >= 1 ){
                 m_diagrams->T1a();
-                std::cout << "what now" << std::endl;
+                //std::cout << "what now" << std::endl;
                 //std::cout << "T1a, world: "<< world_rank<< std::endl;
                 //m_diagrams->T1b();
                 //std::cout << "WHAT NOW" << std::endl;
