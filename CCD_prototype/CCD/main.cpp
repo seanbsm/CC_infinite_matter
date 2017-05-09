@@ -29,7 +29,7 @@ int main(int argc, char** argv)
 {
     Eigen::initParallel();
 
-    double       eps     = atof(argv[5]);              //remember to adjust setprecision in master when changing this
+    double       eps     = 1e-16;              //remember to adjust setprecision in master when changing this
     double       conFac  = 1;                          //convergence factor
     const double pi      = M_PI;
 
@@ -83,6 +83,7 @@ int main(int argc, char** argv)
         if (argc==8){//user defined size
             Nh = atoi(argv[2]);				//number of particles
             Nb = atoi(argv[3]);				//number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
+            eps = atof(argv[5]);
         }
         else{        //default size
             Nh = 14;                        //number of particles
@@ -155,7 +156,7 @@ int main(int argc, char** argv)
             }
         }
         else{
-            master->setCCType(1);
+            master->setCCType(3);
             master->setTriples(true);
             CCDT = true;
         }

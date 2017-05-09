@@ -210,7 +210,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
                 m_diagrams->T1a();
                 //std::cout << "what now" << std::endl;
                 //std::cout << "T1a, world: "<< world_rank<< std::endl;
-                //m_diagrams->T1b();
+                m_diagrams->T1b();
                 //std::cout << "WHAT NOW" << std::endl;
                 //std::cout << "T1b, world: "<< world_rank<< std::endl;
             }
@@ -222,7 +222,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
                 m_diagrams->T2e();
                 //std::cout << "T2e, world: "<< world_rank<< std::endl;
             }
-            if (m_CC_type >= 2){
+            /*if (m_CC_type >= 2){
                 // These diagrams require a re-alignment, done through a temporary map
                 // They use OMP in the secondary sum calculation
                 m_diagrams->T3b();
@@ -233,10 +233,10 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
                 //std::cout << "T3e, world: "<< world_rank<< std::endl;
                 m_diagrams->T3e();  //this is slower than the others because the remap is bigger
                 //std::cout << "T3e, world: "<< world_rank<< std::endl;
-            }
+            }*/
             if (m_CC_type == 3){
                 m_diagrams->T5a();      //slow?
-                m_diagrams->T5b();
+                /*m_diagrams->T5b();
                 //std::cout << "T5b, world: "<< world_rank<< std::endl;
                 m_diagrams->T5c();  //slow?
                 //std::cout << "T5c, world: "<< world_rank<< std::endl;
@@ -246,7 +246,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
                 //std::cout << "T5e, world: "<< world_rank<< std::endl;
                 m_diagrams->T5f();
                 //std::cout << "T5f, world: "<< world_rank<< std::endl;
-                m_diagrams->T5g();
+                m_diagrams->T5g();*/
                 //std::cout << "T5g, world: "<< world_rank<< std::endl;
             }
 
@@ -288,7 +288,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
 
             //calculate T3 contributions to T2 using T3_current
             m_diagrams->D10b();
-            //m_diagrams->D10c();
+            m_diagrams->D10c();
 
         }
 

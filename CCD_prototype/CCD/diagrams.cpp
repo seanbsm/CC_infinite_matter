@@ -432,7 +432,6 @@ void Diagrams::D10b(){
                     Eigen::MatrixXd mat = m_intClass->D10b_makemat(i2, i1);
                     Eigen::MatrixXd M(2*mat.rows(), mat.cols());
                     M << mat, -mat;
-                    //std::cout << m_intClass->Vppph_elements.size() << std::endl;
 
                     mat2v.push_back( M );
                     //mat2v.push_back( m_intClass->D10b_makemat(i2, i1) );
@@ -456,10 +455,9 @@ void Diagrams::D10b(){
         Eigen::MatrixXd M1(mat1.rows(), 2*mat1.cols());
         M1 << mat1, -mat1;
 
-        //productv[i] = -0.5*(mat1*mat2v[i]);
         productv[i] = -0.5*(M1*mat2v[i]);
-        //std::cout << M1 << std::endl;
 
+        //productv[i] = -0.5*(mat1*mat2v[i]);
     }
 
     for (int i=0; i<cols; i++){
@@ -485,7 +483,12 @@ void Diagrams::D10c(){
                     matches.conservativeResize(3, matches.cols()+1);
                     matches.col(matches.cols()-1) << i1,i2,i3;
 
-                    mat2v.push_back( m_intClass->D10c_makemat(i2, i1) );
+                    Eigen::MatrixXd mat = m_intClass->D10c_makemat(i2, i1);
+                    Eigen::MatrixXd M(2*mat.rows(), mat.cols());
+                    M << mat, -mat;
+
+                    mat2v.push_back( M );
+                    //mat2v.push_back( m_intClass->D10c_makemat(i2, i1) );
                 }
             }
         }
@@ -502,9 +505,15 @@ void Diagrams::D10c(){
                 Eigen::MatrixXd mat2 = m_intClass->D10c_makemat(i2, i1);
                 Eigen::MatrixXd product = -0.5*(mat1.transpose()*mat2);*/
 
-        Eigen::MatrixXd mat1 = m_ampClass->D10c_makemat(i2, i3);
+        //Eigen::MatrixXd mat1 = m_ampClass->D10c_makemat(i2, i3);
 
-        productv[i] = -0.5*(mat1.transpose()*mat2v[i]);
+        Eigen::MatrixXd mat1 = m_ampClass->D10c_makemat(i2, i3);
+        Eigen::MatrixXd M1(2*mat1.rows(), mat1.cols());
+        M1 << mat1, -mat1;
+
+        productv[i] = -0.5*(M1.transpose()*mat2v[i]);
+
+        //productv[i] = -0.5*(mat1.transpose()*mat2v[i]);
 
     }
 
@@ -691,7 +700,7 @@ void Diagrams::T1b(){
         m_ampClass->T1b_inverse(product, i2, i3);
     }
 
-    m_ampClass->addElementsT3_T1b();
+    //m_ampClass->addElementsT3_T1b();
 
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
 }
@@ -715,7 +724,7 @@ void Diagrams::T2c(){
 
         Eigen::MatrixXd mat1 = m_intClass->Vpppp[i1];
         Eigen::MatrixXd mat2 = m_ampClass->T2c_makemat(i2, i1);
-        Eigen::MatrixXd product = 0.5*mat2*mat1; //mathematically I need to transpose mat1, but it's symmetric
+        Eigen::MatrixXd product = 0.5*mat2*mat1; //mathematically I need to transpose mat1, but its symmetric
 
         m_ampClass->T2c_inverse(product, i2, i1);
     }*/
@@ -726,13 +735,19 @@ void Diagrams::T2c(){
         i1 = matches(0,i); i2 = matches(1,i);
 
         Eigen::MatrixXd mat1 = m_intClass->Vpppp[i1];
+        Eigen::MatrixXd M1(2*mat1.rows(), mat1.cols());
+        M1 << mat1, -mat1;
+
         Eigen::MatrixXd mat2 = m_ampClass->T2c_makemat(i2, i1);
-        Eigen::MatrixXd product = 0.5*mat2*mat1; //mathematically I need to transpose mat1, but it's symmetric
+        Eigen::MatrixXd M2(mat2.rows(), 2*mat2.cols());
+        M2 << mat2, -mat2;
+
+        Eigen::MatrixXd product = 0.5*M2*M1; //mathematically I need to transpose mat1, but its symmetric
 
         m_ampClass->T2c_inverse(product, i2, i1);
     }
 
-    m_ampClass->addElementsT3_T2c();
+    //m_ampClass->addElementsT3_T2c();
 
 
     /*for (int i1=0; i1<m_intClass->sortVec_pp_pp.size(); i1++){
@@ -740,7 +755,7 @@ void Diagrams::T2c(){
             if ( m_intClass->sortVec_pp_pp[i1] == m_intClass->sortVec_pppm_hhhp[i2]){
                 Eigen::MatrixXd mat1 = m_intClass->Vpppp[i1];
                 Eigen::MatrixXd mat2 = m_ampClass->T2c_makemat(i2, i1);
-                Eigen::MatrixXd product = 0.5*mat2*mat1; //mathematically I need to transpose mat1, but it's symmetric
+                Eigen::MatrixXd product = 0.5*mat2*mat1; //mathematically I need to transpose mat1, but its symmetric
 
                 m_ampClass->T2c_inverse(product, i2, i1);
             }
@@ -771,13 +786,19 @@ void Diagrams::T2d(){
         i1 = matches(0,i); i2 = matches(1,i);
 
         Eigen::MatrixXd mat1 = m_intClass->Vhhhh[i1];
+        Eigen::MatrixXd M1(2*mat1.rows(), mat1.cols());
+        M1 << mat1, -mat1;
+
         Eigen::MatrixXd mat2 = m_ampClass->T2d_makemat(i2, i1);
-        Eigen::MatrixXd product = 0.5*mat2*mat1; //mathematically I need to transpose mat1, but it's symmetric
+        Eigen::MatrixXd M2(mat2.rows(), 2*mat2.cols());
+        M2 << mat2, -mat2;
+
+        Eigen::MatrixXd product = 0.5*M2*M1; //mathematically I need to transpose mat1, but it's symmetric
 
         m_ampClass->T2d_inverse(product, i2, i1);
     }
 
-    m_ampClass->addElementsT3_T2d();
+    //m_ampClass->addElementsT3_T2d();
 
 
     /*for (int i1=0; i1<m_intClass->sortVec_pp_hh.size(); i1++){
@@ -819,16 +840,15 @@ void Diagrams::T2e(){
 #pragma omp parallel for num_threads(m_numThreads) private(i1,i2) firstprivate(cols)
     for (int i=0; i<cols; i++){
         i1 = matches(0,i); i2 = matches(1,i);
-        Eigen::MatrixXd mat1 = m_intClass->Vhphp[i1]; //I think hphp was made with sign index +- on rows and columns
+        Eigen::MatrixXd mat1 = m_intClass->Vhphp[i1]; //hphp was made with sign index +- on rows and columns
         Eigen::MatrixXd mat2 = m_ampClass->T2e_makemat(i2, i1);
         Eigen::MatrixXd product = mat2*mat1; //mathematically I need to transpose mat1, but it's symmetric
-        //std::cout << "ARGH" << std::endl;
         m_ampClass->T2e_inverse(product, i2, i1);
     }
     //auto t4 = Clock::now();
     //auto t7 = Clock::now();
 
-    m_ampClass->addElementsT3_T2e();
+    //m_ampClass->addElementsT3_T2e();
 
     //auto t8 = Clock::now();
 
