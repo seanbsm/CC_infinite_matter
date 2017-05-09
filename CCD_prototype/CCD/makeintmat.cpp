@@ -1230,6 +1230,7 @@ Eigen::MatrixXd MakeIntMat::T3b_makemat(int channel1, int channel2){    //makes 
     unsigned long int id;
     int d; int e;
     int b; int l;
+    short int prefac;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
         e = blockArrays_pm_pp(1,i1);
@@ -1238,8 +1239,25 @@ Eigen::MatrixXd MakeIntMat::T3b_makemat(int channel1, int channel2){    //makes 
             l = blockArrays_pm_hp(1,i2);
             d = blockArrays_pm_hp(2,i2);
 
-            id = Identity_ppph(d,e,b,l);
-            returnMat(i1-range_lower1, i2-range_lower2) = Vppph_elements[id];
+            if (d<e){
+                id = Identity_ppph(d,e,b,l);
+                prefac = +1;
+            }
+            else if (e<d && d<b){
+                id = Identity_ppph(e,d,b,l); //could also have e,b,d,l, without problem
+                prefac = -1;
+            }
+            else if (b<d){
+                id = Identity_ppph(e,b,d,l);
+                prefac = +1;
+            }
+            else{
+                returnMat(i1-range_lower1, i2-range_lower2) = 0;
+                continue;
+            }
+
+            //id = Identity_ppph(d,e,b,l);
+            returnMat(i1-range_lower1, i2-range_lower2) = prefac*Vppph_elements[id];
         }
     }
 
@@ -1350,6 +1368,7 @@ Eigen::MatrixXd MakeIntMat::T5a_makemat(int channel1, int channel2){    //makes 
     unsigned long int id;
     int l; int m;
     int d; int e;
+    short int prefac;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
         m = blockArrays_pm_hp(1,i1);
@@ -1358,8 +1377,41 @@ Eigen::MatrixXd MakeIntMat::T5a_makemat(int channel1, int channel2){    //makes 
             d = blockArrays_pm_ph(1,i2);
             l = blockArrays_pm_ph(2,i2);
 
-            id = Identity_hhpp(l,m,d,e);
-            returnMat(i1-range_lower1, i2-range_lower2) = Vhhpp_elements[id];
+            if (l<m){
+                if (d<e){
+                    id = Identity_hhpp(l,m,d,e);
+                    prefac = +1;
+                }
+                else if (d>e){
+                    id = Identity_hhpp(l,m,e,d);
+                    prefac = -1;
+                }
+                else{
+                    returnMat(i1-range_lower1, i2-range_lower2) = 0;
+                    continue;
+                }
+            }
+            else if (m<l){
+                if (d<e){
+                    id = Identity_hhpp(m,l,d,e);
+                    prefac = -1;
+                }
+                else if (d>e){
+                    id = Identity_hhpp(m,l,e,d);
+                    prefac = +1;
+                }
+                else{
+                    returnMat(i1-range_lower1, i2-range_lower2) = 0;
+                    continue;
+                }
+            }
+            else{
+                returnMat(i1-range_lower1, i2-range_lower2) = 0;
+                continue;
+            }
+
+            //id = Identity_hhpp(l,m,d,e);
+            returnMat(i1-range_lower1, i2-range_lower2) = prefac*Vhhpp_elements[id];
         }
     }
 
@@ -1380,6 +1432,7 @@ Eigen::MatrixXd MakeIntMat::T5b_makemat(int channel1, int channel2){    //makes 
     unsigned long int id;
     int l; int m;
     int d; int e;
+    short int prefac;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
         d = blockArrays_ppm_pph(1,i1);
@@ -1388,8 +1441,21 @@ Eigen::MatrixXd MakeIntMat::T5b_makemat(int channel1, int channel2){    //makes 
         for (int i2 = range_lower2; i2<range_upper2; i2++){
             m = blockArrays_p_h(1,i2);
 
-            id = Identity_hhpp(l,m,d,e);
-            returnMat(i1-range_lower1, i2-range_lower2) = Vhhpp_elements[id];
+            if (l<m){
+                id = Identity_hhpp(l,m,d,e);
+                prefac = +1;
+            }
+            else if (l>m){
+                id = Identity_hhpp(m,l,d,e);
+                prefac = -1;
+            }
+            else{
+                returnMat(i1-range_lower1, i2-range_lower2) = 0;
+                continue;
+            }
+
+            //id = Identity_hhpp(l,m,d,e);
+            returnMat(i1-range_lower1, i2-range_lower2) = prefac*Vhhpp_elements[id];
         }
     }
 
@@ -1410,6 +1476,7 @@ Eigen::MatrixXd MakeIntMat::T5c_makemat(int channel1, int channel2){    //makes 
     unsigned long int id;
     int l; int m;
     int d; int e;
+    short int prefac;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
         l = blockArrays_ppm_hhp(1,i1);
@@ -1418,8 +1485,21 @@ Eigen::MatrixXd MakeIntMat::T5c_makemat(int channel1, int channel2){    //makes 
         for (int i2 = range_lower2; i2<range_upper2; i2++){
             e = blockArrays_p_p(1,i2);
 
-            id = Identity_hhpp(l,m,d,e);
-            returnMat(i1-range_lower1, i2-range_lower2) = Vhhpp_elements[id];
+            if (d<e){
+                id = Identity_hhpp(l,m,d,e);
+                prefac = +1;
+            }
+            else if (d>e){
+                id = Identity_hhpp(l,m,e,d);
+                prefac = -1;
+            }
+            else{
+                returnMat(i1-range_lower1, i2-range_lower2) = 0;
+                continue;
+            }
+
+            //id = Identity_hhpp(l,m,d,e);
+            returnMat(i1-range_lower1, i2-range_lower2) = prefac*Vhhpp_elements[id];
         }
     }
 
@@ -1440,6 +1520,7 @@ Eigen::MatrixXd MakeIntMat::T5d_makemat(int channel1, int channel2){    //makes 
     unsigned long int id;
     int l; int m;
     int d; int e;
+    short int prefac;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
         l = blockArrays_ppm_hhp(1,i1);
@@ -1448,8 +1529,21 @@ Eigen::MatrixXd MakeIntMat::T5d_makemat(int channel1, int channel2){    //makes 
         for (int i2 = range_lower2; i2<range_upper2; i2++){
             d = blockArrays_p_p(1,i2);
 
-            id = Identity_hhpp(l,m,d,e);
-            returnMat(i1-range_lower1, i2-range_lower2) = Vhhpp_elements[id];
+            if (d<e){
+                id = Identity_hhpp(l,m,d,e);
+                prefac = +1;
+            }
+            else if (d>e){
+                id = Identity_hhpp(l,m,e,d);
+                prefac = -1;
+            }
+            else{
+                returnMat(i1-range_lower1, i2-range_lower2) = 0;
+                continue;
+            }
+
+            //id = Identity_hhpp(l,m,d,e);
+            returnMat(i1-range_lower1, i2-range_lower2) = prefac*Vhhpp_elements[id];
         }
     }
 
@@ -1470,6 +1564,7 @@ Eigen::MatrixXd MakeIntMat::T5e_makemat(int channel1, int channel2){    //makes 
     unsigned long int id;
     int l; int m;
     int d; int e;
+    short int prefac;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
         d = blockArrays_ppm_pph(1,i1);
@@ -1478,8 +1573,21 @@ Eigen::MatrixXd MakeIntMat::T5e_makemat(int channel1, int channel2){    //makes 
         for (int i2 = range_lower2; i2<range_upper2; i2++){
             l = blockArrays_p_h(1,i2);
 
-            id = Identity_hhpp(l,m,d,e);
-            returnMat(i1-range_lower1, i2-range_lower2) = Vhhpp_elements[id];
+            if (l<m){
+                id = Identity_hhpp(l,m,d,e);
+                prefac = +1;
+            }
+            else if (l>m){
+                id = Identity_hhpp(m,l,d,e);
+                prefac = -1;
+            }
+            else{
+                returnMat(i1-range_lower1, i2-range_lower2) = 0;
+                continue;
+            }
+
+            //id = Identity_hhpp(l,m,d,e);
+            returnMat(i1-range_lower1, i2-range_lower2) = prefac*Vhhpp_elements[id];
         }
     }
 
@@ -2765,6 +2873,16 @@ unsigned long MakeIntMat::Identity_hhhp(int h1, int h2, int h3, int p1){
                                 + (unsigned long int)h2*m_Nh
                                 + (unsigned long int)h3*m_Nh2
                                 + (unsigned long int)p1*m_Nh3;
+    return out;
+}
+
+unsigned long int MakeIntMat::Identity_hh(int h1, int h2){
+    unsigned long int out = (unsigned long int)h1 + (unsigned long int)h2*m_Nh;
+    return out;
+}
+
+unsigned long int MakeIntMat::Identity_pp(int p1, int p2){
+    unsigned long int out = (unsigned long int)p1*m_Nh2 + (unsigned long int)p2*m_Nh2Ns;
     return out;
 }
 

@@ -220,6 +220,8 @@ public:
     void                            makeMatVec(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
     unsigned long int               Identity_hhhp(int h1, int h2, int h3, int p1);
     unsigned long int               Identity_hhpp(int h1, int h2, int p1, int p2);
+    unsigned long int               Identity_hh(int h1, int h2);
+    unsigned long int               Identity_pp(int p1, int p2);
     unsigned long int               Identity_ppph(int p1, int p2, int p3, int h1);
     unsigned long int               Identity_hhhppp(int h1, int h2, int h3, int p1, int p2, int p3);
     unsigned long int               Identity_hhh(int h1, int h2, int h3);
