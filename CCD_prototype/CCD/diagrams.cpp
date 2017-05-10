@@ -564,7 +564,7 @@ void Diagrams::makeT3(){
 
     m_ampClass->T3_elements_A.resize(m_ampClass->T3_elements_I.size(), 0);
     m_ampClass->T3_elements_A_new.resize(m_ampClass->T3_elements_I.size(), 0);
-    m_ampClass->T3_elements_A_temp.resize(m_ampClass->T3_elements_I.size(), 0);
+    //m_ampClass->T3_elements_A_temp.resize(m_ampClass->T3_elements_I.size(), 0);
 
     std::cout << "Number of T3 elements: " << m_ampClass->T3_elements_A.size() << std::endl;
 
@@ -881,7 +881,6 @@ void Diagrams::T3b(){
                 if ( m_intClass->sortVec_pm_hp[i1] == m_intClass->sortVec_pm_ph[i2] && m_intClass->sortVec_pm_hp[i1] == m_intClass->sortVec_pm_pp[i3]){
 
                     Eigen::MatrixXd mat1 = m_ampClass->T3b_makemat_1(i1, i2);
-
                     Eigen::MatrixXd mat2 = m_intClass->T3b_makemat(i3, i1);
 
                     Eigen::MatrixXd product = mat2*mat1;
@@ -891,6 +890,8 @@ void Diagrams::T3b(){
             }
         }
     }
+
+    //std::cout << "hmm" << std::endl;
 
     //now use remapped function
     //we now parallellize since we are mapping back T3 amplitudes (demanding)
@@ -940,7 +941,7 @@ void Diagrams::T3b(){
         }
     }*/
 
-    m_ampClass->addElementsT3_T3b();
+    //m_ampClass->addElementsT3_T3b();
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
     m_ampClass->T3D_remap.clear();
 
@@ -958,7 +959,7 @@ void Diagrams::T3c(){
                     Eigen::MatrixXd mat2 = m_intClass->T3c_makemat(i3, i2);
                     Eigen::MatrixXd product = mat1*mat2.transpose();
 
-                    //std::cout << product << std::endl;
+                    //std::cout << mat1 << std::endl;
                     m_ampClass->T3c_Inverse_temp(product.transpose(), i3, i1);
                 }
             }
@@ -996,6 +997,8 @@ void Diagrams::T3c(){
 
         Eigen::MatrixXd product = mat1v[i]*mat2v[i].transpose();
 
+        //std::cout << mat2v[i] << std::endl;
+
         m_ampClass->T3c_inverse(product, i3, i1);
     }
 
@@ -1015,7 +1018,7 @@ void Diagrams::T3c(){
         }*/
 
 
-    m_ampClass->addElementsT3_T3c();
+    //m_ampClass->addElementsT3_T3c();
 
     /*m_ampClass->addElementsT3_T3c();*/
     std::fill(m_ampClass->T3_elements_A_temp.begin(), m_ampClass->T3_elements_A_temp.end(), 0); //reset T3 temp
@@ -1031,8 +1034,14 @@ void Diagrams::T3d(){
                 if ( m_intClass->sortVec_pp_hh[i1] == m_intClass->sortVec_pp_ph[i2] && m_intClass->sortVec_pp_hh[i1] == m_intClass->sortVec_pp_pp[i3]){
 
                     Eigen::MatrixXd mat1 = m_ampClass->T3d_makemat_1(i1, i3);
+                    Eigen::MatrixXd M1(mat1.rows(), 2*mat1.cols());
+                    M1 << mat1, -mat1;
+
                     Eigen::MatrixXd mat2 = m_intClass->T3d_makemat(i3, i2);
-                    Eigen::MatrixXd product = mat1*mat2;
+                    Eigen::MatrixXd M2(2*mat2.rows(), mat2.cols());
+                    M2 << mat2, -mat2;
+
+                    Eigen::MatrixXd product = M1*M2;
 
                     m_ampClass->T3d_Inverse_temp(product, i1, i2);
                 }
@@ -1088,7 +1097,7 @@ void Diagrams::T3d(){
             }
         }*/
 
-    m_ampClass->addElementsT3_T3d();
+    //m_ampClass->addElementsT3_T3d();
 
 
     /*m_ampClass->addElementsT3_T3d();*/
@@ -1143,7 +1152,15 @@ void Diagrams::T3e(){
     for (int i=0; i<cols; i++){
         i1 = matches(0,i); i2 = matches(1,i); i3 = matches(2,i);
 
-        Eigen::MatrixXd product = -0.5*mat1v[i]*mat2v[i];
+        Eigen::MatrixXd M1(mat1v[i].rows(), 2*mat1v[i].cols());
+        M1 << mat1v[i], -mat1v[i];
+
+        Eigen::MatrixXd M2(2*mat2v[i].rows(), mat2v[i].cols());
+        M2 << mat2v[i], -mat2v[i];
+
+        //std::cout << "hmm" << std::endl;
+
+        Eigen::MatrixXd product = -0.5*M1*M2;
 
         m_ampClass->T3e_inverse(product, i3, i1);
     }
@@ -1163,7 +1180,7 @@ void Diagrams::T3e(){
             }
         }*/
 
-    m_ampClass->addElementsT3_T3e();
+    //m_ampClass->addElementsT3_T3e();
 
 
     /*m_ampClass->addElementsT3_T3e();*/

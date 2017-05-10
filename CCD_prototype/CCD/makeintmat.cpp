@@ -413,14 +413,29 @@ void  MakeIntMat::mapper_2(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockAr
     //blockArrays_temp2.conservativeResize(3, colSize);
     // 0 0
     if (cond_hh){
-        for (int i=0; i<m_Nh; i++){
-            for (int j=i+1; j<m_Nh; j++){
-                blockArrays_temp.col(index) << m_system->kUnique2(i,j,s1,s2),i,j;
-                index += 1;
+        if (s2 == +1){
+            for (int i=0; i<m_Nh; i++){
+                for (int j=i+1; j<m_Nh; j++){
+                    blockArrays_temp.col(index) << m_system->kUnique2(i,j,s1,s2),i,j;
+                    index += 1;
 
-                if (index >= colSize){
-                    colSize += 10000;
-                    blockArrays_temp.conservativeResize(3, colSize);
+                    if (index >= colSize){
+                        colSize += 10000;
+                        blockArrays_temp.conservativeResize(3, colSize);
+                    }
+                }
+            }
+        }
+        else if (s2 == -1){// I need them independent if s2=-1
+            for (int i=0; i<m_Nh; i++){
+                for (int j=0; j<m_Nh; j++){
+                    blockArrays_temp.col(index) << m_system->kUnique2(i,j,s1,s2),i,j;
+                    index += 1;
+
+                    if (index >= colSize){
+                        colSize += 10000;
+                        blockArrays_temp.conservativeResize(3, colSize);
+                    }
                 }
             }
         }
@@ -455,14 +470,29 @@ void  MakeIntMat::mapper_2(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockAr
     }
     // 1 1
     else{
-        for (int a=m_Nh; a<m_Ns; a++){
-            for (int b=a+1; b<m_Ns; b++){
-                blockArrays_temp.col(index) << m_system->kUnique2(a,b,s1,s2),a,b;
-                index += 1;
+        if (s2 == +1){
+            for (int a=m_Nh; a<m_Ns; a++){
+                for (int b=a+1; b<m_Ns; b++){
+                    blockArrays_temp.col(index) << m_system->kUnique2(a,b,s1,s2),a,b;
+                    index += 1;
 
-                if (index >= colSize){
-                    colSize += 10000;
-                    blockArrays_temp.conservativeResize(3, colSize);
+                    if (index >= colSize){
+                        colSize += 10000;
+                        blockArrays_temp.conservativeResize(3, colSize);
+                    }
+                }
+            }
+        }
+        else if (s2 == -1){// I need them independent if s2=-1
+            for (int a=m_Nh; a<m_Ns; a++){
+                for (int b=m_Nh; b<m_Ns; b++){
+                    blockArrays_temp.col(index) << m_system->kUnique2(a,b,s1,s2),a,b;
+                    index += 1;
+
+                    if (index >= colSize){
+                        colSize += 10000;
+                        blockArrays_temp.conservativeResize(3, colSize);
+                    }
                 }
             }
         }
@@ -509,22 +539,40 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
 
     // 0 0 0
     if (cond_hhh){
-        std::cout << "blockArrays_ppp_hhh: started" << std::endl;
+        if (s3 == +1){
+            std::cout << "blockArrays_ppp_hhh: started" << std::endl;
+            for (int i=0; i<m_Nh; i++){
+                for (int j=i+1; j<m_Nh; j++){
+                    for (int k=j+1; k<m_Nh; k++){
+                        blockArrays_temp.col(index) << m_system->kUnique3(i,j,k,s1,s2,s3),i,j,k;
+                        index += 1;
 
-        for (int i=0; i<m_Nh; i++){
-            for (int j=i+1; j<m_Nh; j++){
-                for (int k=j+1; k<m_Nh; k++){
-                    blockArrays_temp.col(index) << m_system->kUnique3(i,j,k,s1,s2,s3),i,j,k;
-                    index += 1;
-
-                    if (index >= colSize){
-                        colSize += 10000;
-                        blockArrays_temp.conservativeResize(4, colSize);
+                        if (index >= colSize){
+                            colSize += 10000;
+                            blockArrays_temp.conservativeResize(4, colSize);
+                        }
                     }
                 }
             }
+            std::cout << "blockArrays_ppp_hhh: finished" << std::endl;
         }
-        std::cout << "blockArrays_ppp_hhh: finished" << std::endl;
+        else if (s3 == -1){//I need them independent if s3=-1
+            std::cout << "blockArrays_ppm_hhh: started" << std::endl;
+            for (int i=0; i<m_Nh; i++){
+                for (int j=i+1; j<m_Nh; j++){
+                    for (int k=0; k<m_Nh; k++){
+                        blockArrays_temp.col(index) << m_system->kUnique3(i,j,k,s1,s2,s3),i,j,k;
+                        index += 1;
+
+                        if (index >= colSize){
+                            colSize += 10000;
+                            blockArrays_temp.conservativeResize(4, colSize);
+                        }
+                    }
+                }
+            }
+            std::cout << "blockArrays_ppm_hhh: finished" << std::endl;
+        }
     }
     // 0 0 1
     if (cond_hhp){
@@ -1243,13 +1291,14 @@ Eigen::MatrixXd MakeIntMat::T3b_makemat(int channel1, int channel2){    //makes 
                 id = Identity_ppph(d,e,b,l);
                 prefac = +1;
             }
-            else if (e<d && d<b){
+            /*else if (e<d && d<b){
                 id = Identity_ppph(e,d,b,l); //could also have e,b,d,l, without problem
                 prefac = -1;
-            }
-            else if (b<d){
-                id = Identity_ppph(e,b,d,l);
-                prefac = +1;
+            }*/
+            else if (d>e){
+                id = Identity_ppph(e,d,b,l);
+                //id = Identity_ppph(e,b,d,l);
+                prefac = -1;
             }
             else{
                 returnMat(i1-range_lower1, i2-range_lower2) = 0;
@@ -1278,6 +1327,7 @@ Eigen::MatrixXd MakeIntMat::T3c_makemat(int channel1, int channel2){    //makes 
     unsigned long int id;
     int l; int m;
     int j; int d;
+    short int prefac;
 
     for (int i1 = range_lower1; i1<range_upper1; i1++){
         m = blockArrays_pm_hh(1,i1);
@@ -1286,8 +1336,21 @@ Eigen::MatrixXd MakeIntMat::T3c_makemat(int channel1, int channel2){    //makes 
             d = blockArrays_pm_ph(1,i2);
             l = blockArrays_pm_ph(2,i2);
 
-            id = Identity_hhhp(l,m,j,d);
-            returnMat(i1-range_lower1, i2-range_lower2) = Vhhhp_elements[id];
+            if (l<m){
+                id = Identity_hhhp(l,m,j,d);
+                prefac = +1;
+            }
+            else if (l>m){
+                id = Identity_hhhp(m,l,j,d);
+                prefac = -1;
+            }
+            else{
+                returnMat(i1-range_lower1, i2-range_lower2) = 0;
+                continue;
+            }
+
+            //id = Identity_hhhp(l,m,j,d);
+            returnMat(i1-range_lower1, i2-range_lower2) = prefac*Vhhhp_elements[id];
         }
     }
 
@@ -2000,8 +2063,8 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     if (m_triplesOn){
         mapper_2(sortVec_pp_ph, blockArrays_pp_ph, 1,0, 1,1);             //ph
         mapper_2(sortVec_pp_hp, blockArrays_pp_hp, 0,1, 1,1);             //hp
-        mapper_2(sortVec_pm_hh, blockArrays_pm_hh, 0,0, 1,-1);            //ph
-        mapper_2(sortVec_pm_pp, blockArrays_pm_pp, 1,1, 1,-1);            //hp
+        mapper_2(sortVec_pm_hh, blockArrays_pm_hh, 0,0, 1,-1);            //hh
+        mapper_2(sortVec_pm_pp, blockArrays_pm_pp, 1,1, 1,-1);            //pp
         mapper_3(sortVec_ppp_hhh, blockArrays_ppp_hhh, 0,0,0, 1,1,1);     //hhh
         mapper_3(sortVec_ppm_hhh, blockArrays_ppm_hhh, 0,0,0, 1,1,-1);    //hhh
         mapper_3(sortVec_ppp_ppp, blockArrays_ppp_ppp, 1,1,1, 1,1,1);     //ppp
@@ -2811,7 +2874,6 @@ void MakeIntMat::makeMatMap_hhpp(Eigen::MatrixXi& array1, Eigen::MatrixXi& array
             if (val != 0){
                 Vhhpp_elements[Identity_hhpp((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j))] = val;
             }
-
         }
     }
 }
@@ -2823,7 +2885,6 @@ void MakeIntMat::makeMatMap_ppph(Eigen::MatrixXi& array1, Eigen::MatrixXi& array
             if (val != 0){
                 Vppph_elements[Identity_ppph((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j))] = val;
             }
-
         }
     }
 }

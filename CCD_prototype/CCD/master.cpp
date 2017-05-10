@@ -85,14 +85,13 @@ void Master::setClasses(){
         std::cout << "finished setElements_T2" << std::endl;
 
 
-        if (m_triplesOn){
+        /*if (m_triplesOn){
             m_ampClass->makeDenomMat3();
             std::cout << "finished makeDenomMat3" << std::endl;
-            m_intClass->makePermutations();
-            std::cout << "finished makePermutations" << std::endl;
-        }
+            //m_intClass->makePermutations();
+            //std::cout << "finished makePermutations" << std::endl;
+        }*/
     }
-    m_ampClass->emptyFockMaps();
 }
 
 double Master::CC_Eref(){
@@ -135,7 +134,6 @@ double Master::CC_master(double eps, double conFac){
     std::cout << std::endl;
     std::cout << "MBPT2: " << std::setprecision (16) << ECCD_old << std::endl;
     std::cout << std::endl;
-    std::cout << "Start of CC iterations: " << std::endl;
 
     double ECC;
     if (m_timerOn){
@@ -163,18 +161,19 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
 
     if (m_triplesOn){
         m_diagrams->makeT3();
+        m_ampClass->makeDenomMat3();
+        std::cout << "finished makeDenomMat3" << std::endl;
+        m_ampClass->emptyFockMaps();
+
         m_diagrams->makeT5bIndexMat();
         m_diagrams->makeT5cIndexMat();
         m_diagrams->destroy5Map();
-
-        //std::cout << "sup" << std::endl;
     }
     else{
         counter ++;
     }
 
-    //std::cout << m_intClass->blockArrays_pppmm_ppphh.cols()*m_intClass->blockArrays_pppmm_ppphh.rows() << std::endl;
-
+    std::cout << "Start of CC iterations: " << std::endl;
     while (conFac > eps /*&& counter < 8*/){
         ECCD = 0;
         //could make an m_ampClass::updateT or something
@@ -208,64 +207,33 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
 
             if (m_CC_type >= 1 ){
                 m_diagrams->T1a();
-                //std::cout << "what now" << std::endl;
-                //std::cout << "T1a, world: "<< world_rank<< std::endl;
                 m_diagrams->T1b();
-                //std::cout << "WHAT NOW" << std::endl;
-                //std::cout << "T1b, world: "<< world_rank<< std::endl;
             }
             if (m_CC_type == 3 ){
                 m_diagrams->T2c();
-                //std::cout << "T2c, world: "<< world_rank<< std::endl;
                 m_diagrams->T2d();
-                //std::cout << "T2d, world: "<< world_rank<< std::endl;
                 m_diagrams->T2e();
-                //std::cout << "T2e, world: "<< world_rank<< std::endl;
             }
             if (m_CC_type >= 2){
                 // These diagrams require a re-alignment, done through a temporary map
-                // They use OMP in the secondary sum calculation
                 m_diagrams->T3b();
-                //std::cout << "T3b, world: "<< world_rank<< std::endl;
-                //m_diagrams->T3c();
-                //std::cout << "T3c, world: "<< world_rank<< std::endl;
-                //m_diagrams->T3d();
-                //std::cout << "T3e, world: "<< world_rank<< std::endl;
-                //m_diagrams->T3e();  //this is slower than the others because the remap is bigger
-                //std::cout << "T3e, world: "<< world_rank<< std::endl;
+                m_diagrams->T3c();
+                m_diagrams->T3d();
+                m_diagrams->T3e();  //this is slower than the others because the remap is bigger
             }
             if (m_CC_type == 3){
-                m_diagrams->T5a();      //slow?
+                m_diagrams->T5a();
                 m_diagrams->T5b();
-                //std::cout << "T5b, world: "<< world_rank<< std::endl;
-                m_diagrams->T5c();  //slow?
-                //std::cout << "T5c, world: "<< world_rank<< std::endl;
+                m_diagrams->T5c();
                 m_diagrams->T5d();
-                //std::cout << "T5d, world: "<< world_rank<< std::endl;
                 m_diagrams->T5e();
-                //std::cout << "T5e, world: "<< world_rank<< std::endl;
                 m_diagrams->T5f();
-                //std::cout << "T5f, world: "<< world_rank<< std::endl;
                 m_diagrams->T5g();
-                //std::cout << "T5g, world: "<< world_rank<< std::endl;
             }
 
             //update T3 amplitudes
-            for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
-                int ku = m_intClass->Vhhhppp_i[channel];
-
-                Eigen::MatrixXd D_contributions = m_ampClass->T3_buildDirectMat(channel, m_ampClass->T3_elements_A_new);
-                Eigen::MatrixXd temp = (D_contributions).array()*m_ampClass->denomMat3[channel].array();
-
-                MatrixXuli tempIMat = m_ampClass->T3_directMat[channel]; //this holds indices for T3_elements_A (as well as _new and _temp)
-                int rows = tempIMat.rows();
-                int cols = tempIMat.cols();
-
-                for (int col=0; col<cols; col++){
-                    for (int row=0; row<rows; row++){
-                        m_ampClass->T3_elements_A_new[ tempIMat(row, col) ] = temp(row, col);
-                    }
-                }
+            for (int i=0; i<m_ampClass->T3_elements_A_new.size(); i++){
+                m_ampClass->T3_elements_A_new[i] *= m_ampClass->denom3_elements[i];
             }
 
             if (m_relaxation){
@@ -283,7 +251,6 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             /*int zeros = 0;
             for (auto& T: m_ampClass->T3_elements_A)
                 if (T == 0.){zeros ++;}
-
             std::cout << zeros << std::endl;*/
 
             //calculate T3 contributions to T2 using T3_current

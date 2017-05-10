@@ -58,6 +58,7 @@ public:
     //std::vector<spp::sparse_hash_map<unsigned long int, int>> T3_elements_IV;
     std::vector<double>                       T3_elements_A;        //holds T3 amplitudes
     std::vector<double>                       T3_elements_A_new;    //holds new T3 amplitudes
+    std::vector<double>                       denom3_elements;
     std::vector<double>                       T3_elements_A_temp;   //holds temporary diagram contributions
     void                                      T3_makeMap(Eigen::MatrixXd inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6);
     void                                      T3_makeDirectMat();
