@@ -553,8 +553,8 @@ void Diagrams::makeT3(){
                 a = (m_intClass->blockArrays_ppp_ppp)(1,ppp);
                 b = (m_intClass->blockArrays_ppp_ppp)(2,ppp);
                 c = (m_intClass->blockArrays_ppp_ppp)(3,ppp);
-                id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
 
+                id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
                 m_ampClass->T3_elements_I[id] = index;
 
                 index ++;
@@ -568,7 +568,7 @@ void Diagrams::makeT3(){
 
     std::cout << "Number of T3 elements: " << m_ampClass->T3_elements_A.size() << std::endl;
 
-    m_ampClass->T3_makeDirectMat();
+    //m_ampClass->T3_makeDirectMat();
 }
 
 /*Eigen::MatrixXi Diagrams::distributeChannels(Eigen::MatrixXi channels, int elements){

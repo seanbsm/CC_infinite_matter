@@ -130,43 +130,42 @@ void MakeAmpMat::makeDenomMat(){
 
 void MakeAmpMat::makeDenomMat3(){
 
-    spp::sparse_hash_map<int, double> FockMap_h_copy = FockMap_h;
-    spp::sparse_hash_map<int, double> FockMap_p_copy = FockMap_p;
+    //spp::sparse_hash_map<int, double> FockMap_h_copy = FockMap_h;
+    //spp::sparse_hash_map<int, double> FockMap_p_copy = FockMap_p;
 
     denom3_elements.resize(T3_elements_A.size());
     unsigned long int id;
     unsigned long int index;
 
-    for (int i=0; i<m_intClass->numOfKu3; i++){
-        int lowBound_hhh  = m_intClass->boundsHolder_hhhppp_hhh(0,i);
-        int highBound_hhh = m_intClass->boundsHolder_hhhppp_hhh(1,i);
-        int lowBound_ppp  = m_intClass->boundsHolder_hhhppp_ppp(0,i);
-        int highBound_ppp = m_intClass->boundsHolder_hhhppp_ppp(1,i);
+    #pragma omp parallel for num_threads(m_numThreads) private(index, id)
+    for (int channel=0; channel<m_intClass->numOfKu3; channel++){
+        int lowBound_hhh  = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
+        int highBound_hhh = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
+        int lowBound_ppp  = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
+        int highBound_ppp = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
 
         int dim_hhh = highBound_hhh - lowBound_hhh;
         int dim_ppp = highBound_ppp - lowBound_ppp;
         Eigen::MatrixXd newMat;
         newMat.conservativeResize(dim_hhh, dim_ppp);
 
-        //#pragma omp parallel for /*num_threads(n)*/ firstprivate(FockMap_h_copy, FockMap_p_copy)
+        int i; int j; int k;
+        int a; int b; int c;
+
         for (int ppp=lowBound_ppp; ppp<highBound_ppp; ppp++){
-            int aa = m_intClass->blockArrays_ppp_ppp(1,ppp);
-            int bb = m_intClass->blockArrays_ppp_ppp(2,ppp);
-            int cc = m_intClass->blockArrays_ppp_ppp(3,ppp);
+            a = m_intClass->blockArrays_ppp_ppp(1,ppp);
+            b = m_intClass->blockArrays_ppp_ppp(2,ppp);
+            c = m_intClass->blockArrays_ppp_ppp(3,ppp);
             for (int hhh=lowBound_hhh; hhh<highBound_hhh; hhh++){
-                int ii = m_intClass->blockArrays_ppp_hhh(1,hhh);
-                int jj = m_intClass->blockArrays_ppp_hhh(2,hhh);
-                int kk = m_intClass->blockArrays_ppp_hhh(3,hhh);
-                newMat(hhh-lowBound_hhh, ppp-lowBound_ppp) = 1./( (double)(FockMap_h_copy[ii] + FockMap_h_copy[jj] + FockMap_h_copy[kk] - FockMap_p_copy[aa] - FockMap_p_copy[bb] - FockMap_p_copy[cc] ) );
+                i = m_intClass->blockArrays_ppp_hhh(1,hhh);
+                j = m_intClass->blockArrays_ppp_hhh(2,hhh);
+                k = m_intClass->blockArrays_ppp_hhh(3,hhh);
 
-                /*std::cout << 1./( (double)(FockMap_h_copy[ii] + FockMap_h_copy[jj] + FockMap_h_copy[kk] - FockMap_p_copy[aa] - FockMap_p_copy[bb] - FockMap_p_copy[cc] ) ) << std::endl;*/
-
-                id = m_intClass->Identity_hhhppp(ii,jj,kk,aa,bb,cc);
+                id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
                 index = T3_elements_I.find(id)->second;
-                denom3_elements[index] = 1./( (double)(FockMap_h_copy[ii] + FockMap_h_copy[jj] + FockMap_h_copy[kk] - FockMap_p_copy[aa] - FockMap_p_copy[bb] - FockMap_p_copy[cc] ) );
+                denom3_elements[index] = 1./( (double)(FockMap_h[i] + FockMap_h[j] + FockMap_h[k] - FockMap_p[a] - FockMap_p[b] - FockMap_p[c] ) );
             }
         }
-        denomMat3.push_back( newMat );
     }
 }
 
@@ -5492,6 +5491,7 @@ void MakeAmpMat::T1a_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
                 continue;
             }
             index = T3_elements_I.find(id)->second;
+            #pragma omp atomic
             T3_elements_A_new[index] += prefac*inMat(i1-range_lower1, i2-range_lower2);
             /*if (j<k && a<b){
                 id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
@@ -5584,6 +5584,7 @@ void MakeAmpMat::T1b_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
                 continue;
             }
             index = T3_elements_I.find(id)->second;
+            #pragma omp atomic
             T3_elements_A_new[index] += prefac*inMat(i1-range_lower1, i2-range_lower2);
 
             /*id = m_intClass->Identity_hhhppp(m_intClass->blockArrays_ppm_pph(3,i2),
@@ -5638,6 +5639,7 @@ void MakeAmpMat::T2c_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
             }
 
             index = T3_elements_I.find(id)->second;
+            #pragma omp atomic
             T3_elements_A_new[index] += prefac*inMat(i1-range_lower1, i2-range_lower2);
 
             /*id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
@@ -5685,6 +5687,7 @@ void MakeAmpMat::T2d_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
             }
 
             index = T3_elements_I.find(id)->second;
+            #pragma omp atomic
             T3_elements_A_new[index] += prefac*inMat(i1-range_lower1, i2-range_lower2);
 
             /*id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
@@ -5751,6 +5754,7 @@ void MakeAmpMat::T2e_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
                 continue;
             }
             index = T3_elements_I.find(id1+id2)->second;
+            #pragma omp atomic
             T3_elements_A_new[index] +=  prefac1*prefac2*inMat(i1-range_lower1, i2-range_lower2);
 
             /*id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
@@ -5818,6 +5822,7 @@ void MakeAmpMat::T3b_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
                 continue;
             }
             index = T3_elements_I.find(id1+id2)->second;
+            #pragma omp atomic
             T3_elements_A_new[index] +=  prefac1*prefac2*inMat(i1-range_lower1, i2-range_lower2);
 
             /*id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
@@ -5884,6 +5889,7 @@ void MakeAmpMat::T3c_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
                 continue;
             }
             index = T3_elements_I.find(id1+id2)->second;
+            #pragma omp atomic
             T3_elements_A_new[index] +=  prefac1*prefac2*inMat(i1-range_lower1, i2-range_lower2);
 
             /*id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
@@ -5950,6 +5956,7 @@ void MakeAmpMat::T3d_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
                 continue;
             }
             index = T3_elements_I.find(id1+id2)->second;
+            #pragma omp atomic
             T3_elements_A_new[index] +=  prefac1*prefac2*inMat(i1-range_lower1, i2-range_lower2);
 
             /*id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
@@ -5999,6 +6006,7 @@ void MakeAmpMat::T3e_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
 
             //id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
             index = T3_elements_I.find(id)->second;
+            #pragma omp atomic
             T3_elements_A_new[index] += prefac*inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -6061,6 +6069,7 @@ void MakeAmpMat::T5a_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
                 continue;
             }
             index = T3_elements_I.find(id1+id2)->second;
+            #pragma omp atomic
             T3_elements_A_new[index] +=  prefac1*prefac2*inMat(i1-range_lower1, i2-range_lower2);
 
             /*id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
@@ -6136,6 +6145,7 @@ void MakeAmpMat::T5b_inverse_I(Eigen::MatrixXd &inMat, int channel){
     for (int i1 = 0; i1<rows; i1++){
         for (int i2 = 0; i2<cols; i2++){
             index = T3_T5b_indices[channel](i1,i2);
+            #pragma omp atomic
             T3_elements_A_new[index] += inMat(i1,i2)*T3_T5b_indices_signs[channel](i1,i2);
         }
     }
@@ -6151,6 +6161,7 @@ void MakeAmpMat::T5c_inverse_I(Eigen::MatrixXd &inMat, int channel){
     for (int i1 = 0; i1<rows; i1++){
         for (int i2 = 0; i2<cols; i2++){
             index = T3_T5c_indices[channel](i1,i2);
+            #pragma omp atomic
             T3_elements_A_new[index] +=  inMat(i1,i2)*T3_T5c_indices_signs[channel](i1,i2);
         }
     }
@@ -6215,6 +6226,7 @@ void MakeAmpMat::T5d_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
 
             //id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
             index = T3_elements_I.find(id1+id2)->second;//T3_elements_IV[thread][id];
+            #pragma omp atomic
             T3_elements_A_new[index] += prefac1*prefac2*inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -6279,6 +6291,7 @@ void MakeAmpMat::T5e_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
 
             //id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
             index = T3_elements_I.find(id1+id2)->second;//T3_elements_IV[thread][id];
+            #pragma omp atomic
             T3_elements_A_new[index] +=  prefac1*prefac2*inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -6325,6 +6338,7 @@ void MakeAmpMat::T5f_inverse(Eigen::MatrixXd inMat, int channel1, int channel2){
 
             //id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
             index = T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
+            #pragma omp atomic
             T3_elements_A_new[index] +=  prefac*inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -6370,6 +6384,7 @@ void MakeAmpMat::T5g_inverse(Eigen::MatrixXd &inMat, int channel1, int channel2)
 
             //id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
             index = T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
+            #pragma omp atomic
             T3_elements_A_new[index] += prefac*inMat(i1-range_lower1, i2-range_lower2);
         }
     }

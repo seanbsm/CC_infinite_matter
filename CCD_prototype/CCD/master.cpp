@@ -232,6 +232,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             }
 
             //update T3 amplitudes
+#pragma omp parallel for num_threads(m_threads)
             for (int i=0; i<m_ampClass->T3_elements_A_new.size(); i++){
                 m_ampClass->T3_elements_A_new[i] *= m_ampClass->denom3_elements[i];
             }
