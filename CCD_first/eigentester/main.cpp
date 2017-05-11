@@ -169,7 +169,7 @@ int main(int argc, char** argv)
     cout << "success" << endl;
 
 
-    int A= 10;
+    long int A= 10;
     int counter = 0;
     while (A>0 && counter < 20){
         A *= 10;
@@ -177,6 +177,35 @@ int main(int argc, char** argv)
         cout << A << endl;
     }
 
+    std::cout << "------------" << std::endl;
+    int Nh = 14;
+    int Ns = 874;
+    int count1 = 0;
+    int count2 = 0;
+    for (int a=Nh; a<Ns; a++){
+        for (int b=a+1; b<Ns; b++){
+            for (int c=b+1; c<Ns; c++){
+                for (int i=0; i<Nh; i++){
+                    for (int j=i+1; j<Nh; j++){
+                        count1 ++;
+                    }
+                }
+            }
+        }
+    }
+    for (int a=Nh; a<Ns; a++){
+        for (int b=Nh; b<Ns; b++){
+            for (int c=Nh; c<Ns; c++){
+                for (int i=0; i<Nh; i++){
+                    for (int j=0; j<Nh; j++){
+                        count2 ++;
+                    }
+                }
+            }
+        }
+    }
+    std::cout << "New way: " << count1 << std::endl;
+    std::cout << "Old way: " << count2 << std::endl;
 
     /*int max = 1e6;
     int threads = 4;

@@ -23,6 +23,8 @@ private:
     Eigen::MatrixXi intMat_hhpp;
     Eigen::MatrixXi fockMat;
 
+    int m_printLength = 15;
+
 
     //bool contractor(int i, int j){ return i==j; } //contracts repeated elements to a single edit
 public:

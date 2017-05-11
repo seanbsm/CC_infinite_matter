@@ -73,24 +73,16 @@ void Master::setClasses(){
     m_ampClass->setSystem(m_system);
 
     if (1){
+        std::cout << std::endl;
         m_intClass->makeBlockMat(m_system, m_Nh, m_Ns);
         std::cout << "Finished makeBlockMat" << std::endl;
-
-
         m_ampClass->makeFockMaps();
-        std::cout << "finished makeFockMaps" << std::endl;
+        std::cout << "Finished makeFockMaps" << std::endl;
         m_ampClass->makeDenomMat();
-        std::cout << "finished makeDenomMat" << std::endl;
+        std::cout << "Finished makeDenomMat" << std::endl;
         m_ampClass->setElements_T2();
-        std::cout << "finished setElements_T2" << std::endl;
-
-
-        /*if (m_triplesOn){
-            m_ampClass->makeDenomMat3();
-            std::cout << "finished makeDenomMat3" << std::endl;
-            //m_intClass->makePermutations();
-            //std::cout << "finished makePermutations" << std::endl;
-        }*/
+        std::cout << "Finished setElements_T2" << std::endl;
+        std::cout << std::endl;
     }
 }
 
@@ -113,7 +105,7 @@ double Master::CC_master(double eps, double conFac){
 
         std::cout << "Time used: "
                   << std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count()
-                  << " seconds on making blockArray structures" << std::endl;
+                  << " seconds on system setup" << std::endl;
     }
     else{
         setClasses();

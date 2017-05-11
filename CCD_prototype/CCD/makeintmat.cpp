@@ -540,7 +540,7 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
     // 0 0 0
     if (cond_hhh){
         if (s3 == +1){
-            std::cout << "blockArrays_ppp_hhh: started" << std::endl;
+            std::cout << "blockArrays_ppp_hhh     | started  |" << std::fixed << std::right << std::setw(m_printLength+12) << " |" << std::endl;
             for (int i=0; i<m_Nh; i++){
                 for (int j=i+1; j<m_Nh; j++){
                     for (int k=j+1; k<m_Nh; k++){
@@ -554,10 +554,10 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
                     }
                 }
             }
-            std::cout << "blockArrays_ppp_hhh: finished" << std::endl;
+            std::cout << "blockArrays_ppp_hhh     | finished | Columns: " << std::fixed << std::right << std::setw(m_printLength) << index << " |" << std::endl;
         }
         else if (s3 == -1){//I need them independent if s3=-1
-            std::cout << "blockArrays_ppm_hhh: started" << std::endl;
+            std::cout << "blockArrays_ppm_hhh     | started  |" << std::fixed << std::right << std::setw(m_printLength+12) << " |" << std::endl;
             for (int i=0; i<m_Nh; i++){
                 for (int j=i+1; j<m_Nh; j++){
                     for (int k=0; k<m_Nh; k++){
@@ -571,12 +571,12 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
                     }
                 }
             }
-            std::cout << "blockArrays_ppm_hhh: finished" << std::endl;
+            std::cout << "blockArrays_ppm_hhh     | finished | Columns: " << std::fixed << std::right << std::setw(m_printLength) << index << " |" << std::endl;
         }
     }
     // 0 0 1
     if (cond_hhp){
-        std::cout << "blockArrays_ppm_hhp: started" << std::endl;
+        std::cout << "blockArrays_ppm_hhp     | started  |" << std::fixed << std::right << std::setw(m_printLength+12) << " |" << std::endl;
 
         for (int i=0; i<m_Nh; i++){
             for (int j=i+1; j<m_Nh; j++){
@@ -591,11 +591,11 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
                 }
             }
         }
-        std::cout << "blockArrays_ppm_hhp: finished" << std::endl;
+        std::cout << "blockArrays_ppm_hhp     | finished | Columns: " << std::fixed << std::right << std::setw(m_printLength) << index << " |" << std::endl;
     }
     // 1 1 0
     else if (cond_pph){
-        std::cout << "blockArrays_ppm_pph: started" << std::endl;
+        std::cout << "blockArrays_ppm_pph     | started  |" << std::fixed << std::right << std::setw(m_printLength+12) << " |" << std::endl;
 
         int ku;
 
@@ -618,11 +618,11 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
                 }
             }
         }
-        std::cout << "blockArrays_ppm_pph: finished" << std::endl;
+        std::cout << "blockArrays_ppm_pph     | finished | Columns: " << std::fixed << std::right << std::setw(m_printLength) << index << " |" << std::endl;
     }
     // 1 1 1
     else if (cond_ppp){
-        std::cout << "blockArrays_ppp_ppp: started" << std::endl;
+        std::cout << "blockArrays_ppp_ppp     | started  |" << std::fixed << std::right << std::setw(m_printLength+12) << " |" << std::endl;
 
         int ku;
 
@@ -643,7 +643,7 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
                 }
             }
         }
-        std::cout << "blockArrays_ppp_ppp: finished" << std::endl;
+        std::cout << "blockArrays_ppp_ppp     | finished | Columns: " << std::fixed << std::right << std::setw(m_printLength) << index << " |" << std::endl;
     }
 
     /*blockArrays_temp.conservativeResize(4, index);
@@ -688,7 +688,7 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
 
     // 0 0 0 1
     if (cond_hhhp){
-        std::cout << "blockArrays_pppm_hhhp: started" << std::endl;
+        std::cout << "blockArrays_pppm_hhhp   | started  |" << std::fixed << std::right << std::setw(m_printLength+12) << " |" << std::endl;
 
         int ku;
 
@@ -711,11 +711,11 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
                 }
             }
         }
-        std::cout << "blockArrays_pppm_hhhp: finished" << std::endl;
+        std::cout << "blockArrays_pppm_hhhp   | finished | Columns: " << std::fixed << std::right << std::setw(m_printLength) << index << " |" << std::endl;
     }
     // 0 0 1 1
     if (cond_hhpp){ //this isn't used anymore after fix of T5a
-        std::cout << "blockArrays_ppmm_hhpp: started" << std::endl;
+        std::cout << "blockArrays_ppmm_hhpp   | started  |" << std::fixed << std::right << std::setw(m_printLength+12) << " |" << std::endl;
 
         int ku;
 
@@ -738,11 +738,11 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
                 }
             }
         }
-        std::cout << "blockArrays_ppmm_hhpp: finished" << std::endl;
+        std::cout << "blockArrays_ppmm_hhpp   | finished | Columns: " << std::fixed << std::right << std::setw(m_printLength) << index << " |" << std::endl;
     }
     // 1 1 0 0
     if (cond_pphh){
-        std::cout << "blockArrays_ppmm_pphh: started" << std::endl;
+        std::cout << "blockArrays_ppmm_pphh   | started  |" << std::fixed << std::right << std::setw(m_printLength+12) << " |" << std::endl;
 
         int ku;
 
@@ -765,11 +765,11 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
                 }
             }
         }
-        std::cout << "blockArrays_ppmm_pphh: finished" << std::endl;
+        std::cout << "blockArrays_ppmm_pphh   | finished | Columns: " << std::fixed << std::right << std::setw(m_printLength) << index << " |" << std::endl;
     }
     // 1 1 1 0
     else if (cond_ppph){
-        std::cout << "blockArrays_pppm_ppph: started" << std::endl;
+        std::cout << "blockArrays_pppm_ppph   | started  |" << std::fixed << std::right << std::setw(m_printLength+12) << " |" << std::endl;
 
         int ku;
 
@@ -792,7 +792,7 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
                 }
             }
         }
-        std::cout << "blockArrays_pppm_ppph: finished" << std::endl;
+        std::cout << "blockArrays_pppm_ppph   | finished | Columns: " << std::fixed << std::right << std::setw(m_printLength) << index << " |" << std::endl;
     }
 
     /*blockArrays_temp.conservativeResize(5, index);
@@ -835,7 +835,7 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
 
     // 0 0 0 1 1
     if (cond_hhhpp){
-        std::cout << "blockArrays_pppmm_hhhpp: started" << std::endl;
+        std::cout << "blockArrays_pppmm_hhhpp | started  |" << std::fixed << std::right << std::setw(m_printLength+12) << " |" << std::endl;
 
         int ku;
 
@@ -860,11 +860,11 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
                 }
             }
         }
-        std::cout << "blockArrays_pppmm_hhhpp: finished" << std::endl;
+        std::cout << "blockArrays_pppmm_hhhpp | finished | Columns: " << std::fixed << std::right << std::setw(m_printLength) << index << " |" << std::endl;
     }
     // 1 1 1 0 0
     else if (cond_ppphh){
-        std::cout << "blockArrays_pppmm_ppphh: started" << std::endl;
+        std::cout << "blockArrays_pppmm_ppphh | started  |" << std::fixed << std::right << std::setw(m_printLength+12) << " |" << std::endl;
 
         int ku;
 
@@ -876,6 +876,7 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
                             ku = m_system->kUnique5(a,b,c,i,j,s1,s2,s3,s4,s5);
                             auto it = std::find(sortVec_p_h.begin(), sortVec_p_h.end(), ku);
                             if (it != sortVec_p_h.end()){
+                                std::cout << ku << std::endl;
                                 blockArrays_temp.col(index) << ku,a,b,c,i,j;
                                 index += 1;
 
@@ -889,7 +890,7 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
                 }
             }
         }
-        std::cout << "blockArrays_pppmm_ppphh: finished" << std::endl;
+        std::cout << "blockArrays_pppmm_ppphh | finished | Columns: " << std::fixed << std::right << std::setw(m_printLength) << index << " |" << std::endl;
     }
 
     /*blockArrays_temp.conservativeResize(6, index);
@@ -2048,6 +2049,8 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     //I only bothered to let the mapper functions take on the values shown here
     //Any other blockArrays you want to make will have to be implemented by yourself (it's not hard)
 
+    cout << string(m_printLength + 6, '-') << " Making blockArrays " << string(m_printLength + 7, '-') << endl;
+
     mapper_1(sortVec_p_h, blockArrays_p_h, 0, 1);        //h
     mapper_1(sortVec_p_p, blockArrays_p_p, 1, 1);        //p
 
@@ -2078,7 +2081,8 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
 
     }
 
-    cout << "made all blockArrays" << endl;
+    cout << string(m_printLength + 48, '-') << endl;
+    cout << "BlockArrays:              Done" << endl;
 
     int counter         = 0;
 
@@ -2103,9 +2107,6 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     int range_lower_ppp  = 0;
     int range_upper_ppp  = 0;
 
-
-    //set indexHolders
-    //I refrain from doing it for Vpppp for now, since I see no purpose as of yet for doing so.
     boundsHolder_hhpp_hh.conservativeResize(2, Eigen::NoChange);
     boundsHolder_hhpp_pp.conservativeResize(2, Eigen::NoChange);
 
@@ -2145,7 +2146,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         indexHolder_p_p.col(p) << range_lower, range_upper; //this now has same indices as sortVec
     }
 
-    cout << "made one-particle indexHolders" << endl;
+    cout << "1-particle indexHolders:  Done" << endl;
 
     counter     = 0;
     range_lower = 0;
@@ -2336,7 +2337,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         indexHolder_pp_pp.col(pp) << range_lower, range_upper; //this now has same indices as sortVec
     }
 
-    cout << "made two-particle indexHolders" << endl;
+    cout << "2-particle indexHolders:  Done" << endl;
 
     counter     = 0;
     range_lower = 0;
@@ -2457,7 +2458,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         }
     }
 
-    cout << "made three-particle indexHolders" << endl;
+    cout << "3-particle indexHolders:  Done" << endl;
 
     if (m_triplesOn){
         counter     = 0;
@@ -2554,7 +2555,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         }
     }
 
-    cout << "made four-particle indexHolders" << endl;
+    cout << "4-particle indexHolders:  Done" << endl;
 
     if (m_triplesOn){
         counter     = 0;
@@ -2604,7 +2605,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         }
     }
 
-    cout << "made five-particle indexHolders" << endl;
+    cout << "5-particle indexHolders:  Done" << endl;
 
     counter     = 0;
     range_lower = 0;
@@ -2639,34 +2640,6 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         }
     }
     numOfKu = boundsHolder_hhpp_hh.cols();
-    //cout << numOfKu <<" "<< sortVec_pp_hh.size() << endl;
-
-
-    /*std::vector<int> temps;
-    for (int i1=0; i1<sortVec_p_p.size(); i1++){
-        for (int i2=0; i2<sortVec_ppm_pph.size(); i2++){
-            for (int i3=0; i3<sortVec_ppm_hhp.size(); i3++){
-                if ( sortVec_p_p[i1] == sortVec_ppm_pph[i2] && sortVec_p_p[i1] == sortVec_ppm_hhp[i3]){
-                    if (std::find(temps.begin(), temps.end(), sortVec_p_p[i1]) == temps.end()){
-                        temps.push_back( sortVec_p_p[i1] );
-                    }
-                }
-            }
-        }
-    }
-    for (int i1=0; i1<sortVec_p_h.size(); i1++){
-        for (int i2=0; i2<sortVec_ppm_hhp.size(); i2++){
-            for (int i3=0; i3<sortVec_ppm_pph.size(); i3++){
-                if ( sortVec_p_h[i1] == sortVec_ppm_hhp[i2] && sortVec_p_h[i1] == sortVec_ppm_pph[i3]){
-                    if (std::find(temps.begin(), temps.end(), sortVec_p_h[i1]) == temps.end()){
-                        temps.push_back( sortVec_p_h[i1] );
-                    }
-                }
-            }
-        }
-    }*/
-
-
 
     if (m_triplesOn){
         counter     = 0;
@@ -2676,7 +2649,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             for (int ppp=0; ppp<sortVec_ppp_ppp.size(); ppp++){
                 int val_hhh = sortVec_ppp_hhh[hhh];
                 int val_ppp = sortVec_ppp_ppp[ppp];
-                if (val_hhh == val_ppp /*&& std::find(temps.begin(), temps.end(), val_hhh) != temps.end()*/ ){      //ensures I only work on cases where hhh and ppp have equal kunique
+                if (val_hhh == val_ppp){      //ensures I only work on cases where hhh and ppp have equal kunique
                     for (int hhh2=0; hhh2<blockArrays_ppp_hhh.cols(); hhh2++){
                         if ( val_hhh == blockArrays_ppp_hhh(0,hhh2) ){
                             range_upper_hhh = hhh2+1;
@@ -2706,7 +2679,8 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     }
 
 
-    cout << "made indexHolders" << endl;
+    cout << "BoundHolders:             Done" << endl;
+    cout << endl;
 
     //make Vhhpp map
     /*for (int h=0; h<boundsHolder_hhpp_hh.cols(); h++){
@@ -2727,7 +2701,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             }
         }
     }
-    cout << "made Vhhpp" << endl;
+    cout << "Vhhpp interaction matrix: Done" << endl;
 
     if (m_triplesOn){
         for (int pp=0; pp<sortVec_pp_pp.size(); pp++){
@@ -2741,7 +2715,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
                 }
             }
         }
-        cout << "made Vppph" << endl;
+        cout << "Vppph interaction matrix: Done" << endl;
 
         for (int hh=0; hh<sortVec_pp_hh.size(); hh++){
             for (int hp=0; hp<sortVec_pp_hp.size(); hp++){
@@ -2754,7 +2728,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
                 }
             }
         }
-        cout << "made Vhhhp" << endl;
+        cout << "Vhhhp interaction matrix: Done" << endl;
     }
 
     //Below we make Vpppp, Vhhhh, and Vhphp, which are distinct from Vhhpp --> don't need any remapping of elements
@@ -2788,7 +2762,8 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     }
 
 
-    cout << "made Vpppp" << endl;
+    cout << "Vpppp interaction matrix: Done" << endl;
+    cout << endl;
 }
 
 
