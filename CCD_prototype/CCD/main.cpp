@@ -87,7 +87,7 @@ int main(int argc, char** argv)
     }
     else{        //default size
         Nh = 14;                        //number of particles
-        Nb = 4;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
+        Nb = 3;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
     }
     double  rs;     //Wigner Seitz radius
     double  rho;    //Density
