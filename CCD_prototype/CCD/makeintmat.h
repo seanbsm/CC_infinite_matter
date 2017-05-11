@@ -41,6 +41,9 @@ public:
     unsigned long int m_Nh3Ns     = 0;
     unsigned long int m_Nh3Ns2    = 0;
 
+    //Eigen matrix with unsigned long int as type
+    typedef Eigen::Matrix<unsigned long int, Eigen::Dynamic, Eigen::Dynamic> MatrixXuli;
+
     /* Due to the momentum-conservation relation (kp+kq = kr+ks for <pq||rs>),
      * and due to alignment of matrices, we need several blockArrays, and corresponding
      * sortVecs and indexHolders. We'd like the blockArray generation to be pretty general,
@@ -116,35 +119,35 @@ public:
     std::vector<int> sortVec_pppmm_ppphh;
 
     //indexHolder holds upper and lower bound of indices for a certain kUnique, same indexing as the corresponding matrices
-    Eigen::MatrixXi indexHolder_p_h;
-    Eigen::MatrixXi indexHolder_p_p;
-    Eigen::MatrixXi indexHolder_pp_hh;
-    Eigen::MatrixXi indexHolder_pp_hp;
-    Eigen::MatrixXi indexHolder_pp_ph;
-    Eigen::MatrixXi indexHolder_pp_pp;
-    Eigen::MatrixXi indexHolder_hp_s;   //for Vhphp
-    Eigen::MatrixXi indexHolder_pm_hh;
-    Eigen::MatrixXi indexHolder_pm_hp;
-    Eigen::MatrixXi indexHolder_pm_ph;
-    Eigen::MatrixXi indexHolder_pm_pp;
-    Eigen::MatrixXi indexHolder_ppp_hhh;
-    Eigen::MatrixXi indexHolder_ppm_hhh;
-    Eigen::MatrixXi indexHolder_ppm_hhp;
-    Eigen::MatrixXi indexHolder_ppm_pph;
-    Eigen::MatrixXi indexHolder_ppp_ppp;
-    Eigen::MatrixXi indexHolder_pppm_hhhp;
-    Eigen::MatrixXi indexHolder_ppmm_hhpp;
-    Eigen::MatrixXi indexHolder_ppmm_pphh;
-    Eigen::MatrixXi indexHolder_pppm_ppph;
-    Eigen::MatrixXi indexHolder_pppmm_hhhpp;
-    Eigen::MatrixXi indexHolder_pppmm_ppphh;
+    MatrixXuli indexHolder_p_h;
+    MatrixXuli indexHolder_p_p;
+    MatrixXuli indexHolder_pp_hh;
+    MatrixXuli indexHolder_pp_hp;
+    MatrixXuli indexHolder_pp_ph;
+    MatrixXuli indexHolder_pp_pp;
+    MatrixXuli indexHolder_hp_s;   //for Vhphp
+    MatrixXuli indexHolder_pm_hh;
+    MatrixXuli indexHolder_pm_hp;
+    MatrixXuli indexHolder_pm_ph;
+    MatrixXuli indexHolder_pm_pp;
+    MatrixXuli indexHolder_ppp_hhh;
+    MatrixXuli indexHolder_ppm_hhh;
+    MatrixXuli indexHolder_ppm_hhp;
+    MatrixXuli indexHolder_ppm_pph;
+    MatrixXuli indexHolder_ppp_ppp;
+    MatrixXuli indexHolder_pppm_hhhp;
+    MatrixXuli indexHolder_ppmm_hhpp;
+    MatrixXuli indexHolder_ppmm_pphh;
+    MatrixXuli indexHolder_pppm_ppph;
+    MatrixXuli indexHolder_pppmm_hhhpp;
+    MatrixXuli indexHolder_pppmm_ppphh;
 
     // these additional boundsHolders are possibly not necessary after the implementation of make3x1- and make2x2Block
     //these are needed for Qa
-    Eigen::MatrixXi boundsHolder_hhpp_hh;
-    Eigen::MatrixXi boundsHolder_hhpp_pp;
-    Eigen::MatrixXi boundsHolder_hhhppp_hhh;
-    Eigen::MatrixXi boundsHolder_hhhppp_ppp;
+    MatrixXuli boundsHolder_hhpp_hh;
+    MatrixXuli boundsHolder_hhpp_pp;
+    MatrixXuli boundsHolder_hhhppp_hhh;
+    MatrixXuli boundsHolder_hhhppp_ppp;
 
     //these are needed for Qc and Qd
     Eigen::MatrixXi indexHolder_h_pph_hpp;
@@ -175,9 +178,9 @@ public:
 
     int                             numOfKu;        //number of blocks in V_hh_pp
     int                             numOfKu3;       //number of blocks in V_hhh_ppp
-    Eigen::MatrixXd                 makeSquareBlock(Eigen::MatrixXi& array, int range_lower, int range_upper);
-    Eigen::MatrixXd                 makeSquareBlock_s(Eigen::MatrixXi& array, int range_lower, int range_upper);
-    Eigen::MatrixXd                 makeRektBlock(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
+    Eigen::MatrixXd                 makeSquareBlock(Eigen::MatrixXi& array, unsigned long int range_lower, unsigned long int range_upper);
+    Eigen::MatrixXd                 makeSquareBlock_s(Eigen::MatrixXi& array, unsigned long range_lower, unsigned long range_upper);
+    Eigen::MatrixXd                 makeRektBlock(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
 
 
     //CCD terms
@@ -215,11 +218,11 @@ public:
     Eigen::MatrixXd                 make2x2Block(int ku, int i1, int i2, int i3, int i4);
     Eigen::MatrixXd                 make2x2Block_alt(int channel);
 
-    void                            makeMatMap_hhhp(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
-    void                            makeMatMap_hhpp(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
-    void                            makeMatMap_ppph(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
+    void                            makeMatMap_hhhp(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
+    void                            makeMatMap_hhpp(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
+    void                            makeMatMap_ppph(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
 
-    void                            makeMatVec(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, int range_lower1, int range_upper1, int range_lower2, int range_upper2);
+    void                            makeMatVec(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
     unsigned long int               Identity_hhhp(int h1, int h2, int h3, int p1);
     unsigned long int               Identity_hhpp(int h1, int h2, int p1, int p2);
     unsigned long int               Identity_hh(int h1, int h2);
