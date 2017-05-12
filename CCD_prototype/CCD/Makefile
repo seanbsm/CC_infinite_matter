@@ -35,7 +35,7 @@ COMPRESS      = gzip -9f
 DISTNAME      = CCD1.0.0
 DISTDIR = /home/sean/Projects/Project_Genesis/CCD_prototype/CCD/.tmp/CCD1.0.0
 LINK          = g++
-LFLAGS        = -m64 -fopenmp -O3 -Wl,-O1
+LFLAGS        = -m64 -fopenmp -lgfortran -O3 -Wl,-O1
 LIBS          = $(SUBLIBS)  
 AR            = ar cqs
 RANLIB        = 
@@ -48,7 +48,12 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = main.cpp \
+SOURCES       = Systems/NLO2opt/constants.f90 \
+		Systems/NLO2opt/spin_isospin_operators.f90 \
+		Systems/NLO2opt/ang_mom_module.f90 \
+		Systems/NLO2opt/chiral_nnlo_opt_simple.f90 \
+		Systems/NLO2opt/chipot_f90_wrapper.f90 \
+		main.cpp \
 		Systems/heg.cpp \
 		Systems/mp.cpp \
 		Systems/pm.cpp \
@@ -58,7 +63,12 @@ SOURCES       = main.cpp \
 		makeintmat.cpp \
 		diagrams.cpp \
 		Systems/chiral.cpp 
-OBJECTS       = main.o \
+OBJECTS       = constants.o \
+		spin_isospin_operators.o \
+		ang_mom_module.o \
+		chiral_nnlo_opt_simple.o \
+		chipot_f90_wrapper.o \
+		main.o \
 		heg.o \
 		mp.o \
 		pm.o \
@@ -128,7 +138,12 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		makeampmat.h \
 		makeintmat.h \
 		diagrams.h \
-		Systems/chiral.h main.cpp \
+		Systems/chiral.h Systems/NLO2opt/constants.f90 \
+		Systems/NLO2opt/spin_isospin_operators.f90 \
+		Systems/NLO2opt/ang_mom_module.f90 \
+		Systems/NLO2opt/chiral_nnlo_opt_simple.f90 \
+		Systems/NLO2opt/chipot_f90_wrapper.f90 \
+		main.cpp \
 		Systems/heg.cpp \
 		Systems/mp.cpp \
 		Systems/pm.cpp \
@@ -314,6 +329,21 @@ compiler_lex_clean:
 compiler_clean: 
 
 ####### Compile
+
+constants.o: Systems/NLO2opt/constants.f90 
+	$(CC) -c $(CFLAGS) $(INCPATH) -o constants.o Systems/NLO2opt/constants.f90
+
+spin_isospin_operators.o: Systems/NLO2opt/spin_isospin_operators.f90 
+	$(CC) -c $(CFLAGS) $(INCPATH) -o spin_isospin_operators.o Systems/NLO2opt/spin_isospin_operators.f90
+
+ang_mom_module.o: Systems/NLO2opt/ang_mom_module.f90 
+	$(CC) -c $(CFLAGS) $(INCPATH) -o ang_mom_module.o Systems/NLO2opt/ang_mom_module.f90
+
+chiral_nnlo_opt_simple.o: Systems/NLO2opt/chiral_nnlo_opt_simple.f90 
+	$(CC) -c $(CFLAGS) $(INCPATH) -o chiral_nnlo_opt_simple.o Systems/NLO2opt/chiral_nnlo_opt_simple.f90
+
+chipot_f90_wrapper.o: Systems/NLO2opt/chipot_f90_wrapper.f90 
+	$(CC) -c $(CFLAGS) $(INCPATH) -o chipot_f90_wrapper.o Systems/NLO2opt/chipot_f90_wrapper.f90
 
 main.o: main.cpp eigen3/Eigen/Dense \
 		eigen3/Eigen/Core \
@@ -526,6 +556,7 @@ main.o: main.cpp eigen3/Eigen/Dense \
 		Systems/system.h \
 		Systems/heg.h \
 		Systems/mp.h \
+		Systems/chiral.h \
 		makeampmat.h \
 		makeintmat.h \
 		sparsepp/spp.h \

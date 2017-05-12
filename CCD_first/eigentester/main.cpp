@@ -48,6 +48,9 @@ int* returnInt(int i){
     return &i;
 }
 
+template <>
+using Matrix = Eigen::MatrixXd;
+
 bool vecDelta(Eigen::VectorXi v1, Eigen::VectorXi v2){
     int dim1 = v1.rows();
     int dim2 = v2.rows();
@@ -179,7 +182,7 @@ int main(int argc, char** argv)
 
     std::cout << "------------" << std::endl;
     int Nh = 14;
-    int Ns = 874;
+    int Ns = 30;
     int count1 = 0;
     int count2 = 0;
     for (int a=Nh; a<Ns; a++){
@@ -206,6 +209,10 @@ int main(int argc, char** argv)
     }
     std::cout << "New way: " << count1 << std::endl;
     std::cout << "Old way: " << count2 << std::endl;
+
+    Matrix A;
+    A.conservativeResize(5,5);
+    std::cout << A << std::endl;
 
     /*int max = 1e6;
     int threads = 4;

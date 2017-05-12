@@ -22,7 +22,7 @@ MP::MP(Master* master, double m, double L3, double L2, double L1) : System(maste
 }
 
 void MP::makeStateSpace(){
-    m_states.conservativeResize(m_states.rows()+6, Eigen::NoChange);    //sets the format of states
+    m_states.conservativeResize(m_states.rows()+5, Eigen::NoChange);    //sets the format of states
     //start for-loops
     for (int n2=0; n2<m_Nb+1; n2++){
         for (int nx=-n2; nx<n2+1; nx++){
@@ -30,8 +30,8 @@ void MP::makeStateSpace(){
                 for (int nz=-n2; nz<n2+1; nz++){
                     if (nx*nx + ny*ny + nz*nz == n2){
                         m_states.conservativeResize(Eigen::NoChange, m_states.cols()+2);
-                        m_states.col(m_states.cols()-2) << n2,nx,ny,nz, 1, 1;
-                        m_states.col(m_states.cols()-1) << n2,nx,ny,nz,-1, 1;
+                        m_states.col(m_states.cols()-2) << n2,nx,ny,nz, 1;
+                        m_states.col(m_states.cols()-1) << n2,nx,ny,nz,-1;
                     } //end of nx^2 + ny^2 + nz^2 == n^2
                 }//end of nz-loop
             }//end of ny-loop
@@ -45,6 +45,65 @@ void MP::makeStateSpace(){
 
 //I think using eigen here is a bit over-the-top for such a function, but whatevs~
 int MP::kUnique1(int k, int s1){
+    Eigen::Vector4i kk( m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k) );
+    Eigen::VectorXi mom = s1*kk;
+
+    /*int val = 0;
+    for (int i = 0; i<mom.rows();i++){
+        if (val < mom(i)){
+            val = mom(i);
+        }
+    }
+
+    int dk = 2*val + 1;*/
+
+    int kuni = mom(0) + mom(1)*m_dk + mom(2)*m_dk*m_dk + mom(3)*m_dk*m_dk*m_dk;
+    return kuni;
+}
+
+//I think using eigen here is a bit over-the-top for such a function, but whatevs~
+int MP::kUnique2(int k, int p, int s1, int s2){
+    Eigen::Vector4i kk( m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k) );
+    Eigen::Vector4i kp( m_states(1,p), m_states(2,p), m_states(3,p), m_states(4,p) );
+    Eigen::VectorXi mom = s1*kk + s2*kp;
+
+    int kuni = mom(0) + mom(1)*m_dk + mom(2)*m_dk*m_dk + mom(3)*m_dk*m_dk*m_dk;
+    return kuni;
+}
+
+int MP::kUnique3(int k, int p, int q, int s1, int s2, int s3){
+    Eigen::Vector4i kk( m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k) );
+    Eigen::Vector4i kp( m_states(1,p), m_states(2,p), m_states(3,p), m_states(4,p) );
+    Eigen::Vector4i kq( m_states(1,q), m_states(2,q), m_states(3,q), m_states(4,q) );
+    Eigen::VectorXi mom = s1*kk + s2*kp + s3*kq;
+
+    int kuni = mom(0) + mom(1)*m_dk + mom(2)*m_dk*m_dk + mom(3)*m_dk*m_dk*m_dk;
+    return kuni;
+}
+
+int MP::kUnique4(int k, int p, int q, int s, int s1, int s2, int s3, int s4){
+    Eigen::Vector4i kk( m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k) );
+    Eigen::Vector4i kp( m_states(1,p), m_states(2,p), m_states(3,p), m_states(4,p) );
+    Eigen::Vector4i kq( m_states(1,q), m_states(2,q), m_states(3,q), m_states(4,q) );
+    Eigen::Vector4i ks( m_states(1,s), m_states(2,s), m_states(3,s), m_states(4,s) );
+    Eigen::VectorXi mom = s1*kk + s2*kp + s3*kq + s4*ks;
+
+    int kuni = mom(0) + mom(1)*m_dk + mom(2)*m_dk*m_dk + mom(3)*m_dk*m_dk*m_dk;
+    return kuni;
+}
+
+int MP::kUnique5(int k, int p, int q, int s, int t, int s1, int s2, int s3, int s4, int s5){
+    Eigen::Vector4i kk( m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k) );
+    Eigen::Vector4i kp( m_states(1,p), m_states(2,p), m_states(3,p), m_states(4,p) );
+    Eigen::Vector4i kq( m_states(1,q), m_states(2,q), m_states(3,q), m_states(4,q) );
+    Eigen::Vector4i ks( m_states(1,s), m_states(2,s), m_states(3,s), m_states(4,s) );
+    Eigen::Vector4i kt( m_states(1,t), m_states(2,t), m_states(3,t), m_states(4,t) );
+    Eigen::VectorXi mom = s1*kk + s2*kp + s3*kq + s4*ks + s5*kt;
+
+    int kuni = mom(0) + mom(1)*m_dk + mom(2)*m_dk*m_dk + mom(3)*m_dk*m_dk*m_dk;
+    return kuni;
+}
+/*int MP::kUnique1(int k, int s1){
     Eigen::Matrix<int, 5, 1> kk;
     kk << m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k), m_states(5,k);
     Eigen::VectorXi mom = s1*kk;
@@ -108,12 +167,12 @@ int MP::kUnique5(int k, int p, int q, int s, int t, int s1, int s2, int s3, int 
 
     int kuni = mom(0) + mom(1)*m_dk + mom(2)*m_dk*m_dk + mom(3)*m_dk*m_dk*m_dk + mom(4)*m_dk*m_dk*m_dk*m_dk;
     return kuni;
-}
+}*/
 
 double MP::f(int p){
     double returnVal = h0(p);
     for (int i=0; i<m_Nh; i++){
-        returnVal += 0.5*assym_single(p, i);
+        returnVal += assym_single(p, i);
     };
     return returnVal;
 }
@@ -185,7 +244,7 @@ double MP::assym_test(int i, int j, int r, int s){
       if(m_states(2,i) + m_states(2,j) != m_states(2,r) + m_states(2,s)){ return 0.0; }
       if(m_states(3,i) + m_states(3,j) != m_states(3,r) + m_states(3,s)){ return 0.0; }
       if(m_states(4,i) + m_states(4,j) != m_states(4,r) + m_states(4,s)){ return 0.0; }
-      if(m_states(5,i) + m_states(5,j) != m_states(5,r) + m_states(5,s)){ return 0.0; }
+      //if(m_states(5,i) + m_states(5,j) != m_states(5,r) + m_states(5,s)){ return 0.0; }
 
       kX1 = piOverL * (m_states(1,i) - m_states(1,j) - m_states(1,r) + m_states(1,s));
       kY1 = piOverL * (m_states(2,i) - m_states(2,j) - m_states(2,r) + m_states(2,s));
@@ -207,20 +266,20 @@ double MP::assym_test(int i, int j, int r, int s){
       V_S2 = VSfactor * exp(-qSquared2/(4*kappa_S));
 
       spinEx1 = spinExchangeTerm(m_states(4,i), m_states(4,j), m_states(4,r), m_states(4,s));
-      isoSpinEx1 = spinExchangeTerm(m_states(5,i), m_states(5,j), m_states(5,r), m_states(5,s));
+      isoSpinEx1 = 1;//spinExchangeTerm(m_states(5,i), m_states(5,j), m_states(5,r), m_states(5,s));
 
       spinEx2 = spinExchangeTerm(m_states(4,i), m_states(4,j), m_states(4,s), m_states(4,r));
-      isoSpinEx2 = spinExchangeTerm(m_states(5,i), m_states(5,j), m_states(5,s), m_states(5,r));
+      isoSpinEx2 = 1;//spinExchangeTerm(m_states(5,i), m_states(5,j), m_states(5,s), m_states(5,r));
 
-      IsIt1 = kroneckerDelta(m_states(4,i), m_states(4,r)) * kroneckerDelta(m_states(4,j), m_states(4,s)) *
-              kroneckerDelta(m_states(5,i), m_states(5,r)) * kroneckerDelta(m_states(5,j), m_states(5,s));
-      PsIt1 = spinEx1 * kroneckerDelta(m_states(5,i), m_states(5,r)) * kroneckerDelta(m_states(5,j), m_states(5,s));
+      IsIt1 = kroneckerDelta(m_states(4,i), m_states(4,r)) * kroneckerDelta(m_states(4,j), m_states(4,s));/* *
+              kroneckerDelta(m_states(5,i), m_states(5,r)) * kroneckerDelta(m_states(5,j), m_states(5,s));*/
+      PsIt1 = spinEx1;// * kroneckerDelta(m_states(5,i), m_states(5,r)) * kroneckerDelta(m_states(5,j), m_states(5,s));
       PsPt1 = spinEx1 * isoSpinEx1;
       IsPt1 = kroneckerDelta(m_states(4,i), m_states(4,r))*kroneckerDelta(m_states(4,j), m_states(4,s)) * isoSpinEx1;
 
-      IsIt2 = kroneckerDelta(m_states(4,i), m_states(4,s)) * kroneckerDelta(m_states(4,j), m_states(4,r)) *
-              kroneckerDelta(m_states(5,i), m_states(5,s)) * kroneckerDelta(m_states(5,j), m_states(5,r));
-      PsIt2 = spinEx2 * kroneckerDelta(m_states(5,i), m_states(5,s)) * kroneckerDelta(m_states(5,j), m_states(5,r));
+      IsIt2 = kroneckerDelta(m_states(4,i), m_states(4,s)) * kroneckerDelta(m_states(4,j), m_states(4,r));/* *
+              kroneckerDelta(m_states(5,i), m_states(5,s)) * kroneckerDelta(m_states(5,j), m_states(5,r));*/
+      PsIt2 = spinEx2;// * kroneckerDelta(m_states(5,i), m_states(5,s)) * kroneckerDelta(m_states(5,j), m_states(5,r));
       PsPt2 = spinEx2 * isoSpinEx2;
       IsPt2 = kroneckerDelta(m_states(4,i), m_states(4,s)) * kroneckerDelta(m_states(4,j), m_states(4,r)) * isoSpinEx2;
 
@@ -250,10 +309,10 @@ double MP::assym(int p, int q, int r, int s){
     Eigen::Vector3i kq( m_states(1,q), m_states(2,q), m_states(3,q) );
     Eigen::Vector3i kr( m_states(1,r), m_states(2,r), m_states(3,r) );
     Eigen::Vector3i ks( m_states(1,s), m_states(2,s), m_states(3,s) );
-    int sp = m_states(4,p); int tp = m_states(5,p);
-    int sq = m_states(4,q); int tq = m_states(5,q);
-    int sr = m_states(4,r); int tr = m_states(5,r);
-    int ss = m_states(4,s); int ts = m_states(5,s);
+    int sp = m_states(4,p); int tp = 1;//= m_states(5,p);
+    int sq = m_states(4,q); int tq = 1;//= m_states(5,q);
+    int sr = m_states(4,r); int tr = 1;//= m_states(5,r);
+    int ss = m_states(4,s); int ts = 1;//= m_states(5,s);
 
     //these tests should be already performed through k_unique
     if ( vecDelta(kp+kq, kr+ks) == 0){ return 0;}   //momentum conservation
@@ -302,6 +361,7 @@ double MP::assym(int p, int q, int r, int s){
     if (diff > 1e-14){std::cout << diff << std::endl;}*/
 
     return 0.5*returnVal;
+    //return assym_test(p,q,r,s);
 }
 
 double MP::assym_single(int p, int q){

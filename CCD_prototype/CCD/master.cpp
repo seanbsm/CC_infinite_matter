@@ -88,8 +88,11 @@ void Master::setClasses(){
 
 double Master::CC_Eref(){
     double Eref = 0;
-    for (int i = 0; i<m_Nh;i++){
-        Eref += m_system->f(i);
+    for (int i = 0; i<m_Nh; i++){
+        Eref += m_system->h0(i);
+        for (int j = 0; j<m_Nh; j++){
+            Eref += 0.5*m_system->assym_single(i,j);
+        }
     }
     return Eref;
 }
@@ -124,7 +127,8 @@ double Master::CC_master(double eps, double conFac){
 
 
     std::cout << std::endl;
-    std::cout << "MBPT2: " << std::setprecision (16) << ECCD_old << std::endl;
+    std::cout << "MBPT2:    " << std::setprecision (16) << ECCD_old << std::endl;
+    std::cout << "MBPT2/Nh: " << std::setprecision (16) << ECCD_old/m_Nh << std::endl;
     std::cout << std::endl;
 
     double ECC;

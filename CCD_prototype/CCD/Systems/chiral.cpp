@@ -3,6 +3,16 @@
 
 using namespace std;
 
+extern "C" {
+    // get real and imaginary components of matrix element.
+    void chipot_f90_wrapper_(double *matel_real, double *matel_im,
+                            int *Nparticles, double *rho,
+                            int *ps, int *pt, int *ppx, int *ppy, int* ppz,
+                            int *qs, int *qt, int *qpx, int *qpy, int *qpz,
+                            int *rs, int *rt, int *rpx, int *rpy, int *rpz,
+                            int *ss, int *st, int *spx, int *spy, int *spz);
+}
+
 CHIRAL::CHIRAL(class Master* master, double m, double L3, double L2, double L1) : System(master) /* Chiral Potential */
 {
     m_Nh = master->m_Nh;
@@ -18,7 +28,7 @@ CHIRAL::CHIRAL(class Master* master, double m, double L3, double L2, double L1) 
 }
 
 void CHIRAL::makeStateSpace(){
-    m_states.conservativeResize(m_states.rows()+6, Eigen::NoChange);    //sets the format of states
+    m_states.conservativeResize(m_states.rows()+5, Eigen::NoChange);    //sets the format of states
     //start for-loops
     for (int n2=0; n2<m_Nb+1; n2++){
         for (int nx=-n2; nx<n2+1; nx++){
@@ -26,10 +36,8 @@ void CHIRAL::makeStateSpace(){
                 for (int nz=-n2; nz<n2+1; nz++){
                     if (nx*nx + ny*ny + nz*nz == n2){
                         m_states.conservativeResize(Eigen::NoChange, m_states.cols()+4);
-                        m_states.col(m_states.cols()-4) << n2,nx,ny,nz, 1, 1;
-                        m_states.col(m_states.cols()-3) << n2,nx,ny,nz,-1, 1;
-                        m_states.col(m_states.cols()-2) << n2,nx,ny,nz, 1, -1;
-                        m_states.col(m_states.cols()-1) << n2,nx,ny,nz,-1, -1;
+                        m_states.col(m_states.cols()-2) << n2,nx,ny,nz, 1;
+                        m_states.col(m_states.cols()-1) << n2,nx,ny,nz,-1;
                     } //end of nx^2 + ny^2 + nz^2 == n^2
                 }//end of nz-loop
             }//end of ny-loop
@@ -43,75 +51,59 @@ void CHIRAL::makeStateSpace(){
 
 //I think using eigen here is a bit over-the-top for such a function, but whatevs~
 int CHIRAL::kUnique1(int k, int s1){
-    Eigen::Matrix<int, 5, 1> kk;
-    kk << m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k), m_states(5,k);
+    Eigen::Vector4i kk( m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k) );
     Eigen::VectorXi mom = s1*kk;
 
-    int kuni = mom(0) + mom(1)*m_dk + mom(2)*m_dk*m_dk + mom(3)*m_dk*m_dk*m_dk + mom(4)*m_dk*m_dk*m_dk*m_dk;
+    int kuni = mom(0) + mom(1)*m_dk + mom(2)*m_dk*m_dk + mom(3)*m_dk*m_dk*m_dk;
     return kuni;
 }
 
 int CHIRAL::kUnique2(int k, int p, int s1, int s2){
-    Eigen::Matrix<int, 5, 1> kk;
-    Eigen::Matrix<int, 5, 1> kp;
-    kk << m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k), m_states(5,k);
-    kp << m_states(1,p), m_states(2,p), m_states(3,p), m_states(4,p), m_states(5,p);
-    Eigen::VectorXi mom = s1*kk+s2*kp;
+    Eigen::Vector4i kk( m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k) );
+    Eigen::Vector4i kp( m_states(1,p), m_states(2,p), m_states(3,p), m_states(4,p) );
+    Eigen::VectorXi mom = s1*kk + s2*kp;
 
-    int kuni = mom(0) + mom(1)*m_dk + mom(2)*m_dk*m_dk + mom(3)*m_dk*m_dk*m_dk + mom(4)*m_dk*m_dk*m_dk*m_dk;
+    int kuni = mom(0) + mom(1)*m_dk + mom(2)*m_dk*m_dk + mom(3)*m_dk*m_dk*m_dk;
     return kuni;
 }
 
 int CHIRAL::kUnique3(int k, int p, int q, int s1, int s2, int s3){
-    Eigen::Matrix<int, 5, 1> kk;
-    Eigen::Matrix<int, 5, 1> kp;
-    Eigen::Matrix<int, 5, 1> kq;
-    kk << m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k), m_states(5,k);
-    kp << m_states(1,p), m_states(2,p), m_states(3,p), m_states(4,p), m_states(5,p);
-    kq << m_states(1,q), m_states(2,q), m_states(3,q), m_states(4,q), m_states(5,q);
-    Eigen::VectorXi mom = s1*kk+s2*kp+s3*kq;
+    Eigen::Vector4i kk( m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k) );
+    Eigen::Vector4i kp( m_states(1,p), m_states(2,p), m_states(3,p), m_states(4,p) );
+    Eigen::Vector4i kq( m_states(1,q), m_states(2,q), m_states(3,q), m_states(4,q) );
+    Eigen::VectorXi mom = s1*kk + s2*kp + s3*kq;
 
-    int kuni = mom(0) + mom(1)*m_dk + mom(2)*m_dk*m_dk + mom(3)*m_dk*m_dk*m_dk + mom(4)*m_dk*m_dk*m_dk*m_dk;
+    int kuni = mom(0) + mom(1)*m_dk + mom(2)*m_dk*m_dk + mom(3)*m_dk*m_dk*m_dk;
     return kuni;
 }
 
-
 int CHIRAL::kUnique4(int k, int p, int q, int s, int s1, int s2, int s3, int s4){
-    Eigen::Matrix<int, 5, 1> kk;
-    Eigen::Matrix<int, 5, 1> kp;
-    Eigen::Matrix<int, 5, 1> kq;
-    Eigen::Matrix<int, 5, 1> ks;
-    kk << m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k), m_states(5,k);
-    kp << m_states(1,p), m_states(2,p), m_states(3,p), m_states(4,p), m_states(5,p);
-    kq << m_states(1,q), m_states(2,q), m_states(3,q), m_states(4,q), m_states(5,q);
-    ks << m_states(1,s), m_states(2,s), m_states(3,s), m_states(4,s), m_states(5,s);
-    Eigen::VectorXi mom = s1*kk+s2*kp+s3*kq+s4*ks;
+    Eigen::Vector4i kk( m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k) );
+    Eigen::Vector4i kp( m_states(1,p), m_states(2,p), m_states(3,p), m_states(4,p) );
+    Eigen::Vector4i kq( m_states(1,q), m_states(2,q), m_states(3,q), m_states(4,q) );
+    Eigen::Vector4i ks( m_states(1,s), m_states(2,s), m_states(3,s), m_states(4,s) );
+    Eigen::VectorXi mom = s1*kk + s2*kp + s3*kq + s4*ks;
 
-    int kuni = mom(0) + mom(1)*m_dk + mom(2)*m_dk*m_dk + mom(3)*m_dk*m_dk*m_dk + mom(4)*m_dk*m_dk*m_dk*m_dk;
+    int kuni = mom(0) + mom(1)*m_dk + mom(2)*m_dk*m_dk + mom(3)*m_dk*m_dk*m_dk;
     return kuni;
 }
 
 int CHIRAL::kUnique5(int k, int p, int q, int s, int t, int s1, int s2, int s3, int s4, int s5){
-    Eigen::Matrix<int, 5, 1> kk;
-    Eigen::Matrix<int, 5, 1> kp;
-    Eigen::Matrix<int, 5, 1> kq;
-    Eigen::Matrix<int, 5, 1> ks;
-    Eigen::Matrix<int, 5, 1> kt;
-    kk << m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k), m_states(5,k);
-    kp << m_states(1,p), m_states(2,p), m_states(3,p), m_states(4,p), m_states(5,p);
-    kq << m_states(1,q), m_states(2,q), m_states(3,q), m_states(4,q), m_states(5,q);
-    ks << m_states(1,s), m_states(2,s), m_states(3,s), m_states(4,s), m_states(5,s);
-    kt << m_states(1,t), m_states(2,t), m_states(3,t), m_states(4,t), m_states(5,t);
-    Eigen::VectorXi mom = s1*kk+s2*kp+s3*kq+s4*ks+s5*kt;
+    Eigen::Vector4i kk( m_states(1,k), m_states(2,k), m_states(3,k), m_states(4,k) );
+    Eigen::Vector4i kp( m_states(1,p), m_states(2,p), m_states(3,p), m_states(4,p) );
+    Eigen::Vector4i kq( m_states(1,q), m_states(2,q), m_states(3,q), m_states(4,q) );
+    Eigen::Vector4i ks( m_states(1,s), m_states(2,s), m_states(3,s), m_states(4,s) );
+    Eigen::Vector4i kt( m_states(1,t), m_states(2,t), m_states(3,t), m_states(4,t) );
+    Eigen::VectorXi mom = s1*kk + s2*kp + s3*kq + s4*ks + s5*kt;
 
-    int kuni = mom(0) + mom(1)*m_dk + mom(2)*m_dk*m_dk + mom(3)*m_dk*m_dk*m_dk + mom(4)*m_dk*m_dk*m_dk*m_dk;
+    int kuni = mom(0) + mom(1)*m_dk + mom(2)*m_dk*m_dk + mom(3)*m_dk*m_dk*m_dk;
     return kuni;
 }
 
 double CHIRAL::f(int p){
     double returnVal = h0(p);
     for (int i=0; i<m_Nh; i++){
-        returnVal += assym_single(p, i);
+        returnVal += 0.5*assym_single(p, i);
     };
     return returnVal;
 }
@@ -122,20 +114,41 @@ double CHIRAL::h0(int p){
 }
 
 double CHIRAL::assym(int p, int q, int r, int s){
-    Eigen::Vector3i kp( m_states(1,p), m_states(2,p), m_states(3,p) );
+    /*Eigen::Vector3i kp( m_states(1,p), m_states(2,p), m_states(3,p) );
     Eigen::Vector3i kq( m_states(1,q), m_states(2,q), m_states(3,q) );
     Eigen::Vector3i kr( m_states(1,r), m_states(2,r), m_states(3,r) );
     Eigen::Vector3i ks( m_states(1,s), m_states(2,s), m_states(3,s) );
-    int sp = m_states(4,p); int tp = m_states(5,p);
-    int sq = m_states(4,q); int tq = m_states(5,q);
-    int sr = m_states(4,r); int tr = m_states(5,r);
-    int ss = m_states(4,s); int ts = m_states(5,s);
+    int sp = m_states(4,p);
+    int sq = m_states(4,q);
+    int sr = m_states(4,r);
+    int ss = m_states(4,s);*/
 
-    //these tests should be already performed through k_unique
-    if ( vecDelta(kp+kq, kr+ks) == 0){ return 0;}   //momentum conservation
-    if ( sp+sq != sr+ss){ return 0; }               //spin conservation
-    if ( tp+tq != tr+ts){ return 0; }               //isospin conservation
+    double matel_real, matel_im, rho;
+    int isospin = 1;
+    complex<double> result; double temp;
 
+    rho = m_Nh/m_L3;
+
+    //Morten thinks +1=neutrons in the fortran code
+    chipot_f90_wrapper_(&matel_real, &matel_im,
+                        &m_Nh, &rho,
+                        &m_states(4,p), &isospin, &m_states(1,p), &m_states(2,p), &m_states(3,p),
+                        &m_states(4,q), &isospin, &m_states(1,q), &m_states(2,q), &m_states(3,q),
+                        &m_states(4,r), &isospin, &m_states(1,r), &m_states(2,r), &m_states(3,r),
+                        &m_states(4,s), &isospin, &m_states(1,s), &m_states(2,s), &m_states(3,s));
+
+    //function as in wrapper
+    /*chipot_f90_wrapper_(&matel_real, &matel_im,
+                        &Nparticles, &rho,
+                        &ps, &pt, &ppx, &ppy, &ppz,
+                        &qs, &qt, &qpx, &qpy, &qpz,
+                        &rs, &rt, &rpx, &rpy, &rpz,
+                        &ss, &st, &spx, &spy, &spz);*/
+    result.real(matel_real);
+    result.imag(matel_im);
+
+    temp = real(result);
+    return temp;
 }
 
 double CHIRAL::assym_single(int p, int q){

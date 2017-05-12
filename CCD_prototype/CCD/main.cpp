@@ -18,6 +18,7 @@ typedef std::chrono::high_resolution_clock Clock;   //needed for timing
 #include "Systems/system.h"
 #include "Systems/heg.h"
 #include "Systems/mp.h"
+#include "Systems/chiral.h"
 #include "makeampmat.h"
 #include "makeintmat.h"
 
@@ -104,20 +105,20 @@ int main(int argc, char** argv)
         std::cout << "No arguments given, running default setup" << std::endl;
         std::cout << "Default setup: HEG for Nh=14, Nb=3, rs=1.0, 1e-16 precision, CCDT" << std::endl;
 
-        /*m          = 1;             //Electron mass [MeV?]
-            rs         = 1;
-            double  rb = 1.;            //Bohr radius [MeV^-1]
-            double  r1 = pow(rs*rb, 3);
-            L3         = 4.*pi*Nh*r1/3.;
-            L2         = pow(L3, 2./3.);
-            L1         = pow(L3, 1./3.);
-            master->setSystem(new HEG(master, m, L3, L2, L1));*/
-        m   = 939.565;              //Neutron mass [MeV]
+        m          = 1;             //Electron mass [MeV?]
+        rs         = 1;
+        double  rb = 1.;            //Bohr radius [MeV^-1]
+        double  r1 = pow(rs*rb, 3);
+        L3         = 4.*pi*Nh*r1/3.;
+        L2         = pow(L3, 2./3.);
+        L1         = pow(L3, 1./3.);
+        master->setSystem(new HEG(master, m, L3, L2, L1));
+        /*m   = 939.565;              //Neutron mass [MeV]
         rho = 0.2;
         L3  = double(Nh)/rho;
         L2  = pow(L3, 2./3.);
         L1  = pow(L3, 1./3.);
-        master->setSystem(new MP(master, m, L3, L2, L1));
+        master->setSystem(new MP(master, m, L3, L2, L1));*/
     }
     else if (std::string(argv[1]) == "HEG"){
         m          = 1;             //Electron mass [MeV?]
@@ -188,8 +189,9 @@ int main(int argc, char** argv)
 
     Eref = master->CC_Eref();
 
-    std::cout << "Eref:       " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << Eref << std::endl;
-    std::cout << "E/Nh:       " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (Eref+Ecc)/Nh << std::endl;
+    std::cout << "Eref:           " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << Eref << std::endl;
+    std::cout << "E_ref/Nh:       " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (Eref)/Nh << std::endl;
+    std::cout << "E/Nh:           " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (Eref+Ecc)/Nh << std::endl;
 
     if (intermediates){
         std::cout << "Total time used: "
