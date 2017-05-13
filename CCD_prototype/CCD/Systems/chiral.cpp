@@ -103,13 +103,13 @@ int CHIRAL::kUnique5(int k, int p, int q, int s, int t, int s1, int s2, int s3, 
 System::variable_type CHIRAL::f(int p){
     variable_type returnVal = h0(p);
     for (int i=0; i<m_Nh; i++){
-        returnVal += 0.5*assym_single(p, i);
+        returnVal += assym_single(p, i);
     };
     return returnVal;
 }
 
 System::variable_type CHIRAL::h0(int p){
-    variable_type energy = m_states(0,p);
+    variable_type energy = (variable_type)m_states(0,p);
     return energy*2.*pi*pi*m_hbarc*m_hbarc/(m_m*m_L2);
 }
 
@@ -125,7 +125,7 @@ System::variable_type CHIRAL::assym(int p, int q, int r, int s){
 
     double matel_real, matel_im, rho;
     int isospin = 1;
-    complex<double> result; double temp;
+    complex<double> result;// double temp;
 
     rho = m_Nh/m_L3;
 
@@ -147,7 +147,7 @@ System::variable_type CHIRAL::assym(int p, int q, int r, int s){
     result.real(matel_real);
     result.imag(matel_im);
 
-    temp = real(result);
+    //temp = real(result);
     return result;
 }
 

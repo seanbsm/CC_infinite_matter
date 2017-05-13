@@ -79,7 +79,7 @@ int main(int argc, char** argv)
     spp::sparse_hash_map<int, int> VS;
     std::unordered_map<int, int> VSS;
 
-    int lim = 1e7; int in;
+    int lim = 1e5; int in;
     for(int i=0;i<lim;i++){
         in = i;
         VS[in] = i;
@@ -211,9 +211,11 @@ int main(int argc, char** argv)
     std::cout << "New way: " << count1 << std::endl;
     std::cout << "Old way: " << count2 << std::endl;
 
-    std::complex<double> hey = 0;
+    std::complex<double> hey (5.2,5.3);
 
-    std::cout << hey.real() << std::endl;
+    std::complex<double> wut (2.4,5.2);
+
+    std::cout << std::fixed << std::setprecision (16) << hey/wut << std::endl;
 
     /*int max = 1e6;
     int threads = 4;

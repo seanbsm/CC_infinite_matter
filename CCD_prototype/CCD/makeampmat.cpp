@@ -163,6 +163,7 @@ void MakeAmpMat::makeDenomMat3(){
 
                 id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
                 index = T3_elements_I.find(id)->second;
+
                 denom3_elements[index] = 1./( (FockMap_h[i] + FockMap_h[j] + FockMap_h[k] - FockMap_p[a] - FockMap_p[b] - FockMap_p[c] ) );
             }
         }
