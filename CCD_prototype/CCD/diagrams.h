@@ -32,8 +32,8 @@ public:
     //because screw general solvers
     void makeT5bIndexMat();
     void makeT5cIndexMat();
-    Eigen::MatrixXd contructMatT5b(int index);
-    Eigen::MatrixXd contructMatT5c(int index);
+    MatrixX contructMatT5b(int index);
+    MatrixX contructMatT5c(int index);
     void destroy5Map(); //to remove that memory monstrosity
 
     //T2 diagrams

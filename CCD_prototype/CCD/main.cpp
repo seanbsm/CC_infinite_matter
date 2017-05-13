@@ -114,7 +114,7 @@ int main(int argc, char** argv)
         L1         = pow(L3, 1./3.);
         master->setSystem(new HEG(master, m, L3, L2, L1))*/;
         m   = 939.565;              //Neutron mass [MeV]
-        rho = 0.2;
+        rho = 0.08;
         L3  = double(Nh)/rho;
         L2  = pow(L3, 2./3.);
         L1  = pow(L3, 1./3.);

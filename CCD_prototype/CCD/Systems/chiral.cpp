@@ -35,7 +35,7 @@ void CHIRAL::makeStateSpace(){
             for (int ny=-n2; ny<n2+1; ny++){
                 for (int nz=-n2; nz<n2+1; nz++){
                     if (nx*nx + ny*ny + nz*nz == n2){
-                        m_states.conservativeResize(Eigen::NoChange, m_states.cols()+4);
+                        m_states.conservativeResize(Eigen::NoChange, m_states.cols()+2);
                         m_states.col(m_states.cols()-2) << n2,nx,ny,nz, 1;
                         m_states.col(m_states.cols()-1) << n2,nx,ny,nz,-1;
                     } //end of nx^2 + ny^2 + nz^2 == n^2
@@ -101,7 +101,7 @@ int CHIRAL::kUnique5(int k, int p, int q, int s, int t, int s1, int s2, int s3, 
 }
 
 System::variable_type CHIRAL::f(int p){
-    double returnVal = h0(p);
+    variable_type returnVal = h0(p);
     for (int i=0; i<m_Nh; i++){
         returnVal += 0.5*assym_single(p, i);
     };
@@ -109,8 +109,8 @@ System::variable_type CHIRAL::f(int p){
 }
 
 System::variable_type CHIRAL::h0(int p){
-    double energy = m_states(0,p);
-    return energy*2*pi*pi*m_hbarc*m_hbarc/(m_m*m_L2);
+    variable_type energy = m_states(0,p);
+    return energy*2.*pi*pi*m_hbarc*m_hbarc/(m_m*m_L2);
 }
 
 System::variable_type CHIRAL::assym(int p, int q, int r, int s){
@@ -148,7 +148,7 @@ System::variable_type CHIRAL::assym(int p, int q, int r, int s){
     result.imag(matel_im);
 
     temp = real(result);
-    return temp;
+    return result;
 }
 
 System::variable_type CHIRAL::assym_single(int p, int q){

@@ -976,7 +976,7 @@ MakeIntMat::MatrixX MakeIntMat::I2_makemat(int channel1, int channel2){    //mak
     unsigned long int id;
     int k; int l;
     int c; int d;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         k = blockArrays_pm_hp(1,i1);
@@ -1037,7 +1037,7 @@ MakeIntMat::MatrixX MakeIntMat::I3_makemat(int channel1, int channel2){    //mak
     unsigned long int id;
     int k; int l;
     int c; int d;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         c = blockArrays_ppm_pph(1,i1);
@@ -1088,7 +1088,7 @@ MakeIntMat::MatrixX MakeIntMat::I4_makemat(int channel1, int channel2){    //mak
     unsigned long int id;
     int k; int l;
     int c; int d;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         k = blockArrays_ppm_hhp(1,i1);
@@ -1278,7 +1278,7 @@ MakeIntMat::MatrixX MakeIntMat::T3b_makemat(int channel1, int channel2){    //ma
     unsigned long int id;
     int d; int e;
     int b; int l;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         e = blockArrays_pm_pp(1,i1);
@@ -1327,7 +1327,7 @@ MakeIntMat::MatrixX MakeIntMat::T3c_makemat(int channel1, int channel2){    //ma
     unsigned long int id;
     int l; int m;
     int j; int d;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         m = blockArrays_pm_hh(1,i1);
@@ -1431,7 +1431,7 @@ MakeIntMat::MatrixX MakeIntMat::T5a_makemat(int channel1, int channel2){    //ma
     unsigned long int id;
     int l; int m;
     int d; int e;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         m = blockArrays_pm_hp(1,i1);
@@ -1495,7 +1495,7 @@ MakeIntMat::MatrixX MakeIntMat::T5b_makemat(int channel1, int channel2){    //ma
     unsigned long int id;
     int l; int m;
     int d; int e;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         d = blockArrays_ppm_pph(1,i1);
@@ -1539,7 +1539,7 @@ MakeIntMat::MatrixX MakeIntMat::T5c_makemat(int channel1, int channel2){    //ma
     unsigned long int id;
     int l; int m;
     int d; int e;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         l = blockArrays_ppm_hhp(1,i1);
@@ -1583,7 +1583,7 @@ MakeIntMat::MatrixX MakeIntMat::T5d_makemat(int channel1, int channel2){    //ma
     unsigned long int id;
     int l; int m;
     int d; int e;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         l = blockArrays_ppm_hhp(1,i1);
@@ -1627,7 +1627,7 @@ MakeIntMat::MatrixX MakeIntMat::T5e_makemat(int channel1, int channel2){    //ma
     unsigned long int id;
     int l; int m;
     int d; int e;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         d = blockArrays_ppm_pph(1,i1);
@@ -2834,7 +2834,7 @@ void MakeIntMat::makeMatMap_hhhp(Eigen::MatrixXi& array1, Eigen::MatrixXi& array
     for (unsigned long int i = range_lower1; i<range_upper1; i++){
         for (unsigned long int j = range_lower2; j<range_upper2; j++){
             variable_type val = m_system->assym((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j));
-            if (val != 0){
+            if (val.real() != 0 && val.imag() != 0){
                 Vhhhp_elements[Identity_hhhp((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j))] = val;
             }
         }
@@ -2845,7 +2845,7 @@ void MakeIntMat::makeMatMap_hhpp(Eigen::MatrixXi& array1, Eigen::MatrixXi& array
     for (unsigned long int i = range_lower1; i<range_upper1; i++){
         for (unsigned long int j = range_lower2; j<range_upper2; j++){
             variable_type val = m_system->assym((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j));
-            if (val != 0){
+            if (val.real() != 0 && val.imag() != 0){
                 Vhhpp_elements[Identity_hhpp((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j))] = val;
             }
         }
@@ -2856,7 +2856,7 @@ void MakeIntMat::makeMatMap_ppph(Eigen::MatrixXi& array1, Eigen::MatrixXi& array
     for (unsigned long int i = range_lower1; i<range_upper1; i++){
         for (unsigned long int j = range_lower2; j<range_upper2; j++){
             variable_type val = m_system->assym((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j));
-            if (val != 0){
+            if (val.real() != 0 && val.imag() != 0){
                 Vppph_elements[Identity_ppph((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j))] = val;
             }
         }
@@ -2874,7 +2874,7 @@ void MakeIntMat::makeMatVec(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, un
     for (unsigned long int i = range_lower1; i<range_upper1; i++){
         for (unsigned long int j = range_lower2; j<range_upper2; j++){
             variable_type val = m_system->assym((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j));
-            if (val != 0){
+            if (val.real() != 0 && val.imag() != 0){
                 //tempVec.push_back(val);
                 Vhhpp_vector.push_back(val);
                 insertMat(i-range_lower1, j-range_lower2) = Vhhpp_counter;

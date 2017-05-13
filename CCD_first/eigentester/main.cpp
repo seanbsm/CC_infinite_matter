@@ -211,7 +211,9 @@ int main(int argc, char** argv)
     std::cout << "New way: " << count1 << std::endl;
     std::cout << "Old way: " << count2 << std::endl;
 
-    //std::complex<double> hey;
+    std::complex<double> hey = 0;
+
+    std::cout << hey.real() << std::endl;
 
     /*int max = 1e6;
     int threads = 4;

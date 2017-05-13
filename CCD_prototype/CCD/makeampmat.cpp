@@ -121,7 +121,7 @@ void MakeAmpMat::makeDenomMat(){
                 int jj = m_intClass->blockArrays_pp_hh(2,hh);
                 int aa = m_intClass->blockArrays_pp_pp(1,pp);
                 int bb = m_intClass->blockArrays_pp_pp(2,pp);
-                newMat(hh-lowBound_hh, pp-lowBound_pp) = 1./( (double)(FockMap_h[ii] + FockMap_h[jj] - FockMap_p[aa] - FockMap_p[bb] ) );
+                newMat(hh-lowBound_hh, pp-lowBound_pp) = 1./( (FockMap_h[ii] + FockMap_h[jj] - FockMap_p[aa] - FockMap_p[bb] ) );
             }
         }
         denomMat.push_back( newMat );
@@ -163,13 +163,13 @@ void MakeAmpMat::makeDenomMat3(){
 
                 id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
                 index = T3_elements_I.find(id)->second;
-                denom3_elements[index] = 1./( (double)(FockMap_h[i] + FockMap_h[j] + FockMap_h[k] - FockMap_p[a] - FockMap_p[b] - FockMap_p[c] ) );
+                denom3_elements[index] = 1./( (FockMap_h[i] + FockMap_h[j] + FockMap_h[k] - FockMap_p[a] - FockMap_p[b] - FockMap_p[c] ) );
             }
         }
     }
 }
 
-void MakeAmpMat::make3x1Block_inverse(MakeAmpMat::MatrixX inMat, int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<unsigned long int, double> &T_list, bool add){
+void MakeAmpMat::make3x1Block_inverse(MakeAmpMat::MatrixX inMat, int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<unsigned long int, variable_type> &T_list, bool add){
 
     bool cond_hhp = (i1 == 0 && i2 == 0 && i3==1);
     bool cond_pph = (i1 == 1 && i2 == 1 && i3==0);
@@ -291,7 +291,7 @@ void MakeAmpMat::make3x1Block_inverse(MakeAmpMat::MatrixX inMat, int ku, int i1,
     }
 }
 
-void MakeAmpMat::make3x1Block_inverse_D10b(MakeAmpMat::MatrixX inMat, int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<unsigned long int, double> &T_list, bool add){
+void MakeAmpMat::make3x1Block_inverse_D10b(MakeAmpMat::MatrixX inMat, int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<unsigned long int, variable_type> &T_list, bool add){
 
     bool cond_hhp = (i1 == 0 && i2 == 0 && i3==1);
     bool cond_pph = (i1 == 1 && i2 == 1 && i3==0);
@@ -413,7 +413,7 @@ void MakeAmpMat::make3x1Block_inverse_D10b(MakeAmpMat::MatrixX inMat, int ku, in
     }
 }
 
-void MakeAmpMat::make2x2Block_inverse(MakeAmpMat::MatrixX inMat, int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<unsigned long int, double> &T_list, bool add){
+void MakeAmpMat::make2x2Block_inverse(MakeAmpMat::MatrixX inMat, int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<unsigned long int, variable_type> &T_list, bool add){
 
     //std::cout << "hey" << std::endl;
     bool cond_hh1 = (i1 == 0 && i2 == 0);
@@ -582,7 +582,7 @@ void MakeAmpMat::make2x2Block_inverse(MakeAmpMat::MatrixX inMat, int ku, int i1,
     }
 }
 
-void MakeAmpMat::make3x3Block_inverse(MakeAmpMat::MatrixX inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, spp::sparse_hash_map<unsigned long int, double> &T_list, bool add){
+void MakeAmpMat::make3x3Block_inverse(MakeAmpMat::MatrixX inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, spp::sparse_hash_map<unsigned long int, variable_type> &T_list, bool add){
 
     bool cond_hhh1 = (i1 == 0 && i2 == 0 && i3==0);
     bool cond_pph1 = (i1 == 1 && i2 == 1 && i3==0);
@@ -682,7 +682,7 @@ void MakeAmpMat::make3x3Block_inverse(MakeAmpMat::MatrixX inMat, int ku, int i1,
     int ii; int jj; int kk;
     int aa; int bb; int cc;
 
-    double val;
+    variable_type val;
 
     //std::cout << inMat << std::endl;
     if (add == true){
@@ -690,7 +690,7 @@ void MakeAmpMat::make3x3Block_inverse(MakeAmpMat::MatrixX inMat, int ku, int i1,
             for (int i = range_lower1; i<range_upper1; i++){
                 for (int j = range_lower2; j<range_upper2; j++){
                     val = inMat(i-range_lower1,j-range_lower2);
-                    if (val != 0){
+                    if (val.real() != 0 && val.imag() != 0){
                         ii = (blockArrays1_pointer)(1,i);
                         jj = (blockArrays1_pointer)(2,i);
                         kk = (blockArrays2_pointer)(3,j);
@@ -708,7 +708,7 @@ void MakeAmpMat::make3x3Block_inverse(MakeAmpMat::MatrixX inMat, int ku, int i1,
             for (int i = range_lower1; i<range_upper1; i++){
                 for (int j = range_lower2; j<range_upper2; j++){
                     val = inMat(i-range_lower1,j-range_lower2);
-                    if (val != 0){
+                    if (val.real() != 0 && val.imag() != 0){
                         ii = (blockArrays1_pointer)(1,i);
                         jj = (blockArrays1_pointer)(2,i);
                         kk = (blockArrays1_pointer)(3,i);
@@ -727,7 +727,7 @@ void MakeAmpMat::make3x3Block_inverse(MakeAmpMat::MatrixX inMat, int ku, int i1,
             for (int i = range_lower1; i<range_upper1; i++){
                 for (int j = range_lower2; j<range_upper2; j++){
                     val = inMat(i-range_lower1,j-range_lower2);
-                    if (val != 0){
+                    if (val.real() != 0 && val.imag() != 0){
                         id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(3,j), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j),  (blockArrays1_pointer)(3,i));
                         T_list[id] = val;
                     }
@@ -738,7 +738,7 @@ void MakeAmpMat::make3x3Block_inverse(MakeAmpMat::MatrixX inMat, int ku, int i1,
             for (int i = range_lower1; i<range_upper1; i++){
                 for (int j = range_lower2; j<range_upper2; j++){
                     val = inMat(i-range_lower1,j-range_lower2);
-                    if (val != 0){
+                    if (val.real() != 0 && val.imag() != 0){
                         id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j), (blockArrays2_pointer)(3,j));
                         T_list[id] = val;
                     }
@@ -881,13 +881,13 @@ void MakeAmpMat::T3_makeMap(MakeAmpMat::MatrixX inMat, int ku, int i1, int i2, i
     int ii; int jj; int kk;
     int aa; int bb; int cc;
 
-    double val;
+    variable_type val;
 
     if (cond_hhp1 && cond_pph2){
         for (int i = range_lower1; i<range_upper1; i++){
             for (int j = range_lower2; j<range_upper2; j++){
                 val = inMat(i-range_lower1,j-range_lower2);
-                if (val != 0){
+                if (val.real() != 0 && val.imag() != 0){
                     ii = (blockArrays1_pointer)(1,i);
                     jj = (blockArrays1_pointer)(2,i);
                     kk = (blockArrays2_pointer)(3,j);
@@ -912,7 +912,7 @@ void MakeAmpMat::T3_makeMap(MakeAmpMat::MatrixX inMat, int ku, int i1, int i2, i
         for (int i = range_lower1; i<range_upper1; i++){
             for (int j = range_lower2; j<range_upper2; j++){
                 val = inMat(i-range_lower1,j-range_lower2);
-                if (val != 0){
+                if (val.real() != 0 && val.imag() != 0){
                     ii = (blockArrays1_pointer)(1,i);
                     jj = (blockArrays1_pointer)(2,i);
                     kk = (blockArrays1_pointer)(3,i);
@@ -931,7 +931,7 @@ void MakeAmpMat::T3_makeMap(MakeAmpMat::MatrixX inMat, int ku, int i1, int i2, i
     }
 }
 
-void MakeAmpMat::make3x3Block_inverse_I(MakeAmpMat::MatrixX inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<double> &T_vec, bool add){
+void MakeAmpMat::make3x3Block_inverse_I(MakeAmpMat::MatrixX inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<variable_type> &T_vec, bool add){
 
     bool cond_hhh1 = (i1 == 0 && i2 == 0 && i3==0);
     bool cond_pph1 = (i1 == 1 && i2 == 1 && i3==0);
@@ -1031,7 +1031,7 @@ void MakeAmpMat::make3x3Block_inverse_I(MakeAmpMat::MatrixX inMat, int ku, int i
     int ii; int jj; int kk;
     int aa; int bb; int cc;
 
-    double val;
+    variable_type val;
 
     //std::cout << inMat << std::endl;
     if (add == true){
@@ -1110,7 +1110,7 @@ void MakeAmpMat::make3x3Block_inverse_I(MakeAmpMat::MatrixX inMat, int ku, int i
     }
 }
 
-void MakeAmpMat::make3x3Block_inverse_I_T1a(MakeAmpMat::MatrixX inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<double> &T_vec, bool add){
+void MakeAmpMat::make3x3Block_inverse_I_T1a(MakeAmpMat::MatrixX inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<variable_type> &T_vec, bool add){
 
     bool cond_hhh1 = (i1 == 0 && i2 == 0 && i3==0);
     bool cond_pph1 = (i1 == 1 && i2 == 1 && i3==0);
@@ -1210,7 +1210,7 @@ void MakeAmpMat::make3x3Block_inverse_I_T1a(MakeAmpMat::MatrixX inMat, int ku, i
     int ii; int jj; int kk;
     int aa; int bb; int cc;
 
-    double val;
+    variable_type val;
 
     //std::cout << inMat << std::endl;
     if (add == true){
@@ -1286,7 +1286,7 @@ void MakeAmpMat::make3x3Block_inverse_I_T1a(MakeAmpMat::MatrixX inMat, int ku, i
     }
 }
 
-void MakeAmpMat::make3x3Block_inverse_I_T1b(MakeAmpMat::MatrixX inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<double> &T_vec, bool add){
+void MakeAmpMat::make3x3Block_inverse_I_T1b(MakeAmpMat::MatrixX inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<variable_type> &T_vec, bool add){
 
     bool cond_hhh1 = (i1 == 0 && i2 == 0 && i3==0);
     bool cond_pph1 = (i1 == 1 && i2 == 1 && i3==0);
@@ -1386,7 +1386,7 @@ void MakeAmpMat::make3x3Block_inverse_I_T1b(MakeAmpMat::MatrixX inMat, int ku, i
     int ii; int jj; int kk;
     int aa; int bb; int cc;
 
-    double val;
+    variable_type val;
 
     //std::cout << inMat << std::endl;
     if (add == true){
@@ -1469,12 +1469,12 @@ void MakeAmpMat::addElementsT2(bool Pij, bool Pab){
         unsigned long int range_lower2 = m_intClass->boundsHolder_hhpp_pp(0,channel);
         unsigned long int range_upper2 = m_intClass->boundsHolder_hhpp_pp(1,channel);
 
-      unsigned long int id; int id_Pij; int id_Pab; int id_Pijab;
+        unsigned long int id; int id_Pij; int id_Pab; int id_Pijab;
 
         int i; int j;
         int a; int b;
 
-        double val; //double val_unperturbed;
+        variable_type val; //double val_unperturbed;
 
         for (unsigned long int hh = range_lower1; hh<range_upper1; hh++){
             i = (m_intClass->blockArrays_pp_hh)(1,hh);
@@ -2940,7 +2940,7 @@ MakeAmpMat::MatrixX MakeAmpMat::I2_makemat_1(int channel1, int channel2){
     unsigned long int id;
     int j; int l;
     int d; int b;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         j = m_intClass->blockArrays_pm_hp(1,i1);
@@ -2996,7 +2996,7 @@ MakeAmpMat::MatrixX MakeAmpMat::I2_makemat_2(int channel1, int channel2){
     unsigned long int id;
     int i; int k;
     int c; int a;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         k = m_intClass->blockArrays_pm_hp(1,i1);
@@ -3055,7 +3055,7 @@ MakeAmpMat::MatrixX MakeAmpMat::I3_makemat_1(int channel1, int channel2){
     unsigned long int id;
     int j; int l;
     int a; int b;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         a = m_intClass->blockArrays_ppm_pph(1,i1);
@@ -3106,7 +3106,7 @@ MakeAmpMat::MatrixX MakeAmpMat::I3_makemat_2(int channel1, int channel2){
     unsigned long int id;
     int i; int k;
     int c; int d;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         c = m_intClass->blockArrays_ppm_pph(1,i1);
@@ -3157,7 +3157,7 @@ MakeAmpMat::MatrixX MakeAmpMat::I4_makemat_1(int channel1, int channel2){
     unsigned long int id;
     int k; int l;
     int c; int a;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         k = m_intClass->blockArrays_ppm_hhp(1,i1);
@@ -3208,7 +3208,7 @@ MakeAmpMat::MatrixX MakeAmpMat::I4_makemat_2(int channel1, int channel2){
     unsigned long int id;
     int i; int j;
     int d; int b;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         i = m_intClass->blockArrays_ppm_hhp(1,i1);
@@ -3399,7 +3399,7 @@ MakeAmpMat::MatrixX MakeAmpMat::D10b_makemat(int channel1, int channel2){    //m
     unsigned long int index;
     int i; int j; int k;
     int c; int d; int b;
-    short int prefac1; short int prefac2;
+    double prefac1; double prefac2;
 
     for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
         c = m_intClass->blockArrays_ppm_pph(1,i2);
@@ -3561,8 +3561,8 @@ MakeAmpMat::MatrixX MakeAmpMat::D10c_makemat(int channel1, int channel2){    //m
     unsigned long int id2;
     int i; int k; int l;
     int c; int a; int b;
-    short int prefac1;
-    short int prefac2;
+    double prefac1;
+    double prefac2;
 
     for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
         a = m_intClass->blockArrays_ppm_pph(1,i2);
@@ -3665,7 +3665,7 @@ MakeAmpMat::MatrixX MakeAmpMat::T1a_makemat(int channel1, int channel2){    //ma
     unsigned long int id;
     int i; int j;
     int a; int d;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         i = m_intClass->blockArrays_ppm_hhp(1,i1);
@@ -3711,7 +3711,7 @@ MakeAmpMat::MatrixX MakeAmpMat::T1b_makemat(int channel1, int channel2){    //ma
     unsigned long int id;
     int i; int l;
     int a; int b;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         a = m_intClass->blockArrays_ppm_pph(1,i1);
@@ -3754,7 +3754,7 @@ MakeAmpMat::MatrixX MakeAmpMat::T2c_makemat(int channel1, int channel2){    //ma
     unsigned long int id; unsigned long int index;
     int i; int j; int k;
     int d; int e; int c;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         i = m_intClass->blockArrays_pppm_hhhp(1,i1);
@@ -3806,7 +3806,7 @@ MakeAmpMat::MatrixX MakeAmpMat::T2d_makemat(int channel1, int channel2){    //ma
     unsigned long int id; unsigned long int index;
     int l; int m; int k;
     int a; int b; int c;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         a = m_intClass->blockArrays_pppm_ppph(1,i1);
@@ -3860,8 +3860,8 @@ MakeAmpMat::MatrixX MakeAmpMat::T2e_makemat(int channel1, int channel2){    //ma
     unsigned long int index;
     int l; int j; int k;
     int d; int b; int c;
-    short int prefac1;
-    short int prefac2;
+    double prefac1;
+    double prefac2;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         b = m_intClass->blockArrays_ppmm_pphh(1,i1);
@@ -3931,8 +3931,8 @@ MakeAmpMat::MatrixX MakeAmpMat::T3b_makemat_1(int channel1, int channel2){    //
     unsigned long int id2;
     int i; int l;
     int a; int d;
-    short int prefac1;
-    short int prefac2;
+    double prefac1;
+    double prefac2;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         l = m_intClass->blockArrays_pm_hp(1,i1);
@@ -4020,7 +4020,7 @@ MakeAmpMat::MatrixX MakeAmpMat::T3b_makemat_3(int channel1, int channel2){    //
     unsigned long int id;
     int j; int k;
     int e; int c;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         j = m_intClass->blockArrays_ppm_hhp(1,i1);
@@ -4065,8 +4065,8 @@ MakeAmpMat::MatrixX MakeAmpMat::T3c_makemat_1(int channel1, int channel2){    //
     unsigned long int id2;
     int i; int l;
     int a; int d;
-    short int prefac1;
-    short int prefac2;
+    double prefac1;
+    double prefac2;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         i = m_intClass->blockArrays_pm_hp(1,i1);
@@ -4154,7 +4154,7 @@ MakeAmpMat::MatrixX MakeAmpMat::T3c_makemat_3(int channel1, int channel2){    //
     unsigned long int id;
     int m; int k;
     int b; int c;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         b = m_intClass->blockArrays_ppm_pph(1,i1);
@@ -4258,7 +4258,7 @@ MakeAmpMat::MatrixX MakeAmpMat::T3d_makemat_3(int channel1, int channel2){    //
     unsigned long int id;
     int i; int l;
     int a; int b;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         a = m_intClass->blockArrays_ppm_pph(1,i1);
@@ -4302,7 +4302,7 @@ MakeAmpMat::MatrixX MakeAmpMat::T3e_makemat_1(int channel1, int channel2){    //
     unsigned long int id;
     int i; int j;
     int a; int d;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         i = m_intClass->blockArrays_ppm_hhp(1,i1);
@@ -4409,7 +4409,7 @@ MakeAmpMat::MatrixX MakeAmpMat::T5a_makemat_1(int channel1, int channel2){    //
     unsigned long int id;
     int i; int l;
     int a; int d;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         i = m_intClass->blockArrays_pp_hp(1,i1);
@@ -4475,8 +4475,8 @@ MakeAmpMat::MatrixX MakeAmpMat::T5a_makemat_2(int channel1, int channel2){    //
     unsigned long int index;
     int m; int j; int k;
     int e; int b; int c;
-    short int prefac1;
-    short int prefac2;
+    double prefac1;
+    double prefac2;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         b = m_intClass->blockArrays_ppmm_pphh(1,i1);
@@ -4545,7 +4545,7 @@ MakeAmpMat::MatrixX MakeAmpMat::T5b_makemat_1(int channel1, int channel2){    //
     unsigned long int id;
     int l; int i;
     int d; int e;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         d = m_intClass->blockArrays_ppm_pph(1,i1);
@@ -4664,7 +4664,7 @@ MakeAmpMat::MatrixXsi MakeAmpMat::T5b_makemat_2_I_signs(int channel1, int channe
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
     int m; int j; int k;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         j = m_intClass->blockArrays_pppmm_ppphh(4,i1);
@@ -4706,7 +4706,7 @@ MakeAmpMat::MatrixX MakeAmpMat::T5c_makemat_1(int channel1, int channel2){    //
     unsigned long int id;
     int l; int m;
     int d; int a;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         l = m_intClass->blockArrays_ppm_hhp(1,i1);
@@ -4825,7 +4825,7 @@ MakeAmpMat::MatrixXsi MakeAmpMat::T5c_makemat_2_I_signs(int channel1, int channe
 
 
     int e; int b; int c;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         b = m_intClass->blockArrays_pppmm_hhhpp(4,i1);
@@ -4867,7 +4867,7 @@ MakeAmpMat::MatrixX MakeAmpMat::T5d_makemat_1(int channel1, int channel2){    //
     unsigned long int id;
     int i; int j;
     int a; int d;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         i = m_intClass->blockArrays_ppm_hhp(1,i1);
@@ -4913,8 +4913,8 @@ MakeAmpMat::MatrixX MakeAmpMat::T5d_makemat_2(int channel1, int channel2){    //
     unsigned long int index;
     int l; int m; int k;
     int b; int e; int c;
-    short int prefac1;
-    short int prefac2;
+    double prefac1;
+    double prefac2;
 
     for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
         b = m_intClass->blockArrays_ppm_pph(1,i2);
@@ -4983,7 +4983,7 @@ MakeAmpMat::MatrixX MakeAmpMat::T5e_makemat_1(int channel1, int channel2){    //
     unsigned long int id;
     int i; int l;
     int a; int b;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         a = m_intClass->blockArrays_ppm_pph(1,i1);
@@ -5029,8 +5029,8 @@ MakeAmpMat::MatrixX MakeAmpMat::T5e_makemat_2(int channel1, int channel2){    //
     unsigned long int index;
     int j; int m; int k;
     int d; int e; int c;
-    short int prefac1;
-    short int prefac2;
+    double prefac1;
+    double prefac2;
 
     for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
         d = m_intClass->blockArrays_ppm_pph(1,i2);
@@ -5130,7 +5130,7 @@ MakeAmpMat::MatrixX MakeAmpMat::T5f_makemat_2(int channel1, int channel2){    //
     unsigned long int index;
     int l; int m; int k;
     int a; int b; int c;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         a = m_intClass->blockArrays_pppm_ppph(1,i1);
@@ -5212,7 +5212,7 @@ MakeAmpMat::MatrixX MakeAmpMat::T5g_makemat_2(int channel1, int channel2){    //
     unsigned long int index;
     int i; int j; int k;
     int d; int e; int c;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         i = m_intClass->blockArrays_pppm_hhhp(1,i1);
@@ -5260,7 +5260,7 @@ void MakeAmpMat::T3b_Inverse_temp(MakeAmpMat::MatrixX &inMat, int channel1, int 
     unsigned long int id;
     int e; int b;
     int a; int i;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         e = m_intClass->blockArrays_pm_pp(1,i1);
@@ -5297,7 +5297,7 @@ void MakeAmpMat::T3c_Inverse_temp(MakeAmpMat::MatrixX inMat, int channel1, int c
     unsigned long int id;
     int i; int a;
     int m; int j;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         m = m_intClass->blockArrays_pm_hh(1,i1);
@@ -5360,7 +5360,7 @@ void MakeAmpMat::T3e_Inverse_temp(MakeAmpMat::MatrixX &inMat, int channel1, int 
     unsigned long int id;
     int i; int j; int a;
     int l; int m; int k;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         i = m_intClass->blockArrays_ppm_hhp(1,i1);
@@ -5405,7 +5405,7 @@ void MakeAmpMat::T1a_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
     unsigned long int id; unsigned long int index;
     int i; int j; int k;
     int a; int b; int c;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
         b = m_intClass->blockArrays_ppm_pph(1,i2);
@@ -5471,7 +5471,7 @@ void MakeAmpMat::T1a_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
                 continue;
             }
             index = T3_elements_I.find(id)->second;
-            #pragma omp atomic
+            #pragma omp critical
             T3_elements_A_new[index] += prefac*inMat(i1-range_lower1, i2-range_lower2);
             /*if (j<k && a<b){
                 id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
@@ -5496,7 +5496,7 @@ void MakeAmpMat::T1b_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
     unsigned long int id; unsigned long int index;
     int i; int j; int k;
     int a; int b; int c;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
         a = m_intClass->blockArrays_ppm_pph(1,i2);
@@ -5564,7 +5564,7 @@ void MakeAmpMat::T1b_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
                 continue;
             }
             index = T3_elements_I.find(id)->second;
-            #pragma omp atomic
+            #pragma omp critical
             T3_elements_A_new[index] += prefac*inMat(i1-range_lower1, i2-range_lower2);
 
             /*id = m_intClass->Identity_hhhppp(m_intClass->blockArrays_ppm_pph(3,i2),
@@ -5590,7 +5590,7 @@ void MakeAmpMat::T2c_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
     unsigned long int id; unsigned long int index;
     int i; int j; int k;
     int a; int b; int c;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         i = m_intClass->blockArrays_pppm_hhhp(1,i1);
@@ -5619,7 +5619,7 @@ void MakeAmpMat::T2c_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
             }
 
             index = T3_elements_I.find(id)->second;
-            #pragma omp atomic
+            #pragma omp critical
             T3_elements_A_new[index] += prefac*inMat(i1-range_lower1, i2-range_lower2);
 
             /*id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
@@ -5639,7 +5639,7 @@ void MakeAmpMat::T2d_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
     unsigned long int id; unsigned long int index;
     int i; int j; int k;
     int a; int b; int c;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         a = m_intClass->blockArrays_pppm_ppph(1,i1);
@@ -5667,7 +5667,7 @@ void MakeAmpMat::T2d_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
             }
 
             index = T3_elements_I.find(id)->second;
-            #pragma omp atomic
+            #pragma omp critical
             T3_elements_A_new[index] += prefac*inMat(i1-range_lower1, i2-range_lower2);
 
             /*id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
@@ -5689,8 +5689,8 @@ void MakeAmpMat::T2e_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
     unsigned long int index;
     int i; int j; int k;
     int a; int b; int c;
-    short int prefac1;
-    short int prefac2;
+    double prefac1;
+    double prefac2;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         b = m_intClass->blockArrays_ppmm_pphh(1,i1);
@@ -5734,7 +5734,7 @@ void MakeAmpMat::T2e_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
                 continue;
             }
             index = T3_elements_I.find(id1+id2)->second;
-            #pragma omp atomic
+            #pragma omp critical
             T3_elements_A_new[index] +=  prefac1*prefac2*inMat(i1-range_lower1, i2-range_lower2);
 
             /*id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
@@ -5756,8 +5756,8 @@ void MakeAmpMat::T3b_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
     unsigned long int index;
     int i; int j; int k;
     int a; int b; int c;
-    short int prefac1;
-    short int prefac2;
+    double prefac1;
+    double prefac2;
 
     for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
         a = m_intClass->blockArrays_ppm_pph(1,i2);
@@ -5801,7 +5801,7 @@ void MakeAmpMat::T3b_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
                 continue;
             }
             index = T3_elements_I.find(id1+id2)->second;
-            #pragma omp atomic
+            #pragma omp critical
             T3_elements_A_new[index] +=  prefac1*prefac2*inMat(i1-range_lower1, i2-range_lower2);
 
             /*id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
@@ -5823,8 +5823,8 @@ void MakeAmpMat::T3c_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
     unsigned long int index;
     int i; int j; int k;
     int a; int b; int c;
-    short int prefac1;
-    short int prefac2;
+    double prefac1;
+    double prefac2;
 
     for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
         b = m_intClass->blockArrays_ppm_pph(1,i2);
@@ -5868,7 +5868,7 @@ void MakeAmpMat::T3c_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
                 continue;
             }
             index = T3_elements_I.find(id1+id2)->second;
-#pragma omp atomic
+#pragma omp critical
             T3_elements_A_new[index] +=  prefac1*prefac2*inMat(i1-range_lower1, i2-range_lower2);
 
             /*id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
@@ -5890,8 +5890,8 @@ void MakeAmpMat::T3d_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
     unsigned long int index;
     int i; int j; int k;
     int a; int b; int c;
-    short int prefac1;
-    short int prefac2;
+    double prefac1;
+    double prefac2;
 
     for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
         a = m_intClass->blockArrays_ppm_pph(1,i2);
@@ -5935,7 +5935,7 @@ void MakeAmpMat::T3d_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
                 continue;
             }
             index = T3_elements_I.find(id1+id2)->second;
-            #pragma omp atomic
+            #pragma omp critical
             T3_elements_A_new[index] +=  prefac1*prefac2*inMat(i1-range_lower1, i2-range_lower2);
 
             /*id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
@@ -5956,7 +5956,7 @@ void MakeAmpMat::T3e_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
     unsigned long int index;
     int i; int j; int k;
     int a; int b; int c;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         i = m_intClass->blockArrays_pppm_hhhp(1,i1);
@@ -5985,7 +5985,7 @@ void MakeAmpMat::T3e_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
 
             //id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
             index = T3_elements_I.find(id)->second;
-            #pragma omp atomic
+            #pragma omp critical
             T3_elements_A_new[index] += prefac*inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -6003,8 +6003,8 @@ void MakeAmpMat::T5a_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
     unsigned long int index;
     int i; int j; int k;
     int a; int b; int c;
-    short int prefac1;
-    short int prefac2;
+    double prefac1;
+    double prefac2;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         b = m_intClass->blockArrays_ppmm_pphh(1,i1);
@@ -6048,7 +6048,7 @@ void MakeAmpMat::T5a_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
                 continue;
             }
             index = T3_elements_I.find(id1+id2)->second;
-            #pragma omp atomic
+            #pragma omp critical
             T3_elements_A_new[index] += prefac1*prefac2*inMat(i1-range_lower1, i2-range_lower2);
 
             /*id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
@@ -6122,8 +6122,8 @@ void MakeAmpMat::T5b_inverse_I(MakeAmpMat::MatrixX &inMat, int channel){
     for (int i1 = 0; i1<rows; i1++){
         for (int i2 = 0; i2<cols; i2++){
             index = T3_T5b_indices[channel](i1,i2);
-            #pragma omp atomic
-            T3_elements_A_new[index] += inMat(i1,i2)*T3_T5b_indices_signs[channel](i1,i2);
+            #pragma omp critical
+            T3_elements_A_new[index] += inMat(i1,i2)*(double)T3_T5b_indices_signs[channel](i1,i2);
         }
     }
 }
@@ -6138,8 +6138,8 @@ void MakeAmpMat::T5c_inverse_I(MakeAmpMat::MatrixX &inMat, int channel){
     for (int i1 = 0; i1<rows; i1++){
         for (int i2 = 0; i2<cols; i2++){
             index = T3_T5c_indices[channel](i1,i2);
-            #pragma omp atomic
-            T3_elements_A_new[index] +=  inMat(i1,i2)*T3_T5c_indices_signs[channel](i1,i2);
+            #pragma omp critical
+            T3_elements_A_new[index] +=  inMat(i1,i2)*(double)T3_T5c_indices_signs[channel](i1,i2);
         }
     }
 }
@@ -6156,8 +6156,8 @@ void MakeAmpMat::T5d_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
     unsigned long int index;
     int i; int j; int k;
     int a; int b; int c;
-    short int prefac1;
-    short int prefac2;
+    double prefac1;
+    double prefac2;
 
     for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
         b = m_intClass->blockArrays_ppm_pph(1,i2);
@@ -6203,7 +6203,7 @@ void MakeAmpMat::T5d_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
 
             //id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
             index = T3_elements_I.find(id1+id2)->second;//T3_elements_IV[thread][id];
-            #pragma omp atomic
+            #pragma omp critical
             T3_elements_A_new[index] += prefac1*prefac2*inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -6221,8 +6221,8 @@ void MakeAmpMat::T5e_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
     unsigned long int index;
     int i; int j; int k;
     int a; int b; int c;
-    short int prefac1;
-    short int prefac2;
+    double prefac1;
+    double prefac2;
 
     for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
         a = m_intClass->blockArrays_ppm_pph(1,i2);
@@ -6268,7 +6268,7 @@ void MakeAmpMat::T5e_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
 
             //id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
             index = T3_elements_I.find(id1+id2)->second;//T3_elements_IV[thread][id];
-            #pragma omp atomic
+            #pragma omp critical
             T3_elements_A_new[index] +=  prefac1*prefac2*inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -6285,7 +6285,7 @@ void MakeAmpMat::T5f_inverse(MakeAmpMat::MatrixX inMat, int channel1, int channe
     unsigned long int index;
     int i; int j; int k;
     int a; int b; int c;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         a = m_intClass->blockArrays_pppm_ppph(1,i1);
@@ -6315,7 +6315,7 @@ void MakeAmpMat::T5f_inverse(MakeAmpMat::MatrixX inMat, int channel1, int channe
 
             //id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
             index = T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
-            #pragma omp atomic
+            #pragma omp critical
             T3_elements_A_new[index] +=  prefac*inMat(i1-range_lower1, i2-range_lower2);
         }
     }
@@ -6332,7 +6332,7 @@ void MakeAmpMat::T5g_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
     unsigned long int index;
     int i; int j; int k;
     int a; int b; int c;
-    short int prefac;
+    double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         i = m_intClass->blockArrays_pppm_hhhp(1,i1);
@@ -6361,7 +6361,7 @@ void MakeAmpMat::T5g_inverse(MakeAmpMat::MatrixX &inMat, int channel1, int chann
 
             //id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
             index = T3_elements_I.find(id)->second;//T3_elements_IV[thread][id];
-            #pragma omp atomic
+            #pragma omp critical
             T3_elements_A_new[index] += prefac*inMat(i1-range_lower1, i2-range_lower2);
         }
     }

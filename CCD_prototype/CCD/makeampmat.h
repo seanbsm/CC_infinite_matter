@@ -188,7 +188,7 @@ public:
     void                            make3x3Block_inverse(MatrixX inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, spp::sparse_hash_map<unsigned long int, variable_type>& T_list, bool add);
     void                            make3x3Block_inverse_I(MatrixX inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<variable_type>& T_vec, bool add);
     void                            make3x3Block_inverse_I_T1a(MatrixX inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<variable_type>& T_vec, bool add);
-    void                            make3x3Block_inverse_I_T1b(MatrixX inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<double>& T_vec, bool add);
+    void                            make3x3Block_inverse_I_T1b(MatrixX inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<variable_type>& T_vec, bool add);
 
     void                            addElementsT2(bool Pij, bool Pab);
     void                            addElementsT3_T1a();

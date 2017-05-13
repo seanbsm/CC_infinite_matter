@@ -1286,7 +1286,7 @@ Diagrams::MatrixX Diagrams::contructMatT5b(int index){
     for (int row=0; row<rows; row++){
         for (int col=0; col<cols; col++){
             returnMat(row,col) = m_ampClass->T3_elements_A[m_ampClass->T3_T5b_indices[index](row, col) ]
-                                *m_ampClass->T3_T5b_indices_signs[index](row, col);
+                                *(double)m_ampClass->T3_T5b_indices_signs[index](row, col);
         }
     }
     return returnMat;
@@ -1301,7 +1301,7 @@ Diagrams::MatrixX Diagrams::contructMatT5c(int index){
     for (int row=0; row<rows; row++){
         for (int col=0; col<cols; col++){
             returnMat(row,col) = m_ampClass->T3_elements_A[m_ampClass->T3_T5c_indices[index](row, col) ]
-                                *m_ampClass->T3_T5c_indices_signs[index](row, col);;
+                                *(double)m_ampClass->T3_T5c_indices_signs[index](row, col);;
         }
     }
     return returnMat;

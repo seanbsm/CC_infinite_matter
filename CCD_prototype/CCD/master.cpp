@@ -87,13 +87,25 @@ void Master::setClasses(){
 }
 
 double Master::CC_Eref(){
-    variable_type Eref = 0;
-    for (int i = 0; i<m_Nh; i++){
-        Eref += m_system->h0(i);
-        for (int j = 0; j<m_Nh; j++){
-            Eref += 0.5*m_system->assym_single(i,j);
+    double Eref = 0;
+    //if (typeid(variable_type) == typeid(std::complex<double>)){
+        complex<double> Eref_c = 0;
+        for (int i = 0; i<m_Nh; i++){
+            Eref_c += m_system->h0(i);
+            for (int j = 0; j<m_Nh; j++){
+                Eref_c += 0.5*m_system->assym_single(i,j);
+            }
         }
-    }
+        Eref = Eref_c.real();
+    /*}
+    else{
+        for (int i = 0; i<m_Nh; i++){
+            Eref += m_system->h0(i);
+            for (int j = 0; j<m_Nh; j++){
+                Eref += 0.5*m_system->assym_single(i,j);
+            }
+        }
+    }*/
     return Eref;
 }
 
@@ -114,12 +126,12 @@ double Master::CC_master(double eps, double conFac){
         setClasses();
     }
 
-    double ECCD_old = 0;
+    variable_type ECCD_old = 0;
 
     for (int channel = 0; channel<m_intClass->numOfKu; channel++){
-        Eigen::MatrixXd Vhhpp = m_intClass->make2x2Block(m_intClass->Vhhpp_i[channel],0,0,1,1);
+        MatrixX Vhhpp = m_intClass->make2x2Block(m_intClass->Vhhpp_i[channel],0,0,1,1);
         //Eigen::MatrixXd Vhhpp = m_intClass->make2x2Block_alt(h);
-        Eigen::MatrixXd temp = Vhhpp.array()*m_ampClass->denomMat[channel].array();
+        MatrixX temp = Vhhpp.array()*m_ampClass->denomMat[channel].array();
         ECCD_old += ((Vhhpp.transpose())*(temp)).trace();
 
     }
@@ -127,8 +139,8 @@ double Master::CC_master(double eps, double conFac){
 
 
     std::cout << std::endl;
-    std::cout << "MBPT2:    " << std::setprecision (16) << ECCD_old << std::endl;
-    std::cout << "MBPT2/Nh: " << std::setprecision (16) << ECCD_old/m_Nh << std::endl;
+    std::cout << "MBPT2:    " << std::setprecision (16) << ECCD_old.real() << std::endl;
+    std::cout << "MBPT2/Nh: " << std::setprecision (16) << ECCD_old.real()/m_Nh << std::endl;
     std::cout << std::endl;
 
     variable_type ECC;
@@ -147,7 +159,7 @@ double Master::CC_master(double eps, double conFac){
         ECC = Iterator(eps, conFac, ECCD_old);
     }
 
-    return ECC;
+    return ECC.real();
 }
 
 Master::variable_type Master::Iterator(double eps, double conFac, variable_type E_MBPT2){
@@ -260,13 +272,13 @@ Master::variable_type Master::Iterator(double eps, double conFac, variable_type 
         for (int hh = 0; hh<m_intClass->numOfKu; hh++){
             int ku = m_intClass->Vhhpp_i[hh];
 
-            Eigen::MatrixXd Vhhpp           = m_intClass->make2x2Block(ku,0,0,1,1);
-            Eigen::MatrixXd D_contributions = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements_new);
-            Eigen::MatrixXd temp = (Vhhpp + D_contributions).array()*m_ampClass->denomMat[hh].array();
+            MatrixX Vhhpp           = m_intClass->make2x2Block(ku,0,0,1,1);
+            MatrixX D_contributions = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements_new);
+            MatrixX temp = (Vhhpp + D_contributions).array()*m_ampClass->denomMat[hh].array();
 
             m_ampClass->make2x2Block_inverse(temp, ku, 0,0,1,1, m_ampClass->T2_elements_new, false);
 
-            Eigen::MatrixXd Thhpp = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements_new);
+            MatrixX Thhpp = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements_new);
             ECCD += ((Vhhpp.transpose())*(Thhpp)).trace();
         }
 
