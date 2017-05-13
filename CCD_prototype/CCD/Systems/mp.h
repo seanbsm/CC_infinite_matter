@@ -4,6 +4,7 @@
 #include "master.h"
 #include "system.h"
 #include <math.h>
+#include <complex>
 #include <cmath>
 #include "eigen3/Eigen/Dense"
 
@@ -46,10 +47,10 @@ public:
     MP(class Master* master, double m, double L3, double L2, double L1);
     class   Master* m_master = nullptr;
     void    makeStateSpace  ();
-    double  assym           (int p, int q, int r, int s);
-    double  assym_single    (int p, int q);
-    double  h0              (int p);
-    double  f               (int p);
+    variable_type  assym           (int p, int q, int r, int s);
+    variable_type  assym_single    (int p, int q);
+    variable_type  h0              (int p);
+    variable_type  f               (int p);
     int     kUnique1        (int p, int s1);
     int     kUnique2        (int p, int q, int s1, int s2);
     int     kUnique3        (int p, int q, int r, int s1, int s2, int s3);

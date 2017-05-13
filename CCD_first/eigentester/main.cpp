@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <string>
 #include <fstream>
+#include <complex>
 
 //#include <unsupported/Eigen/CXX11/Tensor>
 
@@ -48,8 +49,7 @@ int* returnInt(int i){
     return &i;
 }
 
-template <typename D>
-using Matrix = Eigen::MatrixXd;
+//using Matrix = Eigen::MatrixXd;
 
 bool vecDelta(Eigen::VectorXi v1, Eigen::VectorXi v2){
     int dim1 = v1.rows();
@@ -211,9 +211,7 @@ int main(int argc, char** argv)
     std::cout << "New way: " << count1 << std::endl;
     std::cout << "Old way: " << count2 << std::endl;
 
-    Matrix A;
-    A.conservativeResize(5,5);
-    std::cout << A << std::endl;
+    //std::complex<double> hey;
 
     /*int max = 1e6;
     int threads = 4;

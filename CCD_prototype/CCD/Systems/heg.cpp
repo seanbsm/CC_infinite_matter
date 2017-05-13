@@ -99,20 +99,20 @@ int HEG::kUnique5(int k, int p, int q, int s, int t, int s1, int s2, int s3, int
     return kuni;
 }
 
-double HEG::f(int p){
-    double returnVal = h0(p);
+System::variable_type HEG::f(int p){
+    variable_type returnVal = h0(p);
     for (int i=0; i<m_Nh; i++){
         returnVal += assym_single(p, i);
     };
     return returnVal;
 }
 
-double HEG::h0(int p){
+System::variable_type HEG::h0(int p){
     double energy = m_states(0,p);
     return energy*2*pi*pi/(m_m*m_L2);
 }
 
-double HEG::assym(int p, int q, int r, int s){
+System::variable_type HEG::assym(int p, int q, int r, int s){
 
     Eigen::Vector3i kp( m_states(1,p), m_states(2,p), m_states(3,p) );
     Eigen::Vector3i kq( m_states(1,q), m_states(2,q), m_states(3,q) );
@@ -140,7 +140,7 @@ double HEG::assym(int p, int q, int r, int s){
 }
 
 //can test this func by copying assym, and set int r = p, int s = q
-double HEG::assym_single(int p, int q){
+System::variable_type HEG::assym_single(int p, int q){
 
     Eigen::Vector3i kp( m_states(1,p), m_states(2,p), m_states(3,p) );
     Eigen::Vector3i kq( m_states(1,q), m_states(2,q), m_states(3,q) );

@@ -7,6 +7,7 @@
 #include <Systems/mp.h>
 #include <iostream>
 #include <map>
+#include <complex>
 #include <unordered_map>
 #include <sparsepp/spp.h>
 
@@ -25,9 +26,14 @@ private:
 
     int m_printLength = 15;
 
-
     //bool contractor(int i, int j){ return i==j; } //contracts repeated elements to a single edit
 public:
+
+    //this is the type to be used in the interactions and amplitudes
+    //set to std::complex<double> if you wish to work with the chiral model, otherwise use double
+    typedef std::complex<double> variable_type;
+    typedef Eigen::Matrix<variable_type, Eigen::Dynamic, Eigen::Dynamic> MatrixX;
+
     int m_Nh        = 0;
     int m_Ns        = 0;
     int m_Np        = 0;
@@ -43,6 +49,7 @@ public:
 
     //Eigen matrix with unsigned long int as type
     typedef Eigen::Matrix<unsigned long int, Eigen::Dynamic, Eigen::Dynamic> MatrixXuli;
+
 
     /* Due to the momentum-conservation relation (kp+kq = kr+ks for <pq||rs>),
      * and due to alignment of matrices, we need several blockArrays, and corresponding
@@ -164,7 +171,7 @@ public:
 
     MakeIntMat();
     System* m_system = nullptr;
-    void                            mapper_1(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArraysIn, int i1, int s1);
+    void                            mapper_1(std::vector<int>& sortVecIn, Eigen::MatrixXi &blockArraysIn, int i1, int s1);
     void                            mapper_2(std::vector<int> &sortVecIn, Eigen::MatrixXi &blockArraysIn, int i1, int i2, int s1, int s2);
     void                            mapper_2_alt();
     void                            mapper_3(std::vector<int> &sortVecIn, Eigen::MatrixXi &blockArraysIn, int i1, int i2, int i3, int s1, int s2, int s3);
@@ -178,45 +185,45 @@ public:
 
     int                             numOfKu;        //number of blocks in V_hh_pp
     int                             numOfKu3;       //number of blocks in V_hhh_ppp
-    Eigen::MatrixXd                 makeSquareBlock(Eigen::MatrixXi& array, unsigned long int range_lower, unsigned long int range_upper);
-    Eigen::MatrixXd                 makeSquareBlock_s(Eigen::MatrixXi& array, unsigned long range_lower, unsigned long range_upper);
-    Eigen::MatrixXd                 makeRektBlock(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
+    MatrixX                 makeSquareBlock(Eigen::MatrixXi& array, unsigned long int range_lower, unsigned long int range_upper);
+    MatrixX                 makeSquareBlock_s(Eigen::MatrixXi& array, unsigned long range_lower, unsigned long range_upper);
+    MatrixX                 makeRektBlock(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
 
 
     //CCD terms
-    Eigen::MatrixXd                 I1_makemat(int channel1, int channel2);
-    Eigen::MatrixXd                 I2_makemat(int channel1, int channel2);
-    Eigen::MatrixXd                 I3_makemat(int channel1, int channel2);
-    Eigen::MatrixXd                 I4_makemat(int channel1, int channel2);
+    MatrixX                 I1_makemat(int channel1, int channel2);
+    MatrixX                 I2_makemat(int channel1, int channel2);
+    MatrixX                 I3_makemat(int channel1, int channel2);
+    MatrixX                 I4_makemat(int channel1, int channel2);
 
     //T3 contributions to T2
-    Eigen::MatrixXd                 D10b_makemat(int channel1, int channel2);
-    Eigen::MatrixXd                 D10c_makemat(int channel1, int channel2);
+    MakeIntMat::MatrixX                 D10b_makemat(int channel1, int channel2);
+    MakeIntMat::MatrixX                 D10c_makemat(int channel1, int channel2);
 
     //linear T2 terms in T3
-    Eigen::MatrixXd                 T1a_makemat(int channel1, int channel2);
-    Eigen::MatrixXd                 T1b_makemat(int channel1, int channel2);
+    MakeIntMat::MatrixX                 T1a_makemat(int channel1, int channel2);
+    MakeIntMat::MatrixX                 T1b_makemat(int channel1, int channel2);
 
     //linear T3 terms in T3 (these already stored directly, and need no "make" function)
 
     //quadratic T2 terms in T3
-    Eigen::MatrixXd                 T3b_makemat(int channel1, int channel2);
-    Eigen::MatrixXd                 T3c_makemat(int channel1, int channel2);
-    Eigen::MatrixXd                 T3d_makemat(int channel1, int channel2);
-    Eigen::MatrixXd                 T3e_makemat(int channel1, int channel2);
+    MakeIntMat::MatrixX                 T3b_makemat(int channel1, int channel2);
+    MakeIntMat::MatrixX                 T3c_makemat(int channel1, int channel2);
+    MakeIntMat::MatrixX                 T3d_makemat(int channel1, int channel2);
+    MakeIntMat::MatrixX                 T3e_makemat(int channel1, int channel2);
 
     //T2*T3 terms in T3
-    Eigen::MatrixXd                 T5a_makemat(int channel1, int channel2);
-    Eigen::MatrixXd                 T5b_makemat(int channel1, int channel2);
-    Eigen::MatrixXd                 T5c_makemat(int channel1, int channel2);
-    Eigen::MatrixXd                 T5d_makemat(int channel1, int channel2);
-    Eigen::MatrixXd                 T5e_makemat(int channel1, int channel2);
-    Eigen::MatrixXd                 T5f_makemat(int channel1, int channel2); //T5f and T5g are identical, but it's nice to think of them seperate
-    Eigen::MatrixXd                 T5g_makemat(int channel1, int channel2);
+    MakeIntMat::MatrixX                 T5a_makemat(int channel1, int channel2);
+    MakeIntMat::MatrixX                 T5b_makemat(int channel1, int channel2);
+    MakeIntMat::MatrixX                 T5c_makemat(int channel1, int channel2);
+    MakeIntMat::MatrixX                 T5d_makemat(int channel1, int channel2);
+    MakeIntMat::MatrixX                 T5e_makemat(int channel1, int channel2);
+    MakeIntMat::MatrixX                 T5f_makemat(int channel1, int channel2); //T5f and T5g are identical, but it's nice to think of them seperate
+    MakeIntMat::MatrixX                 T5g_makemat(int channel1, int channel2);
 
-    Eigen::MatrixXd                 make3x1Block(int ku, int i1, int i2, int i3, int i4);
-    Eigen::MatrixXd                 make2x2Block(int ku, int i1, int i2, int i3, int i4);
-    Eigen::MatrixXd                 make2x2Block_alt(int channel);
+    MakeIntMat::MatrixX                 make3x1Block(int ku, int i1, int i2, int i3, int i4);
+    MakeIntMat::MatrixX                 make2x2Block(int ku, int i1, int i2, int i3, int i4);
+    MakeIntMat::MatrixX                 make2x2Block_alt(int channel);
 
     void                            makeMatMap_hhhp(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
     void                            makeMatMap_hhpp(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
@@ -232,25 +239,25 @@ public:
     unsigned long int               Identity_hhh(int h1, int h2, int h3);
     unsigned long int               Identity_ppp(int p1, int p2, int p3);
     unsigned long int               Identity_hhhhhp(int h1, int h2, int h3, int h4, int h5, int p1); //this is a special function for T3e alone
-    spp::sparse_hash_map<unsigned long int, double>           Vhhhp_elements; //needed for T3
-    spp::sparse_hash_map<unsigned long int, double>           Vhhpp_elements;
-    spp::sparse_hash_map<unsigned long int, double>           Vppph_elements; //needed for T3
+    spp::sparse_hash_map<unsigned long int, variable_type>           Vhhhp_elements; //needed for T3
+    spp::sparse_hash_map<unsigned long int, variable_type>           Vhhpp_elements;
+    spp::sparse_hash_map<unsigned long int, variable_type>           Vppph_elements; //needed for T3
 
     /*std::pair<unsigned long, int> returnId_hhhp(const int i1, const int i2, const int i3, const int i4);
     int returnId_hhpp(const int i1, const int i2, const int i3, const int i4);
     int returnId_hppp(const int i1, const int i2, const int i3, const int i4);*/
 
     //Eigen::VectorXd                 Vhhpp_vector;
-    std::vector<double>             Vhhpp_vector;
+    std::vector<variable_type>             Vhhpp_vector;
     int                             Vhhpp_counter = 0;
 
     //interaction matrices for CCD
-    std::vector<Eigen::MatrixXd>   Vhhpp;
+    std::vector<MakeIntMat::MatrixX>   Vhhpp;
 
     //these are special
-    std::vector<Eigen::MatrixXd>   Vpppp; //for La
-    std::vector<Eigen::MatrixXd>   Vhhhh; //for Lb
-    std::vector<Eigen::MatrixXd>   Vhphp; //for Lc
+    std::vector<MakeIntMat::MatrixX>   Vpppp; //for La
+    std::vector<MakeIntMat::MatrixX>   Vhhhh; //for Lb
+    std::vector<MakeIntMat::MatrixX>   Vhphp; //for Lc
 
     std::vector<Eigen::MatrixXi>   V_hp_hp;
     std::vector<Eigen::MatrixXi>   V_hh_pp;

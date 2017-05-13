@@ -1,4 +1,3 @@
-
 #ifndef MASTER_H
 #define MASTER_H
 
@@ -26,6 +25,11 @@ public:
     int               m_threads            = 1;
     double            m_alpha              = 1;
 
+    //this is the type to be used in the interactions and amplitudes
+    //set to std::complex if you wish to work with the chiral model, otherwise use double
+    typedef std::complex<double> variable_type;
+    typedef Eigen::Matrix<variable_type, Eigen::Dynamic, Eigen::Dynamic> MatrixX;
+
     typedef Eigen::Matrix<unsigned long int, Eigen::Dynamic, Eigen::Dynamic> MatrixXuli;
 
     void setSize();
@@ -42,7 +46,7 @@ public:
 
     double CC_Eref();
     double CC_master(double eps, double conFac);
-    double Iterator(double eps, double conFac, double E_MBPT2);
+    variable_type Iterator(double eps, double conFac, variable_type E_MBPT2);
 };
 
 #endif // MASTER_H

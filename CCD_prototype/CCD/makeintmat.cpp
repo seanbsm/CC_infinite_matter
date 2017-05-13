@@ -925,14 +925,14 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
 // ##                                              ##
 // ##################################################
 
-Eigen::MatrixXd MakeIntMat::I1_makemat(int channel1, int channel2){    //makes a 2x2 matrix
+MakeIntMat::MatrixX MakeIntMat::I1_makemat(int channel1, int channel2){    //makes a 2x2 matrix
 
     unsigned long int range_lower1 = indexHolder_pp_hh(0, channel1);
     unsigned long int range_upper1 = indexHolder_pp_hh(1, channel1);
     unsigned long int range_lower2 = indexHolder_pp_pp(0, channel2);
     unsigned long int range_upper2 = indexHolder_pp_pp(1, channel2);
 
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
@@ -962,14 +962,14 @@ Eigen::MatrixXd MakeIntMat::I1_makemat(int channel1, int channel2){    //makes a
     return returnMat;
 }
 
-Eigen::MatrixXd MakeIntMat::I2_makemat(int channel1, int channel2){    //makes a 2x2 matrix
+MakeIntMat::MatrixX MakeIntMat::I2_makemat(int channel1, int channel2){    //makes a 2x2 matrix
 
     unsigned long int range_lower1 = indexHolder_pm_hp(0, channel1);
     unsigned long int range_upper1 = indexHolder_pm_hp(1, channel1);
     unsigned long int range_lower2 = indexHolder_pm_ph(0, channel2);
     unsigned long int range_upper2 = indexHolder_pm_ph(1, channel2);
 
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
@@ -1023,14 +1023,14 @@ Eigen::MatrixXd MakeIntMat::I2_makemat(int channel1, int channel2){    //makes a
     return returnMat;
 }
 
-Eigen::MatrixXd MakeIntMat::I3_makemat(int channel1, int channel2){    //makes a 3x1 matrix
+MakeIntMat::MatrixX MakeIntMat::I3_makemat(int channel1, int channel2){    //makes a 3x1 matrix
 
     unsigned long int range_lower1 = indexHolder_ppm_pph(0, channel1);
     unsigned long int range_upper1 = indexHolder_ppm_pph(1, channel1);
     unsigned long int range_lower2 = indexHolder_p_h(0, channel2);
     unsigned long int range_upper2 = indexHolder_p_h(1, channel2);
 
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
@@ -1074,14 +1074,14 @@ Eigen::MatrixXd MakeIntMat::I3_makemat(int channel1, int channel2){    //makes a
     return returnMat;
 }
 
-Eigen::MatrixXd MakeIntMat::I4_makemat(int channel1, int channel2){    //makes a 3x1 matrix
+MakeIntMat::MatrixX MakeIntMat::I4_makemat(int channel1, int channel2){    //makes a 3x1 matrix
 
     unsigned long int range_lower1 = indexHolder_ppm_hhp(0, channel1);
     unsigned long int range_upper1 = indexHolder_ppm_hhp(1, channel1);
     unsigned long int range_lower2 = indexHolder_p_p(0, channel2);
     unsigned long int range_upper2 = indexHolder_p_p(1, channel2);
 
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
@@ -1125,14 +1125,14 @@ Eigen::MatrixXd MakeIntMat::I4_makemat(int channel1, int channel2){    //makes a
     return returnMat;
 }
 
-Eigen::MatrixXd MakeIntMat::D10b_makemat(int channel1, int channel2){    //makes a 3x1 matrix
+MakeIntMat::MatrixX MakeIntMat::D10b_makemat(int channel1, int channel2){    //makes a 3x1 matrix
 
     unsigned long int range_lower1 = indexHolder_ppm_pph(0, channel1);
     unsigned long int range_upper1 = indexHolder_ppm_pph(1, channel1);
     unsigned long int range_lower2 = indexHolder_p_p(0, channel2);
     unsigned long int range_upper2 = indexHolder_p_p(1, channel2);
 
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
@@ -1174,14 +1174,14 @@ Eigen::MatrixXd MakeIntMat::D10b_makemat(int channel1, int channel2){    //makes
     return returnMat;
 }
 
-Eigen::MatrixXd MakeIntMat::D10c_makemat(int channel1, int channel2){
+MakeIntMat::MatrixX MakeIntMat::D10c_makemat(int channel1, int channel2){
 
     unsigned long int range_lower1 = indexHolder_ppm_hhp(0, channel1);
     unsigned long int range_upper1 = indexHolder_ppm_hhp(1, channel1);
     unsigned long int range_lower2 = indexHolder_p_h(0, channel2);
     unsigned long int range_upper2 = indexHolder_p_h(1, channel2);
 
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
@@ -1204,14 +1204,14 @@ Eigen::MatrixXd MakeIntMat::D10c_makemat(int channel1, int channel2){
     return returnMat;
 }
 
-Eigen::MatrixXd MakeIntMat::T1a_makemat(int channel1, int channel2){    //makes a 3x1 matrix
+MakeIntMat::MatrixX MakeIntMat::T1a_makemat(int channel1, int channel2){    //makes a 3x1 matrix
 
     unsigned long int range_lower1 = indexHolder_ppm_pph(0, channel1);
     unsigned long int range_upper1 = indexHolder_ppm_pph(1, channel1);
     unsigned long int range_lower2 = indexHolder_p_p(0, channel2);
     unsigned long int range_upper2 = indexHolder_p_p(1, channel2);
 
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
@@ -1234,14 +1234,14 @@ Eigen::MatrixXd MakeIntMat::T1a_makemat(int channel1, int channel2){    //makes 
     return returnMat;
 }
 
-Eigen::MatrixXd MakeIntMat::T1b_makemat(int channel1, int channel2){    //makes a 3x1 matrix
+MakeIntMat::MatrixX MakeIntMat::T1b_makemat(int channel1, int channel2){    //makes a 3x1 matrix
 
     unsigned long int range_lower1 = indexHolder_ppm_hhp(0, channel1);
     unsigned long int range_upper1 = indexHolder_ppm_hhp(1, channel1);
     unsigned long int range_lower2 = indexHolder_p_h(0, channel2);
     unsigned long int range_upper2 = indexHolder_p_h(1, channel2);
 
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
@@ -1264,14 +1264,14 @@ Eigen::MatrixXd MakeIntMat::T1b_makemat(int channel1, int channel2){    //makes 
     return returnMat;
 }
 
-Eigen::MatrixXd MakeIntMat::T3b_makemat(int channel1, int channel2){    //makes a 2x2 matrix
+MakeIntMat::MatrixX MakeIntMat::T3b_makemat(int channel1, int channel2){    //makes a 2x2 matrix
 
     unsigned long int range_lower1 = indexHolder_pm_pp(0, channel1);
     unsigned long int range_upper1 = indexHolder_pm_pp(1, channel1);
     unsigned long int range_lower2 = indexHolder_pm_hp(0, channel2);
     unsigned long int range_upper2 = indexHolder_pm_hp(1, channel2);
 
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
@@ -1313,14 +1313,14 @@ Eigen::MatrixXd MakeIntMat::T3b_makemat(int channel1, int channel2){    //makes 
     return returnMat;
 }
 
-Eigen::MatrixXd MakeIntMat::T3c_makemat(int channel1, int channel2){    //makes a 2x2 matrix
+MakeIntMat::MatrixX MakeIntMat::T3c_makemat(int channel1, int channel2){    //makes a 2x2 matrix
 
     unsigned long int range_lower1 = indexHolder_pm_hh(0, channel1);
     unsigned long int range_upper1 = indexHolder_pm_hh(1, channel1);
     unsigned long int range_lower2 = indexHolder_pm_ph(0, channel2);
     unsigned long int range_upper2 = indexHolder_pm_ph(1, channel2);
 
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
@@ -1357,14 +1357,14 @@ Eigen::MatrixXd MakeIntMat::T3c_makemat(int channel1, int channel2){    //makes 
     return returnMat;
 }
 
-Eigen::MatrixXd MakeIntMat::T3d_makemat(int channel1, int channel2){    //makes a 2x2 matrix
+MakeIntMat::MatrixX MakeIntMat::T3d_makemat(int channel1, int channel2){    //makes a 2x2 matrix
 
     unsigned long int range_lower1 = indexHolder_pp_pp(0, channel1);
     unsigned long int range_upper1 = indexHolder_pp_pp(1, channel1);
     unsigned long int range_lower2 = indexHolder_pp_ph(0, channel2);
     unsigned long int range_upper2 = indexHolder_pp_ph(1, channel2);
 
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
@@ -1387,14 +1387,14 @@ Eigen::MatrixXd MakeIntMat::T3d_makemat(int channel1, int channel2){    //makes 
     return returnMat;
 }
 
-Eigen::MatrixXd MakeIntMat::T3e_makemat(int channel1, int channel2){    //makes a 3x1 matrix
+MakeIntMat::MatrixX MakeIntMat::T3e_makemat(int channel1, int channel2){    //makes a 3x1 matrix
 
     unsigned long int range_lower1 = indexHolder_ppm_hhh(0, channel1);
     unsigned long int range_upper1 = indexHolder_ppm_hhh(1, channel1);
     unsigned long int range_lower2 = indexHolder_p_p(0, channel2);
     unsigned long int range_upper2 = indexHolder_p_p(1, channel2);
 
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
@@ -1417,14 +1417,14 @@ Eigen::MatrixXd MakeIntMat::T3e_makemat(int channel1, int channel2){    //makes 
     return returnMat;
 }
 
-Eigen::MatrixXd MakeIntMat::T5a_makemat(int channel1, int channel2){    //makes a 2x2 matrix
+MakeIntMat::MatrixX MakeIntMat::T5a_makemat(int channel1, int channel2){    //makes a 2x2 matrix
 
     unsigned long int range_lower1 = indexHolder_pm_hp(0, channel1);
     unsigned long int range_upper1 = indexHolder_pm_hp(1, channel1);
     unsigned long int range_lower2 = indexHolder_pm_ph(0, channel2);
     unsigned long int range_upper2 = indexHolder_pm_ph(1, channel2);
 
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
@@ -1481,14 +1481,14 @@ Eigen::MatrixXd MakeIntMat::T5a_makemat(int channel1, int channel2){    //makes 
     return returnMat;
 }
 
-Eigen::MatrixXd MakeIntMat::T5b_makemat(int channel1, int channel2){    //makes a 3x1 matrix
+MakeIntMat::MatrixX MakeIntMat::T5b_makemat(int channel1, int channel2){    //makes a 3x1 matrix
 
     unsigned long int range_lower1 = indexHolder_ppm_pph(0, channel1);
     unsigned long int range_upper1 = indexHolder_ppm_pph(1, channel1);
     unsigned long int range_lower2 = indexHolder_p_h(0, channel2);
     unsigned long int range_upper2 = indexHolder_p_h(1, channel2);
 
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
@@ -1525,14 +1525,14 @@ Eigen::MatrixXd MakeIntMat::T5b_makemat(int channel1, int channel2){    //makes 
     return returnMat;
 }
 
-Eigen::MatrixXd MakeIntMat::T5c_makemat(int channel1, int channel2){    //makes a 3x1 matrix
+MakeIntMat::MatrixX MakeIntMat::T5c_makemat(int channel1, int channel2){    //makes a 3x1 matrix
 
     unsigned long int range_lower1 = indexHolder_ppm_hhp(0, channel1);
     unsigned long int range_upper1 = indexHolder_ppm_hhp(1, channel1);
     unsigned long int range_lower2 = indexHolder_p_p(0, channel2);
     unsigned long int range_upper2 = indexHolder_p_p(1, channel2);
 
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
@@ -1569,14 +1569,14 @@ Eigen::MatrixXd MakeIntMat::T5c_makemat(int channel1, int channel2){    //makes 
     return returnMat;
 }
 
-Eigen::MatrixXd MakeIntMat::T5d_makemat(int channel1, int channel2){    //makes a 3x1 matrix
+MakeIntMat::MatrixX MakeIntMat::T5d_makemat(int channel1, int channel2){    //makes a 3x1 matrix
 
     unsigned long int range_lower1 = indexHolder_ppm_hhp(0, channel1);
     unsigned long int range_upper1 = indexHolder_ppm_hhp(1, channel1);
     unsigned long int range_lower2 = indexHolder_p_p(0, channel2);
     unsigned long int range_upper2 = indexHolder_p_p(1, channel2);
 
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
@@ -1613,14 +1613,14 @@ Eigen::MatrixXd MakeIntMat::T5d_makemat(int channel1, int channel2){    //makes 
     return returnMat;
 }
 
-Eigen::MatrixXd MakeIntMat::T5e_makemat(int channel1, int channel2){    //makes a 3x1 matrix
+MakeIntMat::MatrixX MakeIntMat::T5e_makemat(int channel1, int channel2){    //makes a 3x1 matrix
 
     unsigned long int range_lower1 = indexHolder_ppm_pph(0, channel1);
     unsigned long int range_upper1 = indexHolder_ppm_pph(1, channel1);
     unsigned long int range_lower2 = indexHolder_p_h(0, channel2);
     unsigned long int range_upper2 = indexHolder_p_h(1, channel2);
 
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
@@ -1657,14 +1657,14 @@ Eigen::MatrixXd MakeIntMat::T5e_makemat(int channel1, int channel2){    //makes 
     return returnMat;
 }
 
-Eigen::MatrixXd MakeIntMat::T5f_makemat(int channel1, int channel2){    //makes a 2x2 matrix
+MakeIntMat::MatrixX MakeIntMat::T5f_makemat(int channel1, int channel2){    //makes a 2x2 matrix
 
     unsigned long int range_lower1 = indexHolder_pp_hh(0, channel1);
     unsigned long int range_upper1 = indexHolder_pp_hh(1, channel1);
     unsigned long int range_lower2 = indexHolder_pp_pp(0, channel2);
     unsigned long int range_upper2 = indexHolder_pp_pp(1, channel2);
 
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
@@ -1687,14 +1687,14 @@ Eigen::MatrixXd MakeIntMat::T5f_makemat(int channel1, int channel2){    //makes 
     return returnMat;
 }
 
-Eigen::MatrixXd MakeIntMat::T5g_makemat(int channel1, int channel2){    //makes a 2x2 matrix
+MakeIntMat::MatrixX MakeIntMat::T5g_makemat(int channel1, int channel2){    //makes a 2x2 matrix
 
     unsigned long int range_lower1 = indexHolder_pp_hh(0, channel1);
     unsigned long int range_upper1 = indexHolder_pp_hh(1, channel1);
     unsigned long int range_lower2 = indexHolder_pp_pp(0, channel2);
     unsigned long int range_upper2 = indexHolder_pp_pp(1, channel2);
 
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
 
 
@@ -1721,7 +1721,7 @@ Eigen::MatrixXd MakeIntMat::T5g_makemat(int channel1, int channel2){    //makes 
 
 //returns a block matrix of dimensions 3x1, currently only made for Vhhpp
 // i1,i2,i3,i4 specify whether there is a hole or particle (by a 0 or 1)  index at index ij, for j=1-4
-Eigen::MatrixXd MakeIntMat::make3x1Block(int ku, int i1, int i2, int i3, int i4){
+MakeIntMat::MatrixX MakeIntMat::make3x1Block(int ku, int i1, int i2, int i3, int i4){
 
     bool cond_hhp = (i1 == 0 && i2 == 0 && i3==1);
     bool cond_pph = (i1 == 1 && i2 == 1 && i3==0);
@@ -1767,7 +1767,7 @@ Eigen::MatrixXd MakeIntMat::make3x1Block(int ku, int i1, int i2, int i3, int i4)
 
     int index1; int index2;
 
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
 
     auto it1 = std::find(sortVec1.begin(), sortVec1.end(), ku);
     if (it1 == sortVec1.end()){
@@ -1837,11 +1837,11 @@ Eigen::MatrixXd MakeIntMat::make3x1Block(int ku, int i1, int i2, int i3, int i4)
     return returnMat;
 }
 
-Eigen::MatrixXd MakeIntMat::make2x2Block_alt(int channel){
+MakeIntMat::MatrixX MakeIntMat::make2x2Block_alt(int channel){
     int dim1 = V_hh_pp[channel].rows();
     int dim2 = V_hh_pp[channel].cols();
 
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(dim1, dim2);
     for (int i = 0; i<dim1; i++){
         for (int j = 0; j<dim2; j++){
@@ -1855,7 +1855,7 @@ Eigen::MatrixXd MakeIntMat::make2x2Block_alt(int channel){
 
 //returns a block matrix of dimensions 2x2, currently only made for Vhhpp
 // i1,i2,i3,i4 specify whether there is a hole or particle (by a 0 or 1) index at index ij, for j=1-4
-Eigen::MatrixXd MakeIntMat::make2x2Block(int ku, int i1, int i2, int i3, int i4){
+MakeIntMat::MatrixX MakeIntMat::make2x2Block(int ku, int i1, int i2, int i3, int i4){
 
     //std::cout << "hey" << std::endl;
     bool cond_hh1 = (i1 == 0 && i2 == 0);
@@ -1931,7 +1931,7 @@ Eigen::MatrixXd MakeIntMat::make2x2Block(int ku, int i1, int i2, int i3, int i4)
 
     int index1; int index2;
 
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
 
     auto it1 = std::find(sortVec1.begin(), sortVec1.end(), ku);
     if (it1 == sortVec1.end()){
@@ -2781,10 +2781,10 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
 // ##################################################
 
 //I get the same result using this as I get using Rektblock
-Eigen::MatrixXd MakeIntMat::makeSquareBlock(Eigen::MatrixXi& array, unsigned long int range_lower, unsigned long int range_upper){
+MakeIntMat::MatrixX MakeIntMat::makeSquareBlock(Eigen::MatrixXi& array, unsigned long int range_lower, unsigned long int range_upper){
     int dim = range_upper - range_lower;
     //cout << dim << endl;
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(dim, dim);
     for (unsigned long int i = range_lower; i<range_upper; i++){
         for (unsigned long int j = i; j<range_upper; j++){
@@ -2795,10 +2795,10 @@ Eigen::MatrixXd MakeIntMat::makeSquareBlock(Eigen::MatrixXi& array, unsigned lon
     return returnMat;
 }
 
-Eigen::MatrixXd MakeIntMat::makeSquareBlock_s(Eigen::MatrixXi& array, unsigned long int range_lower, unsigned long int range_upper){
+MakeIntMat::MatrixX MakeIntMat::makeSquareBlock_s(Eigen::MatrixXi& array, unsigned long int range_lower, unsigned long int range_upper){
     int dim = range_upper - range_lower;
     //cout << dim << endl;
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(dim, dim);
     for (unsigned long int i = range_lower; i<range_upper; i++){
         for (unsigned long int j = range_lower; j<range_upper; j++){
@@ -2809,10 +2809,10 @@ Eigen::MatrixXd MakeIntMat::makeSquareBlock_s(Eigen::MatrixXi& array, unsigned l
     return returnMat;
 }
 
-Eigen::MatrixXd MakeIntMat::makeRektBlock(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2){
+MakeIntMat::MatrixX MakeIntMat::makeRektBlock(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2){
     int dim1 = range_upper1 - range_lower1;
     int dim2 = range_upper2 - range_lower2;
-    Eigen::MatrixXd returnMat;
+    MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(dim1, dim2);
     for (unsigned long int i = range_lower1; i<range_upper1; i++){
         for (unsigned long int j = range_lower2; j<range_upper2; j++){
@@ -2833,7 +2833,7 @@ Eigen::MatrixXd MakeIntMat::makeRektBlock(Eigen::MatrixXi& array1, Eigen::Matrix
 void MakeIntMat::makeMatMap_hhhp(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2){
     for (unsigned long int i = range_lower1; i<range_upper1; i++){
         for (unsigned long int j = range_lower2; j<range_upper2; j++){
-            double val = m_system->assym((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j));
+            variable_type val = m_system->assym((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j));
             if (val != 0){
                 Vhhhp_elements[Identity_hhhp((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j))] = val;
             }
@@ -2844,7 +2844,7 @@ void MakeIntMat::makeMatMap_hhhp(Eigen::MatrixXi& array1, Eigen::MatrixXi& array
 void MakeIntMat::makeMatMap_hhpp(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2){
     for (unsigned long int i = range_lower1; i<range_upper1; i++){
         for (unsigned long int j = range_lower2; j<range_upper2; j++){
-            double val = m_system->assym((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j));
+            variable_type val = m_system->assym((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j));
             if (val != 0){
                 Vhhpp_elements[Identity_hhpp((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j))] = val;
             }
@@ -2855,7 +2855,7 @@ void MakeIntMat::makeMatMap_hhpp(Eigen::MatrixXi& array1, Eigen::MatrixXi& array
 void MakeIntMat::makeMatMap_ppph(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2){
     for (unsigned long int i = range_lower1; i<range_upper1; i++){
         for (unsigned long int j = range_lower2; j<range_upper2; j++){
-            double val = m_system->assym((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j));
+            variable_type val = m_system->assym((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j));
             if (val != 0){
                 Vppph_elements[Identity_ppph((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j))] = val;
             }
@@ -2873,7 +2873,7 @@ void MakeIntMat::makeMatVec(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, un
     insertMat.conservativeResize(dim1, dim2);
     for (unsigned long int i = range_lower1; i<range_upper1; i++){
         for (unsigned long int j = range_lower2; j<range_upper2; j++){
-            double val = m_system->assym((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j));
+            variable_type val = m_system->assym((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j));
             if (val != 0){
                 //tempVec.push_back(val);
                 Vhhpp_vector.push_back(val);

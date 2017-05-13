@@ -4,6 +4,7 @@
 #include "eigen3/Eigen/Dense"
 #include <makeintmat.h>
 #include <makeampmat.h>
+#include <complex>
 #include <Systems/system.h>
 #include <Systems/heg.h>
 #include <Systems/mp.h>
@@ -15,6 +16,9 @@ public:
     MakeIntMat*  m_intClass = nullptr;
     MakeAmpMat*  m_ampClass = nullptr;
     System*      m_system   = nullptr;
+
+    typedef MakeIntMat::variable_type   variable_type;
+    typedef MakeIntMat::MatrixX         MatrixX;
 
     Diagrams();
 

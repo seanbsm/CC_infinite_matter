@@ -105,20 +105,20 @@ int main(int argc, char** argv)
         std::cout << "No arguments given, running default setup" << std::endl;
         std::cout << "Default setup: HEG for Nh=14, Nb=3, rs=1.0, 1e-16 precision, CCDT" << std::endl;
 
-        m          = 1;             //Electron mass [MeV?]
+        /*m          = 1;             //Electron mass [MeV?]
         rs         = 1;
         double  rb = 1.;            //Bohr radius [MeV^-1]
         double  r1 = pow(rs*rb, 3);
         L3         = 4.*pi*Nh*r1/3.;
         L2         = pow(L3, 2./3.);
         L1         = pow(L3, 1./3.);
-        master->setSystem(new HEG(master, m, L3, L2, L1));
-        /*m   = 939.565;              //Neutron mass [MeV]
+        master->setSystem(new HEG(master, m, L3, L2, L1))*/;
+        m   = 939.565;              //Neutron mass [MeV]
         rho = 0.2;
         L3  = double(Nh)/rho;
         L2  = pow(L3, 2./3.);
         L1  = pow(L3, 1./3.);
-        master->setSystem(new MP(master, m, L3, L2, L1));*/
+        master->setSystem(new CHIRAL(master, m, L3, L2, L1));
     }
     else if (std::string(argv[1]) == "HEG"){
         m          = 1;             //Electron mass [MeV?]
@@ -173,6 +173,8 @@ int main(int argc, char** argv)
     double Eref; double Ecc;
 
     auto t1 = Clock::now();
+
+    //typedef MakeIntMat::variable_type variable_type;
 
     if (CCDT){
         double ECCDT = master->CC_master(eps, conFac);

@@ -87,7 +87,7 @@ void Master::setClasses(){
 }
 
 double Master::CC_Eref(){
-    double Eref = 0;
+    variable_type Eref = 0;
     for (int i = 0; i<m_Nh; i++){
         Eref += m_system->h0(i);
         for (int j = 0; j<m_Nh; j++){
@@ -131,7 +131,7 @@ double Master::CC_master(double eps, double conFac){
     std::cout << "MBPT2/Nh: " << std::setprecision (16) << ECCD_old/m_Nh << std::endl;
     std::cout << std::endl;
 
-    double ECC;
+    variable_type ECC;
     if (m_timerOn){
 
         auto t1 = Clock::now();
@@ -150,10 +150,10 @@ double Master::CC_master(double eps, double conFac){
     return ECC;
 }
 
-double Master::Iterator(double eps, double conFac, double E_MBPT2){
+Master::variable_type Master::Iterator(double eps, double conFac, variable_type E_MBPT2){
     int counter = 0;
-    double ECCD_old = E_MBPT2;
-    double ECCD     = 0;
+    variable_type ECCD_old = E_MBPT2;
+    variable_type ECCD     = 0;
 
     if (m_triplesOn){
         m_diagrams->makeT3();
@@ -234,7 +234,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
             }
 
             if (m_relaxation){
-                std::vector<double> T3_temp = m_ampClass->T3_elements_A;
+                std::vector<variable_type> T3_temp = m_ampClass->T3_elements_A;
 
                 for(int it=0; it<m_ampClass->T3_elements_A_new.size(); it++){
                     m_ampClass->T3_elements_A[it] = m_alpha*m_ampClass->T3_elements_A_new[it] + (1-m_alpha)*T3_temp[it];
@@ -278,7 +278,7 @@ double Master::Iterator(double eps, double conFac, double E_MBPT2){
         counter += 1;
 
         if (m_relaxation){
-            spp::sparse_hash_map<unsigned long int, double> T2_temp = m_ampClass->T2_elements;
+            spp::sparse_hash_map<unsigned long int, variable_type> T2_temp = m_ampClass->T2_elements;
             m_ampClass->T2_elements.clear();
             for(auto const& it : m_ampClass->T2_elements_new) {
                 m_ampClass->T2_elements[it.first] = m_alpha*it.second + (1-m_alpha)*T2_temp[it.first];
