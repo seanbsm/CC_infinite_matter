@@ -48,7 +48,7 @@ int* returnInt(int i){
     return &i;
 }
 
-template <>
+template <typename D>
 using Matrix = Eigen::MatrixXd;
 
 bool vecDelta(Eigen::VectorXi v1, Eigen::VectorXi v2){
@@ -71,6 +71,7 @@ bool vecDelta(Eigen::VectorXi v1, Eigen::VectorXi v2){
 
 int main(int argc, char** argv)
 {
+
 
     int threads = 4;
     std::vector<spp::sparse_hash_map<int, int>> VP;
