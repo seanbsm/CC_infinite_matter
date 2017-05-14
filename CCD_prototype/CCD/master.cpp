@@ -106,6 +106,7 @@ double Master::CC_Eref(){
             }
         }
     }*/
+        //std::cout << Eref_c << std::endl;
     return Eref;
 }
 

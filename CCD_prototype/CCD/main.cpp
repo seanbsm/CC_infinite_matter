@@ -87,8 +87,8 @@ int main(int argc, char** argv)
         eps = atof(argv[5]);
     }
     else{        //default size
-        Nh = 38;                        //number of particles
-        Nb = 5;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
+        Nh = 14;                        //number of particles
+        Nb = 15;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
     }
     double  rs;     //Wigner Seitz radius
     double  rho;    //Density
@@ -193,6 +193,7 @@ int main(int argc, char** argv)
 
     std::cout << "Eref:           " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << Eref << std::endl;
     std::cout << "E_ref/Nh:       " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (Eref)/Nh << std::endl;
+    std::cout << "E_corr/Nh:      " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (Ecc)/Nh << std::endl;
     std::cout << "E/Nh:           " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (Eref+Ecc)/Nh << std::endl;
 
     if (intermediates){

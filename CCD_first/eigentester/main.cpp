@@ -215,7 +215,7 @@ int main(int argc, char** argv)
 
     std::complex<double> wut (2.4,5.2);
 
-    std::cout << std::fixed << std::setprecision (16) << hey/wut << std::endl;
+    std::cout << std::fixed << std::setprecision (16) << abs(wut) << std::endl;
 
     /*int max = 1e6;
     int threads = 4;

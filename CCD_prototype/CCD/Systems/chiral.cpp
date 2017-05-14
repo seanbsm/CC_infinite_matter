@@ -3,6 +3,10 @@
 
 using namespace std;
 
+template <typename T> int sgn(T val) {
+    return (T(0) < val) - (val < T(0));
+}
+
 extern "C" {
     // get real and imaginary components of matrix element.
     void chipot_f90_wrapper_(double *matel_real, double *matel_im,
@@ -105,29 +109,22 @@ System::variable_type CHIRAL::f(int p){
     for (int i=0; i<m_Nh; i++){
         returnVal += assym_single(p, i);
     };
+    //cout << returnVal << endl;
     return returnVal;
 }
 
 System::variable_type CHIRAL::h0(int p){
     variable_type energy = (variable_type)m_states(0,p);
-    return energy*2.*pi*pi*m_hbarc*m_hbarc/(m_m*m_L2);
+   // cout << energy*2.*pi*pi*m_hbarc*m_hbarc/(m_m*m_L2) << endl;
+    return 2.*energy*pi*pi*m_hbarc*m_hbarc/(m_m*m_L2);
 }
 
 System::variable_type CHIRAL::assym(int p, int q, int r, int s){
-    /*Eigen::Vector3i kp( m_states(1,p), m_states(2,p), m_states(3,p) );
-    Eigen::Vector3i kq( m_states(1,q), m_states(2,q), m_states(3,q) );
-    Eigen::Vector3i kr( m_states(1,r), m_states(2,r), m_states(3,r) );
-    Eigen::Vector3i ks( m_states(1,s), m_states(2,s), m_states(3,s) );
-    int sp = m_states(4,p);
-    int sq = m_states(4,q);
-    int sr = m_states(4,r);
-    int ss = m_states(4,s);*/
-
-    double matel_real, matel_im, rho;
-    int isospin = 1;
-    complex<double> result;// double temp;
-
-    rho = m_Nh/m_L3;
+    double matel_real   = 0;
+    double matel_im     = 0;
+    double rho          = m_Nh/(m_L3);
+    int isospin         = 1;
+    complex<double> result;
 
     //Morten thinks +1=neutrons in the fortran code
     chipot_f90_wrapper_(&matel_real, &matel_im,
@@ -144,10 +141,18 @@ System::variable_type CHIRAL::assym(int p, int q, int r, int s){
                         &qs, &qt, &qpx, &qpy, &qpz,
                         &rs, &rt, &rpx, &rpy, &rpz,
                         &ss, &st, &spx, &spy, &spz);*/
-    result.real(matel_real);
-    result.imag(matel_im);
+    double real = sgn(matel_real)*pow(sgn(matel_real)*matel_real, 1./3);
+    double imag = sgn(matel_im)*pow(sgn(matel_im)*matel_im, 1./3);
 
-    //temp = real(result);
+
+    //std::cout << real << " " << matel_real << std::endl;
+
+    result.real(real);
+    result.imag(imag);
+
+    //result.real(matel_real);
+    //result.imag(matel_im);
+
     return result;
 }
 

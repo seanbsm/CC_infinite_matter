@@ -596,10 +596,13 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
     // 1 1 0
     else if (cond_pph){
         std::cout << "blockArrays_ppm_pph     | started  |" << std::fixed << std::right << std::setw(m_printLength+12) << " |" << std::endl;
-
+        //blockArrays_temp.conservativeResize(4, 0);
         int ku;
-
+//#pragma omp parallel for reduction(+:index) private(ku) firstprivate(colSize)
         for (int a=m_Nh; a<m_Ns; a++){
+            /*Eigen::MatrixXi temp1;
+            Eigen::MatrixXi temp2;
+            temp2.conservativeResize(blockArrays_temp.rows(), colSize);*/
             for (int b=a+1; b<m_Ns; b++){
                 for (int i=0; i<m_Nh; i++){
                     ku = m_system->kUnique3(a,b,i,s1,s2,s3);
@@ -608,16 +611,30 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
                     auto it3 = std::find(sortVec_p_p.begin(), sortVec_p_p.end(), ku);
                     if (it1 != sortVec_ppp_hhh.end() || it2 != sortVec_p_h.end() || it3 != sortVec_p_p.end()){
                         blockArrays_temp.col(index) << ku,a,b,i;
+                        //temp2.col(index) << ku,a,b,i;
                         index += 1;
 
                         if (index >= colSize){
                             colSize += 10000;
                             blockArrays_temp.conservativeResize(4, colSize);
+                            //temp2.conservativeResize(4, colSize);
                         }
+                        //std::cout << temp2.col(index-1) << std::endl;
                     }
                 }
             }
+/*#pragma omp critical
+            {
+                std::cout << index << std::endl;
+            temp1.conservativeResize(blockArrays_temp.rows(), blockArrays_temp.cols()+temp2.cols());
+            temp1 << blockArrays_temp, temp2;
+            blockArrays_temp.conservativeResize(temp1.rows(),blockArrays_temp.cols()+ temp1.cols());
+            blockArrays_temp.noalias() << blockArrays_temp, temp1;
+            }
+
+            colSize = 10000;*/
         }
+        //std::cout << index << std::endl;
         std::cout << "blockArrays_ppm_pph     | finished | Columns: " << std::fixed << std::right << std::setw(m_printLength) << index << " |" << std::endl;
     }
     // 1 1 1
