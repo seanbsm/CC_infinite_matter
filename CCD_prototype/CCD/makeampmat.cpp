@@ -153,13 +153,13 @@ void MakeAmpMat::makeDenomMat3(){
         int a; int b; int c;
 
         for (int ppp=lowBound_ppp; ppp<highBound_ppp; ppp++){
-            a = m_intClass->blockArrays_ppp_ppp(1,ppp);
-            b = m_intClass->blockArrays_ppp_ppp(2,ppp);
-            c = m_intClass->blockArrays_ppp_ppp(3,ppp);
+            a = m_intClass->blockArrays_ppp_ppp(0,ppp);
+            b = m_intClass->blockArrays_ppp_ppp(1,ppp);
+            c = m_intClass->blockArrays_ppp_ppp(2,ppp);
             for (int hhh=lowBound_hhh; hhh<highBound_hhh; hhh++){
-                i = m_intClass->blockArrays_ppp_hhh(1,hhh);
-                j = m_intClass->blockArrays_ppp_hhh(2,hhh);
-                k = m_intClass->blockArrays_ppp_hhh(3,hhh);
+                i = m_intClass->blockArrays_ppp_hhh(0,hhh);
+                j = m_intClass->blockArrays_ppp_hhh(1,hhh);
+                k = m_intClass->blockArrays_ppp_hhh(2,hhh);
 
                 id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
                 index = T3_elements_I.find(id)->second;

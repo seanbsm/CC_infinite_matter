@@ -184,7 +184,7 @@ Master::variable_type Master::Iterator(double eps, double conFac, variable_type 
     }
 
     std::cout << "Start of CC iterations: " << std::endl;
-    while (conFac > eps && counter < 2){
+    while (conFac > eps /*&& counter < 2*/){
         ECCD = 0;
         //could make an m_ampClass::updateT or something
         m_ampClass->T2_elements_new.clear();
@@ -213,7 +213,6 @@ Master::variable_type Master::Iterator(double eps, double conFac, variable_type 
         if(m_triplesOn){
 
             std::fill(m_ampClass->T3_elements_A_new.begin(), m_ampClass->T3_elements_A_new.end(), 0); //reset T3 new
-
             if (m_CC_type >= 1 ){
                 m_diagrams->T1a();
                 m_diagrams->T1b();

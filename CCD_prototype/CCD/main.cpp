@@ -88,7 +88,7 @@ int main(int argc, char** argv)
     }
     else{        //default size
         Nh = 14;                        //number of particles
-        Nb = 3;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
+        Nb = 4;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
     }
     double  rs;     //Wigner Seitz radius
     double  rho;    //Density
@@ -114,7 +114,7 @@ int main(int argc, char** argv)
         L1         = pow(L3, 1./3.);
         master->setSystem(new HEG(master, m, L3, L2, L1))*/;
         m   = 939.565;              //Neutron mass [MeV]
-        rho = 0.02;//7.9999998211860657E-002;
+        rho = 0.08;//7.9999998211860657E-002;
         L3  = double(Nh)/rho;
         L2  = pow(L3, 2./3.);
         L1  = pow(L3, 1./3.);
@@ -163,9 +163,9 @@ int main(int argc, char** argv)
         }
     }
     else{
-        master->setCCType(0);
-        master->setTriples(false);
-        CCDT = false;
+        master->setCCType(3);
+        master->setTriples(true);
+        CCDT = true;
     }
 
     cout << "C++ code" << endl;

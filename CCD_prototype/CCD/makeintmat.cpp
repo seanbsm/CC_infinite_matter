@@ -2780,6 +2780,31 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
 
 
     cout << "BoundHolders:             Done" << endl;
+
+    fullVec_p_h.clear();
+    fullVec_p_p.clear();
+    fullVec_pp_hh.clear();
+    fullVec_pp_hp.clear();
+    fullVec_pp_ph.clear();
+    fullVec_pp_pp.clear();
+    fullVec_hp_s.clear();
+    fullVec_pm_hh.clear();
+    fullVec_pm_hp.clear();
+    fullVec_pm_ph.clear();
+    fullVec_pm_pp.clear();
+    fullVec_ppp_hhh.clear();
+    fullVec_ppm_hhh.clear();
+    fullVec_ppm_hhp.clear();
+    fullVec_ppm_pph.clear();
+    fullVec_ppp_ppp.clear();
+    fullVec_pppm_hhhp.clear();
+    fullVec_ppmm_hhpp.clear();
+    fullVec_ppmm_pphh.clear();
+    fullVec_pppm_ppph.clear();
+    fullVec_pppmm_hhhpp.clear();
+    fullVec_pppmm_ppphh.clear();
+
+    cout << "Fullvecs deleted:         Done" << endl;
     cout << endl;
 
     //make Vhhpp map
