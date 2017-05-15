@@ -15,14 +15,16 @@ class MakeIntMat
 {
 private:
 
+    typedef Eigen::Matrix<short int, Eigen::Dynamic, Eigen::Dynamic>         MatrixXsi;
+
     //index-keepers
     Eigen::VectorXi identify_pppp;
     Eigen::VectorXi identify_hhpp;
     Eigen::VectorXi identify_fock;
     //memory storage
-    Eigen::MatrixXi intMat_pppp;
-    Eigen::MatrixXi intMat_hhpp;
-    Eigen::MatrixXi fockMat;
+    MatrixXsi intMat_pppp;
+    MatrixXsi intMat_hhpp;
+    MatrixXsi fockMat;
 
     int m_printLength = 15;
 
@@ -49,7 +51,7 @@ public:
 
     //Eigen matrix with unsigned long int as type
     typedef Eigen::Matrix<unsigned long int, Eigen::Dynamic, Eigen::Dynamic> MatrixXuli;
-    typedef Eigen::Matrix<short int, Eigen::Dynamic, Eigen::Dynamic>         MatrixXsi;
+    //typedef Eigen::Matrix<short int, Eigen::Dynamic, Eigen::Dynamic>         MatrixXsi;
 
 
     /* Due to the momentum-conservation relation (kp+kq = kr+ks for <pq||rs>),
@@ -63,42 +65,42 @@ public:
      */
 
     //blockArrays hold quantum numbers
-    Eigen::MatrixXi blockArrays_p_h;
-    Eigen::MatrixXi blockArrays_p_p;
-    Eigen::MatrixXi blockArrays_pp_hh;
-    Eigen::MatrixXi blockArrays_pp_hp;
-    Eigen::MatrixXi blockArrays_pp_ph;
-    Eigen::MatrixXi blockArrays_pp_pp;
-    Eigen::MatrixXi blockArrays_hp_s;   //for Vhphp
-    Eigen::MatrixXi blockArrays_pm_hh;
-    Eigen::MatrixXi blockArrays_pm_hp;
-    Eigen::MatrixXi blockArrays_pm_ph;
-    Eigen::MatrixXi blockArrays_pm_pp;
-    Eigen::MatrixXi blockArrays_ppp_hhh;
-    Eigen::MatrixXi blockArrays_ppm_hhh;
-    Eigen::MatrixXi blockArrays_ppm_hhp;
-    Eigen::MatrixXi blockArrays_ppm_pph;
-    Eigen::MatrixXi blockArrays_ppp_ppp;
-    Eigen::MatrixXi blockArrays_pppm_hhhp;
-    Eigen::MatrixXi blockArrays_ppmm_hhpp;
-    Eigen::MatrixXi blockArrays_ppmm_pphh;
-    Eigen::MatrixXi blockArrays_pppm_ppph;
-    Eigen::MatrixXi blockArrays_pppmm_hhhpp;
-    Eigen::MatrixXi blockArrays_pppmm_ppphh;
+    MatrixXsi blockArrays_p_h;
+    MatrixXsi blockArrays_p_p;
+    MatrixXsi blockArrays_pp_hh;
+    MatrixXsi blockArrays_pp_hp;
+    MatrixXsi blockArrays_pp_ph;
+    MatrixXsi blockArrays_pp_pp;
+    MatrixXsi blockArrays_hp_s;   //for Vhphp
+    MatrixXsi blockArrays_pm_hh;
+    MatrixXsi blockArrays_pm_hp;
+    MatrixXsi blockArrays_pm_ph;
+    MatrixXsi blockArrays_pm_pp;
+    MatrixXsi blockArrays_ppp_hhh;
+    MatrixXsi blockArrays_ppm_hhh;
+    MatrixXsi blockArrays_ppm_hhp;
+    MatrixXsi blockArrays_ppm_pph;
+    MatrixXsi blockArrays_ppp_ppp;
+    MatrixXsi blockArrays_pppm_hhhp;
+    MatrixXsi blockArrays_ppmm_hhpp;
+    MatrixXsi blockArrays_ppmm_pphh;
+    MatrixXsi blockArrays_pppm_ppph;
+    MatrixXsi blockArrays_pppmm_hhhpp;
+    MatrixXsi blockArrays_pppmm_ppphh;
 
     //T3 permutations, needed to restack t_ijk^abc matrices
     //same shape as corresponding blockArrays
-    Eigen::MatrixXi blockArrays_ppp_hhh_Pij;    // ijk <-> jik
-    Eigen::MatrixXi blockArrays_ppp_hhh_Pik;    // ijk <-> kji
-    Eigen::MatrixXi blockArrays_ppp_hhh_Pjk;    // ijk <-> ikj
-    Eigen::MatrixXi blockArrays_ppp_hhh_Pijik;  // ijk <-> kij
-    Eigen::MatrixXi blockArrays_ppp_hhh_Pijjk;  // ijk <-> jki
+    MatrixXsi blockArrays_ppp_hhh_Pij;    // ijk <-> jik
+    MatrixXsi blockArrays_ppp_hhh_Pik;    // ijk <-> kji
+    MatrixXsi blockArrays_ppp_hhh_Pjk;    // ijk <-> ikj
+    MatrixXsi blockArrays_ppp_hhh_Pijik;  // ijk <-> kij
+    MatrixXsi blockArrays_ppp_hhh_Pijjk;  // ijk <-> jki
 
-    Eigen::MatrixXi blockArrays_ppp_ppp_Pab;    // abc <-> bac
-    Eigen::MatrixXi blockArrays_ppp_ppp_Pac;    // abc <-> cba
-    Eigen::MatrixXi blockArrays_ppp_ppp_Pbc;    // abc <-> acb
-    Eigen::MatrixXi blockArrays_ppp_ppp_Pabac;  // abc <-> cab
-    Eigen::MatrixXi blockArrays_ppp_ppp_Pabbc;  // abc <-> bca
+    MatrixXsi blockArrays_ppp_ppp_Pab;    // abc <-> bac
+    MatrixXsi blockArrays_ppp_ppp_Pac;    // abc <-> cba
+    MatrixXsi blockArrays_ppp_ppp_Pbc;    // abc <-> acb
+    MatrixXsi blockArrays_ppp_ppp_Pabac;  // abc <-> cab
+    MatrixXsi blockArrays_ppp_ppp_Pabbc;  // abc <-> bca
 
     void makePermutations(); //fills all permutaion matrices
 
@@ -125,6 +127,29 @@ public:
     std::vector<int> sortVec_pppm_ppph;
     std::vector<int> sortVec_pppmm_hhhpp;
     std::vector<int> sortVec_pppmm_ppphh;
+
+    std::vector<int> fullVec_p_h;
+    std::vector<int> fullVec_p_p;
+    std::vector<int> fullVec_pp_hh;
+    std::vector<int> fullVec_pp_hp;
+    std::vector<int> fullVec_pp_ph;
+    std::vector<int> fullVec_pp_pp;
+    std::vector<int> fullVec_hp_s;      //for Vhphp
+    std::vector<int> fullVec_pm_hh;
+    std::vector<int> fullVec_pm_hp;
+    std::vector<int> fullVec_pm_ph;
+    std::vector<int> fullVec_pm_pp;
+    std::vector<int> fullVec_ppp_hhh;
+    std::vector<int> fullVec_ppm_hhh;
+    std::vector<int> fullVec_ppm_hhp;
+    std::vector<int> fullVec_ppm_pph;
+    std::vector<int> fullVec_ppp_ppp;
+    std::vector<int> fullVec_pppm_hhhp;
+    std::vector<int> fullVec_ppmm_hhpp;
+    std::vector<int> fullVec_ppmm_pphh;
+    std::vector<int> fullVec_pppm_ppph;
+    std::vector<int> fullVec_pppmm_hhhpp;
+    std::vector<int> fullVec_pppmm_ppphh;
 
     //indexHolder holds upper and lower bound of indices for a certain kUnique, same indexing as the corresponding matrices
     MatrixXuli indexHolder_p_h;
@@ -158,26 +183,26 @@ public:
     MatrixXuli boundsHolder_hhhppp_ppp;
 
     //these are needed for Qc and Qd
-    Eigen::MatrixXi indexHolder_h_pph_hpp;
-    Eigen::MatrixXi indexHolder_h_pph_h;
-    Eigen::MatrixXi indexHolder_hhp_p_hhp;
-    Eigen::MatrixXi indexHolder_hhp_p_p;
+    MatrixXsi indexHolder_h_pph_hpp;
+    MatrixXsi indexHolder_h_pph_h;
+    MatrixXsi indexHolder_hhp_p_hhp;
+    MatrixXsi indexHolder_hhp_p_p;
 
-    //Eigen::MatrixXi indexHolder_hp;
-    //Eigen::MatrixXi indexHolder_ph;
-    //Eigen::MatrixXi boundsHolder_pppp_pp;
+    //MatrixXsi indexHolder_hp;
+    //MatrixXsi indexHolder_ph;
+    //MatrixXsi boundsHolder_pppp_pp;
 
     void setThreads(int numthreads);
     int m_numThreads;
 
     MakeIntMat();
     System* m_system = nullptr;
-    void                            mapper_1(std::vector<int>& sortVecIn, Eigen::MatrixXi &blockArraysIn, int i1, int s1);
-    void                            mapper_2(std::vector<int> &sortVecIn, Eigen::MatrixXi &blockArraysIn, int i1, int i2, int s1, int s2);
+    void                            mapper_1(std::vector<int> &sortVecIn, std::vector<int> &fullVecIn, MatrixXsi &blockArraysIn, int i1, int s1);
+    void                            mapper_2(std::vector<int> &sortVecIn, std::vector<int> &fullVecIn, MatrixXsi &blockArraysIn, int i1, int i2, int s1, int s2);
     void                            mapper_2_alt();
-    void                            mapper_3(std::vector<int> &sortVecIn, Eigen::MatrixXi &blockArraysIn, int i1, int i2, int i3, int s1, int s2, int s3);
-    void                            mapper_4(std::vector<int> &sortVecIn, Eigen::MatrixXi &blockArraysIn, int i1, int i2, int i3, int i4, int s1, int s2, int s3, int s4);
-    void                            mapper_5(std::vector<int> &sortVecIn, Eigen::MatrixXi &blockArraysIn, int i1, int i2, int i3, int i4, int i5, int s1, int s2, int s3, int s4, int s5);
+    void                            mapper_3(std::vector<int> &sortVecIn, std::vector<int> &fullVecIn, MatrixXsi &blockArraysIn, int i1, int i2, int i3, int s1, int s2, int s3);
+    void                            mapper_4(std::vector<int> &sortVecIn, std::vector<int> &fullVecIn, MatrixXsi &blockArraysIn, int i1, int i2, int i3, int i4, int s1, int s2, int s3, int s4);
+    void                            mapper_5(std::vector<int> &sortVecIn, std::vector<int> &fullVecIn, MatrixXsi &blockArraysIn, int i1, int i2, int i3, int i4, int i5, int s1, int s2, int s3, int s4, int s5);
     void                            mapper_hp();        //special func made for Lc diagram, not necessary IF I fix sign convention for ph and hp
 
     void                            makeBlockMat(System* system, int Nh, int Ns);
@@ -186,9 +211,9 @@ public:
 
     int                             numOfKu;        //number of blocks in V_hh_pp
     int                             numOfKu3;       //number of blocks in V_hhh_ppp
-    MatrixX                 makeSquareBlock(Eigen::MatrixXi& array, unsigned long int range_lower, unsigned long int range_upper);
-    MatrixX                 makeSquareBlock_s(Eigen::MatrixXi& array, unsigned long range_lower, unsigned long range_upper);
-    MatrixX                 makeRektBlock(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
+    MatrixX                 makeSquareBlock(MatrixXsi& array, unsigned long int range_lower, unsigned long int range_upper);
+    MatrixX                 makeSquareBlock_s(MatrixXsi& array, unsigned long range_lower, unsigned long range_upper);
+    MatrixX                 makeRektBlock(MatrixXsi& array1, MatrixXsi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
 
 
     //CCD terms
@@ -226,11 +251,11 @@ public:
     MakeIntMat::MatrixX                 make2x2Block(int ku, int i1, int i2, int i3, int i4);
     MakeIntMat::MatrixX                 make2x2Block_alt(int channel);
 
-    void                            makeMatMap_hhhp(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
-    void                            makeMatMap_hhpp(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
-    void                            makeMatMap_ppph(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
+    void                            makeMatMap_hhhp(MatrixXsi& array1, MatrixXsi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
+    void                            makeMatMap_hhpp(MatrixXsi& array1, MatrixXsi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
+    void                            makeMatMap_ppph(MatrixXsi& array1, MatrixXsi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
 
-    void                            makeMatVec(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
+    void                            makeMatVec(MatrixXsi& array1, MatrixXsi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
     unsigned long int               Identity_hhhp(int h1, int h2, int h3, int p1);
     unsigned long int               Identity_hhpp(int h1, int h2, int p1, int p2);
     unsigned long int               Identity_hh(int h1, int h2);
@@ -260,8 +285,8 @@ public:
     std::vector<MakeIntMat::MatrixX>   Vhhhh; //for Lb
     std::vector<MakeIntMat::MatrixX>   Vhphp; //for Lc
 
-    std::vector<Eigen::MatrixXi>   V_hp_hp;
-    std::vector<Eigen::MatrixXi>   V_hh_pp;
+    std::vector<MatrixXsi>   V_hp_hp;
+    std::vector<MatrixXsi>   V_hh_pp;
 
     //vectors with kUnique for each matrix, indices match ( that is, Vhhhh_i[h] <-> Vhhhh[h] )
     std::vector<int>               Vhhhh_i;

@@ -96,6 +96,7 @@ double Master::CC_Eref(){
                 Eref_c -= 0.5*m_system->assym_single(i,j);
             }
         }
+        //std::cout << std::fixed << std::setprecision (16) << Eref << std::endl;
         Eref = Eref_c.real();
     /*}
     else{
@@ -183,11 +184,10 @@ Master::variable_type Master::Iterator(double eps, double conFac, variable_type 
     }
 
     std::cout << "Start of CC iterations: " << std::endl;
-    while (conFac > eps /*&& counter < 8*/){
+    while (conFac > eps && counter < 2){
         ECCD = 0;
         //could make an m_ampClass::updateT or something
         m_ampClass->T2_elements_new.clear();
-
         //calculate CCD T2 diagrams
         if (counter != -1){
             if (m_intermediatesOn){

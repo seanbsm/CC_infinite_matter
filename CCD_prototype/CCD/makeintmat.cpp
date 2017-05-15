@@ -253,8 +253,8 @@ void MakeIntMat::makePermutations(){
 
 //i only store this in case my rewrite fails
 //0 means hole, 1 means particle
-/*void MakeIntMat::mapper_1(std::vector<int>& sortVec, Eigen::MatrixXi& blockArrays, int i1, int s1){
-    Eigen::MatrixXi   blockArrays_temp;
+/*void MakeIntMat::mapper_1(std::vector<int>& sortVec, MatrixXsi& blockArrays, int i1, int s1){
+    MatrixXsi   blockArrays_temp;
     int index       = 0;
     int colSize     = 0;
     int range_upper = 0;
@@ -285,7 +285,7 @@ void MakeIntMat::makePermutations(){
         }
     }
 
-    Eigen::MatrixXi blockArrays = blockArrays_temp;     //need this
+    MatrixXsi blockArrays = blockArrays_temp;     //need this
     Eigen::VectorXi veryTempVec = blockArrays_temp.row(0);
     std::vector<int> sortVec(veryTempVec.data(), veryTempVec.row(0).data() + blockArrays_temp.cols());
     std::vector<int> tempVec = sortVec;
@@ -316,8 +316,9 @@ void MakeIntMat::setTriples(bool argument){
 }
 
 //0 means hole, 1 means particle
-void MakeIntMat::mapper_1(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArraysIn, int i1, int s1){
-    Eigen::MatrixXi   blockArrays_temp;
+void MakeIntMat::mapper_1(std::vector<int> &sortVecIn, std::vector<int> &fullVecIn, MatrixXsi& blockArraysIn, int i1, int s1){
+    MatrixXsi        blockArrays_temp;
+    Eigen::VectorXi  fullVec_temp;
     int index       = 0;
     int colSize     = 0;
 
@@ -327,29 +328,39 @@ void MakeIntMat::mapper_1(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
     // 0
     if (cond_h){
         colSize = m_Nh;
-        blockArrays_temp.conservativeResize(2, colSize);
+        blockArrays_temp.conservativeResize(1, colSize);
+        fullVec_temp.conservativeResize(colSize);
 
-        for (int i=0; i<m_Nh; i++){
-            blockArrays_temp.col(index) << m_system->kUnique1(i, s1),i;
+        for (short int i=0; i<m_Nh; i++){
+            //blockArrays_temp.col(index) << m_system->kUnique1(i, s1),i;
+            blockArrays_temp.col(index) << i;
+            fullVec_temp(index) = m_system->kUnique1(i, s1);
+
             index += 1;
-
         }
     }
     // 1
     else{
         colSize = (m_Ns-m_Nh);
-        blockArrays_temp.conservativeResize(2, colSize);
-        for (int a=m_Nh; a<m_Ns; a++){
-            blockArrays_temp.col(index) << m_system->kUnique1(a, s1),a;
+        blockArrays_temp.conservativeResize(1, colSize);
+        fullVec_temp.conservativeResize(colSize);
+
+        for (short int a=m_Nh; a<m_Ns; a++){
+            //blockArrays_temp.col(index) << m_system->kUnique1(a, s1),a;
+            blockArrays_temp.col(index) << a;
+            fullVec_temp(index) = m_system->kUnique1(a, s1);
+
             index += 1;
 
         }
     }
 
-    Eigen::MatrixXi blockArrays = blockArrays_temp;     //need this
-    Eigen::VectorXi veryTempVec = blockArrays_temp.row(0);
-    std::vector<int> sortVec(veryTempVec.data(), veryTempVec.row(0).data() + blockArrays_temp.cols());
-    std::vector<int> tempVec = sortVec;
+    MatrixXsi blockArrays (1, blockArrays_temp.cols() );
+    std::vector<int> tempVec(fullVec_temp.data(), fullVec_temp.row(0).data() + fullVec_temp.rows());
+    std::vector<int> sortVec( blockArrays_temp.cols() );
+    /*Eigen::VectorXi veryTempVec = blockArrays_temp.row(0);
+    std::vector<int> tempVec = sortVec;*/
+
 
     index = 0;
     for (auto i: sort_indexes(tempVec)){
@@ -357,6 +368,8 @@ void MakeIntMat::mapper_1(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
         sortVec[index]         = tempVec[i];
         index += 1;
     }
+
+    fullVecIn = sortVec;
 
     sortVec.erase( unique( sortVec.begin(), sortVec.end() ), sortVec.end() ); //need this
 
@@ -369,19 +382,24 @@ void  MakeIntMat::mapper_hp(){
 
     int index       = 0;
     int colSize     = m_Nh*(m_Ns-m_Nh);
-    Eigen::MatrixXi   blockArrays_temp(3, colSize);
+    MatrixXsi        blockArrays_temp(2, colSize);
+    Eigen::VectorXi  fullVec_temp(colSize);
 
-    for (int i=0; i<m_Nh; i++){
-        for (int a=m_Nh; a<m_Ns; a++){
-            blockArrays_temp.col(index) << m_system->kUnique2(i,a,1,1),i,a;
+    for (short int i=0; i<m_Nh; i++){
+        for (short int a=m_Nh; a<m_Ns; a++){
+            blockArrays_temp.col(index) << i,a;
+            fullVec_temp(index) = m_system->kUnique2(i,a,1,1);
+
             index += 1;
         }
     }
 
-    Eigen::MatrixXi blockArrays = blockArrays_temp;     //need this
-    Eigen::VectorXi veryTempVec = blockArrays_temp.row(0);
+    MatrixXsi blockArrays (2, blockArrays_temp.cols() );
+    std::vector<int> tempVec(fullVec_temp.data(), fullVec_temp.row(0).data() + fullVec_temp.rows());
+    std::vector<int> sortVec( blockArrays_temp.cols() );
+    /*Eigen::VectorXi veryTempVec = blockArrays_temp.row(0);
     std::vector<int> sortVec(veryTempVec.data(), veryTempVec.row(0).data() + blockArrays_temp.cols());
-    std::vector<int> tempVec = sortVec;
+    std::vector<int> tempVec = sortVec;*/
 
     index = 0;
     for (auto i: sort_indexes(tempVec)){
@@ -389,6 +407,8 @@ void  MakeIntMat::mapper_hp(){
         sortVec[index]         = tempVec[i];
         index += 1;
     }
+
+    fullVec_hp_s     = sortVec;
 
     sortVec.erase( unique( sortVec.begin(), sortVec.end() ), sortVec.end() ); //need this
 
@@ -398,12 +418,13 @@ void  MakeIntMat::mapper_hp(){
 
 
 
-void  MakeIntMat::mapper_2(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArraysIn, int i1, int i2, int s1, int s2){
+void  MakeIntMat::mapper_2(std::vector<int>& sortVecIn, std::vector<int> &fullVecIn, MatrixXsi& blockArraysIn, int i1, int i2, int s1, int s2){
 
     int index       = 0;
     int colSize     = 10000;
-    Eigen::MatrixXi   blockArrays_temp(3,colSize);
-    //Eigen::MatrixXi   blockArrays_temp2;
+    MatrixXsi        blockArrays_temp(2,colSize);
+    Eigen::VectorXi  fullVec_temp(colSize);
+    //MatrixXsi   blockArrays_temp2;
 
     bool cond_hh = (i1 == 0 && i2 == 0);
     bool cond_hp = (i1 == 0 && i2 == 1);
@@ -414,27 +435,31 @@ void  MakeIntMat::mapper_2(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockAr
     // 0 0
     if (cond_hh){
         if (s2 == +1){
-            for (int i=0; i<m_Nh; i++){
-                for (int j=i+1; j<m_Nh; j++){
-                    blockArrays_temp.col(index) << m_system->kUnique2(i,j,s1,s2),i,j;
+            for (short int i=0; i<m_Nh; i++){
+                for (short int j=i+1; j<m_Nh; j++){
+                    blockArrays_temp.col(index) << i,j;
+                    fullVec_temp(index) = m_system->kUnique2(i,j,s1,s2);
                     index += 1;
 
                     if (index >= colSize){
                         colSize += 10000;
-                        blockArrays_temp.conservativeResize(3, colSize);
+                        blockArrays_temp.conservativeResize(2, colSize);
+                        fullVec_temp.conservativeResize(colSize);
                     }
                 }
             }
         }
         else if (s2 == -1){// I need them independent if s2=-1
-            for (int i=0; i<m_Nh; i++){
-                for (int j=0; j<m_Nh; j++){
-                    blockArrays_temp.col(index) << m_system->kUnique2(i,j,s1,s2),i,j;
+            for (short int i=0; i<m_Nh; i++){
+                for (short int j=0; j<m_Nh; j++){
+                    blockArrays_temp.col(index) << i,j;
+                    fullVec_temp(index) = m_system->kUnique2(i,j,s1,s2);
                     index += 1;
 
                     if (index >= colSize){
                         colSize += 10000;
-                        blockArrays_temp.conservativeResize(3, colSize);
+                        blockArrays_temp.conservativeResize(2, colSize);
+                        fullVec_temp.conservativeResize(colSize);
                     }
                 }
             }
@@ -442,28 +467,32 @@ void  MakeIntMat::mapper_2(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockAr
     }
     // 0 1
     else if (cond_hp){
-        for (int i=0; i<m_Nh; i++){
-            for (int a=m_Nh; a<m_Ns; a++){
-                blockArrays_temp.col(index) << m_system->kUnique2(i,a,s1,s2),i,a;
+        for (short int i=0; i<m_Nh; i++){
+            for (short int a=m_Nh; a<m_Ns; a++){
+                blockArrays_temp.col(index) << i,a;
+                fullVec_temp(index) = m_system->kUnique2(i,a,s1,s2);
                 index += 1;
 
                 if (index >= colSize){
                     colSize += 10000;
-                    blockArrays_temp.conservativeResize(3, colSize);
+                    blockArrays_temp.conservativeResize(2, colSize);
+                    fullVec_temp.conservativeResize(colSize);
                 }
             }
         }
     }
     // 1 0
     else if (cond_ph){
-        for (int a=m_Nh; a<m_Ns; a++){
-            for (int i=0; i<m_Nh; i++){
-                blockArrays_temp.col(index) << m_system->kUnique2(a,i,s1,s2),a,i;
+        for (short int a=m_Nh; a<m_Ns; a++){
+            for (short int i=0; i<m_Nh; i++){
+                blockArrays_temp.col(index) << a,i;
+                fullVec_temp(index) = m_system->kUnique2(a,i,s1,s2);
                 index += 1;
 
                 if (index >= colSize){
                     colSize += 10000;
-                    blockArrays_temp.conservativeResize(3, colSize);
+                    blockArrays_temp.conservativeResize(2, colSize);
+                    fullVec_temp.conservativeResize(colSize);
                 }
             }
         }
@@ -471,51 +500,63 @@ void  MakeIntMat::mapper_2(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockAr
     // 1 1
     else{
         if (s2 == +1){
-            for (int a=m_Nh; a<m_Ns; a++){
-                for (int b=a+1; b<m_Ns; b++){
-                    blockArrays_temp.col(index) << m_system->kUnique2(a,b,s1,s2),a,b;
+            for (short int a=m_Nh; a<m_Ns; a++){
+                for (short int b=a+1; b<m_Ns; b++){
+                    blockArrays_temp.col(index) << a,b;
+                    fullVec_temp(index) = m_system->kUnique2(a,b,s1,s2);
                     index += 1;
 
                     if (index >= colSize){
                         colSize += 10000;
-                        blockArrays_temp.conservativeResize(3, colSize);
+                        blockArrays_temp.conservativeResize(2, colSize);
+                        fullVec_temp.conservativeResize(colSize);
                     }
                 }
             }
         }
         else if (s2 == -1){// I need them independent if s2=-1
-            for (int a=m_Nh; a<m_Ns; a++){
-                for (int b=m_Nh; b<m_Ns; b++){
-                    blockArrays_temp.col(index) << m_system->kUnique2(a,b,s1,s2),a,b;
+            for (short int a=m_Nh; a<m_Ns; a++){
+                for (short int b=m_Nh; b<m_Ns; b++){
+                    blockArrays_temp.col(index) << a,b;
+                    fullVec_temp(index) = m_system->kUnique2(a,b,s1,s2);
                     index += 1;
 
                     if (index >= colSize){
                         colSize += 10000;
-                        blockArrays_temp.conservativeResize(3, colSize);
+                        blockArrays_temp.conservativeResize(2, colSize);
+                        fullVec_temp.conservativeResize(colSize);
                     }
                 }
             }
         }
     }
-
     /*blockArrays_temp.conservativeResize(3, index);
     for (int c=0; c<index; c++){
         blockArrays_temp.col(c) = blockArrays_temp2.col(c);
     }
     blockArrays_temp2.resize(0,0);*/
-    blockArrays_temp.conservativeResize(3, index);
+    blockArrays_temp.conservativeResize(2, index);
+    fullVec_temp.conservativeResize(index);
 
-    Eigen::MatrixXi blockArrays = blockArrays_temp;     //need this
+    //std::cout << fullVec_temp << std::endl;
+    MatrixXsi blockArrays (2, blockArrays_temp.cols() );
+    std::vector<int> tempVec(fullVec_temp.data(), fullVec_temp.row(0).data() + fullVec_temp.rows());
+    std::vector<int> sortVec( blockArrays_temp.cols() );
+
+    /*MatrixXsi blockArrays = blockArrays_temp;     //need this
     Eigen::VectorXi veryTempVec = blockArrays_temp.row(0);
     std::vector<int> sortVec(veryTempVec.data(), veryTempVec.row(0).data() + blockArrays_temp.cols());
-    std::vector<int> tempVec = sortVec;
+    std::vector<int> tempVec = sortVec;*/
 
     index = 0;
     for (auto i: sort_indexes(tempVec)){
         blockArrays.col(index) = blockArrays_temp.col(i);
         sortVec[index]         = tempVec[i];
+        //std::cout << tempVec[i] << " " << fullVec_temp(index) <<std::endl;
         index += 1;
     }
+
+    fullVecIn     = sortVec;
 
     sortVec.erase( unique( sortVec.begin(), sortVec.end() ), sortVec.end() ); //need this
 
@@ -523,33 +564,36 @@ void  MakeIntMat::mapper_2(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockAr
     sortVecIn     = sortVec;
 }
 
-void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArraysIn, int i1, int i2, int i3, int s1, int s2, int s3){
+void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, std::vector<int> &fullVecIn, MatrixXsi& blockArraysIn, int i1, int i2, int i3, int s1, int s2, int s3){
 
     int index       = 0;
     int colSize     = 10000;
-    Eigen::MatrixXi   blockArrays_temp(4,colSize);
+    MatrixXsi        blockArrays_temp(3,colSize);
+    Eigen::VectorXi  fullVec_temp(colSize);
 
     bool cond_hhh = (i1 == 0 && i2 == 0 && i3==0);
     bool cond_hhp = (i1 == 0 && i2 == 0 && i3==1);
     bool cond_pph = (i1 == 1 && i2 == 1 && i3==0);
     bool cond_ppp = (i1 == 1 && i2 == 1 && i3==1);
 
-    //Eigen::MatrixXi   blockArrays_temp2;
+    //MatrixXsi   blockArrays_temp2;
     //blockArrays_temp.conservativeResize(4, colSize);
 
     // 0 0 0
     if (cond_hhh){
         if (s3 == +1){
             std::cout << "blockArrays_ppp_hhh     | started  |" << std::fixed << std::right << std::setw(m_printLength+12) << " |" << std::endl;
-            for (int i=0; i<m_Nh; i++){
-                for (int j=i+1; j<m_Nh; j++){
-                    for (int k=j+1; k<m_Nh; k++){
-                        blockArrays_temp.col(index) << m_system->kUnique3(i,j,k,s1,s2,s3),i,j,k;
+            for (short int i=0; i<m_Nh; i++){
+                for (short int j=i+1; j<m_Nh; j++){
+                    for (short int k=j+1; k<m_Nh; k++){
+                        blockArrays_temp.col(index) << i,j,k;
+                        fullVec_temp(index) = m_system->kUnique3(i,j,k,s1,s2,s3);
                         index += 1;
 
                         if (index >= colSize){
                             colSize += 10000;
-                            blockArrays_temp.conservativeResize(4, colSize);
+                            blockArrays_temp.conservativeResize(3, colSize);
+                            fullVec_temp.conservativeResize(colSize);
                         }
                     }
                 }
@@ -558,15 +602,17 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
         }
         else if (s3 == -1){//I need them independent if s3=-1
             std::cout << "blockArrays_ppm_hhh     | started  |" << std::fixed << std::right << std::setw(m_printLength+12) << " |" << std::endl;
-            for (int i=0; i<m_Nh; i++){
-                for (int j=i+1; j<m_Nh; j++){
-                    for (int k=0; k<m_Nh; k++){
-                        blockArrays_temp.col(index) << m_system->kUnique3(i,j,k,s1,s2,s3),i,j,k;
+            for (short int i=0; i<m_Nh; i++){
+                for (short int j=i+1; j<m_Nh; j++){
+                    for (short int k=0; k<m_Nh; k++){
+                        blockArrays_temp.col(index) << i,j,k;
+                        fullVec_temp(index) = m_system->kUnique3(i,j,k,s1,s2,s3);
                         index += 1;
 
                         if (index >= colSize){
                             colSize += 10000;
-                            blockArrays_temp.conservativeResize(4, colSize);
+                            blockArrays_temp.conservativeResize(3, colSize);
+                            fullVec_temp.conservativeResize(colSize);
                         }
                     }
                 }
@@ -578,15 +624,17 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
     if (cond_hhp){
         std::cout << "blockArrays_ppm_hhp     | started  |" << std::fixed << std::right << std::setw(m_printLength+12) << " |" << std::endl;
 
-        for (int i=0; i<m_Nh; i++){
-            for (int j=i+1; j<m_Nh; j++){
-                for (int a=m_Nh; a<m_Ns; a++){
-                    blockArrays_temp.col(index) << m_system->kUnique3(i,j,a,s1,s2,s3),i,j,a;
+        for (short int i=0; i<m_Nh; i++){
+            for (short int j=i+1; j<m_Nh; j++){
+                for (short int a=m_Nh; a<m_Ns; a++){
+                    blockArrays_temp.col(index) << i,j,a;
+                    fullVec_temp(index) = m_system->kUnique3(i,j,a,s1,s2,s3);
                     index += 1;
 
                     if (index >= colSize){
                         colSize += 10000;
-                        blockArrays_temp.conservativeResize(4, colSize);
+                        blockArrays_temp.conservativeResize(3, colSize);
+                        fullVec_temp.conservativeResize(colSize);
                     }
                 }
             }
@@ -599,24 +647,26 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
         //blockArrays_temp.conservativeResize(4, 0);
         int ku;
 //#pragma omp parallel for reduction(+:index) private(ku) firstprivate(colSize)
-        for (int a=m_Nh; a<m_Ns; a++){
-            /*Eigen::MatrixXi temp1;
-            Eigen::MatrixXi temp2;
+        for (short int a=m_Nh; a<m_Ns; a++){
+            /*MatrixXsi temp1;
+            MatrixXsi temp2;
             temp2.conservativeResize(blockArrays_temp.rows(), colSize);*/
-            for (int b=a+1; b<m_Ns; b++){
-                for (int i=0; i<m_Nh; i++){
+            for (short int b=a+1; b<m_Ns; b++){
+                for (short int i=0; i<m_Nh; i++){
                     ku = m_system->kUnique3(a,b,i,s1,s2,s3);
                     auto it1 = std::find(sortVec_ppm_hhp.begin(), sortVec_ppm_hhp.end(), ku);
                     auto it2 = std::find(sortVec_p_h.begin(), sortVec_p_h.end(), ku);
                     auto it3 = std::find(sortVec_p_p.begin(), sortVec_p_p.end(), ku);
                     if (it1 != sortVec_ppp_hhh.end() || it2 != sortVec_p_h.end() || it3 != sortVec_p_p.end()){
-                        blockArrays_temp.col(index) << ku,a,b,i;
+                        blockArrays_temp.col(index) << a,b,i;
+                        fullVec_temp(index) = ku;
                         //temp2.col(index) << ku,a,b,i;
                         index += 1;
 
                         if (index >= colSize){
                             colSize += 10000;
-                            blockArrays_temp.conservativeResize(4, colSize);
+                            blockArrays_temp.conservativeResize(3, colSize);
+                            fullVec_temp.conservativeResize(colSize);
                             //temp2.conservativeResize(4, colSize);
                         }
                         //std::cout << temp2.col(index-1) << std::endl;
@@ -643,23 +693,25 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
 
         int ku;
 
-        for (int a=m_Nh; a<m_Ns; a++){
-            for (int b=a+1; b<m_Ns; b++){
-                for (int c=b+1; c<m_Ns; c++){
+        for (short int a=m_Nh; a<m_Ns; a++){
+            for (short int b=a+1; b<m_Ns; b++){
+                for (short int c=b+1; c<m_Ns; c++){
                     ku = m_system->kUnique3(a,b,c,s1,s2,s3);
                     auto it = std::find(sortVec_ppp_hhh.begin(), sortVec_ppp_hhh.end(), ku);
                     if (it != sortVec_ppp_hhh.end()){
-                        blockArrays_temp.col(index) << ku,a,b,c;
+                        blockArrays_temp.col(index) << a,b,c;
+                        fullVec_temp(index) = ku;
                         index += 1;
 
                         if (index >= colSize){
                             colSize += 10000;
-                            blockArrays_temp.conservativeResize(4, colSize);
+                            blockArrays_temp.conservativeResize(3, colSize);
+                            fullVec_temp.conservativeResize(colSize);
                         }
                     }
                 }
             }
-        }
+        }//
         std::cout << "blockArrays_ppp_ppp     | finished | Columns: " << std::fixed << std::right << std::setw(m_printLength) << index << " |" << std::endl;
     }
 
@@ -668,13 +720,17 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
         blockArrays_temp.col(c) = blockArrays_temp2.col(c);
     }
     blockArrays_temp2.resize(0,0);*/
-    blockArrays_temp.conservativeResize(4, index);
+    blockArrays_temp.conservativeResize(3, index);
+    fullVec_temp.conservativeResize(index);
 
 
-    Eigen::MatrixXi blockArrays = blockArrays_temp;     //need this
+    /*MatrixXsi blockArrays = blockArrays_temp;     //need this
     Eigen::VectorXi veryTempVec = blockArrays_temp.row(0);
     std::vector<int> sortVec(veryTempVec.data(), veryTempVec.row(0).data() + blockArrays_temp.cols());
-    std::vector<int> tempVec = sortVec;
+    std::vector<int> tempVec = sortVec;*/
+    MatrixXsi blockArrays (3, blockArrays_temp.cols() );
+    std::vector<int> tempVec(fullVec_temp.data(), fullVec_temp.row(0).data() + fullVec_temp.rows());
+    std::vector<int> sortVec( blockArrays_temp.cols() );
 
     index = 0;
     for (auto i: sort_indexes(tempVec)){
@@ -683,18 +739,21 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
         index += 1;
     }
 
+    fullVecIn = sortVec;
+
     sortVec.erase( unique( sortVec.begin(), sortVec.end() ), sortVec.end() ); //need this
 
     blockArraysIn = blockArrays;
     sortVecIn     = sortVec;
 }
 
-void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArraysIn, int i1, int i2, int i3, int i4, int s1, int s2, int s3, int s4){
+void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, std::vector<int> &fullVecIn, MatrixXsi& blockArraysIn, int i1, int i2, int i3, int i4, int s1, int s2, int s3, int s4){
 
     int index       = 0;
     int colSize     = 10000;
-    Eigen::MatrixXi   blockArrays_temp(5,colSize);
-    //Eigen::MatrixXi   blockArrays_temp2;
+    MatrixXsi        blockArrays_temp(4,colSize);
+    Eigen::VectorXi  fullVec_temp(colSize);
+    //MatrixXsi   blockArrays_temp2;
 
     bool cond_hhpp = (i1 == 0 && i2 == 0 && i3==1 && i4==1);
     bool cond_pphh = (i1 == 1 && i2 == 1 && i3==0 && i4==0);
@@ -709,19 +768,21 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
 
         int ku;
 
-        for (int i=0; i<m_Nh; i++){
-            for (int j=i+1; j<m_Nh; j++){
-                for (int k=j+1; k<m_Nh; k++){
-                    for (int a=m_Nh; a<m_Ns; a++){
+        for (short int i=0; i<m_Nh; i++){
+            for (short int j=i+1; j<m_Nh; j++){
+                for (short int k=j+1; k<m_Nh; k++){
+                    for (short int a=m_Nh; a<m_Ns; a++){
                         ku = m_system->kUnique4(i,j,k,a,s1,s2,s3,s4);
                         auto it = std::find(sortVec_pp_pp.begin(), sortVec_pp_pp.end(), ku);
                         if (it != sortVec_pp_pp.end()){
-                            blockArrays_temp.col(index) << ku,i,j,k,a;
+                            blockArrays_temp.col(index) << i,j,k,a;
+                            fullVec_temp(index) = ku;
                             index += 1;
 
                             if (index >= colSize){
                                 colSize += 10000;
-                                blockArrays_temp.conservativeResize(5, colSize);
+                                blockArrays_temp.conservativeResize(4, colSize);
+                                fullVec_temp.conservativeResize(colSize);
                             }
                         }
                     }
@@ -736,19 +797,21 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
 
         int ku;
 
-        for (int i=0; i<m_Nh; i++){
-            for (int j=i+1; j<m_Nh; j++){
-                for (int a=m_Nh; a<m_Ns; a++){
-                    for (int b=a+1; b<m_Ns; b++){
+        for (short int i=0; i<m_Nh; i++){
+            for (short int j=i+1; j<m_Nh; j++){
+                for (short int a=m_Nh; a<m_Ns; a++){
+                    for (short int b=a+1; b<m_Ns; b++){
                         ku = m_system->kUnique4(i,j,a,b,s1,s2,s3,s4);
                         auto it = std::find(sortVec_pm_ph.begin(), sortVec_pm_ph.end(), ku);
                         if (it != sortVec_pm_ph.end()){
-                            blockArrays_temp.col(index) << ku,i,j,a,b;
+                            blockArrays_temp.col(index) << i,j,a,b;
+                            fullVec_temp(index) = ku;
                             index += 1;
 
                             if (index >= colSize){
                                 colSize += 10000;
-                                blockArrays_temp.conservativeResize(5, colSize);
+                                blockArrays_temp.conservativeResize(4, colSize);
+                                fullVec_temp.conservativeResize(colSize);
                             }
                         }
                     }
@@ -763,19 +826,21 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
 
         int ku;
 
-        for (int a=m_Nh; a<m_Ns; a++){
-            for (int b=a+1; b<m_Ns; b++){
-                for (int i=0; i<m_Nh; i++){
-                    for (int j=i+1; j<m_Nh; j++){
+        for (short int a=m_Nh; a<m_Ns; a++){
+            for (short int b=a+1; b<m_Ns; b++){
+                for (short int i=0; i<m_Nh; i++){
+                    for (short int j=i+1; j<m_Nh; j++){
                         ku = m_system->kUnique4(a,b,i,j,s1,s2,s3,s4);
                         auto it = std::find(sortVec_pm_hp.begin(), sortVec_pm_hp.end(), ku);
                         if (it != sortVec_pm_hp.end()){
-                            blockArrays_temp.col(index) << ku,a,b,i,j;
+                            blockArrays_temp.col(index) << a,b,i,j;
+                            fullVec_temp(index) = ku;
                             index += 1;
 
                             if (index >= colSize){
                                 colSize += 10000;
-                                blockArrays_temp.conservativeResize(5, colSize);
+                                blockArrays_temp.conservativeResize(4, colSize);
+                                fullVec_temp.conservativeResize(colSize);
                             }
                         }
                     }
@@ -790,19 +855,21 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
 
         int ku;
 
-        for (int a=m_Nh; a<m_Ns; a++){
-            for (int b=a+1; b<m_Ns; b++){
-                for (int c=b+1; c<m_Ns; c++){
-                    for (int i=0; i<m_Nh; i++){
+        for (short int a=m_Nh; a<m_Ns; a++){
+            for (short int b=a+1; b<m_Ns; b++){
+                for (short int c=b+1; c<m_Ns; c++){
+                    for (short int i=0; i<m_Nh; i++){
                         ku = m_system->kUnique4(a,b,c,i,s1,s2,s3,s4);
                         auto it = std::find(sortVec_pp_hh.begin(), sortVec_pp_hh.end(), ku);
                         if (it != sortVec_pp_hh.end()){
-                            blockArrays_temp.col(index) << ku,a,b,c,i;
+                            blockArrays_temp.col(index) << a,b,c,i;
+                            fullVec_temp(index) = ku;
                             index += 1;
 
                             if (index >= colSize){
                                 colSize += 10000;
-                                blockArrays_temp.conservativeResize(5, colSize);
+                                blockArrays_temp.conservativeResize(4, colSize);
+                                fullVec_temp.conservativeResize(colSize);
                             }
                         }
                     }
@@ -817,12 +884,16 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
         blockArrays_temp.col(c) = blockArrays_temp2.col(c);
     }
     blockArrays_temp2.resize(0,0);*/
-    blockArrays_temp.conservativeResize(5, index);
+    blockArrays_temp.conservativeResize(4, index);
+    fullVec_temp.conservativeResize(index);
 
-    Eigen::MatrixXi blockArrays = blockArrays_temp;     //need this
+    /*MatrixXsi blockArrays = blockArrays_temp;     //need this
     Eigen::VectorXi veryTempVec = blockArrays_temp.row(0);
     std::vector<int> sortVec(veryTempVec.data(), veryTempVec.row(0).data() + blockArrays_temp.cols());
-    std::vector<int> tempVec = sortVec;
+    std::vector<int> tempVec = sortVec;*/
+    MatrixXsi blockArrays (4, blockArrays_temp.cols() );
+    std::vector<int> tempVec(fullVec_temp.data(), fullVec_temp.row(0).data() + fullVec_temp.rows());
+    std::vector<int> sortVec( blockArrays_temp.cols() );
 
     index = 0;
     for (auto i: sort_indexes(tempVec)){
@@ -831,6 +902,8 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
         index += 1;
     }
 
+    fullVecIn = sortVec;
+
     sortVec.erase( unique( sortVec.begin(), sortVec.end() ), sortVec.end() ); //need this
 
     blockArraysIn = blockArrays;
@@ -838,12 +911,13 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
 }
 
 
-void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArraysIn, int i1, int i2, int i3, int i4, int i5, int s1, int s2, int s3, int s4, int s5){
+void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, std::vector<int> &fullVecIn, MatrixXsi& blockArraysIn, int i1, int i2, int i3, int i4, int i5, int s1, int s2, int s3, int s4, int s5){
 
     int index       = 0;
     int colSize     = 10000;
-    Eigen::MatrixXi   blockArrays_temp(6,colSize);
-    //Eigen::MatrixXi   blockArrays_temp2;
+    MatrixXsi        blockArrays_temp(5,colSize);
+    Eigen::VectorXi  fullVec_temp(colSize);
+    //MatrixXsi   blockArrays_temp2;
 
     bool cond_hhhpp = (i1 == 0 && i2 == 0 && i3 == 0 && i4==1 && i5==1);
     bool cond_ppphh = (i1 == 1 && i2 == 1 && i3 == 1 && i4==0 && i5==0);
@@ -856,20 +930,22 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
 
         int ku;
 
-        for (int i=0; i<m_Nh; i++){
-            for (int j=i+1; j<m_Nh; j++){
-                for (int k=j+1; k<m_Nh; k++){
-                    for (int a=m_Nh; a<m_Ns; a++){
-                        for (int b=a+1; b<m_Ns; b++){
+        for (short int i=0; i<m_Nh; i++){
+            for (short int j=i+1; j<m_Nh; j++){
+                for (short int k=j+1; k<m_Nh; k++){
+                    for (short int a=m_Nh; a<m_Ns; a++){
+                        for (short int b=a+1; b<m_Ns; b++){
                             ku = m_system->kUnique5(i,j,k,a,b,s1,s2,s3,s4,s5);
                             auto it = std::find(sortVec_p_p.begin(), sortVec_p_p.end(), ku);
                             if (it != sortVec_p_p.end()){
-                                blockArrays_temp.col(index) << ku,i,j,k,a,b;
+                                blockArrays_temp.col(index) << i,j,k,a,b;
+                                fullVec_temp(index) = ku;
                                 index += 1;
 
                                 if (index >= colSize){
                                     colSize += 10000;
-                                    blockArrays_temp.conservativeResize(6, colSize);
+                                    blockArrays_temp.conservativeResize(5, colSize);
+                                    fullVec_temp.conservativeResize(colSize);
                                 }
                             }
                         }
@@ -885,20 +961,22 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
 
         int ku;
 
-        for (int a=m_Nh; a<m_Ns; a++){
-            for (int b=a+1; b<m_Ns; b++){
-                for (int c=b+1; c<m_Ns; c++){
-                    for (int i=0; i<m_Nh; i++){
-                        for (int j=i+1; j<m_Nh; j++){
+        for (short int a=m_Nh; a<m_Ns; a++){
+            for (short int b=a+1; b<m_Ns; b++){
+                for (short int c=b+1; c<m_Ns; c++){
+                    for (short int i=0; i<m_Nh; i++){
+                        for (short int j=i+1; j<m_Nh; j++){
                             ku = m_system->kUnique5(a,b,c,i,j,s1,s2,s3,s4,s5);
                             auto it = std::find(sortVec_p_h.begin(), sortVec_p_h.end(), ku);
                             if (it != sortVec_p_h.end()){
-                                blockArrays_temp.col(index) << ku,a,b,c,i,j;
+                                blockArrays_temp.col(index) << a,b,c,i,j;
+                                fullVec_temp(index) = ku;
                                 index += 1;
 
                                 if (index >= colSize){
                                     colSize += 10000;
-                                    blockArrays_temp.conservativeResize(6, colSize);
+                                    blockArrays_temp.conservativeResize(5, colSize);
+                                    fullVec_temp.conservativeResize(colSize);
                                 }
                             }
                         }
@@ -914,13 +992,18 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
         blockArrays_temp.col(c) = blockArrays_temp2.col(c);
     }
     blockArrays_temp2.resize(0,0);*/
-    blockArrays_temp.conservativeResize(6, index);
+    blockArrays_temp.conservativeResize(5, index);
+    fullVec_temp.conservativeResize(index);
 
-    Eigen::MatrixXi blockArrays = blockArrays_temp;
+    /*MatrixXsi blockArrays = blockArrays_temp;
 
     Eigen::VectorXi veryTempVec = blockArrays_temp.row(0);
     std::vector<int> sortVec(veryTempVec.data(), veryTempVec.row(0).data() + blockArrays_temp.cols());
-    std::vector<int> tempVec = sortVec;
+    std::vector<int> tempVec = sortVec;*/
+
+    MatrixXsi blockArrays (5, blockArrays_temp.cols() );
+    std::vector<int> tempVec(fullVec_temp.data(), fullVec_temp.row(0).data() + fullVec_temp.rows());
+    std::vector<int> sortVec( blockArrays_temp.cols() );
 
     index = 0;
     for (auto i: sort_indexes(tempVec)){
@@ -928,6 +1011,8 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, Eigen::MatrixXi& blockArr
         sortVec[index]         = tempVec[i];
         index += 1;
     }
+
+    fullVecIn = sortVec;
 
     sortVec.erase( unique( sortVec.begin(), sortVec.end() ), sortVec.end() ); //need this
 
@@ -968,10 +1053,10 @@ MakeIntMat::MatrixX MakeIntMat::I1_makemat(int channel1, int channel2){    //mak
             id = Identity_hhpp(k,l,c,d);
             */
 
-            id = Identity_hhpp(blockArrays_pp_hh(1,i1),
-                               blockArrays_pp_hh(2,i1),
-                               blockArrays_pp_pp(1,i2),
-                               blockArrays_pp_pp(2,i2));
+            id = Identity_hhpp(blockArrays_pp_hh(0,i1),
+                               blockArrays_pp_hh(1,i1),
+                               blockArrays_pp_pp(0,i2),
+                               blockArrays_pp_pp(1,i2));
             returnMat(i1-range_lower1, i2-range_lower2) = Vhhpp_elements[id];
         }
     }
@@ -996,11 +1081,11 @@ MakeIntMat::MatrixX MakeIntMat::I2_makemat(int channel1, int channel2){    //mak
     double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
-        k = blockArrays_pm_hp(1,i1);
-        c = blockArrays_pm_hp(2,i1);
+        k = blockArrays_pm_hp(0,i1);
+        c = blockArrays_pm_hp(1,i1);
         for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
-            d = blockArrays_pm_ph(1,i2);
-            l = blockArrays_pm_ph(2,i2);
+            d = blockArrays_pm_ph(0,i2);
+            l = blockArrays_pm_ph(1,i2);
 
             //id = Identity_hhpp(k,l,c,d);
 
@@ -1057,11 +1142,11 @@ MakeIntMat::MatrixX MakeIntMat::I3_makemat(int channel1, int channel2){    //mak
     double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
-        c = blockArrays_ppm_pph(1,i1);
-        d = blockArrays_ppm_pph(2,i1);
-        k = blockArrays_ppm_pph(3,i1);
+        c = blockArrays_ppm_pph(0,i1);
+        d = blockArrays_ppm_pph(1,i1);
+        k = blockArrays_ppm_pph(2,i1);
         for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
-            l = blockArrays_p_h(1,i2);
+            l = blockArrays_p_h(0,i2);
 
             //id = Identity_hhpp(k,l,c,d);
 
@@ -1108,11 +1193,11 @@ MakeIntMat::MatrixX MakeIntMat::I4_makemat(int channel1, int channel2){    //mak
     double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
-        k = blockArrays_ppm_hhp(1,i1);
-        l = blockArrays_ppm_hhp(2,i1);
-        c = blockArrays_ppm_hhp(3,i1);
+        k = blockArrays_ppm_hhp(0,i1);
+        l = blockArrays_ppm_hhp(1,i1);
+        c = blockArrays_ppm_hhp(2,i1);
         for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
-            d = blockArrays_p_p(1,i2);
+            d = blockArrays_p_p(0,i2);
 
             //id = Identity_hhpp(k,l,c,d);
 
@@ -1158,11 +1243,11 @@ MakeIntMat::MatrixX MakeIntMat::D10b_makemat(int channel1, int channel2){    //m
     int a; int k;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
-        c = blockArrays_ppm_pph(1,i1);
-        d = blockArrays_ppm_pph(2,i1);
-        k = blockArrays_ppm_pph(3,i1);
+        c = blockArrays_ppm_pph(0,i1);
+        d = blockArrays_ppm_pph(1,i1);
+        k = blockArrays_ppm_pph(2,i1);
         for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
-            a = blockArrays_p_p(1,i2);
+            a = blockArrays_p_p(0,i2);
 
             /*if (d<a){
                 id = Identity_ppph(c,d,a,k);
@@ -1207,11 +1292,11 @@ MakeIntMat::MatrixX MakeIntMat::D10c_makemat(int channel1, int channel2){
     int c; int j;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
-        k = blockArrays_ppm_hhp(1,i1);
-        l = blockArrays_ppm_hhp(2,i1);
-        c = blockArrays_ppm_hhp(3,i1);
+        k = blockArrays_ppm_hhp(0,i1);
+        l = blockArrays_ppm_hhp(1,i1);
+        c = blockArrays_ppm_hhp(2,i1);
         for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
-            j = blockArrays_p_h(1,i2);
+            j = blockArrays_p_h(0,i2);
 
             id = Identity_hhhp(k,l,j,c);
             returnMat(i1-range_lower1, i2-range_lower2) = Vhhhp_elements[id];
@@ -1237,11 +1322,11 @@ MakeIntMat::MatrixX MakeIntMat::T1a_makemat(int channel1, int channel2){    //ma
     int d; int k;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
-        b = blockArrays_ppm_pph(1,i1);
-        c = blockArrays_ppm_pph(2,i1);
-        k = blockArrays_ppm_pph(3,i1);
+        b = blockArrays_ppm_pph(0,i1);
+        c = blockArrays_ppm_pph(1,i1);
+        k = blockArrays_ppm_pph(2,i1);
         for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
-            d = blockArrays_p_p(1,i2);
+            d = blockArrays_p_p(0,i2);
 
             id = Identity_ppph(b,c,d,k);
             returnMat(i1-range_lower1, i2-range_lower2) = Vppph_elements[id];
@@ -1267,11 +1352,11 @@ MakeIntMat::MatrixX MakeIntMat::T1b_makemat(int channel1, int channel2){    //ma
     int l; int c;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
-        j = blockArrays_ppm_hhp(1,i1);
-        k = blockArrays_ppm_hhp(2,i1);
-        c = blockArrays_ppm_hhp(3,i1);
+        j = blockArrays_ppm_hhp(0,i1);
+        k = blockArrays_ppm_hhp(1,i1);
+        c = blockArrays_ppm_hhp(2,i1);
         for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
-            l = blockArrays_p_h(1,i2);
+            l = blockArrays_p_h(0,i2);
 
             id = Identity_hhhp(j,k,l,c);
             returnMat(i1-range_lower1, i2-range_lower2) = Vhhhp_elements[id];
@@ -1298,11 +1383,11 @@ MakeIntMat::MatrixX MakeIntMat::T3b_makemat(int channel1, int channel2){    //ma
     double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
-        e = blockArrays_pm_pp(1,i1);
-        b = blockArrays_pm_pp(2,i1);
+        e = blockArrays_pm_pp(0,i1);
+        b = blockArrays_pm_pp(1,i1);
         for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
-            l = blockArrays_pm_hp(1,i2);
-            d = blockArrays_pm_hp(2,i2);
+            l = blockArrays_pm_hp(0,i2);
+            d = blockArrays_pm_hp(1,i2);
 
             if (d<e){
                 id = Identity_ppph(d,e,b,l);
@@ -1347,11 +1432,11 @@ MakeIntMat::MatrixX MakeIntMat::T3c_makemat(int channel1, int channel2){    //ma
     double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
-        m = blockArrays_pm_hh(1,i1);
-        j = blockArrays_pm_hh(2,i1);
+        m = blockArrays_pm_hh(0,i1);
+        j = blockArrays_pm_hh(1,i1);
         for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
-            d = blockArrays_pm_ph(1,i2);
-            l = blockArrays_pm_ph(2,i2);
+            d = blockArrays_pm_ph(0,i2);
+            l = blockArrays_pm_ph(1,i2);
 
             if (l<m){
                 id = Identity_hhhp(l,m,j,d);
@@ -1390,11 +1475,11 @@ MakeIntMat::MatrixX MakeIntMat::T3d_makemat(int channel1, int channel2){    //ma
     int c; int l;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
-        d = blockArrays_pp_pp(1,i1);
-        e = blockArrays_pp_pp(2,i1);
+        d = blockArrays_pp_pp(0,i1);
+        e = blockArrays_pp_pp(1,i1);
         for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
-            c = blockArrays_pp_ph(1,i2);
-            l = blockArrays_pp_ph(2,i2);
+            c = blockArrays_pp_ph(0,i2);
+            l = blockArrays_pp_ph(1,i2);
 
             id = Identity_ppph(d,e,c,l);
             returnMat(i1-range_lower1, i2-range_lower2) = Vppph_elements[id];
@@ -1420,11 +1505,11 @@ MakeIntMat::MatrixX MakeIntMat::T3e_makemat(int channel1, int channel2){    //ma
     int k; int d;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
-        l = blockArrays_ppm_hhh(1,i1);
-        m = blockArrays_ppm_hhh(2,i1);
-        k = blockArrays_ppm_hhh(3,i1);
+        l = blockArrays_ppm_hhh(0,i1);
+        m = blockArrays_ppm_hhh(1,i1);
+        k = blockArrays_ppm_hhh(2,i1);
         for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
-            d = blockArrays_p_p(1,i2);
+            d = blockArrays_p_p(0,i2);
 
             id = Identity_hhhp(l,m,k,d);
             returnMat(i1-range_lower1, i2-range_lower2) = Vhhhp_elements[id];
@@ -1451,11 +1536,11 @@ MakeIntMat::MatrixX MakeIntMat::T5a_makemat(int channel1, int channel2){    //ma
     double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
-        m = blockArrays_pm_hp(1,i1);
-        e = blockArrays_pm_hp(2,i1);
+        m = blockArrays_pm_hp(0,i1);
+        e = blockArrays_pm_hp(1,i1);
         for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
-            d = blockArrays_pm_ph(1,i2);
-            l = blockArrays_pm_ph(2,i2);
+            d = blockArrays_pm_ph(0,i2);
+            l = blockArrays_pm_ph(1,i2);
 
             if (l<m){
                 if (d<e){
@@ -1515,11 +1600,11 @@ MakeIntMat::MatrixX MakeIntMat::T5b_makemat(int channel1, int channel2){    //ma
     double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
-        d = blockArrays_ppm_pph(1,i1);
-        e = blockArrays_ppm_pph(2,i1);
-        l = blockArrays_ppm_pph(3,i1);
+        d = blockArrays_ppm_pph(0,i1);
+        e = blockArrays_ppm_pph(1,i1);
+        l = blockArrays_ppm_pph(2,i1);
         for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
-            m = blockArrays_p_h(1,i2);
+            m = blockArrays_p_h(0,i2);
 
             if (l<m){
                 id = Identity_hhpp(l,m,d,e);
@@ -1559,11 +1644,11 @@ MakeIntMat::MatrixX MakeIntMat::T5c_makemat(int channel1, int channel2){    //ma
     double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
-        l = blockArrays_ppm_hhp(1,i1);
-        m = blockArrays_ppm_hhp(2,i1);
-        d = blockArrays_ppm_hhp(3,i1);
+        l = blockArrays_ppm_hhp(0,i1);
+        m = blockArrays_ppm_hhp(1,i1);
+        d = blockArrays_ppm_hhp(2,i1);
         for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
-            e = blockArrays_p_p(1,i2);
+            e = blockArrays_p_p(0,i2);
 
             if (d<e){
                 id = Identity_hhpp(l,m,d,e);
@@ -1603,11 +1688,11 @@ MakeIntMat::MatrixX MakeIntMat::T5d_makemat(int channel1, int channel2){    //ma
     double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
-        l = blockArrays_ppm_hhp(1,i1);
-        m = blockArrays_ppm_hhp(2,i1);
-        e = blockArrays_ppm_hhp(3,i1);
+        l = blockArrays_ppm_hhp(0,i1);
+        m = blockArrays_ppm_hhp(1,i1);
+        e = blockArrays_ppm_hhp(2,i1);
         for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
-            d = blockArrays_p_p(1,i2);
+            d = blockArrays_p_p(0,i2);
 
             if (d<e){
                 id = Identity_hhpp(l,m,d,e);
@@ -1647,11 +1732,11 @@ MakeIntMat::MatrixX MakeIntMat::T5e_makemat(int channel1, int channel2){    //ma
     double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
-        d = blockArrays_ppm_pph(1,i1);
-        e = blockArrays_ppm_pph(2,i1);
-        m = blockArrays_ppm_pph(3,i1);
+        d = blockArrays_ppm_pph(0,i1);
+        e = blockArrays_ppm_pph(1,i1);
+        m = blockArrays_ppm_pph(2,i1);
         for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
-            l = blockArrays_p_h(1,i2);
+            l = blockArrays_p_h(0,i2);
 
             if (l<m){
                 id = Identity_hhpp(l,m,d,e);
@@ -1690,11 +1775,11 @@ MakeIntMat::MatrixX MakeIntMat::T5f_makemat(int channel1, int channel2){    //ma
     int d; int e;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
-        l = blockArrays_pp_hh(1,i1);
-        m = blockArrays_pp_hh(2,i1);
+        l = blockArrays_pp_hh(0,i1);
+        m = blockArrays_pp_hh(1,i1);
         for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
-            d = blockArrays_pp_pp(1,i2);
-            e = blockArrays_pp_pp(2,i2);
+            d = blockArrays_pp_pp(0,i2);
+            e = blockArrays_pp_pp(1,i2);
 
             id = Identity_hhpp(l,m,d,e);
             returnMat(i1-range_lower1, i2-range_lower2) = Vhhpp_elements[id];
@@ -1720,11 +1805,11 @@ MakeIntMat::MatrixX MakeIntMat::T5g_makemat(int channel1, int channel2){    //ma
     int d; int e;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
-        l = blockArrays_pp_hh(1,i1);
-        m = blockArrays_pp_hh(2,i1);
+        l = blockArrays_pp_hh(0,i1);
+        m = blockArrays_pp_hh(1,i1);
         for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
-            d = blockArrays_pp_pp(1,i2);
-            e = blockArrays_pp_pp(2,i2);
+            d = blockArrays_pp_pp(0,i2);
+            e = blockArrays_pp_pp(1,i2);
 
             id = Identity_hhpp(l,m,d,e);
             returnMat(i1-range_lower1, i2-range_lower2) = Vhhpp_elements[id];
@@ -1747,8 +1832,8 @@ MakeIntMat::MatrixX MakeIntMat::make3x1Block(int ku, int i1, int i2, int i3, int
     bool cond_p   = (i4 == 1);
 
 
-    Eigen::MatrixXi blockArrays1_pointer;
-    Eigen::MatrixXi blockArrays2_pointer;
+    MatrixXsi blockArrays1_pointer;
+    MatrixXsi blockArrays2_pointer;
 
     std::vector<int> sortVec1;
     std::vector<int> sortVec2;
@@ -1886,8 +1971,8 @@ MakeIntMat::MatrixX MakeIntMat::make2x2Block(int ku, int i1, int i2, int i3, int
     bool cond_pp2 = (i3 == 1 && i4 == 1);
 
 
-    Eigen::MatrixXi blockArrays1_pointer;
-    Eigen::MatrixXi blockArrays2_pointer;
+    MatrixXsi blockArrays1_pointer;
+    MatrixXsi blockArrays2_pointer;
 
     std::vector<int> sortVec1;
     std::vector<int> sortVec2;
@@ -1987,7 +2072,7 @@ MakeIntMat::MatrixX MakeIntMat::make2x2Block(int ku, int i1, int i2, int i3, int
         for (int i = range_lower1; i<range_upper1; i++){
             for (int j = range_lower2; j<range_upper2; j++){
                 //count1 ++;
-                returnMat(i-range_lower1, j-range_lower2) = Vhhpp_elements[Identity_hhpp((blockArrays1_pointer)(1,i), (blockArrays2_pointer)(2,j), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j))];
+                returnMat(i-range_lower1, j-range_lower2) = Vhhpp_elements[Identity_hhpp((blockArrays1_pointer)(0,i), (blockArrays2_pointer)(1,j), (blockArrays1_pointer)(1,i), (blockArrays2_pointer)(0,j))];
                 /*int ii = (blockArrays1_pointer)(1,i);
                 int jj = (blockArrays2_pointer)(2,j);
                 int aa = (blockArrays1_pointer)(2,i);
@@ -2006,7 +2091,7 @@ MakeIntMat::MatrixX MakeIntMat::make2x2Block(int ku, int i1, int i2, int i3, int
         //int count2 = 0;
         for (int i = range_lower1; i<range_upper1; i++){
             for (int j = range_lower2; j<range_upper2; j++){
-                returnMat(i-range_lower1, j-range_lower2) = Vhhpp_elements[Identity_hhpp((blockArrays1_pointer)(2,i), (blockArrays2_pointer)(2,j), (blockArrays1_pointer)(1,i), (blockArrays2_pointer)(1,j))];
+                returnMat(i-range_lower1, j-range_lower2) = Vhhpp_elements[Identity_hhpp((blockArrays1_pointer)(1,i), (blockArrays2_pointer)(1,j), (blockArrays1_pointer)(0,i), (blockArrays2_pointer)(0,j))];
                 /*int ii = (blockArrays1_pointer)(2,i);
                 int jj = (blockArrays2_pointer)(2,j);
                 int aa = (blockArrays1_pointer)(1,i);
@@ -2023,7 +2108,7 @@ MakeIntMat::MatrixX MakeIntMat::make2x2Block(int ku, int i1, int i2, int i3, int
     else if (cond_hh1 && cond_pp2){
         for (int i = range_lower1; i<range_upper1; i++){
             for (int j = range_lower2; j<range_upper2; j++){
-                returnMat(i-range_lower1, j-range_lower2) = Vhhpp_elements[Identity_hhpp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j))];
+                returnMat(i-range_lower1, j-range_lower2) = Vhhpp_elements[Identity_hhpp((blockArrays1_pointer)(0,i), (blockArrays1_pointer)(1,i), (blockArrays2_pointer)(0,j), (blockArrays2_pointer)(1,j))];
             }
         }
     }
@@ -2067,33 +2152,32 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
 
     cout << string(m_printLength + 6, '-') << " Making blockArrays " << string(m_printLength + 7, '-') << endl;
 
-    mapper_1(sortVec_p_h, blockArrays_p_h, 0, 1);        //h
-    mapper_1(sortVec_p_p, blockArrays_p_p, 1, 1);        //p
+    mapper_1(sortVec_p_h, fullVec_p_h, blockArrays_p_h, 0, 1);        //h
+    mapper_1(sortVec_p_p, fullVec_p_p, blockArrays_p_p, 1, 1);        //p
 
-    mapper_2(sortVec_pp_hh, blockArrays_pp_hh, 0,0, 1,1);      //hh
-    mapper_2(sortVec_pm_hp, blockArrays_pm_hp, 0,1, 1,-1);     //hp
-    mapper_2(sortVec_pm_ph, blockArrays_pm_ph, 1,0, 1,-1);     //ph
-    mapper_2(sortVec_pp_pp, blockArrays_pp_pp, 1,1, 1,1);      //pp
+    mapper_2(sortVec_pp_hh, fullVec_pp_hh, blockArrays_pp_hh, 0,0, 1,1);      //hh
+    mapper_2(sortVec_pm_hp, fullVec_pm_hp, blockArrays_pm_hp, 0,1, 1,-1);     //hp
+    mapper_2(sortVec_pm_ph, fullVec_pm_ph, blockArrays_pm_ph, 1,0, 1,-1);     //ph
+    mapper_2(sortVec_pp_pp, fullVec_pp_pp, blockArrays_pp_pp, 1,1, 1,1);      //pp
     mapper_hp();        //hp for Vhphp
-
-    mapper_3(sortVec_ppm_hhp, blockArrays_ppm_hhp, 0,0,1, 1,1,-1);    //hhp
-    mapper_3(sortVec_ppm_pph, blockArrays_ppm_pph, 1,1,0, 1,1,-1);    //pph
+    mapper_3(sortVec_ppm_hhp, fullVec_ppm_hhp, blockArrays_ppm_hhp, 0,0,1, 1,1,-1);    //hhp
+    mapper_3(sortVec_ppm_pph, fullVec_ppm_pph, blockArrays_ppm_pph, 1,1,0, 1,1,-1);    //pph
 
     if (m_triplesOn){
-        mapper_2(sortVec_pp_ph, blockArrays_pp_ph, 1,0, 1,1);             //ph
-        mapper_2(sortVec_pp_hp, blockArrays_pp_hp, 0,1, 1,1);             //hp
-        mapper_2(sortVec_pm_hh, blockArrays_pm_hh, 0,0, 1,-1);            //hh
-        mapper_2(sortVec_pm_pp, blockArrays_pm_pp, 1,1, 1,-1);            //pp
-        mapper_3(sortVec_ppp_hhh, blockArrays_ppp_hhh, 0,0,0, 1,1,1);     //hhh
-        mapper_3(sortVec_ppm_hhh, blockArrays_ppm_hhh, 0,0,0, 1,1,-1);    //hhh
-        mapper_3(sortVec_ppp_ppp, blockArrays_ppp_ppp, 1,1,1, 1,1,1);     //ppp
-        mapper_4(sortVec_pppm_hhhp, blockArrays_pppm_hhhp, 0,0,0,1, 1,1,1,-1);     //hhhp
+        mapper_2(sortVec_pp_ph, fullVec_pp_ph, blockArrays_pp_ph, 1,0, 1,1);             //ph
+        mapper_2(sortVec_pp_hp, fullVec_pp_hp, blockArrays_pp_hp, 0,1, 1,1);             //hp
+        mapper_2(sortVec_pm_hh, fullVec_pm_hh, blockArrays_pm_hh, 0,0, 1,-1);            //hh
+        mapper_2(sortVec_pm_pp, fullVec_pm_pp, blockArrays_pm_pp, 1,1, 1,-1);            //pp
+        mapper_3(sortVec_ppp_hhh, fullVec_ppp_hhh, blockArrays_ppp_hhh, 0,0,0, 1,1,1);     //hhh
+        mapper_3(sortVec_ppm_hhh, fullVec_ppm_hhh, blockArrays_ppm_hhh, 0,0,0, 1,1,-1);    //hhh
+        mapper_3(sortVec_ppp_ppp, fullVec_ppp_ppp, blockArrays_ppp_ppp, 1,1,1, 1,1,1);     //ppp
+        mapper_4(sortVec_pppm_hhhp, fullVec_pppm_hhhp, blockArrays_pppm_hhhp, 0,0,0,1, 1,1,1,-1);     //hhhp
         //mapper_4(sortVec_ppmm_hhpp, blockArrays_ppmm_hhpp, 0,0,1,1, 1,1,-1,-1);    //hhpp
-        mapper_4(sortVec_ppmm_pphh, blockArrays_ppmm_pphh, 1,1,0,0, 1,1,-1,-1);    //pphh
-        mapper_4(sortVec_pppm_ppph, blockArrays_pppm_ppph, 1,1,1,0, 1,1,1,-1);     //ppph
+        mapper_4(sortVec_ppmm_pphh, fullVec_ppmm_pphh, blockArrays_ppmm_pphh, 1,1,0,0, 1,1,-1,-1);    //pphh
+        mapper_4(sortVec_pppm_ppph, fullVec_pppm_ppph, blockArrays_pppm_ppph, 1,1,1,0, 1,1,1,-1);     //ppph
 
-        mapper_5(sortVec_pppmm_hhhpp, blockArrays_pppmm_hhhpp, 0,0,0,1,1, 1,1,1,-1,-1);     //hhhpp
-        mapper_5(sortVec_pppmm_ppphh, blockArrays_pppmm_ppphh, 1,1,1,0,0, 1,1,1,-1,-1);     //ppphh
+        mapper_5(sortVec_pppmm_hhhpp, fullVec_pppmm_hhhpp, blockArrays_pppmm_hhhpp, 0,0,0,1,1, 1,1,1,-1,-1);     //hhhpp
+        mapper_5(sortVec_pppmm_ppphh, fullVec_pppmm_ppphh, blockArrays_pppmm_ppphh, 1,1,1,0,0, 1,1,1,-1,-1);     //ppphh
 
     }
 
@@ -2135,7 +2219,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     for (int h=0; h<sortVec_p_h.size(); h++){
         int val_h = sortVec_p_h[h];
         for (int bA_h=0; bA_h<blockArrays_p_h.cols(); bA_h++){
-            if (val_h == blockArrays_p_h(0,bA_h)){
+            if (val_h == fullVec_p_h[bA_h]){
                 range_upper = bA_h+1;
                 counter += 1;
             }
@@ -2152,7 +2236,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     for (int p=0; p<sortVec_p_p.size(); p++){
         int val_p = sortVec_p_p[p];
         for (int bA_p=0; bA_p<blockArrays_p_p.cols(); bA_p++){
-            if (val_p == blockArrays_p_p(0,bA_p)){
+            if (val_p == fullVec_p_p[bA_p]){
                 range_upper = bA_p+1;
                 counter += 1;
             }
@@ -2171,7 +2255,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     for (int hh=0; hh<sortVec_pp_hh.size(); hh++){
         int val_hh = sortVec_pp_hh[hh];
         for (int bA_hh=0; bA_hh<blockArrays_pp_hh.cols(); bA_hh++){
-            if (val_hh == blockArrays_pp_hh(0,bA_hh)){
+            if (val_hh == fullVec_pp_hh[bA_hh]){
                 range_upper = bA_hh+1;
                 counter += 1;
             }
@@ -2190,7 +2274,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         auto it = std::find(sortVec_pm_ph.begin(), sortVec_pm_ph.end(), val_hp);
         if (it != sortVec_pm_ph.end()){
             for (int bA_hp=0; bA_hp<blockArrays_pm_hp.cols(); bA_hp++){
-                if (val_hp == blockArrays_pm_hp(0,bA_hp)){
+                if (val_hp == fullVec_pm_hp[0,bA_hp]){
                     range_upper = bA_hp+1;
                     counter += 1;
                 }
@@ -2211,7 +2295,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         auto it2 = std::find(sortVec_ppmm_hhpp.begin(), sortVec_ppmm_hhpp.end(), val_ph);
         if (it1 != sortVec_pm_hp.end() || it2 != sortVec_ppmm_hhpp.end()){
             for (int bA_ph=0; bA_ph<blockArrays_pm_ph.cols(); bA_ph++){
-                if (val_ph == blockArrays_pm_ph(0,bA_ph)){
+                if (val_ph == fullVec_pm_ph[bA_ph]){
                     range_upper = bA_ph+1;
                     counter += 1;
                 }
@@ -2232,7 +2316,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             auto it1 = std::find(sortVec_pm_ph.begin(), sortVec_pm_ph.end(), val_hh);
             if (it1 != sortVec_pm_ph.end()){
                 for (int bA_hh=0; bA_hh<blockArrays_pm_hh.cols(); bA_hh++){
-                    if (val_hh == blockArrays_pm_hh(0,bA_hh)){
+                    if (val_hh == fullVec_pm_hh[bA_hh]){
                         range_upper = bA_hh+1;
                         counter += 1;
                     }
@@ -2254,7 +2338,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             auto it2 = std::find(sortVec_pp_hh.begin(), sortVec_pp_hh.end(), val_hp);
             if (it1 != sortVec_pp_ph.end() || it2 != sortVec_pp_hh.end()){
                 for (int bA_hp=0; bA_hp<blockArrays_pp_hp.cols(); bA_hp++){
-                    if (val_hp == blockArrays_pp_hp(0,bA_hp)){
+                    if (val_hp == fullVec_pp_hp[0,bA_hp]){
                         range_upper = bA_hp+1;
                         counter += 1;
                     }
@@ -2276,7 +2360,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             auto it2 = std::find(sortVec_pp_pp.begin(), sortVec_pp_pp.end(), val_ph);
             if (it1 != sortVec_pp_hp.end() || it2 != sortVec_pp_pp.end()){
                 for (int bA_ph=0; bA_ph<blockArrays_pp_ph.cols(); bA_ph++){
-                    if (val_ph == blockArrays_pp_ph(0,bA_ph)){
+                    if (val_ph == fullVec_pp_ph[bA_ph]){
                         range_upper = bA_ph+1;
                         counter += 1;
                     }
@@ -2296,7 +2380,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             auto it1 = std::find(sortVec_pm_ph.begin(), sortVec_pm_ph.end(), val_pp);
             if (it1 != sortVec_pm_ph.end()){
                 for (int bA_pp=0; bA_pp<blockArrays_pm_pp.cols(); bA_pp++){
-                    if (val_pp == blockArrays_pm_pp(0,bA_pp)){
+                    if (val_pp == fullVec_pm_pp[0,bA_pp]){
                         range_upper = bA_pp+1;
                         counter += 1;
                     }
@@ -2315,11 +2399,11 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     for (int hp=0; hp<sortVec_hp_s.size(); hp++){
         int val_hp = sortVec_hp_s[hp];
         for (int bA_hp=range_upper; bA_hp<blockArrays_hp_s.cols(); bA_hp++){
-            if (val_hp == blockArrays_hp_s(0,bA_hp)){
+            if (val_hp == fullVec_hp_s[bA_hp]){
                 range_upper = bA_hp+1;
                 counter += 1;
             }
-            else if (val_hp < blockArrays_hp_s(0,bA_hp)){
+            else if (val_hp < fullVec_hp_s[bA_hp]){
                 break;
             }
         }
@@ -2339,11 +2423,11 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         auto it3 = std::find(sortVec_pppm_hhhp.begin(), sortVec_pppm_hhhp.end(), val_pp);
         if (it1 != sortVec_pp_hh.end() || it2 != sortVec_pp_ph.end() || it3 != sortVec_pppm_hhhp.end()){
             for (int bA_pp=range_upper; bA_pp<blockArrays_pp_pp.cols(); bA_pp++){
-                if (val_pp == blockArrays_pp_pp(0,bA_pp)){
+                if (val_pp ==fullVec_pp_pp[bA_pp]){
                     range_upper = bA_pp+1;
                     counter += 1;
                 }
-                else if(val_pp < blockArrays_pp_pp(0,bA_pp)){
+                else if(val_pp < fullVec_pp_pp[bA_pp]){
                     break;
                 }
             }
@@ -2365,11 +2449,11 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         auto it2 = std::find(sortVec_ppm_pph.begin(), sortVec_ppm_pph.end(), val_hhp);
         if (it1 != sortVec_p_p.end() || it2 != sortVec_ppm_pph.end()){
             for (int bA_hhp=range_upper; bA_hhp<blockArrays_ppm_hhp.cols(); bA_hhp++){
-                if (val_hhp == blockArrays_ppm_hhp(0,bA_hhp)){
+                if (val_hhp == fullVec_ppm_hhp[bA_hhp]){
                     range_upper = bA_hhp+1;
                     counter += 1;
                 }
-                else if(val_hhp < blockArrays_ppm_hhp(0,bA_hhp)){
+                else if(val_hhp < fullVec_ppm_hhp[bA_hhp]){
                     break;
                 }
             }
@@ -2389,11 +2473,11 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         auto it2 = std::find(sortVec_ppm_hhp.begin(), sortVec_ppm_hhp.end(), val_pph);
         if (it1 != sortVec_p_h.end() || it2 != sortVec_ppm_hhp.end()){
             for (int bA_pph=range_upper; bA_pph<blockArrays_ppm_pph.cols(); bA_pph++){
-                if (val_pph == blockArrays_ppm_pph(0,bA_pph)){
+                if (val_pph == fullVec_ppm_pph[bA_pph]){
                     range_upper = bA_pph+1;
                     counter += 1;
                 }
-                else if(val_pph < blockArrays_ppm_pph(0,bA_pph)){
+                else if(val_pph < fullVec_ppm_pph[bA_pph]){
                     break;
                 }
             }
@@ -2413,11 +2497,11 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             auto it = std::find(sortVec_ppp_ppp.begin(), sortVec_ppp_ppp.end(), val_hhh);
             if (it != sortVec_ppp_ppp.end()){
                 for (int bA_hhh=range_upper; bA_hhh<blockArrays_ppp_hhh.cols(); bA_hhh++){
-                    if (val_hhh == blockArrays_ppp_hhh(0,bA_hhh)){
+                    if (val_hhh == fullVec_ppp_hhh[bA_hhh]){
                         range_upper = bA_hhh+1;
                         counter += 1;
                     }
-                    else if (val_hhh < blockArrays_ppp_hhh(0,bA_hhh)){
+                    else if (val_hhh < fullVec_ppp_hhh[bA_hhh]){
                         break;
                     }
                 }
@@ -2436,11 +2520,11 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             auto it = std::find(sortVec_p_p.begin(), sortVec_p_p.end(), val_hhh);
             if (it != sortVec_p_p.end()){
                 for (int bA_hhh=range_upper; bA_hhh<blockArrays_ppm_hhh.cols(); bA_hhh++){
-                    if (val_hhh == blockArrays_ppm_hhh(0,bA_hhh)){
+                    if (val_hhh == fullVec_ppm_hhh[bA_hhh]){
                         range_upper = bA_hhh+1;
                         counter += 1;
                     }
-                    else if (val_hhh < blockArrays_ppm_hhh(0,bA_hhh)){
+                    else if (val_hhh < fullVec_ppm_hhh[bA_hhh]){
                         break;
                     }
                 }
@@ -2459,11 +2543,11 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             auto it = std::find(sortVec_ppp_hhh.begin(), sortVec_ppp_hhh.end(), val_ppp);
             if (it != sortVec_ppp_hhh.end()){
                 for (int bA_ppp=range_upper; bA_ppp<blockArrays_ppp_ppp.cols(); bA_ppp++){
-                    if (val_ppp == blockArrays_ppp_ppp(0,bA_ppp)){
+                    if (val_ppp == fullVec_ppp_ppp[bA_ppp]){
                         range_upper = bA_ppp+1;
                         counter += 1;
                     }
-                    else if (val_ppp < blockArrays_ppp_ppp(0,bA_ppp)){
+                    else if (val_ppp < fullVec_ppp_ppp[bA_ppp]){
                         break;
                     }
                 }
@@ -2486,11 +2570,11 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             auto it = std::find(sortVec_pp_pp.begin(), sortVec_pp_pp.end(), val_hhhp);
             if (it != sortVec_pp_pp.end()){
                 for (int bA_hhhp=range_upper; bA_hhhp<blockArrays_pppm_hhhp.cols(); bA_hhhp++){
-                    if (val_hhhp == blockArrays_pppm_hhhp(0,bA_hhhp)){
+                    if (val_hhhp == fullVec_pppm_hhhp[bA_hhhp]){
                         range_upper = bA_hhhp+1;
                         counter += 1;
                     }
-                    else if (val_hhhp < blockArrays_pppm_hhhp(0,bA_hhhp)){
+                    else if (val_hhhp < fullVec_pppm_hhhp[bA_hhhp]){
                         break;
                     }
                 }
@@ -2533,11 +2617,11 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
                 auto it = std::find(sortVec_pm_hp.begin(), sortVec_pm_hp.end(), val_pphh);
                 if (it != sortVec_pm_hp.end()){
                     for (int bA_pphh=range_upper; bA_pphh<blockArrays_ppmm_pphh.cols(); bA_pphh++){
-                        if (val_pphh == blockArrays_ppmm_pphh(0,bA_pphh)){
+                        if (val_pphh == fullVec_ppmm_pphh[bA_pphh]){
                             range_upper = bA_pphh+1;
                             counter += 1;
                         }
-                        else if (val_pphh < blockArrays_ppmm_pphh(0,bA_pphh)){
+                        else if (val_pphh < fullVec_ppmm_pphh[bA_pphh]){
                             break;
                         }
                     }
@@ -2556,11 +2640,11 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             auto it = std::find(sortVec_pp_hh.begin(), sortVec_pp_hh.end(), val_ppph);
             if (it != sortVec_pp_hh.end()){
                 for (int bA_ppph=range_upper; bA_ppph<blockArrays_pppm_ppph.cols(); bA_ppph++){
-                    if (val_ppph == blockArrays_pppm_ppph(0,bA_ppph)){
+                    if (val_ppph == fullVec_pppm_ppph[bA_ppph]){
                         range_upper = bA_ppph+1;
                         counter += 1;
                     }
-                    else if (val_ppph < blockArrays_pppm_ppph(0,bA_ppph)){
+                    else if (val_ppph < fullVec_pppm_ppph[bA_ppph]){
                         break;
                     }
                 }
@@ -2583,11 +2667,11 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             auto it = std::find(sortVec_p_p.begin(), sortVec_p_p.end(), val_hhhpp);
             if (it != sortVec_p_p.end()){
                 for (int bA_hhhpp=range_upper; bA_hhhpp<blockArrays_pppmm_hhhpp.cols(); bA_hhhpp++){
-                    if (val_hhhpp == blockArrays_pppmm_hhhpp(0,bA_hhhpp)){
+                    if (val_hhhpp == fullVec_pppmm_hhhpp[bA_hhhpp]){
                         range_upper = bA_hhhpp+1;
                         counter += 1;
                     }
-                    else if (val_hhhpp < blockArrays_pppmm_hhhpp(0,bA_hhhpp)){
+                    else if (val_hhhpp < fullVec_pppmm_hhhpp[bA_hhhpp]){
                         break;
                     }
                 }
@@ -2606,11 +2690,11 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             auto it = std::find(sortVec_p_h.begin(), sortVec_p_h.end(), val_ppphh);
             if (it != sortVec_p_h.end()){
                 for (int bA_ppphh=range_upper; bA_ppphh<blockArrays_pppmm_ppphh.cols(); bA_ppphh++){
-                    if (val_ppphh == blockArrays_pppmm_ppphh(0,bA_ppphh)){
+                    if (val_ppphh == fullVec_pppmm_ppphh[bA_ppphh]){
                         range_upper = bA_ppphh+1;
                         counter += 1;
                     }
-                    else if (val_ppphh < blockArrays_pppmm_ppphh(0,bA_ppphh)){
+                    else if (val_ppphh < fullVec_pppmm_ppphh[bA_ppphh]){
                         break;
                     }
                 }
@@ -2632,7 +2716,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             int val_pp = sortVec_pp_pp[p];
             if (val_hh == val_pp){      //ensures I only work on cases where hh and pp have equal kunique
                 for (int hh=0; hh<blockArrays_pp_hh.cols(); hh++){
-                    if ( val_hh == blockArrays_pp_hh(0,hh) ){
+                    if ( val_hh == fullVec_pp_hh[hh] ){
                         range_upper_hh = hh+1;
                         counter += 1;
                     }
@@ -2640,7 +2724,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
                 range_lower_hh = range_upper_hh - counter;
                 counter = 0;
                 for (int pp=0; pp<blockArrays_pp_pp.cols(); pp++){
-                    if ( val_hh == blockArrays_pp_pp(0,pp) ){
+                    if ( val_hh == fullVec_pp_pp[pp] ){
                         range_upper_pp = pp+1;
                         counter += 1;
                     }
@@ -2667,7 +2751,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
                 int val_ppp = sortVec_ppp_ppp[ppp];
                 if (val_hhh == val_ppp){      //ensures I only work on cases where hhh and ppp have equal kunique
                     for (int hhh2=0; hhh2<blockArrays_ppp_hhh.cols(); hhh2++){
-                        if ( val_hhh == blockArrays_ppp_hhh(0,hhh2) ){
+                        if ( val_hhh == fullVec_ppp_hhh[hhh2] ){
                             range_upper_hhh = hhh2+1;
                             counter += 1;
                         }
@@ -2675,7 +2759,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
                     range_lower_hhh = range_upper_hhh - counter;
                     counter = 0;
                     for (int ppp2=0; ppp2<blockArrays_ppp_ppp.cols(); ppp2++){
-                        if ( val_hhh == blockArrays_ppp_ppp(0,ppp2) ){
+                        if ( val_hhh == fullVec_ppp_ppp[ppp2] ){
                             range_upper_ppp = ppp2+1;
                             counter += 1;
                         }
@@ -2706,6 +2790,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         range_upper_pp = boundsHolder_hhpp_pp(1,h);
         makeMatMap_hhpp(blockArrays_pp_hh, blockArrays_pp_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp);
     }*/
+
     for (int hh=0; hh<sortVec_pp_hh.size(); hh++){
         for (int pp=0; pp<sortVec_pp_pp.size(); pp++){
             if (sortVec_pp_hh[hh] == sortVec_pp_pp[pp] ){
@@ -2714,6 +2799,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
                 range_lower_pp = indexHolder_pp_pp(0,pp);
                 range_upper_pp = indexHolder_pp_pp(1,pp);
                 makeMatMap_hhpp(blockArrays_pp_hh, blockArrays_pp_pp,range_lower_hh, range_upper_hh, range_lower_pp, range_upper_pp);
+                //std::cout << "hmm" << std::endl;
             }
         }
     }
@@ -2798,35 +2884,35 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
 // ##################################################
 
 //I get the same result using this as I get using Rektblock
-MakeIntMat::MatrixX MakeIntMat::makeSquareBlock(Eigen::MatrixXi& array, unsigned long int range_lower, unsigned long int range_upper){
+MakeIntMat::MatrixX MakeIntMat::makeSquareBlock(MatrixXsi& array, unsigned long int range_lower, unsigned long int range_upper){
     int dim = range_upper - range_lower;
     //cout << dim << endl;
     MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(dim, dim);
     for (unsigned long int i = range_lower; i<range_upper; i++){
         for (unsigned long int j = i; j<range_upper; j++){
-            returnMat(i-range_lower,j-range_lower) = m_system->assym((array)(1,i), (array)(2,i), (array)(1,j), (array)(2,j));
+            returnMat(i-range_lower,j-range_lower) = m_system->assym((array)(0,i), (array)(1,i), (array)(0,j), (array)(1,j));
         }
     }
     returnMat = returnMat.selfadjointView<Eigen::Upper>();  //Since Vpppp is symmetric, we reflect the upper half onto the lower half
     return returnMat;
 }
 
-MakeIntMat::MatrixX MakeIntMat::makeSquareBlock_s(Eigen::MatrixXi& array, unsigned long int range_lower, unsigned long int range_upper){
+MakeIntMat::MatrixX MakeIntMat::makeSquareBlock_s(MatrixXsi& array, unsigned long int range_lower, unsigned long int range_upper){
     int dim = range_upper - range_lower;
     //cout << dim << endl;
     MakeIntMat::MatrixX returnMat;
     returnMat.conservativeResize(dim, dim);
     for (unsigned long int i = range_lower; i<range_upper; i++){
         for (unsigned long int j = range_lower; j<range_upper; j++){
-            returnMat(i-range_lower,j-range_lower) = m_system->assym((array)(1,j), (array)(2,i), (array)(1,i), (array)(2,j));
+            returnMat(i-range_lower,j-range_lower) = m_system->assym((array)(0,j), (array)(1,i), (array)(0,i), (array)(1,j));
         }
     }
     //returnMat = returnMat.selfadjointView<Eigen::Upper>();  //Since Vpppp is symmetric, we reflect the upper half onto the lower half
     return returnMat;
 }
 
-MakeIntMat::MatrixX MakeIntMat::makeRektBlock(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2){
+MakeIntMat::MatrixX MakeIntMat::makeRektBlock(MatrixXsi& array1, MatrixXsi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2){
     int dim1 = range_upper1 - range_lower1;
     int dim2 = range_upper2 - range_lower2;
     MakeIntMat::MatrixX returnMat;
@@ -2834,7 +2920,7 @@ MakeIntMat::MatrixX MakeIntMat::makeRektBlock(Eigen::MatrixXi& array1, Eigen::Ma
     for (unsigned long int i = range_lower1; i<range_upper1; i++){
         for (unsigned long int j = range_lower2; j<range_upper2; j++){
             //returnMat(i-range_lower1, j-range_lower2) = m_system->assym((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j));
-            returnMat(i-range_lower1, j-range_lower2) = Vhhpp_elements[Identity_hhpp((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j))];
+            returnMat(i-range_lower1, j-range_lower2) = Vhhpp_elements[Identity_hhpp((array1)(0,i), (array1)(1,i), (array2)(0,j), (array2)(1,j))];
         }
     }
     return returnMat;
@@ -2847,50 +2933,52 @@ MakeIntMat::MatrixX MakeIntMat::makeRektBlock(Eigen::MatrixXi& array1, Eigen::Ma
 // ##                                              ##
 // ##################################################
 
-void MakeIntMat::makeMatMap_hhhp(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2){
+void MakeIntMat::makeMatMap_hhhp(MatrixXsi& array1, MatrixXsi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2){
     for (unsigned long int i = range_lower1; i<range_upper1; i++){
         for (unsigned long int j = range_lower2; j<range_upper2; j++){
-            variable_type val = m_system->assym((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j));
+            //std::cout << (array1)(0,i) << (array1)(1,i) << (array2)(0,j) << (array2)(1,j) << std::endl;
+            variable_type val = m_system->assym((array1)(0,i), (array1)(1,i), (array2)(0,j), (array2)(1,j));
             if (val.real() != 0 && val.imag() != 0){
-                Vhhhp_elements[Identity_hhhp((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j))] = val;
+                Vhhhp_elements[Identity_hhhp((array1)(0,i), (array1)(1,i), (array2)(0,j), (array2)(1,j))] = val;
             }
         }
     }
 }
 
-void MakeIntMat::makeMatMap_hhpp(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2){
+void MakeIntMat::makeMatMap_hhpp(MatrixXsi& array1, MatrixXsi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2){
     for (unsigned long int i = range_lower1; i<range_upper1; i++){
         for (unsigned long int j = range_lower2; j<range_upper2; j++){
-            variable_type val = m_system->assym((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j));
+            //std::cout << (array1)(0,i) << " " << (array1)(0,i) << " " << (array2)(0,j) << " " << (array2)(0,j) << std::endl;
+            variable_type val = m_system->assym((array1)(0,i), (array1)(1,i), (array2)(0,j), (array2)(1,j));
             if (val.real() != 0 && val.imag() != 0){
-                Vhhpp_elements[Identity_hhpp((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j))] = val;
+                Vhhpp_elements[Identity_hhpp((array1)(0,i), (array1)(1,i), (array2)(0,j), (array2)(1,j))] = val;
             }
         }
     }
 }
 
-void MakeIntMat::makeMatMap_ppph(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2){
+void MakeIntMat::makeMatMap_ppph(MatrixXsi& array1, MatrixXsi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2){
     for (unsigned long int i = range_lower1; i<range_upper1; i++){
         for (unsigned long int j = range_lower2; j<range_upper2; j++){
-            variable_type val = m_system->assym((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j));
+            variable_type val = m_system->assym((array1)(0,i), (array1)(1,i), (array2)(0,j), (array2)(1,j));
             if (val.real() != 0 && val.imag() != 0){
-                Vppph_elements[Identity_ppph((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j))] = val;
+                Vppph_elements[Identity_ppph((array1)(0,i), (array1)(1,i), (array2)(0,j), (array2)(1,j))] = val;
             }
         }
     }
 }
 
-void MakeIntMat::makeMatVec(Eigen::MatrixXi& array1, Eigen::MatrixXi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2){
+void MakeIntMat::makeMatVec(MatrixXsi& array1, MatrixXsi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2){
     //std::vector<double> tempVec;
 
     int dim1 = range_upper1 - range_lower1;
     int dim2 = range_upper2 - range_lower2;
-    Eigen::MatrixXi insertMat;
+    MatrixXsi insertMat;
 
     insertMat.conservativeResize(dim1, dim2);
     for (unsigned long int i = range_lower1; i<range_upper1; i++){
         for (unsigned long int j = range_lower2; j<range_upper2; j++){
-            variable_type val = m_system->assym((array1)(1,i), (array1)(2,i), (array2)(1,j), (array2)(2,j));
+            variable_type val = m_system->assym((array1)(0,i), (array1)(1,i), (array2)(0,j), (array2)(1,j));
             if (val.real() != 0 && val.imag() != 0){
                 //tempVec.push_back(val);
                 Vhhpp_vector.push_back(val);

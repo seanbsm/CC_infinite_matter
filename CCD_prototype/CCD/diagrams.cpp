@@ -546,13 +546,13 @@ void Diagrams::makeT3(){
         int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
 
         for (int hhh=range_lower1; hhh<range_upper1; hhh++){
-            i = (m_intClass->blockArrays_ppp_hhh)(1,hhh);
-            j = (m_intClass->blockArrays_ppp_hhh)(2,hhh);
-            k = (m_intClass->blockArrays_ppp_hhh)(3,hhh);
+            i = (m_intClass->blockArrays_ppp_hhh)(0,hhh);
+            j = (m_intClass->blockArrays_ppp_hhh)(1,hhh);
+            k = (m_intClass->blockArrays_ppp_hhh)(2,hhh);
             for (int ppp=range_lower2; ppp<range_upper2; ppp++){
-                a = (m_intClass->blockArrays_ppp_ppp)(1,ppp);
-                b = (m_intClass->blockArrays_ppp_ppp)(2,ppp);
-                c = (m_intClass->blockArrays_ppp_ppp)(3,ppp);
+                a = (m_intClass->blockArrays_ppp_ppp)(0,ppp);
+                b = (m_intClass->blockArrays_ppp_ppp)(1,ppp);
+                c = (m_intClass->blockArrays_ppp_ppp)(2,ppp);
 
                 id = m_intClass->Identity_hhhppp(i,j,k,a,b,c);
                 m_ampClass->T3_elements_I[id] = index;
