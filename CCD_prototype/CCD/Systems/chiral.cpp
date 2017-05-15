@@ -141,17 +141,17 @@ System::variable_type CHIRAL::assym(int p, int q, int r, int s){
                         &qs, &qt, &qpx, &qpy, &qpz,
                         &rs, &rt, &rpx, &rpy, &rpz,
                         &ss, &st, &spx, &spy, &spz);*/
-    double real = sgn(matel_real)*pow(sgn(matel_real)*matel_real, 1./3);
-    double imag = sgn(matel_im)*pow(sgn(matel_im)*matel_im, 1./3);
+    //double real = sgn(matel_real)*pow(sgn(matel_real)*matel_real, 1./3);
+    //double imag = sgn(matel_im)*pow(sgn(matel_im)*matel_im, 1./3);
 
 
     //std::cout << real << " " << matel_real << std::endl;
 
-    result.real(real);
-    result.imag(imag);
+    //result.real(real);
+    //result.imag(imag);
 
-    //result.real(matel_real);
-    //result.imag(matel_im);
+    result.real(matel_real);
+    result.imag(matel_im);
 
     return result;
 }

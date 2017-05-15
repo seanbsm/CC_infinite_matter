@@ -34,7 +34,7 @@ public:
     std::vector<MatrixX>  Amplitudes;
 
     typedef Eigen::Matrix<unsigned long int, Eigen::Dynamic, Eigen::Dynamic> MatrixXuli;
-    typedef Eigen::Matrix<short int, Eigen::Dynamic, Eigen::Dynamic> MatrixXsi;
+    typedef Eigen::Matrix<short int, Eigen::Dynamic, Eigen::Dynamic>         MatrixXsi;
 
     spp::sparse_hash_map<unsigned long int, variable_type>           T2_elements;
     spp::sparse_hash_map<unsigned long int, variable_type>           T2_temp;

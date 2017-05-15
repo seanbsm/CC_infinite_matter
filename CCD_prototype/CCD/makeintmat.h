@@ -49,6 +49,7 @@ public:
 
     //Eigen matrix with unsigned long int as type
     typedef Eigen::Matrix<unsigned long int, Eigen::Dynamic, Eigen::Dynamic> MatrixXuli;
+    typedef Eigen::Matrix<short int, Eigen::Dynamic, Eigen::Dynamic>         MatrixXsi;
 
 
     /* Due to the momentum-conservation relation (kp+kq = kr+ks for <pq||rs>),
@@ -56,7 +57,7 @@ public:
      * sortVecs and indexHolders. We'd like the blockArray generation to be pretty general,
      * otherwise the generation of blockArrays would require a nightmare of if-tests and whatnot.
      * So, since the CC diagrams require many different alignments, giving various rewritings of
-     * the momentum relation, I've used the convention _p/m_p/h, where in the first, p/m stands for
+     * the momentum relation, I've used the convention _(p/m)_(p/h), where in the first, p/m stands for
      * plus or minus between p/h in the next part. I.e. _ppm_hpp means total momentum kh+kp-kp.
      * Probably there's a better way, but I can't muck about with a little problem for long.
      */

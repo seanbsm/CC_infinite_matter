@@ -93,7 +93,7 @@ double Master::CC_Eref(){
         for (int i = 0; i<m_Nh; i++){
             Eref_c += m_system->h0(i);
             for (int j = 0; j<m_Nh; j++){
-                Eref_c += 0.5*m_system->assym_single(i,j);
+                Eref_c -= 0.5*m_system->assym_single(i,j);
             }
         }
         Eref = Eref_c.real();
