@@ -87,7 +87,7 @@ int main(int argc, char** argv)
         eps = atof(argv[5]);
     }
     else{        //default size
-        Nh = 14;                        //number of particles
+        Nh = 66;                        //number of particles
         Nb = 4;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
     }
     double  rs;     //Wigner Seitz radius
@@ -178,36 +178,39 @@ int main(int argc, char** argv)
 
     //typedef MakeIntMat::variable_type variable_type;
 
-    if (CCDT){
-        double ECCDT = master->CC_master(eps, conFac);
+    bool run_CC = false;
 
-        std::cout << std::endl;
-        std::cout << "Correlation energy" << std::endl;
-        std::cout << "Delta ECCDT:    "<< std::right << std::setw(21) << ECCDT << std::endl;
-        Ecc = ECCDT;
+    if (run_CC){
+        if (CCDT){
+            double ECCDT = master->CC_master(eps, conFac);
+            std::cout << std::endl;
+            std::cout << "Correlation energy" << std::endl;
+            std::cout << "Delta ECCDT:    "<< std::right << std::setw(21) << ECCDT << std::endl;
+            Ecc = ECCDT;
+        }
+        else{
+            double ECCD = master->CC_master(eps, conFac);
+            std::cout << std::endl;
+            std::cout << "Correlation energy" << std::endl;
+            std::cout << "Delta ECCD:     "<< std::right << std::setw(21) << ECCD << std::endl;
+            Ecc = ECCD;
+        }
+        std::cout << "E_corr/A:       " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (Ecc)/Nh << std::endl;
     }
-    else{
-        double ECCD = master->CC_master(eps, conFac);
-        std::cout << std::endl;
-        std::cout << "Correlation energy" << std::endl;
-        std::cout << "Delta ECCD:     "<< std::right << std::setw(21) << ECCD << std::endl;
-        Ecc = ECCD;
-    }
-    std::cout << "E_corr/Nh:      " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (Ecc)/Nh << std::endl;
 
     auto t2 = Clock::now();
 
     std::cout << std::endl;
-    std::cout << "Hatree-Fock energy" << std::endl;
+    std::cout << "Hartree-Fock energy" << std::endl;
     std::cout << "E_HF:           " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << EHF << std::endl;
-    std::cout << "E_HF/Nh:        " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (EHF)/Nh << std::endl;
+    std::cout << "E_HF/A:         " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (EHF)/Nh << std::endl;
     std::cout << std::endl;
     std::cout << "Reference energy" << std::endl;
     std::cout << "Eref:           " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << Eref << std::endl;
-    std::cout << "E_ref/Nh:       " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (Eref)/Nh << std::endl;
+    std::cout << "E_ref/A:        " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (Eref)/Nh << std::endl;
     std::cout << std::endl;
     std::cout << "Total energy" << std::endl;
-    std::cout << "E/Nh:           " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (Eref+Ecc)/Nh << std::endl;
+    std::cout << "E/A:            " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (Eref+Ecc)/Nh << std::endl;
     std::cout << std::endl;
 
     if (intermediates){
