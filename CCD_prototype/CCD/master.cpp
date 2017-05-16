@@ -88,27 +88,30 @@ void Master::setClasses(){
 
 double Master::CC_Eref(){
     double Eref = 0;
-    //if (typeid(variable_type) == typeid(std::complex<double>)){
-        complex<double> Eref_c = 0;
-        for (int i = 0; i<m_Nh; i++){
-            Eref_c += m_system->h0(i);
-            for (int j = 0; j<m_Nh; j++){
-                Eref_c -= 0.5*m_system->assym_single(i,j);
-            }
+    complex<double> Eref_c = 0;
+    for (int i = 0; i<m_Nh; i++){
+        Eref_c += m_system->h0(i);
+        for (int j = 0; j<m_Nh; j++){
+            Eref_c += 0.5*m_system->assym_single(i,j);
         }
-        //std::cout << std::fixed << std::setprecision (16) << Eref << std::endl;
-        Eref = Eref_c.real();
-    /*}
-    else{
-        for (int i = 0; i<m_Nh; i++){
-            Eref += m_system->h0(i);
-            for (int j = 0; j<m_Nh; j++){
-                Eref += 0.5*m_system->assym_single(i,j);
-            }
-        }
-    }*/
-        //std::cout << Eref_c << std::endl;
+    }
+    //std::cout << std::fixed << std::setprecision (16) << Eref << std::endl;
+    Eref = Eref_c.real();
     return Eref;
+}
+
+double Master::CC_E_HF(){
+    double EHF = 0;
+    complex<double> EHF_c = 0;
+    for (int i = 0; i<m_Nh; i++){
+        EHF_c += m_system->h0(i);
+        for (int j = 0; j<m_Nh; j++){
+            EHF_c -= 0.5*m_system->assym_single(i,j);
+        }
+    }
+    //std::cout << std::fixed << std::setprecision (16) << Eref << std::endl;
+    EHF = EHF_c.real();
+    return EHF;
 }
 
 double Master::CC_master(double eps, double conFac){

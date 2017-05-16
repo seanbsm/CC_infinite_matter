@@ -45,6 +45,7 @@ public:
     void setCCType(int type);
 
     double CC_Eref();
+    double CC_E_HF();
     double CC_master(double eps, double conFac);
     variable_type Iterator(double eps, double conFac, variable_type E_MBPT2);
 };

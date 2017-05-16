@@ -163,14 +163,16 @@ int main(int argc, char** argv)
         }
     }
     else{
-        master->setCCType(3);
-        master->setTriples(true);
-        CCDT = true;
+        master->setCCType(0);
+        master->setTriples(false);
+        CCDT = false;
     }
 
     cout << "C++ code" << endl;
 
-    double Eref; double Ecc;
+    double EHF; double Eref; double Ecc;
+    Eref = master->CC_Eref();
+    EHF = master->CC_E_HF();
 
     auto t1 = Clock::now();
 
@@ -178,23 +180,35 @@ int main(int argc, char** argv)
 
     if (CCDT){
         double ECCDT = master->CC_master(eps, conFac);
-        cout << "Delta ECCDT: "<< std::right << std::setw(21) << ECCDT << endl;
+
+        std::cout << std::endl;
+        std::cout << "Correlation energy" << std::endl;
+        std::cout << "Delta ECCDT:    "<< std::right << std::setw(21) << ECCDT << std::endl;
         Ecc = ECCDT;
     }
     else{
         double ECCD = master->CC_master(eps, conFac);
-        cout << "Delta ECCD: "<< std::right << std::setw(21) << ECCD << endl;
+        std::cout << std::endl;
+        std::cout << "Correlation energy" << std::endl;
+        std::cout << "Delta ECCD:     "<< std::right << std::setw(21) << ECCD << std::endl;
         Ecc = ECCD;
     }
+    std::cout << "E_corr/Nh:      " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (Ecc)/Nh << std::endl;
 
     auto t2 = Clock::now();
 
-    Eref = master->CC_Eref();
-
+    std::cout << std::endl;
+    std::cout << "Hatree-Fock energy" << std::endl;
+    std::cout << "E_HF:           " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << EHF << std::endl;
+    std::cout << "E_HF/Nh:        " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (EHF)/Nh << std::endl;
+    std::cout << std::endl;
+    std::cout << "Reference energy" << std::endl;
     std::cout << "Eref:           " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << Eref << std::endl;
     std::cout << "E_ref/Nh:       " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (Eref)/Nh << std::endl;
-    std::cout << "E_corr/Nh:      " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (Ecc)/Nh << std::endl;
+    std::cout << std::endl;
+    std::cout << "Total energy" << std::endl;
     std::cout << "E/Nh:           " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (Eref+Ecc)/Nh << std::endl;
+    std::cout << std::endl;
 
     if (intermediates){
         std::cout << "Total time used: "
