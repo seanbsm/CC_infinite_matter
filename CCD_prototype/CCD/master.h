@@ -25,6 +25,8 @@ public:
     int               m_threads            = 1;
     double            m_alpha              = 1;
 
+    int countCC_iters = 0;
+
     //this is the type to be used in the interactions and amplitudes
     //set to std::complex if you wish to work with the chiral model, otherwise use double
     typedef std::complex<double> variable_type;

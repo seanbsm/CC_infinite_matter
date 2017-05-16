@@ -107,6 +107,7 @@ int CHIRAL::kUnique5(int k, int p, int q, int s, int t, int s1, int s2, int s3, 
 System::variable_type CHIRAL::f(int p){
     variable_type returnVal = h0(p);
     for (int i=0; i<m_Nh; i++){
+        //if (i!=p){returnVal += assym_single(p, i);}
         returnVal += assym_single(p, i);
     };
     //cout << returnVal << endl;
@@ -120,6 +121,20 @@ System::variable_type CHIRAL::h0(int p){
 }
 
 System::variable_type CHIRAL::assym(int p, int q, int r, int s){
+    Eigen::Vector3i kp( m_states(1,p), m_states(2,p), m_states(3,p) );
+    Eigen::Vector3i kq( m_states(1,q), m_states(2,q), m_states(3,q) );
+    Eigen::Vector3i kr( m_states(1,r), m_states(2,r), m_states(3,r) );
+    Eigen::Vector3i ks( m_states(1,s), m_states(2,s), m_states(3,s) );
+    int sp = m_states(4,p); int tp = 1;//= m_states(5,p);
+    int sq = m_states(4,q); int tq = 1;//= m_states(5,q);
+    int sr = m_states(4,r); int tr = 1;//= m_states(5,r);
+    int ss = m_states(4,s); int ts = 1;//= m_states(5,s);
+
+    //these tests should be already performed through k_unique
+    if ( vecDelta(kp+kq, kr+ks) == 0){ return 0;}   //momentum conservation
+    if ( sp+sq != sr+ss){ return 0; }               //spin conservation
+    if ( tp+tq != tr+ts){ return 0; }               //isospin conservation
+
     double matel_real   = 0;
     double matel_im     = 0;
     double rho          = m_Nh/(m_L3);
@@ -133,6 +148,16 @@ System::variable_type CHIRAL::assym(int p, int q, int r, int s){
                         &m_states(4,q), &isospin, &m_states(1,q), &m_states(2,q), &m_states(3,q),
                         &m_states(4,r), &isospin, &m_states(1,r), &m_states(2,r), &m_states(3,r),
                         &m_states(4,s), &isospin, &m_states(1,s), &m_states(2,s), &m_states(3,s));
+
+    double matel_real1   = 0;
+    double matel_im1     = 0;
+    complex<double> result1;
+    chipot_f90_wrapper_(&matel_real1, &matel_im1,
+                        &m_Nh, &rho,
+                        &m_states(4,p), &isospin, &m_states(1,p), &m_states(2,p), &m_states(3,p),
+                        &m_states(4,q), &isospin, &m_states(1,q), &m_states(2,q), &m_states(3,q),
+                        &m_states(4,s), &isospin, &m_states(1,s), &m_states(2,s), &m_states(3,s),
+                        &m_states(4,r), &isospin, &m_states(1,r), &m_states(2,r), &m_states(3,r));
 
     //function as in wrapper
     /*chipot_f90_wrapper_(&matel_real, &matel_im,
@@ -153,10 +178,19 @@ System::variable_type CHIRAL::assym(int p, int q, int r, int s){
     result.real(matel_real);
     result.imag(matel_im);
 
-    return result;
+    result1.real(matel_real1);
+    result1.imag(matel_im1);
+
+    return (result)*m_hbarc*m_hbarc/(2.*m_m);
 }
 
 System::variable_type CHIRAL::assym_single(int p, int q){
+    /*if (m_states(1,p) == m_states(1,q)){
+    std::cout << "i: "<< m_states(1,p) << " " << m_states(2,p) << " " << m_states(3,p) << std::endl;
+    std::cout << "j: "<< m_states(1,q) << " " << m_states(2,q) << " " << m_states(3,q) << std::endl;
+    std::cout << assym(p,q,p,q) << std::endl;
+    std::cout << std::endl;
+    }*/
     return assym(p,q,p,q);
 }
 

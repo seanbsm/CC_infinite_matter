@@ -91,8 +91,8 @@ double Master::CC_Eref(){
     complex<double> Eref_c = 0;
     for (int i = 0; i<m_Nh; i++){
         Eref_c += m_system->h0(i);
-        for (int j = 0; j<m_Nh; j++){
-            Eref_c += 0.5*m_system->assym_single(i,j);
+        for (int j = i+1; j<m_Nh; j++){
+            Eref_c += m_system->assym_single(i,j);
         }
     }
     //std::cout << std::fixed << std::setprecision (16) << Eref << std::endl;
@@ -104,11 +104,16 @@ double Master::CC_E_HF(){
     double EHF = 0;
     complex<double> EHF_c = 0;
     for (int i = 0; i<m_Nh; i++){
-        EHF_c += m_system->h0(i);
-        for (int j = 0; j<m_Nh; j++){
-            EHF_c -= 0.5*m_system->assym_single(i,j);
+        EHF_c += 0;//m_system->h0(i);
+        for (int j = i+1; j<m_Nh; j++){
+            EHF_c -= m_system->assym_single(i,j);
         }
     }
+
+    for (int i = 0; i<m_Nh; i++){
+        std::cout << m_system->assym_single(i,i) << std::endl;
+    }
+
     //std::cout << std::fixed << std::setprecision (16) << Eref << std::endl;
     EHF = EHF_c.real();
     return EHF;
@@ -145,7 +150,7 @@ double Master::CC_master(double eps, double conFac){
 
     std::cout << std::endl;
     std::cout << "MBPT2:    " << std::setprecision (16) << ECCD_old.real() << std::endl;
-    std::cout << "MBPT2/Nh: " << std::setprecision (16) << ECCD_old.real()/m_Nh << std::endl;
+    std::cout << "MBPT2/A: " << std::setprecision (16) << ECCD_old.real()/m_Nh << std::endl;
     std::cout << std::endl;
 
     variable_type ECC;
@@ -155,10 +160,23 @@ double Master::CC_master(double eps, double conFac){
         ECC = Iterator(eps, conFac, ECCD_old);
         auto t2 = Clock::now();
 
-            std::cout << "Time used: "
-                      << std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count()
-                      << " seconds on solving CC" << std::endl;
-
+        std::cout << "CC has converged" << std::endl;
+        std::cout << "Time used:  "
+                  << std::fixed
+                  << std::setprecision (16)
+                  << std::right
+                  << std::setw(8)
+                  << std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count()
+                  << " seconds"
+                  << std::endl;
+        std::cout << "Iterations: "
+                  << std::fixed
+                  << std::setprecision (16)
+                  << std::right
+                  << std::setw(8)
+                  << countCC_iters
+                  << " iterations"
+                  << std::endl;
     }
     else{
         ECC = Iterator(eps, conFac, ECCD_old);
@@ -185,6 +203,8 @@ Master::variable_type Master::Iterator(double eps, double conFac, variable_type 
     else{
         counter ++;
     }
+
+    countCC_iters = 0;
 
     std::cout << "Start of CC iterations: " << std::endl;
     while (conFac > eps /*&& counter < 2*/){
@@ -302,6 +322,8 @@ Master::variable_type Master::Iterator(double eps, double conFac, variable_type 
         else{
             m_ampClass->T2_elements = m_ampClass->T2_elements_new;
         }
+
+        countCC_iters ++;
 
         //ECCD = 0; too good to delete; you don't want to know how long i used to find this
     }

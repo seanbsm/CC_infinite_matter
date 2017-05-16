@@ -39,7 +39,7 @@ int main(int argc, char** argv)
     //bool    CCDT          = true;                   //turn on/off CCDT-1
     bool    timer         = true;                   //turn on/off timer
     bool    relaxation    = true;                   //turn on/off relaxation when updating amplitudes
-    double  alpha         = 0.5;                  //relaxation parameter (I found 0.875 to be best)
+    double  alpha         = 0.873;                  //relaxation parameter (I found 0.873 to be best)
     int     threads       = 4;                      //number of threads, default is whatever you put here
 
     bool    threadsOn;
@@ -87,7 +87,7 @@ int main(int argc, char** argv)
         eps = atof(argv[5]);
     }
     else{        //default size
-        Nh = 66;                        //number of particles
+        Nh = 14;                        //number of particles
         Nb = 4;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
     }
     double  rs;     //Wigner Seitz radius
@@ -113,8 +113,8 @@ int main(int argc, char** argv)
         L2         = pow(L3, 2./3.);
         L1         = pow(L3, 1./3.);
         master->setSystem(new HEG(master, m, L3, L2, L1))*/;
-        m   = 939.565;              //Neutron mass [MeV]
-        rho = 0.08;//7.9999998211860657E-002;
+        m   = 939.5653;              //Neutron mass [MeV]
+        rho = 0.1;//7.9999998211860657E-002;
         L3  = double(Nh)/rho;
         L2  = pow(L3, 2./3.);
         L1  = pow(L3, 1./3.);
@@ -178,7 +178,7 @@ int main(int argc, char** argv)
 
     //typedef MakeIntMat::variable_type variable_type;
 
-    bool run_CC = false;
+    bool run_CC = true;
 
     if (run_CC){
         if (CCDT){
