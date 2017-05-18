@@ -163,9 +163,9 @@ int main(int argc, char** argv)
         }
     }
     else{
-        master->setCCType(0);
-        master->setTriples(false);
-        CCDT = false;
+        master->setCCType(3);
+        master->setTriples(true);
+        CCDT = true;
     }
 
     cout << "C++ code" << endl;
@@ -178,7 +178,7 @@ int main(int argc, char** argv)
 
     //typedef MakeIntMat::variable_type variable_type;
 
-    bool run_CC = true;
+    bool run_CC = false;
 
     if (run_CC){
         if (CCDT){

@@ -380,8 +380,8 @@ void MakeIntMat::mapper_1(std::vector<int> &sortVecIn, std::vector<int> &fullVec
 
 void  MakeIntMat::mapper_hp(){
 
-    int index       = 0;
-    int colSize     = m_Nh*(m_Ns-m_Nh);
+    unsigned long int index       = 0;
+    unsigned long int colSize     = m_Nh*(m_Ns-m_Nh);
     MatrixXsi        blockArrays_temp(2, colSize);
     Eigen::VectorXi  fullVec_temp(colSize);
 
@@ -420,8 +420,8 @@ void  MakeIntMat::mapper_hp(){
 
 void  MakeIntMat::mapper_2(std::vector<int>& sortVecIn, std::vector<int> &fullVecIn, MatrixXsi& blockArraysIn, int i1, int i2, int s1, int s2){
 
-    int index       = 0;
-    int colSize     = 10000;
+    unsigned long int index       = 0;
+    unsigned long int colSize     = 10000;
     MatrixXsi        blockArrays_temp(2,colSize);
     Eigen::VectorXi  fullVec_temp(colSize);
     //MatrixXsi   blockArrays_temp2;
@@ -566,8 +566,8 @@ void  MakeIntMat::mapper_2(std::vector<int>& sortVecIn, std::vector<int> &fullVe
 
 void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, std::vector<int> &fullVecIn, MatrixXsi& blockArraysIn, int i1, int i2, int i3, int s1, int s2, int s3){
 
-    int index       = 0;
-    int colSize     = 10000;
+    unsigned long int index       = 0;
+    unsigned long int colSize     = 10000;
     MatrixXsi        blockArrays_temp(3,colSize);
     Eigen::VectorXi  fullVec_temp(colSize);
 
@@ -749,8 +749,8 @@ void MakeIntMat::mapper_3(std::vector<int>& sortVecIn, std::vector<int> &fullVec
 
 void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, std::vector<int> &fullVecIn, MatrixXsi& blockArraysIn, int i1, int i2, int i3, int i4, int s1, int s2, int s3, int s4){
 
-    int index       = 0;
-    int colSize     = 10000;
+    unsigned long int index       = 0;
+    unsigned long int colSize     = 10000;
     MatrixXsi        blockArrays_temp(4,colSize);
     Eigen::VectorXi  fullVec_temp(colSize);
     //MatrixXsi   blockArrays_temp2;
@@ -913,8 +913,8 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, std::vector<int> &fullVec
 
 void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, std::vector<int> &fullVecIn, MatrixXsi& blockArraysIn, int i1, int i2, int i3, int i4, int i5, int s1, int s2, int s3, int s4, int s5){
 
-    int index       = 0;
-    int colSize     = 10000;
+    unsigned long int index       = 0;
+    unsigned long int colSize     = 10000;
     MatrixXsi        blockArrays_temp(5,colSize);
     Eigen::VectorXi  fullVec_temp(colSize);
     //MatrixXsi   blockArrays_temp2;
@@ -2178,8 +2178,9 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
 
         mapper_5(sortVec_pppmm_hhhpp, fullVec_pppmm_hhhpp, blockArrays_pppmm_hhhpp, 0,0,0,1,1, 1,1,1,-1,-1);     //hhhpp
         mapper_5(sortVec_pppmm_ppphh, fullVec_pppmm_ppphh, blockArrays_pppmm_ppphh, 1,1,1,0,0, 1,1,1,-1,-1);     //ppphh
-
     }
+
+    std::cout << blockArrays_pppmm_hhhpp.cols()/(double)(m_Np*m_Np*m_Nh3) << std::endl;
 
     cout << string(m_printLength + 48, '-') << endl;
     cout << "BlockArrays:              Done" << endl;
