@@ -4398,10 +4398,10 @@ MakeAmpMat::MatrixX MakeAmpMat::T3e_makemat_3(int channel1, int channel2){    //
 
 MakeAmpMat::MatrixX MakeAmpMat::T5a_makemat_1(int channel1, int channel2){    //makes a 2x2 matrix
 
-    unsigned long int range_lower1 = m_intClass->indexHolder_pp_hp(0, channel1);
-    unsigned long int range_upper1 = m_intClass->indexHolder_pp_hp(1, channel1);
-    unsigned long int range_lower2 = m_intClass->indexHolder_pp_ph(0, channel2);
-    unsigned long int range_upper2 = m_intClass->indexHolder_pp_ph(1, channel2);
+    unsigned long int range_lower1 = m_intClass->indexHolder_pm_hp(0, channel1);
+    unsigned long int range_upper1 = m_intClass->indexHolder_pm_hp(1, channel1);
+    unsigned long int range_lower2 = m_intClass->indexHolder_pm_ph(0, channel2);
+    unsigned long int range_upper2 = m_intClass->indexHolder_pm_ph(1, channel2);
 
     MakeAmpMat::MatrixX returnMat;
     returnMat.conservativeResize(range_upper1 - range_lower1, range_upper2 - range_lower2);
@@ -4413,11 +4413,11 @@ MakeAmpMat::MatrixX MakeAmpMat::T5a_makemat_1(int channel1, int channel2){    //
     double prefac;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
-        i = m_intClass->blockArrays_pp_hp(0,i1);
-        a = m_intClass->blockArrays_pp_hp(1,i1);
+        i = m_intClass->blockArrays_pm_hp(0,i1);
+        a = m_intClass->blockArrays_pm_hp(1,i1);
         for (unsigned long int i2 = range_lower2; i2<range_upper2; i2++){
-            d = m_intClass->blockArrays_pp_ph(0,i2);
-            l = m_intClass->blockArrays_pp_ph(1,i2);
+            d = m_intClass->blockArrays_pm_ph(0,i2);
+            l = m_intClass->blockArrays_pm_ph(1,i2);
 
             if (i<l){
                 if (a<d){

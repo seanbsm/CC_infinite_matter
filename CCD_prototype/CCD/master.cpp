@@ -104,15 +104,15 @@ double Master::CC_E_HF(){
     double EHF = 0;
     complex<double> EHF_c = 0;
     for (int i = 0; i<m_Nh; i++){
-        EHF_c += 0;//m_system->h0(i);
+        EHF_c += m_system->h0(i);
         for (int j = i+1; j<m_Nh; j++){
             EHF_c -= m_system->assym_single(i,j);
         }
     }
 
-    for (int i = 0; i<m_Nh; i++){
+    /*for (int i = 0; i<m_Nh; i++){
         std::cout << m_system->assym_single(i,i) << std::endl;
-    }
+    }*/
 
     //std::cout << std::fixed << std::setprecision (16) << Eref << std::endl;
     EHF = EHF_c.real();
@@ -207,7 +207,7 @@ Master::variable_type Master::Iterator(double eps, double conFac, variable_type 
     countCC_iters = 0;
 
     std::cout << "Start of CC iterations: " << std::endl;
-    while (conFac > eps /*&& counter < 2*/){
+    while (conFac > eps && counter < 7){
         ECCD = 0;
         //could make an m_ampClass::updateT or something
         m_ampClass->T2_elements_new.clear();

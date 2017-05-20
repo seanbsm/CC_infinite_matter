@@ -217,6 +217,25 @@ int main(int argc, char** argv)
 
     std::cout << std::fixed << std::setprecision (16) << abs(wut) << std::endl;
 
+    int Nb = 0;
+    int counter2 = 0;
+    while (counter2<31000){
+        Nb++;
+        counter2=0;
+        for (int n2=0; n2<Nb+1; n2++){
+            for (int nx=-n2; nx<n2+1; nx++){
+                for (int ny=-n2; ny<n2+1; ny++){
+                    for (int nz=-n2; nz<n2+1; nz++){
+                        if (nx*nx + ny*ny + nz*nz == n2){
+                            counter2++;
+                        }
+                    }
+                }
+            }
+        }
+        std::cout << Nb << ": " << counter2 << std::endl;
+    }
+
     /*int max = 1e6;
     int threads = 4;
     int max4 = max/threads;

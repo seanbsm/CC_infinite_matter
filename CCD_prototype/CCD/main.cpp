@@ -178,7 +178,7 @@ int main(int argc, char** argv)
 
     //typedef MakeIntMat::variable_type variable_type;
 
-    bool run_CC = false;
+    bool run_CC = true;
 
     if (run_CC){
         if (CCDT){

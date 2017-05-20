@@ -141,6 +141,10 @@ System::variable_type CHIRAL::assym(int p, int q, int r, int s){
     int isospin         = 1;
     complex<double> result;
 
+    /*std::cout << kp(0) << " " << kp(1) << " " << kp(2) << " " << sp << std::endl;
+    std::cout << kq(0) << " " << kq(1) << " " << kq(2) << " " << sq << std::endl;
+    std::cout << std::endl;*/
+
     //Morten thinks +1=neutrons in the fortran code
     chipot_f90_wrapper_(&matel_real, &matel_im,
                         &m_Nh, &rho,
@@ -158,6 +162,25 @@ System::variable_type CHIRAL::assym(int p, int q, int r, int s){
                         &m_states(4,q), &isospin, &m_states(1,q), &m_states(2,q), &m_states(3,q),
                         &m_states(4,s), &isospin, &m_states(1,s), &m_states(2,s), &m_states(3,s),
                         &m_states(4,r), &isospin, &m_states(1,r), &m_states(2,r), &m_states(3,r));
+
+    /*int nxp = kp(0); int nyp = kp(1); int nzp = kp(2);
+    int nxq = kq(0); int nyq = kq(1); int nzq = kq(2);
+    int nxr = kr(0); int nyr = kr(1); int nzr = kr(2);
+    int nxs = ks(0); int nys = ks(1); int nzs = ks(2);
+
+    chipot_f90_wrapper_(&matel_real, &matel_im,
+                            &m_Nh, &rho,
+                            &sp, &isospin, &nxp, &nyp, &nzp,
+                            &sq, &isospin, &nxq, &nyq, &nzq,
+                            &sr, &isospin, &nxr, &nyr, &nzr,
+                            &ss, &isospin, &nxs, &nys, &nzs);
+    chipot_f90_wrapper_(&matel_real1, &matel_im1,
+                            &m_Nh, &rho,
+                            &sp, &isospin, &nxp, &nyp, &nzp,
+                            &sq, &isospin, &nxq, &nyq, &nzq,
+                            &ss, &isospin, &nxs, &nys, &nzs,
+                            &sr, &isospin, &nxr, &nyr, &nzr);*/
+
 
     //function as in wrapper
     /*chipot_f90_wrapper_(&matel_real, &matel_im,
