@@ -207,7 +207,7 @@ Master::variable_type Master::Iterator(double eps, double conFac, variable_type 
     countCC_iters = 0;
 
     std::cout << "Start of CC iterations: " << std::endl;
-    while (conFac > eps && counter < 7){
+    while (conFac > eps /*&& counter < 7*/){
         ECCD = 0;
         //could make an m_ampClass::updateT or something
         m_ampClass->T2_elements_new.clear();

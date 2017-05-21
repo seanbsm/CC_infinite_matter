@@ -173,10 +173,14 @@ int main(int argc, char** argv)
     cout << "success" << endl;
 
 
-    long int A= 10;
+     int A= 10;
     int counter = 0;
-    while (A>0 && counter < 20){
-        A *= 10;
+    while (A>0 && counter < 40){
+        A *= 2;
+        if (A<0){
+            A/=2;
+            A*=1.5;
+        }
         counter += 1;
         cout << A << endl;
     }
