@@ -34,12 +34,13 @@ public:
     std::vector<MatrixX>  Amplitudes;
 
     typedef Eigen::Matrix<unsigned long int, Eigen::Dynamic, Eigen::Dynamic> MatrixXuli;
-    typedef Eigen::Matrix<short int, Eigen::Dynamic, Eigen::Dynamic> MatrixXsi;
+    typedef Eigen::Matrix<short int, Eigen::Dynamic, Eigen::Dynamic>         MatrixXsi;
 
     spp::sparse_hash_map<unsigned long int, variable_type>           T2_elements;
     spp::sparse_hash_map<unsigned long int, variable_type>           T2_temp;
     spp::sparse_hash_map<unsigned long int, variable_type>           T2_elements_new;
 
+    //these are no longer in use
     spp::sparse_hash_map<int, variable_type>           T3_elements;
     spp::sparse_hash_map<int, variable_type>           T3_temp;
     spp::sparse_hash_map<int, variable_type>           T3_elements_new;
@@ -54,20 +55,16 @@ public:
 
     int returnId(const int i1, const int i2, const int i3, const int i4);
 
-    //std::unordered_map<int, int>              T2_elements_I;
-    //std::vector<double>                       T2_elements_A;
-    //std::map<unsigned long int, int> T3_elements_I_um;
-    //std::map<unsigned long int, int>        T3_elements_I;        //holds indices to T3_elements_A, same for _new and _temp
     spp::sparse_hash_map<unsigned long int, unsigned long int>        T3_elements_I;
-    //std::vector<spp::sparse_hash_map<unsigned long int, int>> T3_elements_IV;
-    std::vector<variable_type>                       T3_elements_A;        //holds T3 amplitudes
-    std::vector<variable_type>                       T3_elements_A_new;    //holds new T3 amplitudes
-    std::vector<variable_type>                       denom3_elements;
-    std::vector<variable_type>                       T3_elements_A_temp;   //holds temporary diagram contributions
-    void                                      T3_makeMap(MatrixX inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6);
-    void                                      T3_makeDirectMat();
+
+    std::vector<variable_type>        T3_elements_A;        //holds T3 amplitudes
+    std::vector<variable_type>        T3_elements_A_new;    //holds new T3 amplitudes
+    std::vector<variable_type>        denom3_elements;
+    std::vector<variable_type>        T3_elements_A_temp;   //holds temporary diagram contributions
+    void                              T3_makeMap(MatrixX inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6);
+    void                              T3_makeDirectMat();
     MatrixX                           T3_buildDirectMat(int channel, std::vector<variable_type>& T_vec);
-    std::vector<MatrixXuli>              T3_directMat;     //holds indices for T3_elements_A to make t_ijk^abc
+    std::vector<MatrixXuli>           T3_directMat;         //holds indices for T3_elements_A to make t_ijk^abc
 
     MatrixX                 make3x1Block(int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<unsigned long int, variable_type> &T_list);
     MatrixX                 make2x2Block(int ku, int i1, int i2, int i3, int i4, spp::sparse_hash_map<unsigned long int, variable_type>& T_list);
@@ -121,12 +118,12 @@ public:
     MatrixX                 T5a_makemat_2(int channel1, int channel2);
     MatrixX                 T5b_makemat_1(int channel1, int channel2);
     MatrixX                 T5b_makemat_2(int channel1, int channel2);
-    MatrixXuli                      T5b_makemat_2_I(int channel1, int channel2); //index, not double
-    MatrixXsi                       T5b_makemat_2_I_signs(int channel1, int channel2); //signs of indices, not double
+    MatrixXuli              T5b_makemat_2_I(int channel1, int channel2); //index, not double
+    MatrixXsi               T5b_makemat_2_I_signs(int channel1, int channel2); //signs of indices, not double
     MatrixX                 T5c_makemat_1(int channel1, int channel2);
     MatrixX                 T5c_makemat_2(int channel1, int channel2);
-    MatrixXuli                      T5c_makemat_2_I(int channel1, int channel2); //index, not double
-    MatrixXsi                       T5c_makemat_2_I_signs(int channel1, int channel2); //signs of indices, not double
+    MatrixXuli              T5c_makemat_2_I(int channel1, int channel2); //index, not double
+    MatrixXsi               T5c_makemat_2_I_signs(int channel1, int channel2); //signs of indices, not double
     MatrixX                 T5d_makemat_1(int channel1, int channel2);
     MatrixX                 T5d_makemat_2(int channel1, int channel2);
     MatrixX                 T5e_makemat_1(int channel1, int channel2);
@@ -188,7 +185,7 @@ public:
     void                            make3x3Block_inverse(MatrixX inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, spp::sparse_hash_map<unsigned long int, variable_type>& T_list, bool add);
     void                            make3x3Block_inverse_I(MatrixX inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<variable_type>& T_vec, bool add);
     void                            make3x3Block_inverse_I_T1a(MatrixX inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<variable_type>& T_vec, bool add);
-    void                            make3x3Block_inverse_I_T1b(MatrixX inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<double>& T_vec, bool add);
+    void                            make3x3Block_inverse_I_T1b(MatrixX inMat, int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<variable_type>& T_vec, bool add);
 
     void                            addElementsT2(bool Pij, bool Pab);
     void                            addElementsT3_T1a();

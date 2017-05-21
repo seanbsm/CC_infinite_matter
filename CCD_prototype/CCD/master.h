@@ -25,9 +25,11 @@ public:
     int               m_threads            = 1;
     double            m_alpha              = 1;
 
+    int countCC_iters = 0;
+
     //this is the type to be used in the interactions and amplitudes
     //set to std::complex if you wish to work with the chiral model, otherwise use double
-    typedef std::complex<double> variable_type;
+    typedef double variable_type;
     typedef Eigen::Matrix<variable_type, Eigen::Dynamic, Eigen::Dynamic> MatrixX;
 
     typedef Eigen::Matrix<unsigned long int, Eigen::Dynamic, Eigen::Dynamic> MatrixXuli;
@@ -45,6 +47,7 @@ public:
     void setCCType(int type);
 
     double CC_Eref();
+    double CC_E_HF();
     double CC_master(double eps, double conFac);
     variable_type Iterator(double eps, double conFac, variable_type E_MBPT2);
 };

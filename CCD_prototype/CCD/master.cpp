@@ -87,14 +87,36 @@ void Master::setClasses(){
 }
 
 double Master::CC_Eref(){
-    variable_type Eref = 0;
+    double Eref = 0;
+    complex<double> Eref_c = 0;
     for (int i = 0; i<m_Nh; i++){
         Eref += m_system->h0(i);
-        for (int j = 0; j<m_Nh; j++){
-            Eref += 0.5*m_system->assym_single(i,j);
+        for (int j = i+1; j<m_Nh; j++){
+            Eref += m_system->assym_single(i,j);
         }
     }
+    //std::cout << std::fixed << std::setprecision (16) << Eref << std::endl;
+    //Eref = Eref_c.real();
     return Eref;
+}
+
+double Master::CC_E_HF(){
+    double EHF = 0;
+    complex<double> EHF_c = 0;
+    for (int i = 0; i<m_Nh; i++){
+        EHF += m_system->h0(i);
+        for (int j = i+1; j<m_Nh; j++){
+            EHF -= m_system->assym_single(i,j);
+        }
+    }
+
+    /*for (int i = 0; i<m_Nh; i++){
+        std::cout << m_system->assym_single(i,i) << std::endl;
+    }*/
+
+    //std::cout << std::fixed << std::setprecision (16) << Eref << std::endl;
+    //EHF = EHF_c.real();
+    return EHF;
 }
 
 double Master::CC_master(double eps, double conFac){
@@ -114,12 +136,12 @@ double Master::CC_master(double eps, double conFac){
         setClasses();
     }
 
-    double ECCD_old = 0;
+    variable_type ECCD_old = 0;
 
     for (int channel = 0; channel<m_intClass->numOfKu; channel++){
-        Eigen::MatrixXd Vhhpp = m_intClass->make2x2Block(m_intClass->Vhhpp_i[channel],0,0,1,1);
+        MatrixX Vhhpp = m_intClass->make2x2Block(m_intClass->Vhhpp_i[channel],0,0,1,1);
         //Eigen::MatrixXd Vhhpp = m_intClass->make2x2Block_alt(h);
-        Eigen::MatrixXd temp = Vhhpp.array()*m_ampClass->denomMat[channel].array();
+        MatrixX temp = Vhhpp.array()*m_ampClass->denomMat[channel].array();
         ECCD_old += ((Vhhpp.transpose())*(temp)).trace();
 
     }
@@ -128,7 +150,7 @@ double Master::CC_master(double eps, double conFac){
 
     std::cout << std::endl;
     std::cout << "MBPT2:    " << std::setprecision (16) << ECCD_old << std::endl;
-    std::cout << "MBPT2/Nh: " << std::setprecision (16) << ECCD_old/m_Nh << std::endl;
+    std::cout << "MBPT2/A: " << std::setprecision (16) << ECCD_old/m_Nh << std::endl;
     std::cout << std::endl;
 
     variable_type ECC;
@@ -138,10 +160,23 @@ double Master::CC_master(double eps, double conFac){
         ECC = Iterator(eps, conFac, ECCD_old);
         auto t2 = Clock::now();
 
-            std::cout << "Time used: "
-                      << std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count()
-                      << " seconds on solving CC" << std::endl;
-
+        std::cout << "CC has converged" << std::endl;
+        std::cout << "Time used:  "
+                  << std::fixed
+                  << std::setprecision (16)
+                  << std::right
+                  << std::setw(8)
+                  << std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count()
+                  << " seconds"
+                  << std::endl;
+        std::cout << "Iterations: "
+                  << std::fixed
+                  << std::setprecision (16)
+                  << std::right
+                  << std::setw(8)
+                  << countCC_iters
+                  << " iterations"
+                  << std::endl;
     }
     else{
         ECC = Iterator(eps, conFac, ECCD_old);
@@ -169,12 +204,13 @@ Master::variable_type Master::Iterator(double eps, double conFac, variable_type 
         counter ++;
     }
 
+    countCC_iters = 0;
+
     std::cout << "Start of CC iterations: " << std::endl;
-    while (conFac > eps /*&& counter < 8*/){
+    while (conFac > eps /*&& counter < 7*/){
         ECCD = 0;
         //could make an m_ampClass::updateT or something
         m_ampClass->T2_elements_new.clear();
-
         //calculate CCD T2 diagrams
         if (counter != -1){
             if (m_intermediatesOn){
@@ -200,7 +236,6 @@ Master::variable_type Master::Iterator(double eps, double conFac, variable_type 
         if(m_triplesOn){
 
             std::fill(m_ampClass->T3_elements_A_new.begin(), m_ampClass->T3_elements_A_new.end(), 0); //reset T3 new
-
             if (m_CC_type >= 1 ){
                 m_diagrams->T1a();
                 m_diagrams->T1b();
@@ -260,13 +295,13 @@ Master::variable_type Master::Iterator(double eps, double conFac, variable_type 
         for (int hh = 0; hh<m_intClass->numOfKu; hh++){
             int ku = m_intClass->Vhhpp_i[hh];
 
-            Eigen::MatrixXd Vhhpp           = m_intClass->make2x2Block(ku,0,0,1,1);
-            Eigen::MatrixXd D_contributions = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements_new);
-            Eigen::MatrixXd temp = (Vhhpp + D_contributions).array()*m_ampClass->denomMat[hh].array();
+            MatrixX Vhhpp           = m_intClass->make2x2Block(ku,0,0,1,1);
+            MatrixX D_contributions = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements_new);
+            MatrixX temp = (Vhhpp + D_contributions).array()*m_ampClass->denomMat[hh].array();
 
             m_ampClass->make2x2Block_inverse(temp, ku, 0,0,1,1, m_ampClass->T2_elements_new, false);
 
-            Eigen::MatrixXd Thhpp = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements_new);
+            MatrixX Thhpp = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements_new);
             ECCD += ((Vhhpp.transpose())*(Thhpp)).trace();
         }
 
@@ -287,6 +322,8 @@ Master::variable_type Master::Iterator(double eps, double conFac, variable_type 
         else{
             m_ampClass->T2_elements = m_ampClass->T2_elements_new;
         }
+
+        countCC_iters ++;
 
         //ECCD = 0; too good to delete; you don't want to know how long i used to find this
     }

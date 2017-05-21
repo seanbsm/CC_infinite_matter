@@ -39,7 +39,7 @@ int main(int argc, char** argv)
     //bool    CCDT          = true;                   //turn on/off CCDT-1
     bool    timer         = true;                   //turn on/off timer
     bool    relaxation    = true;                   //turn on/off relaxation when updating amplitudes
-    double  alpha         = 0.875;                  //relaxation parameter (I found 0.875 to be best)
+    double  alpha         = 0.873;                  //relaxation parameter (I found 0.873 to be best)
     int     threads       = 4;                      //number of threads, default is whatever you put here
 
     bool    threadsOn;
@@ -88,7 +88,7 @@ int main(int argc, char** argv)
     }
     else{        //default size
         Nh = 14;                        //number of particles
-        Nb = 3;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
+        Nb = 5;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
     }
     double  rs;     //Wigner Seitz radius
     double  rho;    //Density
@@ -113,12 +113,12 @@ int main(int argc, char** argv)
         L2         = pow(L3, 2./3.);
         L1         = pow(L3, 1./3.);
         master->setSystem(new HEG(master, m, L3, L2, L1))*/;
-        m   = 939.565;              //Neutron mass [MeV]
-        rho = 0.2;
+        m   = 939.5653;              //Neutron mass [MeV]
+        rho = 0.2;//7.9999998211860657E-002;
         L3  = double(Nh)/rho;
         L2  = pow(L3, 2./3.);
         L1  = pow(L3, 1./3.);
-        master->setSystem(new CHIRAL(master, m, L3, L2, L1));
+        master->setSystem(new MP(master, m, L3, L2, L1));
     }
     else if (std::string(argv[1]) == "HEG"){
         m          = 1;             //Electron mass [MeV?]
@@ -170,30 +170,48 @@ int main(int argc, char** argv)
 
     cout << "C++ code" << endl;
 
-    double Eref; double Ecc;
+    double EHF; double Eref; double Ecc;
+    Eref = master->CC_Eref();
+    EHF = master->CC_E_HF();
 
     auto t1 = Clock::now();
 
     //typedef MakeIntMat::variable_type variable_type;
 
-    if (CCDT){
-        double ECCDT = master->CC_master(eps, conFac);
-        cout << "Delta ECCDT: "<< std::right << std::setw(21) << ECCDT << endl;
-        Ecc = ECCDT;
-    }
-    else{
-        double ECCD = master->CC_master(eps, conFac);
-        cout << "Delta ECCD: "<< std::right << std::setw(21) << ECCD << endl;
-        Ecc = ECCD;
+    bool run_CC = true;
+
+    if (run_CC){
+        if (CCDT){
+            double ECCDT = master->CC_master(eps, conFac);
+            std::cout << std::endl;
+            std::cout << "Correlation energy" << std::endl;
+            std::cout << "Delta ECCDT:    "<< std::right << std::setw(21) << ECCDT << std::endl;
+            Ecc = ECCDT;
+        }
+        else{
+            double ECCD = master->CC_master(eps, conFac);
+            std::cout << std::endl;
+            std::cout << "Correlation energy" << std::endl;
+            std::cout << "Delta ECCD:     "<< std::right << std::setw(21) << ECCD << std::endl;
+            Ecc = ECCD;
+        }
+        std::cout << "E_corr/A:       " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (Ecc)/Nh << std::endl;
     }
 
     auto t2 = Clock::now();
 
-    Eref = master->CC_Eref();
-
+    std::cout << std::endl;
+    std::cout << "Hartree-Fock energy" << std::endl;
+    std::cout << "E_HF:           " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << EHF << std::endl;
+    std::cout << "E_HF/A:         " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (EHF)/Nh << std::endl;
+    std::cout << std::endl;
+    std::cout << "Reference energy" << std::endl;
     std::cout << "Eref:           " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << Eref << std::endl;
-    std::cout << "E_ref/Nh:       " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (Eref)/Nh << std::endl;
-    std::cout << "E/Nh:           " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (Eref+Ecc)/Nh << std::endl;
+    std::cout << "E_ref/A:        " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (Eref)/Nh << std::endl;
+    std::cout << std::endl;
+    std::cout << "Total energy" << std::endl;
+    std::cout << "E/A:            " << std::fixed << std::setprecision (16) << std::right << std::setw(21) << (Eref+Ecc)/Nh << std::endl;
+    std::cout << std::endl;
 
     if (intermediates){
         std::cout << "Total time used: "

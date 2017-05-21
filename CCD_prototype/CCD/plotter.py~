@@ -151,7 +151,7 @@ ax.yaxis.set_major_formatter(ticks_y)
 plt.plot(xData, yData, marker='s', linestyle = '-')
 
 
-matplotlib.rcParams.update({'font.size': 18})
+matplotlib.rcParams.update({'font.size': 22})
 
 
 plt.legend(loc=4)
@@ -163,5 +163,5 @@ plt.ylabel(r"Density (\%)", fontsize=18)
 
 plt.savefig('T3_density.pdf', format='pdf')
 
-plt.tight_layout()
 plt.show()
+plt.tight_layout()

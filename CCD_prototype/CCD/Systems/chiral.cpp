@@ -3,6 +3,10 @@
 
 using namespace std;
 
+template <typename T> int sgn(T val) {
+    return (T(0) < val) - (val < T(0));
+}
+
 extern "C" {
     // get real and imaginary components of matrix element.
     void chipot_f90_wrapper_(double *matel_real, double *matel_im,
@@ -35,7 +39,7 @@ void CHIRAL::makeStateSpace(){
             for (int ny=-n2; ny<n2+1; ny++){
                 for (int nz=-n2; nz<n2+1; nz++){
                     if (nx*nx + ny*ny + nz*nz == n2){
-                        m_states.conservativeResize(Eigen::NoChange, m_states.cols()+4);
+                        m_states.conservativeResize(Eigen::NoChange, m_states.cols()+2);
                         m_states.col(m_states.cols()-2) << n2,nx,ny,nz, 1;
                         m_states.col(m_states.cols()-1) << n2,nx,ny,nz,-1;
                     } //end of nx^2 + ny^2 + nz^2 == n^2
@@ -101,33 +105,45 @@ int CHIRAL::kUnique5(int k, int p, int q, int s, int t, int s1, int s2, int s3, 
 }
 
 System::variable_type CHIRAL::f(int p){
-    double returnVal = h0(p);
+    variable_type returnVal = h0(p);
     for (int i=0; i<m_Nh; i++){
-        returnVal += 0.5*assym_single(p, i);
+        //if (i!=p){returnVal += assym_single(p, i);}
+        returnVal += assym_single(p, i);
     };
+    //cout << returnVal << endl;
     return returnVal;
 }
 
 System::variable_type CHIRAL::h0(int p){
-    double energy = m_states(0,p);
-    return energy*2*pi*pi*m_hbarc*m_hbarc/(m_m*m_L2);
+    variable_type energy = (variable_type)m_states(0,p);
+   // cout << energy*2.*pi*pi*m_hbarc*m_hbarc/(m_m*m_L2) << endl;
+    return 2.*energy*pi*pi*m_hbarc*m_hbarc/(m_m*m_L2);
 }
 
 System::variable_type CHIRAL::assym(int p, int q, int r, int s){
-    /*Eigen::Vector3i kp( m_states(1,p), m_states(2,p), m_states(3,p) );
+    Eigen::Vector3i kp( m_states(1,p), m_states(2,p), m_states(3,p) );
     Eigen::Vector3i kq( m_states(1,q), m_states(2,q), m_states(3,q) );
     Eigen::Vector3i kr( m_states(1,r), m_states(2,r), m_states(3,r) );
     Eigen::Vector3i ks( m_states(1,s), m_states(2,s), m_states(3,s) );
-    int sp = m_states(4,p);
-    int sq = m_states(4,q);
-    int sr = m_states(4,r);
-    int ss = m_states(4,s);*/
+    int sp = m_states(4,p); int tp = 1;//= m_states(5,p);
+    int sq = m_states(4,q); int tq = 1;//= m_states(5,q);
+    int sr = m_states(4,r); int tr = 1;//= m_states(5,r);
+    int ss = m_states(4,s); int ts = 1;//= m_states(5,s);
 
-    double matel_real, matel_im, rho;
-    int isospin = 1;
-    complex<double> result; double temp;
+    //these tests should be already performed through k_unique
+    if ( vecDelta(kp+kq, kr+ks) == 0){ return 0;}   //momentum conservation
+    if ( sp+sq != sr+ss){ return 0; }               //spin conservation
+    if ( tp+tq != tr+ts){ return 0; }               //isospin conservation
 
-    rho = m_Nh/m_L3;
+    double matel_real   = 0;
+    double matel_im     = 0;
+    double rho          = m_Nh/(m_L3);
+    int isospin         = 1;
+    variable_type result;
+
+    /*std::cout << kp(0) << " " << kp(1) << " " << kp(2) << " " << sp << std::endl;
+    std::cout << kq(0) << " " << kq(1) << " " << kq(2) << " " << sq << std::endl;
+    std::cout << std::endl;*/
 
     //Morten thinks +1=neutrons in the fortran code
     chipot_f90_wrapper_(&matel_real, &matel_im,
@@ -137,6 +153,35 @@ System::variable_type CHIRAL::assym(int p, int q, int r, int s){
                         &m_states(4,r), &isospin, &m_states(1,r), &m_states(2,r), &m_states(3,r),
                         &m_states(4,s), &isospin, &m_states(1,s), &m_states(2,s), &m_states(3,s));
 
+    double matel_real1   = 0;
+    double matel_im1     = 0;
+    variable_type result1;
+    chipot_f90_wrapper_(&matel_real1, &matel_im1,
+                        &m_Nh, &rho,
+                        &m_states(4,p), &isospin, &m_states(1,p), &m_states(2,p), &m_states(3,p),
+                        &m_states(4,q), &isospin, &m_states(1,q), &m_states(2,q), &m_states(3,q),
+                        &m_states(4,s), &isospin, &m_states(1,s), &m_states(2,s), &m_states(3,s),
+                        &m_states(4,r), &isospin, &m_states(1,r), &m_states(2,r), &m_states(3,r));
+
+    /*int nxp = kp(0); int nyp = kp(1); int nzp = kp(2);
+    int nxq = kq(0); int nyq = kq(1); int nzq = kq(2);
+    int nxr = kr(0); int nyr = kr(1); int nzr = kr(2);
+    int nxs = ks(0); int nys = ks(1); int nzs = ks(2);
+
+    chipot_f90_wrapper_(&matel_real, &matel_im,
+                            &m_Nh, &rho,
+                            &sp, &isospin, &nxp, &nyp, &nzp,
+                            &sq, &isospin, &nxq, &nyq, &nzq,
+                            &sr, &isospin, &nxr, &nyr, &nzr,
+                            &ss, &isospin, &nxs, &nys, &nzs);
+    chipot_f90_wrapper_(&matel_real1, &matel_im1,
+                            &m_Nh, &rho,
+                            &sp, &isospin, &nxp, &nyp, &nzp,
+                            &sq, &isospin, &nxq, &nyq, &nzq,
+                            &ss, &isospin, &nxs, &nys, &nzs,
+                            &sr, &isospin, &nxr, &nyr, &nzr);*/
+
+
     //function as in wrapper
     /*chipot_f90_wrapper_(&matel_real, &matel_im,
                         &Nparticles, &rho,
@@ -144,14 +189,31 @@ System::variable_type CHIRAL::assym(int p, int q, int r, int s){
                         &qs, &qt, &qpx, &qpy, &qpz,
                         &rs, &rt, &rpx, &rpy, &rpz,
                         &ss, &st, &spx, &spy, &spz);*/
-    result.real(matel_real);
+    //double real = sgn(matel_real)*pow(sgn(matel_real)*matel_real, 1./3);
+    //double imag = sgn(matel_im)*pow(sgn(matel_im)*matel_im, 1./3);
+
+
+    //std::cout << real << " " << matel_real << std::endl;
+
+    //result.real(real);
+    //result.imag(imag);
+
+    /*result.real(matel_real);
     result.imag(matel_im);
 
-    temp = real(result);
-    return temp;
+    result1.real(matel_real1);
+    result1.imag(matel_im1);*/
+
+    return (result)*m_hbarc*m_hbarc/(2.*m_m);
 }
 
 System::variable_type CHIRAL::assym_single(int p, int q){
+    /*if (m_states(1,p) == m_states(1,q)){
+    std::cout << "i: "<< m_states(1,p) << " " << m_states(2,p) << " " << m_states(3,p) << std::endl;
+    std::cout << "j: "<< m_states(1,q) << " " << m_states(2,q) << " " << m_states(3,q) << std::endl;
+    std::cout << assym(p,q,p,q) << std::endl;
+    std::cout << std::endl;
+    }*/
     return assym(p,q,p,q);
 }
 

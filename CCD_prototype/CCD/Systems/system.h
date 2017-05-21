@@ -9,13 +9,13 @@
 class System
 {
 public:
-    typedef std::complex<double> variable_type;
+    typedef double variable_type;
     System(class Master* master);
     int                    m_Nh;        //number of particles
     int                    m_Nb;        //number of closed-shells
     int                    m_Ns;
     int                    m_dk;
-    const double    m_hbarc = 197.3269788;  //[Mev fm] (/c)
+    const double    m_hbarc = 197.32697188;  //[Mev fm] (/c)
     Eigen::VectorXi below_fermi;
     Eigen::VectorXi above_fermi;
     Eigen::MatrixXi m_states;                         //each column is a state where the rows are quantum numbers of that states
