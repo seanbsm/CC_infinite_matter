@@ -2751,7 +2751,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
                 int val_hhh = sortVec_ppp_hhh[hhh];
                 int val_ppp = sortVec_ppp_ppp[ppp];
                 if (val_hhh == val_ppp){      //ensures I only work on cases where hhh and ppp have equal kunique
-                    for (int hhh2=0; hhh2<blockArrays_ppp_hhh.cols(); hhh2++){
+                    for (unsigned long int hhh2=0; hhh2<blockArrays_ppp_hhh.cols(); hhh2++){
                         if ( val_hhh == fullVec_ppp_hhh[hhh2] ){
                             range_upper_hhh = hhh2+1;
                             counter += 1;
@@ -2759,7 +2759,7 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
                     }
                     range_lower_hhh = range_upper_hhh - counter;
                     counter = 0;
-                    for (int ppp2=0; ppp2<blockArrays_ppp_ppp.cols(); ppp2++){
+                    for (unsigned long int ppp2=0; ppp2<blockArrays_ppp_ppp.cols(); ppp2++){
                         if ( val_hhh == fullVec_ppp_ppp[ppp2] ){
                             range_upper_ppp = ppp2+1;
                             counter += 1;
