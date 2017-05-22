@@ -264,14 +264,14 @@ Master::variable_type Master::Iterator(double eps, double conFac, variable_type 
 
             //update T3 amplitudes
 #pragma omp parallel for num_threads(m_threads)
-            for (int i=0; i<m_ampClass->T3_elements_A_new.size(); i++){
+            for (unsigned long int i=0; i<m_ampClass->T3_elements_A_new.size(); i++){
                 m_ampClass->T3_elements_A_new[i] *= m_ampClass->denom3_elements[i];
             }
 
             if (m_relaxation){
                 std::vector<variable_type> T3_temp = m_ampClass->T3_elements_A;
 
-                for(int it=0; it<m_ampClass->T3_elements_A_new.size(); it++){
+                for(unsigned long int it=0; it<m_ampClass->T3_elements_A_new.size(); it++){
                     m_ampClass->T3_elements_A[it] = m_alpha*m_ampClass->T3_elements_A_new[it] + (1-m_alpha)*T3_temp[it];
                 }
             }
