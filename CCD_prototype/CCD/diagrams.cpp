@@ -540,16 +540,16 @@ void Diagrams::makeT3(){
 
     for (int channel = 0; channel<m_intClass->numOfKu3; channel++){
 
-        int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
-        int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
-        int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
-        int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
+        unsigned long int range_lower1 = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
+        unsigned long int range_upper1 = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
+        unsigned long int range_lower2 = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
+        unsigned long int range_upper2 = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
 
-        for (int hhh=range_lower1; hhh<range_upper1; hhh++){
+        for (unsigned long int hhh=range_lower1; hhh<range_upper1; hhh++){
             i = (m_intClass->blockArrays_ppp_hhh)(0,hhh);
             j = (m_intClass->blockArrays_ppp_hhh)(1,hhh);
             k = (m_intClass->blockArrays_ppp_hhh)(2,hhh);
-            for (int ppp=range_lower2; ppp<range_upper2; ppp++){
+            for (unsigned long int ppp=range_lower2; ppp<range_upper2; ppp++){
                 a = (m_intClass->blockArrays_ppp_ppp)(0,ppp);
                 b = (m_intClass->blockArrays_ppp_ppp)(1,ppp);
                 c = (m_intClass->blockArrays_ppp_ppp)(2,ppp);

@@ -139,24 +139,24 @@ void MakeAmpMat::makeDenomMat3(){
 
     #pragma omp parallel for num_threads(m_numThreads) private(index, id)
     for (int channel=0; channel<m_intClass->numOfKu3; channel++){
-        int lowBound_hhh  = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
-        int highBound_hhh = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
-        int lowBound_ppp  = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
-        int highBound_ppp = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
+        unsigned long int lowBound_hhh  = m_intClass->boundsHolder_hhhppp_hhh(0,channel);
+        unsigned long int highBound_hhh = m_intClass->boundsHolder_hhhppp_hhh(1,channel);
+        unsigned long int lowBound_ppp  = m_intClass->boundsHolder_hhhppp_ppp(0,channel);
+        unsigned long int highBound_ppp = m_intClass->boundsHolder_hhhppp_ppp(1,channel);
 
-        int dim_hhh = highBound_hhh - lowBound_hhh;
-        int dim_ppp = highBound_ppp - lowBound_ppp;
+        unsigned long int dim_hhh = highBound_hhh - lowBound_hhh;
+        unsigned long int dim_ppp = highBound_ppp - lowBound_ppp;
         MakeAmpMat::MatrixX newMat;
         newMat.conservativeResize(dim_hhh, dim_ppp);
 
         int i; int j; int k;
         int a; int b; int c;
 
-        for (int ppp=lowBound_ppp; ppp<highBound_ppp; ppp++){
+        for (unsigned long int ppp=lowBound_ppp; ppp<highBound_ppp; ppp++){
             a = m_intClass->blockArrays_ppp_ppp(0,ppp);
             b = m_intClass->blockArrays_ppp_ppp(1,ppp);
             c = m_intClass->blockArrays_ppp_ppp(2,ppp);
-            for (int hhh=lowBound_hhh; hhh<highBound_hhh; hhh++){
+            for (unsigned long int hhh=lowBound_hhh; hhh<highBound_hhh; hhh++){
                 i = m_intClass->blockArrays_ppp_hhh(0,hhh);
                 j = m_intClass->blockArrays_ppp_hhh(1,hhh);
                 k = m_intClass->blockArrays_ppp_hhh(2,hhh);
