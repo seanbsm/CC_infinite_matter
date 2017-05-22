@@ -809,7 +809,7 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, std::vector<int> &fullVec
                             index += 1;
 
                             if (index >= colSize){
-                                colSize += 10000;
+                                colSize += 1000000;
                                 blockArrays_temp.conservativeResize(4, colSize);
                                 fullVec_temp.conservativeResize(colSize);
                             }
@@ -838,7 +838,7 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, std::vector<int> &fullVec
                             index += 1;
 
                             if (index >= colSize){
-                                colSize += 10000;
+                                colSize += 1000000;
                                 blockArrays_temp.conservativeResize(4, colSize);
                                 fullVec_temp.conservativeResize(colSize);
                             }
@@ -867,7 +867,7 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, std::vector<int> &fullVec
                             index += 1;
 
                             if (index >= colSize){
-                                colSize += 10000;
+                                colSize += 1000000;
                                 blockArrays_temp.conservativeResize(4, colSize);
                                 fullVec_temp.conservativeResize(colSize);
                             }
@@ -943,7 +943,7 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, std::vector<int> &fullVec
                                 index += 1;
 
                                 if (index >= colSize){
-                                    colSize += 10000;
+                                    colSize += 1000000;
                                     blockArrays_temp.conservativeResize(5, colSize);
                                     fullVec_temp.conservativeResize(colSize);
                                 }
@@ -974,7 +974,7 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, std::vector<int> &fullVec
                                 index += 1;
 
                                 if (index >= colSize){
-                                    colSize += 10000;
+                                    colSize += 1000000;
                                     blockArrays_temp.conservativeResize(5, colSize);
                                     fullVec_temp.conservativeResize(colSize);
                                 }
