@@ -824,7 +824,7 @@ void Diagrams::T2e(){
     //auto t1 = Clock::now();
 
     for (int i1=0; i1<m_intClass->sortVec_pm_hp.size(); i1++){
-        for (int i2=0; i2<m_intClass->sortVec_ppmm_pphh.size(); i2++){  //THIS IS WRONG (17/03/17)
+        for (int i2=0; i2<m_intClass->sortVec_ppmm_pphh.size(); i2++){
             if ( m_intClass->sortVec_pm_hp[i1] == m_intClass->sortVec_ppmm_pphh[i2]){
                 matches.conservativeResize(2, matches.cols()+1);
                 matches.col(matches.cols()-1) << i1,i2;
@@ -832,18 +832,20 @@ void Diagrams::T2e(){
         }
     }
 
-
     //auto t2 = Clock::now();
     //auto t3 = Clock::now();
 
     int i1; int i2; int cols = matches.cols();
 #pragma omp parallel for num_threads(m_numThreads) private(i1,i2) firstprivate(cols)
     for (int i=0; i<cols; i++){
+#pragma omp critical
+    {
         i1 = matches(0,i); i2 = matches(1,i);
         MatrixX mat1 = m_intClass->Vhphp[i1]; //hphp was made with sign index +- on rows and columns
         MatrixX mat2 = m_ampClass->T2e_makemat(i2, i1);
         MatrixX product = mat2*mat1; //mathematically I need to transpose mat1, but it's symmetric
         m_ampClass->T2e_inverse(product, i2, i1);
+    }
     }
     //auto t4 = Clock::now();
     //auto t7 = Clock::now();

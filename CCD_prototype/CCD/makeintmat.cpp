@@ -836,7 +836,7 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, std::vector<int> &fullVec
                             blockArrays_temp.col(index) << a,b,i,j;
                             fullVec_temp(index) = ku;
                             index += 1;
-
+                            //std::cout << a << " " << b << " " << i << " " << j << std::endl;
                             if (index >= colSize){
                                 colSize += 1000000;
                                 blockArrays_temp.conservativeResize(4, colSize);
@@ -2174,6 +2174,9 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         mapper_4(sortVec_pppm_hhhp, fullVec_pppm_hhhp, blockArrays_pppm_hhhp, 0,0,0,1, 1,1,1,-1);     //hhhp
         //mapper_4(sortVec_ppmm_hhpp, blockArrays_ppmm_hhpp, 0,0,1,1, 1,1,-1,-1);    //hhpp
         mapper_4(sortVec_ppmm_pphh, fullVec_ppmm_pphh, blockArrays_ppmm_pphh, 1,1,0,0, 1,1,-1,-1);    //pphh
+        if (blockArrays_ppmm_pphh(0,0) >= m_Ns || blockArrays_ppmm_pphh(1,0) >= m_Ns || blockArrays_ppmm_pphh(2,0) >= m_Nh || blockArrays_ppmm_pphh(3,0) >= m_Nh){
+            std::cout << blockArrays_ppmm_pphh.col(0) << std::endl;
+        }
         mapper_4(sortVec_pppm_ppph, fullVec_pppm_ppph, blockArrays_pppm_ppph, 1,1,1,0, 1,1,1,-1);     //ppph
 
         mapper_5(sortVec_pppmm_hhhpp, fullVec_pppmm_hhhpp, blockArrays_pppmm_hhhpp, 0,0,0,1,1, 1,1,1,-1,-1);     //hhhpp
@@ -2282,6 +2285,10 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             }
         }
         range_lower = range_upper - counter;
+        std::cout << std::endl;
+        std::cout << range_lower << " " << range_upper << std::endl;
+        std::cout << fullVec_pm_hp[range_lower] << " " << fullVec_pm_hp[range_upper] << std::endl;
+        std::cout << std::endl;
         counter = 0;
         indexHolder_pm_hp.col(hp) << range_lower, range_upper; //this now has same indices as sortVec
     }
@@ -2628,6 +2635,10 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
                     }
                 }
                 range_lower = range_upper - counter;
+                std::cout << std::endl;
+                std::cout << range_lower << " " << range_upper << std::endl;
+                std::cout << fullVec_ppmm_pphh[range_lower] << " " << fullVec_ppmm_pphh[range_upper] << std::endl;
+                std::cout << std::endl;
                 counter = 0;
                 indexHolder_ppmm_pphh.col(pphh) << range_lower, range_upper; //this now has same indices as sortVec
         }
