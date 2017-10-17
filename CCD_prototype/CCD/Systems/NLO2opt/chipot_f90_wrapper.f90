@@ -52,13 +52,17 @@ stateR%k(3) = rpz
 stateS%k(1) = spx
 stateS%k(2) = spy
 stateS%k(3) = spz
+!write(*,*) stateS
 ! get matrix element
 ! -NOTE: we need to check beforehand momentum and spin conservation
 matel=chiral_pot_nnlo_opt_np(stateP,stateQ,stateR,stateS)
-!write(*,*) *, ppx, qpx, rpx, spx
+matel=matel-chiral_pot_nnlo_opt_np(stateP,stateQ,stateS,stateR)
+!write(*,*) ps, qs, rs, ss
+!write(*,*) ppx, qpx, rpx, spx
 !write(*,*) ppy, qpy, rpy, spy
 !write(*,*) ppz, qpz, rpz, spz
 !write(*,*) matel
+!write(*,*)
 ! restore energy units
 !matel=matel*e_scale
 matel_real = RealPart(matel)

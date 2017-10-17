@@ -178,8 +178,10 @@ System::variable_type MP::f(int p){
 }
 
 System::variable_type MP::h0(int p){
-    double energy = m_states(0,p);
-    return energy*2*pi*pi*m_hbarc*m_hbarc/(m_m*m_L2);
+    System::variable_type energy;
+    energy.imag(0);
+    energy.real(m_states(0,p)*2*pi*pi*m_hbarc*m_hbarc/(m_m*m_L2));
+    return energy;
 }
 
 /*
@@ -343,23 +345,25 @@ System::variable_type MP::assym(int p, int q, int r, int s){
     bool Pt_ex = (tp==tr)*(tq==ts);    //exchange isospins
     bool Ct_ex = (tp==ts)*(tq==tr);    //direct isospins
 
-    double returnVal = 0;
+    System::variable_type returnVal;
+    returnVal.imag(0.);
 
-    returnVal += (VR_dir + 0.5*VT_dir + 0.5*VS_dir)*Cs_dir*Ct_dir
-               + 0.5*(VT_dir - VS_dir)*Ps_dir*Ct_dir
-               - (VR_dir + 0.5*VT_dir + 0.5*VS_dir)*Ps_dir*Pt_dir
-               - 0.5*(VT_dir - VS_dir)*Cs_dir*Pt_dir;
+    double dir  =   (VR_dir + 0.5*VT_dir + 0.5*VS_dir)*Cs_dir*Ct_dir
+                  + 0.5*(VT_dir - VS_dir)*Ps_dir*Ct_dir
+                  - (VR_dir + 0.5*VT_dir + 0.5*VS_dir)*Ps_dir*Pt_dir
+                  - 0.5*(VT_dir - VS_dir)*Cs_dir*Pt_dir;
 
-    returnVal += -(VR_ex + 0.5*VT_ex + 0.5*VS_ex)*Cs_ex*Ct_ex
-               - 0.5*(VT_ex - VS_ex)*Ps_ex*Ct_ex
-               + (VR_ex + 0.5*VT_ex + 0.5*VS_ex)*Ps_ex*Pt_ex
-               + 0.5*(VT_ex - VS_ex)*Cs_ex*Pt_ex;
+    double exch = - (VR_ex + 0.5*VT_ex + 0.5*VS_ex)*Cs_ex*Ct_ex
+                  - 0.5*(VT_ex - VS_ex)*Ps_ex*Ct_ex
+                  + (VR_ex + 0.5*VT_ex + 0.5*VS_ex)*Ps_ex*Pt_ex
+                  + 0.5*(VT_ex - VS_ex)*Cs_ex*Pt_ex;
 
+    returnVal.real(dir+exch);
     //use to compare with morten's code
     /*double temp = assym_test(p,q,r,s);
     double diff = abs(temp - 0.5*returnVal);
     if (diff > 1e-14){std::cout << diff << std::endl;}*/
-
+    //std::cout << returnVal << std::endl;
     return 0.5*returnVal;
     //return assym_test(p,q,r,s);
 }

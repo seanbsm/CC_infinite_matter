@@ -89,24 +89,43 @@ void Master::setClasses(){
 double Master::CC_Eref(){
     double Eref = 0;
     complex<double> Eref_c = 0;
+    complex<double> one_body = 0; complex<double> two_body = 0;
+    //std::cout << Eref_c << std::endl;
     for (int i = 0; i<m_Nh; i++){
         Eref_c += m_system->h0(i);
+        one_body += m_system->h0(i);
         for (int j = i+1; j<m_Nh; j++){
             Eref_c += m_system->assym_single(i,j);
+            two_body += m_system->assym_single(i,j);
         }
     }
     //std::cout << std::fixed << std::setprecision (16) << Eref << std::endl;
+
+    std::cout << std::endl;
+    std::cout << "One-body energy per particle  [MeV]:   " << one_body.real()/m_Nh << std::endl;
+    std::cout << "Two-body energy per particle  [MeV]:   " << two_body.real()/m_Nh << std::endl;
+    std::cout << std::endl;
+
     Eref = Eref_c.real();
     return Eref;
 }
 
 double Master::CC_E_HF(){
-    double EHF = 0;
+
+    /*for (int i = 0; i<m_Nh; i++){
+       std::cout << m_system->assym(i,i,i,i) << std::endl;
+    }*/
+
+    double EHF = 0; complex<double> temp = 0;
     complex<double> EHF_c = 0;
     for (int i = 0; i<m_Nh; i++){
         EHF_c += m_system->h0(i);
         for (int j = i+1; j<m_Nh; j++){
-            EHF_c -= m_system->assym_single(i,j);
+            temp = m_system->assym_single(i,j);
+            EHF_c += temp;
+            //std::cout << "element: " << temp << ", state: " << i << " " << j << std::endl;
+            //EHF_c -= m_system->assym_single(i,j);
+            //std::cout << "element: " << m_system->assym_single(i,j) << ", state: " << i << " " << j << std::endl;
         }
     }
 
@@ -141,6 +160,7 @@ double Master::CC_master(double eps, double conFac){
     for (int channel = 0; channel<m_intClass->numOfKu; channel++){
         MatrixX Vhhpp = m_intClass->make2x2Block(m_intClass->Vhhpp_i[channel],0,0,1,1);
         //Eigen::MatrixXd Vhhpp = m_intClass->make2x2Block_alt(h);
+        //std::cout << Vhhpp << std::endl;
         MatrixX temp = Vhhpp.array()*m_ampClass->denomMat[channel].array();
         ECCD_old += ((Vhhpp.transpose())*(temp)).trace();
 
@@ -215,10 +235,10 @@ Master::variable_type Master::Iterator(double eps, double conFac, variable_type 
         if (counter != -1){
             if (m_intermediatesOn){
                 m_diagrams->La();
-                m_diagrams->I1_term1();  // Lb, Qa
-                m_diagrams->I2_term1();  // Lc, Qb, due to structure of blockarrays, this is no faster than calling Lc and Qb seperatly
-                m_diagrams->I3_term1();  // Qd
-                m_diagrams->I4_term1();  // Qc
+                //m_diagrams->I1_term1();  // Lb, Qa
+                //m_diagrams->I2_term1();  // Lc, Qb, due to structure of blockarrays, this is no faster than calling Lc and Qb seperatly
+                //m_diagrams->I3_term1();  // Qd
+                //m_diagrams->I4_term1();  // Qc
             }
             else{
                 //CCD diagrams

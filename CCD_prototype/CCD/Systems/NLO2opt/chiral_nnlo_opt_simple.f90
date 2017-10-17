@@ -76,6 +76,7 @@ CONTAINS
     use ang_mom_functions, only : commons_to_angmom
     implicit none   
     real*8,intent(in)  :: rho
+    !real*8  :: rho
     integer,intent(in) :: npart
     real*8,intent(out)  :: e_scale    
     
@@ -83,19 +84,25 @@ CONTAINS
     real*8 :: lambdachi
     integer :: i 
     
+    !rho = 0.08
+    !write(*,*) proton_mass
     vol = real(npart)/rho
     a_lat=vol**(1.d0/3.d0)
     mom_scale = (twopi/a_lat)
 !    write(6,*) "kf = ",2.d0*mom_scale,neutron_mass,pi,a_lat
 ! #ifdef ISOSPIN_ON
-    escale = hbarc*(hbarc/(0.5d0*(proton_mass+neutron_mass)))*mom_scale*mom_scale
+!    escale = hbarc*(hbarc/(0.5d0*(proton_mass+neutron_mass)))*mom_scale*mom_scale
 ! #else
-!     escale = hbarc*(hbarc/neutron_mass)*mom_scale*mom_scale
+     escale = hbarc*(hbarc/neutron_mass)*mom_scale*mom_scale
 ! #endif
 
     e_scale = escale
     
+    !write(*,*) escale
+    
     iescale=hbarc**3/vol/escale
+    
+    !write(*,*) iescale
     
     mnuc(-1) = proton_mass
     mnuc(0)  = 0.5d0*(proton_mass+neutron_mass)
@@ -207,9 +214,9 @@ CONTAINS
     !
     ! leading order contacts in PW
     !
-    c1s0(-1) = -0.1513660372031080D+00
-    c1s0(0)  = -0.1521410882366787D+00
-    c1s0(1)  = -0.1517647459006913D+00
+    c1s0(-1) = -0.1513660372031080D+00  ! pp term
+    c1s0(0)  = -0.1521410882366787D+00  ! np term
+    c1s0(1)  = -0.1517647459006913D+00  ! nn term
     
     c3s1(-1) = -0.1584341766228121D+00
     c3s1(0)  = -0.1584341766228121D+00
@@ -1087,7 +1094,11 @@ contains
     ENDIF
 
     chiral_pot_nnlo_opt_np =  vdir*iescale
-
+    
+    !write(*,*) iescale
+    
+    !write(*,*) chiral_pot_nnlo_opt_np
+    
   end function chiral_pot_nnlo_opt_np
   
 end module chiral_potentials_nnlo_opt

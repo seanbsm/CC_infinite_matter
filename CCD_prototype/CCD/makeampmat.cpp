@@ -691,7 +691,7 @@ void MakeAmpMat::make3x3Block_inverse(MakeAmpMat::MatrixX inMat, int ku, int i1,
             for (int i = range_lower1; i<range_upper1; i++){
                 for (int j = range_lower2; j<range_upper2; j++){
                     val = inMat(i-range_lower1,j-range_lower2);
-                    if (val.real() != 0 && val.imag() != 0){
+                    if (val.real() != 0 || val.imag() != 0){
                         ii = (blockArrays1_pointer)(1,i);
                         jj = (blockArrays1_pointer)(2,i);
                         kk = (blockArrays2_pointer)(3,j);
@@ -709,7 +709,7 @@ void MakeAmpMat::make3x3Block_inverse(MakeAmpMat::MatrixX inMat, int ku, int i1,
             for (int i = range_lower1; i<range_upper1; i++){
                 for (int j = range_lower2; j<range_upper2; j++){
                     val = inMat(i-range_lower1,j-range_lower2);
-                    if (val.real() != 0 && val.imag() != 0){
+                    if (val.real() != 0 || val.imag() != 0){
                         ii = (blockArrays1_pointer)(1,i);
                         jj = (blockArrays1_pointer)(2,i);
                         kk = (blockArrays1_pointer)(3,i);
@@ -728,7 +728,7 @@ void MakeAmpMat::make3x3Block_inverse(MakeAmpMat::MatrixX inMat, int ku, int i1,
             for (int i = range_lower1; i<range_upper1; i++){
                 for (int j = range_lower2; j<range_upper2; j++){
                     val = inMat(i-range_lower1,j-range_lower2);
-                    if (val.real() != 0 && val.imag() != 0){
+                    if (val.real() != 0 || val.imag() != 0){
                         id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays2_pointer)(3,j), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j),  (blockArrays1_pointer)(3,i));
                         T_list[id] = val;
                     }
@@ -739,7 +739,7 @@ void MakeAmpMat::make3x3Block_inverse(MakeAmpMat::MatrixX inMat, int ku, int i1,
             for (int i = range_lower1; i<range_upper1; i++){
                 for (int j = range_lower2; j<range_upper2; j++){
                     val = inMat(i-range_lower1,j-range_lower2);
-                    if (val.real() != 0 && val.imag() != 0){
+                    if (val.real() != 0 || val.imag() != 0){
                         id = m_intClass->Identity_hhhppp((blockArrays1_pointer)(1,i), (blockArrays1_pointer)(2,i), (blockArrays1_pointer)(3,i), (blockArrays2_pointer)(1,j), (blockArrays2_pointer)(2,j), (blockArrays2_pointer)(3,j));
                         T_list[id] = val;
                     }
@@ -888,7 +888,7 @@ void MakeAmpMat::T3_makeMap(MakeAmpMat::MatrixX inMat, int ku, int i1, int i2, i
         for (int i = range_lower1; i<range_upper1; i++){
             for (int j = range_lower2; j<range_upper2; j++){
                 val = inMat(i-range_lower1,j-range_lower2);
-                if (val.real() != 0 && val.imag() != 0){
+                if (val.real() != 0 || val.imag() != 0){
                     ii = (blockArrays1_pointer)(1,i);
                     jj = (blockArrays1_pointer)(2,i);
                     kk = (blockArrays2_pointer)(3,j);
@@ -913,7 +913,7 @@ void MakeAmpMat::T3_makeMap(MakeAmpMat::MatrixX inMat, int ku, int i1, int i2, i
         for (int i = range_lower1; i<range_upper1; i++){
             for (int j = range_lower2; j<range_upper2; j++){
                 val = inMat(i-range_lower1,j-range_lower2);
-                if (val.real() != 0 && val.imag() != 0){
+                if (val.real() != 0 || val.imag() != 0){
                     ii = (blockArrays1_pointer)(1,i);
                     jj = (blockArrays1_pointer)(2,i);
                     kk = (blockArrays1_pointer)(3,i);

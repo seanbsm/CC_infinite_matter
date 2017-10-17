@@ -30,7 +30,7 @@ int main(int argc, char** argv)
 {
     Eigen::initParallel();
 
-    double       eps     = 1e-16;              //remember to adjust setprecision in master when changing this
+    double       eps     = 1e-6;              //remember to adjust setprecision in master when changing this
     double       conFac  = 1;                          //convergence factor
     const double pi      = M_PI;
 
@@ -88,7 +88,7 @@ int main(int argc, char** argv)
     }
     else{        //default size
         Nh = 14;                        //number of particles
-        Nb = 4;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
+        Nb = 3;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
     }
     double  rs;     //Wigner Seitz radius
     double  rho;    //Density
@@ -114,7 +114,7 @@ int main(int argc, char** argv)
         L1         = pow(L3, 1./3.);
         master->setSystem(new HEG(master, m, L3, L2, L1))*/;
         m   = 939.5653;              //Neutron mass [MeV]
-        rho = 0.1;//7.9999998211860657E-002;
+        rho = 0.08;//8.0000000000000002E-002;
         L3  = double(Nh)/rho;
         L2  = pow(L3, 2./3.);
         L1  = pow(L3, 1./3.);
@@ -131,12 +131,20 @@ int main(int argc, char** argv)
         master->setSystem(new HEG(master, m, L3, L2, L1));
     }
     else if (std::string(argv[1]) == "MP"){
-        m   = 939.565;              //Neutron mass [MeV]
+        m   = 939.5653;              //Neutron mass [MeV]
         rho = atof(argv[4]);
         L3  = double(Nh)/rho;
         L2  = pow(L3, 2./3.);
         L1  = pow(L3, 1./3.);
         master->setSystem(new MP(master, m, L3, L2, L1));
+    }
+    else if (std::string(argv[1]) == "CHIRAL"){
+        m   = 939.5653;              //Neutron mass [MeV]
+        rho = atof(argv[4]);
+        L3  = double(Nh)/rho;
+        L2  = pow(L3, 2./3.);
+        L1  = pow(L3, 1./3.);
+        master->setSystem(new CHIRAL(master, m, L3, L2, L1));
     }
     else{
         std::cout << "Failure: You need to submit a model, e.g. HEG or MP" << std::endl;
@@ -163,9 +171,9 @@ int main(int argc, char** argv)
         }
     }
     else{
-        master->setCCType(3);
-        master->setTriples(true);
-        CCDT = true;
+        master->setCCType(0);
+        master->setTriples(0);
+        CCDT = 0;
     }
 
     cout << "C++ code" << endl;
@@ -178,7 +186,7 @@ int main(int argc, char** argv)
 
     //typedef MakeIntMat::variable_type variable_type;
 
-    bool run_CC = true;
+    bool run_CC = false;
 
     if (run_CC){
         if (CCDT){

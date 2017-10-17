@@ -9,6 +9,9 @@ QMAKE_LFLAGS -= -O1
 QMAKE_LFLAGS += -O3
 QMAKE_CXXFLAGS = -m64 -O3 -fopenmp -std=c++11
 
+
+LIBS += -lgfortran
+
 SOURCES += Systems/NLO2opt/constants.f90 \
     Systems/NLO2opt/spin_isospin_operators.f90 \
     Systems/NLO2opt/ang_mom_module.f90 \

@@ -809,7 +809,7 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, std::vector<int> &fullVec
                             index += 1;
 
                             if (index >= colSize){
-                                colSize += 10000;
+                                colSize += 1000000;
                                 blockArrays_temp.conservativeResize(4, colSize);
                                 fullVec_temp.conservativeResize(colSize);
                             }
@@ -838,7 +838,7 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, std::vector<int> &fullVec
                             index += 1;
 
                             if (index >= colSize){
-                                colSize += 10000;
+                                colSize += 1000000;
                                 blockArrays_temp.conservativeResize(4, colSize);
                                 fullVec_temp.conservativeResize(colSize);
                             }
@@ -867,7 +867,7 @@ void MakeIntMat::mapper_4(std::vector<int>& sortVecIn, std::vector<int> &fullVec
                             index += 1;
 
                             if (index >= colSize){
-                                colSize += 10000;
+                                colSize += 1000000;
                                 blockArrays_temp.conservativeResize(4, colSize);
                                 fullVec_temp.conservativeResize(colSize);
                             }
@@ -943,7 +943,7 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, std::vector<int> &fullVec
                                 index += 1;
 
                                 if (index >= colSize){
-                                    colSize += 10000;
+                                    colSize += 1000000;
                                     blockArrays_temp.conservativeResize(5, colSize);
                                     fullVec_temp.conservativeResize(colSize);
                                 }
@@ -974,7 +974,7 @@ void MakeIntMat::mapper_5(std::vector<int>& sortVecIn, std::vector<int> &fullVec
                                 index += 1;
 
                                 if (index >= colSize){
-                                    colSize += 10000;
+                                    colSize += 1000000;
                                     blockArrays_temp.conservativeResize(5, colSize);
                                     fullVec_temp.conservativeResize(colSize);
                                 }
@@ -2964,7 +2964,7 @@ void MakeIntMat::makeMatMap_hhhp(MatrixXsi& array1, MatrixXsi& array2, unsigned 
         for (unsigned long int j = range_lower2; j<range_upper2; j++){
             //std::cout << (array1)(0,i) << (array1)(1,i) << (array2)(0,j) << (array2)(1,j) << std::endl;
             variable_type val = m_system->assym((array1)(0,i), (array1)(1,i), (array2)(0,j), (array2)(1,j));
-            if (val.real() != 0 && val.imag() != 0){
+            if (val.real() != 0 || val.imag() != 0){
                 Vhhhp_elements[Identity_hhhp((array1)(0,i), (array1)(1,i), (array2)(0,j), (array2)(1,j))] = val;
             }
         }
@@ -2976,7 +2976,7 @@ void MakeIntMat::makeMatMap_hhpp(MatrixXsi& array1, MatrixXsi& array2, unsigned 
         for (unsigned long int j = range_lower2; j<range_upper2; j++){
             //std::cout << (array1)(0,i) << " " << (array1)(0,i) << " " << (array2)(0,j) << " " << (array2)(0,j) << std::endl;
             variable_type val = m_system->assym((array1)(0,i), (array1)(1,i), (array2)(0,j), (array2)(1,j));
-            if (val.real() != 0 && val.imag() != 0){
+            if (val.real() != 0 || val.imag() != 0){
                 Vhhpp_elements[Identity_hhpp((array1)(0,i), (array1)(1,i), (array2)(0,j), (array2)(1,j))] = val;
             }
         }
@@ -2987,7 +2987,7 @@ void MakeIntMat::makeMatMap_ppph(MatrixXsi& array1, MatrixXsi& array2, unsigned 
     for (unsigned long int i = range_lower1; i<range_upper1; i++){
         for (unsigned long int j = range_lower2; j<range_upper2; j++){
             variable_type val = m_system->assym((array1)(0,i), (array1)(1,i), (array2)(0,j), (array2)(1,j));
-            if (val.real() != 0 && val.imag() != 0){
+            if (val.real() != 0 || val.imag() != 0){
                 Vppph_elements[Identity_ppph((array1)(0,i), (array1)(1,i), (array2)(0,j), (array2)(1,j))] = val;
             }
         }
@@ -3005,7 +3005,7 @@ void MakeIntMat::makeMatVec(MatrixXsi& array1, MatrixXsi& array2, unsigned long 
     for (unsigned long int i = range_lower1; i<range_upper1; i++){
         for (unsigned long int j = range_lower2; j<range_upper2; j++){
             variable_type val = m_system->assym((array1)(0,i), (array1)(1,i), (array2)(0,j), (array2)(1,j));
-            if (val.real() != 0 && val.imag() != 0){
+            if (val.real() != 0 || val.imag() != 0){
                 //tempVec.push_back(val);
                 Vhhpp_vector.push_back(val);
                 insertMat(i-range_lower1, j-range_lower2) = Vhhpp_counter;
