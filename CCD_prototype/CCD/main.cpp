@@ -30,7 +30,7 @@ int main(int argc, char** argv)
 {
     Eigen::initParallel();
 
-    double       eps     = 1e-6;              //remember to adjust setprecision in master when changing this
+    double       eps     = 1e-16;              //remember to adjust setprecision in master when changing this
     double       conFac  = 1;                          //convergence factor
     const double pi      = M_PI;
 
@@ -39,7 +39,7 @@ int main(int argc, char** argv)
     //bool    CCDT          = true;                   //turn on/off CCDT-1
     bool    timer         = true;                   //turn on/off timer
     bool    relaxation    = true;                   //turn on/off relaxation when updating amplitudes
-    double  alpha         = 0.873;                  //relaxation parameter (I found 0.873 to be best)
+    double  alpha         = 0.8;                  //relaxation parameter (I found 0.873 to be best)
     int     threads       = 4;                      //number of threads, default is whatever you put here
 
     bool    threadsOn;
@@ -88,7 +88,7 @@ int main(int argc, char** argv)
     }
     else{        //default size
         Nh = 14;                        //number of particles
-        Nb = 3;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
+        Nb = 2;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
     }
     double  rs;     //Wigner Seitz radius
     double  rho;    //Density
@@ -105,20 +105,21 @@ int main(int argc, char** argv)
         std::cout << "No arguments given, running default setup" << std::endl;
         std::cout << "Default setup: HEG for Nh=14, Nb=3, rs=1.0, 1e-16 precision, CCDT" << std::endl;
 
-        /*m          = 1;             //Electron mass [MeV?]
-        rs         = 1;
+        m          = 1;             //Electron mass [MeV?]
+        rs         = 1.0;
         double  rb = 1.;            //Bohr radius [MeV^-1]
         double  r1 = pow(rs*rb, 3);
         L3         = 4.*pi*Nh*r1/3.;
+        std::cout << L3 << std::endl;
         L2         = pow(L3, 2./3.);
         L1         = pow(L3, 1./3.);
-        master->setSystem(new HEG(master, m, L3, L2, L1))*/;
-        m   = 939.5653;              //Neutron mass [MeV]
+        master->setSystem(new HEG(master, m, L3, L2, L1));
+        /*m   = 939.5653;              //Neutron mass [MeV]
         rho = 0.08;//8.0000000000000002E-002;
         L3  = double(Nh)/rho;
         L2  = pow(L3, 2./3.);
         L1  = pow(L3, 1./3.);
-        master->setSystem(new CHIRAL(master, m, L3, L2, L1));
+        master->setSystem(new CHIRAL(master, m, L3, L2, L1));*/
     }
     else if (std::string(argv[1]) == "HEG"){
         m          = 1;             //Electron mass [MeV?]
@@ -162,8 +163,8 @@ int main(int argc, char** argv)
     if (argc == 8){
         master->setCCType(atoi(argv[6]));
         if (atoi(argv[6])==0){
-            master->setTriples(false);
-            CCDT = false;
+            master->setTriples(true);
+            CCDT = true;
         }
         else{
             master->setTriples(true);
@@ -186,7 +187,7 @@ int main(int argc, char** argv)
 
     //typedef MakeIntMat::variable_type variable_type;
 
-    bool run_CC = false;
+    bool run_CC = true;
 
     if (run_CC){
         if (CCDT){
