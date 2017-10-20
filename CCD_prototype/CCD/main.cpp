@@ -172,9 +172,15 @@ int main(int argc, char** argv)
         }
     }
     else{
-        master->setCCType(0);
-        master->setTriples(0);
-        CCDT = 0;
+        int CC_model = 1;   //0=CCD, 1=CCDT-1, 2=CCDT-2, 3=CCDT
+        master->setCCType(CC_model);
+        if (CC_model = 0){
+            CCDT = false;
+        }
+        else{
+            CCDT = true;
+        }
+        master->setTriples(CCDT);
     }
 
     cout << "C++ code" << endl;

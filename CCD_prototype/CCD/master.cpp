@@ -235,10 +235,10 @@ Master::variable_type Master::Iterator(double eps, double conFac, variable_type 
         if (counter != -1){
             if (m_intermediatesOn){
                 m_diagrams->La();
-                //m_diagrams->I1_term1();  // Lb, Qa
-                //m_diagrams->I2_term1();  // Lc, Qb, due to structure of blockarrays, this is no faster than calling Lc and Qb seperatly
-                //m_diagrams->I3_term1();  // Qd
-                //m_diagrams->I4_term1();  // Qc
+                m_diagrams->I1_term1();  // Lb, Qa
+                m_diagrams->I2_term1();  // Lc, Qb, due to structure of blockarrays, this is no faster than calling Lc and Qb seperatly
+                m_diagrams->I3_term1();  // Qd
+                m_diagrams->I4_term1();  // Qc
             }
             else{
                 //CCD diagrams
@@ -258,7 +258,7 @@ Master::variable_type Master::Iterator(double eps, double conFac, variable_type 
             std::fill(m_ampClass->T3_elements_A_new.begin(), m_ampClass->T3_elements_A_new.end(), 0); //reset T3 new
             if (m_CC_type >= 1 ){
                 m_diagrams->T1a();
-                m_diagrams->T1b();
+                //m_diagrams->T1b();
             }
             if (m_CC_type == 3 ){
                 m_diagrams->T2c();
@@ -307,7 +307,7 @@ Master::variable_type Master::Iterator(double eps, double conFac, variable_type 
 
             //calculate T3 contributions to T2 using T3_current
             m_diagrams->D10b();
-            m_diagrams->D10c();
+            //m_diagrams->D10c();
 
         }
 
