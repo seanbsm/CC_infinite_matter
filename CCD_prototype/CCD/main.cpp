@@ -38,8 +38,8 @@ int main(int argc, char** argv)
     bool    intermediates = true;                   //turn on/off intermediates in CCD eqs
     //bool    CCDT          = true;                   //turn on/off CCDT-1
     bool    timer         = true;                   //turn on/off timer
-    bool    relaxation    = true;                   //turn on/off relaxation when updating amplitudes
-    double  alpha         = 0.8;                  //relaxation parameter (I found 0.873 to be best)
+    bool    relaxation    = false;                   //turn on/off relaxation when updating amplitudes
+    double  alpha         = 0.873;                  //relaxation parameter (I found 0.873 to be best)
     int     threads       = 4;                      //number of threads, default is whatever you put here
 
     bool    threadsOn;
@@ -87,8 +87,8 @@ int main(int argc, char** argv)
         eps = atof(argv[5]);
     }
     else{        //default size
-        Nh = 14;                        //number of particles
-        Nb = 2;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
+        Nh = 66;                        //number of particles
+        Nb = 6;                         //number of closed-shells (n^2=0, n^2=1, n^2=2, etc... For NB=2 is min for N=14)
     }
     double  rs;     //Wigner Seitz radius
     double  rho;    //Density
@@ -105,7 +105,7 @@ int main(int argc, char** argv)
         std::cout << "No arguments given, running default setup" << std::endl;
         std::cout << "Default setup: HEG for Nh=14, Nb=3, rs=1.0, 1e-16 precision, CCDT" << std::endl;
 
-        m          = 1;             //Electron mass [MeV?]
+        /*m          = 1;             //Electron mass [MeV?]
         rs         = 1.0;
         double  rb = 1.;            //Bohr radius [MeV^-1]
         double  r1 = pow(rs*rb, 3);
@@ -113,13 +113,13 @@ int main(int argc, char** argv)
         std::cout << L3 << std::endl;
         L2         = pow(L3, 2./3.);
         L1         = pow(L3, 1./3.);
-        master->setSystem(new HEG(master, m, L3, L2, L1));
-        /*m   = 939.5653;              //Neutron mass [MeV]
+        master->setSystem(new HEG(master, m, L3, L2, L1));*/
+        m   = 939.5653;              //Neutron mass [MeV]
         rho = 0.08;//8.0000000000000002E-002;
         L3  = double(Nh)/rho;
         L2  = pow(L3, 2./3.);
         L1  = pow(L3, 1./3.);
-        master->setSystem(new CHIRAL(master, m, L3, L2, L1));*/
+        master->setSystem(new CHIRAL(master, m, L3, L2, L1));
     }
     else if (std::string(argv[1]) == "HEG"){
         m          = 1;             //Electron mass [MeV?]
@@ -163,8 +163,8 @@ int main(int argc, char** argv)
     if (argc == 8){
         master->setCCType(atoi(argv[6]));
         if (atoi(argv[6])==0){
-            master->setTriples(true);
-            CCDT = true;
+            master->setTriples(false);
+            CCDT = false;
         }
         else{
             master->setTriples(true);
@@ -172,9 +172,9 @@ int main(int argc, char** argv)
         }
     }
     else{
-        int CC_model = 1;   //0=CCD, 1=CCDT-1, 2=CCDT-2, 3=CCDT
+        bool CC_model = 0;   //0=CCD, 1=CCDT-1, 2=CCDT-2, 3=CCDT
         master->setCCType(CC_model);
-        if (CC_model = 0){
+        if (CC_model == 0){
             CCDT = false;
         }
         else{

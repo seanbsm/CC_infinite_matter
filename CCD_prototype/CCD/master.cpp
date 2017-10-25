@@ -38,6 +38,7 @@ void Master::setSystem(class System* system){
 
 void Master::setTriples(bool argument){
     m_triplesOn = argument;
+    std::cout << argument << std::endl;
 }
 
 void Master::setCCType(int type){
@@ -256,9 +257,10 @@ Master::variable_type Master::Iterator(double eps, double conFac, variable_type 
         if(m_triplesOn){
 
             std::fill(m_ampClass->T3_elements_A_new.begin(), m_ampClass->T3_elements_A_new.end(), 0); //reset T3 new
+            //m_ampClass->T3_elements_new.clear();
             if (m_CC_type >= 1 ){
                 m_diagrams->T1a();
-                //m_diagrams->T1b();
+                m_diagrams->T1b();
             }
             if (m_CC_type == 3 ){
                 m_diagrams->T2c();
@@ -307,7 +309,7 @@ Master::variable_type Master::Iterator(double eps, double conFac, variable_type 
 
             //calculate T3 contributions to T2 using T3_current
             m_diagrams->D10b();
-            //m_diagrams->D10c();
+            m_diagrams->D10c();
 
         }
 
