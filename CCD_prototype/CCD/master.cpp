@@ -323,16 +323,10 @@ Master::variable_type Master::Iterator(double eps, double conFac, variable_type 
 
             m_ampClass->make2x2Block_inverse(temp, ku, 0,0,1,1, m_ampClass->T2_elements_new, false);
 
-            MatrixX Thhpp = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements_new);
-            ECCD += ((Vhhpp.transpose())*(Thhpp)).trace();
+            /*MatrixX Thhpp = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements_new);
+            ECCD += ((Vhhpp.transpose())*(Thhpp)).trace();*/
         }
 
-
-        cout << std::fixed << std::setprecision (16) << ECCD << endl;
-
-        conFac = abs(ECCD - ECCD_old);
-        ECCD_old = ECCD;
-        counter += 1;
 
         if (m_relaxation){
             spp::sparse_hash_map<unsigned long int, variable_type> T2_temp = m_ampClass->T2_elements;
@@ -345,7 +339,21 @@ Master::variable_type Master::Iterator(double eps, double conFac, variable_type 
             m_ampClass->T2_elements = m_ampClass->T2_elements_new;
         }
 
+
+
+        for (int hh = 0; hh<m_intClass->numOfKu; hh++){
+            int ku = m_intClass->Vhhpp_i[hh];
+
+            MatrixX Vhhpp           = m_intClass->make2x2Block(ku,0,0,1,1);
+            MatrixX Thhpp = m_ampClass->make2x2Block(ku,0,0,1,1, m_ampClass->T2_elements);
+            ECCD += ((Vhhpp.transpose())*(Thhpp)).trace();
+        }
+        cout << std::fixed << std::setprecision (16) << ECCD << endl;
         countCC_iters ++;
+
+        conFac = abs(ECCD - ECCD_old);
+        ECCD_old = ECCD;
+        counter += 1;
 
         //ECCD = 0; too good to delete; you don't want to know how long i used to find this
     }
