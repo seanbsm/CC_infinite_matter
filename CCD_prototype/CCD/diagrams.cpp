@@ -842,7 +842,7 @@ void Diagrams::T2e(){
         i1 = matches(0,i); i2 = matches(1,i);
         MatrixX mat1 = m_intClass->Vhphp[i1]; //hphp was made with sign index +- on rows and columns
         MatrixX mat2 = m_ampClass->T2e_makemat(i2, i1);
-        MatrixX product = mat2*mat1; //mathematically I need to transpose mat1, but it's symmetric
+        MatrixX product = -mat2*mat1; //mathematically I need to transpose mat1, but it's symmetric
         m_ampClass->T2e_inverse(product, i2, i1);
     }
     //auto t4 = Clock::now();
@@ -1218,7 +1218,7 @@ void Diagrams::T5a(){
         /*MatrixX mat1 = m_ampClass->T5a_makemat_1(i1, i2);
         MatrixX mat2 = m_intClass->T5a_makemat(i1, i2);
         MatrixX mat3 = m_ampClass->T5a_makemat_2(i3, i2);
-        MatrixX product = mat3*mat2.transpose()*mat1;*/
+        MatrixX product = mat3*mat2*mat1;*/
 
         MatrixX mat3 = m_ampClass->T5a_makemat_2(i3, i1);
 

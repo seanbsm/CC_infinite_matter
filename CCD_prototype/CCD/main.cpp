@@ -39,7 +39,7 @@ int main(int argc, char** argv)
     //bool    CCDT          = true;                   //turn on/off CCDT-1
     bool    timer         = true;                   //turn on/off timer
     bool    relaxation    = true;                   //turn on/off relaxation when updating amplitudes
-    double  alpha         = 0.873;                  //relaxation parameter (I found 0.873 to be best)
+    double  alpha         = 0.81;//873;                  //relaxation parameter (I found 0.873 to be best)
     int     threads       = 4;                      //number of threads, default is whatever you put here
 
     bool    threadsOn;
@@ -172,7 +172,7 @@ int main(int argc, char** argv)
         }
     }
     else{
-        bool CC_model = 0;   //0=CCD, 1=CCDT-1, 2=CCDT-2, 3=CCDT
+        int CC_model = 3;   //0=CCD, 1=CCDT-1, 2=CCDT-2, 3=CCDT
         master->setCCType(CC_model);
         if (CC_model == 0){
             CCDT = false;

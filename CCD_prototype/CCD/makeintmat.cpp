@@ -2293,8 +2293,8 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     for (int ph=0; ph<sortVec_pm_ph.size(); ph++){
         int val_ph = sortVec_pm_ph[ph];
         auto it1 = std::find(sortVec_pm_hp.begin(), sortVec_pm_hp.end(), val_ph);
-        auto it2 = std::find(sortVec_ppmm_hhpp.begin(), sortVec_ppmm_hhpp.end(), val_ph);
-        if (it1 != sortVec_pm_hp.end() || it2 != sortVec_ppmm_hhpp.end()){
+        auto it2 = std::find(sortVec_ppmm_pphh.begin(), sortVec_ppmm_pphh.end(), val_ph);
+        if (it1 != sortVec_pm_hp.end() || it2 != sortVec_ppmm_pphh.end()){
             for (unsigned long int bA_ph=0; bA_ph<blockArrays_pm_ph.cols(); bA_ph++){
                 if (val_ph == fullVec_pm_ph[bA_ph]){
                     range_upper = bA_ph+1;
@@ -2609,27 +2609,27 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             indexHolder_ppmm_hhpp.col(hhpp) << range_lower, range_upper; //this now has same indices as sortVec
         }*/
 
-            counter     = 0;
-            range_lower = 0;
-            range_upper = 0;
-            indexHolder_ppmm_pphh.conservativeResize(2,sortVec_ppmm_pphh.size());
-            for (unsigned long int pphh=0; pphh<sortVec_ppmm_pphh.size(); pphh++){
-                int val_pphh = sortVec_ppmm_pphh[pphh];
-                auto it = std::find(sortVec_pm_hp.begin(), sortVec_pm_hp.end(), val_pphh);
-                if (it != sortVec_pm_hp.end()){
-                    for (unsigned long int bA_pphh=range_upper; bA_pphh<blockArrays_ppmm_pphh.cols(); bA_pphh++){
-                        if (val_pphh == fullVec_ppmm_pphh[bA_pphh]){
-                            range_upper = bA_pphh+1;
-                            counter += 1;
-                        }
-                        else if (val_pphh < fullVec_ppmm_pphh[bA_pphh]){
-                            break;
-                        }
+        counter     = 0;
+        range_lower = 0;
+        range_upper = 0;
+        indexHolder_ppmm_pphh.conservativeResize(2,sortVec_ppmm_pphh.size());
+        for (unsigned long int pphh=0; pphh<sortVec_ppmm_pphh.size(); pphh++){
+            int val_pphh = sortVec_ppmm_pphh[pphh];
+            auto it = std::find(sortVec_pm_hp.begin(), sortVec_pm_hp.end(), val_pphh);
+            if (it != sortVec_pm_hp.end()){
+                for (unsigned long int bA_pphh=range_upper; bA_pphh<blockArrays_ppmm_pphh.cols(); bA_pphh++){
+                    if (val_pphh == fullVec_ppmm_pphh[bA_pphh]){
+                        range_upper = bA_pphh+1;
+                        counter += 1;
+                    }
+                    else if (val_pphh < fullVec_ppmm_pphh[bA_pphh]){
+                        break;
                     }
                 }
-                range_lower = range_upper - counter;
-                counter = 0;
-                indexHolder_ppmm_pphh.col(pphh) << range_lower, range_upper; //this now has same indices as sortVec
+            }
+            range_lower = range_upper - counter;
+            counter = 0;
+            indexHolder_ppmm_pphh.col(pphh) << range_lower, range_upper; //this now has same indices as sortVec
         }
 
         counter     = 0;

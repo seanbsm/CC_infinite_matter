@@ -263,25 +263,25 @@ Master::variable_type Master::Iterator(double eps, double conFac, variable_type 
                 m_diagrams->T1b();
             }
             if (m_CC_type == 3 ){
-                m_diagrams->T2c();
-                m_diagrams->T2d();
-                m_diagrams->T2e();
+                //m_diagrams->T2c();
+                //m_diagrams->T2d();
+                //m_diagrams->T2e();
             }
-            if (m_CC_type >= 2){
+            /*if (m_CC_type >= 2){
                 // These diagrams require a re-alignment, done through a temporary map
                 m_diagrams->T3b();
                 m_diagrams->T3c();
                 m_diagrams->T3d();
                 m_diagrams->T3e();  //this is slower than the others because the remap is bigger
-            }
+            }*/
             if (m_CC_type == 3){
                 m_diagrams->T5a();
-                m_diagrams->T5b();
-                m_diagrams->T5c();
-                m_diagrams->T5d();
-                m_diagrams->T5e();
-                m_diagrams->T5f();
-                m_diagrams->T5g();
+                //m_diagrams->T5b();
+                //m_diagrams->T5c();
+                //m_diagrams->T5d();
+                //m_diagrams->T5e();
+                //m_diagrams->T5f();
+                //m_diagrams->T5g();
             }
 
             //update T3 amplitudes
