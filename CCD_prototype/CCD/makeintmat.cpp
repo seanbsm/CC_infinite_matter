@@ -1408,7 +1408,7 @@ MakeIntMat::MatrixX MakeIntMat::T3b_makemat(int channel1, int channel2){    //ma
             }
 
             //id = Identity_ppph(d,e,b,l);
-            returnMat(i1-range_lower1, i2-range_lower2) = prefac*Vppph_elements[id];
+            returnMat(i1-range_lower1, i2-range_lower2) = prefac*std::conj(Vppph_elements[id]);
         }
     }
 
@@ -1482,7 +1482,7 @@ MakeIntMat::MatrixX MakeIntMat::T3d_makemat(int channel1, int channel2){    //ma
             l = blockArrays_pp_ph(1,i2);
 
             id = Identity_ppph(d,e,c,l);
-            returnMat(i1-range_lower1, i2-range_lower2) = Vppph_elements[id];
+            returnMat(i1-range_lower1, i2-range_lower2) = std::conj(Vppph_elements[id]);
         }
     }
 
@@ -2272,8 +2272,9 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
     indexHolder_pm_hp.conservativeResize(2,sortVec_pm_hp.size());
     for (int hp=0; hp<sortVec_pm_hp.size(); hp++){
         int val_hp = sortVec_pm_hp[hp];
-        auto it = std::find(sortVec_pm_ph.begin(), sortVec_pm_ph.end(), val_hp);
-        if (it != sortVec_pm_ph.end()){
+        auto it1 = std::find(sortVec_pm_ph.begin(), sortVec_pm_ph.end(), val_hp);
+        auto it2 = std::find(sortVec_ppmm_pphh.begin(), sortVec_ppmm_pphh.end(), val_hp);
+        if (it1 != sortVec_pm_ph.end() || it2 != sortVec_ppmm_pphh.end()){
             for (int bA_hp=0; bA_hp<blockArrays_pm_hp.cols(); bA_hp++){
                 if (val_hp == fullVec_pm_hp[0,bA_hp]){
                     range_upper = bA_hp+1;
@@ -2615,8 +2616,9 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
         indexHolder_ppmm_pphh.conservativeResize(2,sortVec_ppmm_pphh.size());
         for (unsigned long int pphh=0; pphh<sortVec_ppmm_pphh.size(); pphh++){
             int val_pphh = sortVec_ppmm_pphh[pphh];
-            auto it = std::find(sortVec_pm_hp.begin(), sortVec_pm_hp.end(), val_pphh);
-            if (it != sortVec_pm_hp.end()){
+            auto it1 = std::find(sortVec_pm_hp.begin(), sortVec_pm_hp.end(), val_pphh);
+            auto it2 = std::find(sortVec_pm_ph.begin(), sortVec_pm_ph.end(), val_pphh);
+            if (it1 != sortVec_pm_hp.end() || it2 != sortVec_pm_ph.end()){
                 for (unsigned long int bA_pphh=range_upper; bA_pphh<blockArrays_ppmm_pphh.cols(); bA_pphh++){
                     if (val_pphh == fullVec_ppmm_pphh[bA_pphh]){
                         range_upper = bA_pphh+1;
