@@ -1,10 +1,12 @@
-from sympy import *
+#from sympy import *
 #from pylab import *
 import numpy as np
 import math
 import matplotlib.pyplot as plt
 
 #CLASSES
+
+pi = np.pi
 
 class HEG:	#Homogenous Electron Gas
 	def __init__(self):

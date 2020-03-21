@@ -1,4 +1,4 @@
-from sympy import *
+#from sympy import *
 from pylab import *
 import numpy as np
 import matplotlib.pyplot as plt
@@ -203,7 +203,7 @@ g 	= 1							#pairing strength
 
 
 system = PM()
-PM_on = true
+PM_on = True
 
 states, below_fermi, above_fermi, NS = system.makeStateSpace()
 
@@ -374,7 +374,7 @@ while conFac > eps:
 	ECCD = ECCD_new
 	print ECCD
 
-if PM_on == true:	
+if PM_on == True:	
 	E_REF = -g*N/4
 	for p in below_fermi:
 		E_REF += states[p,0]-1
