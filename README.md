@@ -1,4 +1,4 @@
-# Project_Genesis
+# CC_infinite_matter
 A CCDT code for infinite matter using closed shell system space.
 
 Important packages used are:
@@ -27,5 +27,3 @@ which will run the program for:
 	- 1 = CCDT-1
 	- 2 = CCDT-2
 	- 3 = CCDT (all diagrams)
-
-Lastly, yes the project name is silly.
