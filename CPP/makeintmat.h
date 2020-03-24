@@ -1,15 +1,18 @@
 #ifndef MAKEINTMAT_H
 #define MAKEINTMAT_H
 
-#include "eigen3/Eigen/Dense"
-#include <Systems/system.h>
-#include <Systems/heg.h>
-#include <Systems/mp.h>
+#include "../eigen3/Eigen/Dense"
+#include "Systems/system.h"
+#include "Systems/heg.h"
+#include "Systems/mp.h"
 #include <iostream>
+#include <omp.h>
+#include <iomanip>
+#include <numeric>
 #include <map>
 #include <complex>
 #include <unordered_map>
-#include <sparsepp/spp.h>
+#include "sparsepp/spp.h"
 
 class MakeIntMat
 {

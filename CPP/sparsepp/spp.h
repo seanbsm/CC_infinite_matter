@@ -60,12 +60,12 @@
 #include <iosfwd>
 #include <ios>
 
-#include <sparsepp/spp_stdint.h>  // includes spp_config.h
-#include <sparsepp/spp_traits.h>
-#include <sparsepp/spp_utils.h>
+#include "spp_stdint.h"  // includes spp_config.h
+#include "spp_traits.h"
+#include "spp_utils.h"
 
 #ifdef SPP_INCLUDE_SPP_ALLOC
-    #include <sparsepp/spp_alloc.h>
+    #include "spp_alloc.h"
 #endif
 
 #if !defined(SPP_NO_CXX11_HDR_INITIALIZER_LIST)

@@ -1,12 +1,12 @@
 #ifndef HEG_H
 #define HEG_H
 
-#include "master.h"
+#include "../master.h"
 #include "system.h"
 #include <math.h>
 #include <complex>
 #include <cmath>
-#include "eigen3/Eigen/Dense"
+#include "../../eigen3/Eigen/Dense"
 
 class HEG : public System
 {

@@ -1,10 +1,10 @@
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
-#include <master.h>
+#include "../master.h"
 #include <complex>
 //#include "../makeintmat.h"
-#include "eigen3/Eigen/Dense"
+#include "../../eigen3/Eigen/Dense"
 
 class System
 {

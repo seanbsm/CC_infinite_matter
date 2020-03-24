@@ -12,14 +12,14 @@
  * -----------------------------------------------------------------------------------------------
  */
 
-#include <sparsepp/spp_stdint.h> // includes spp_config.h
-#include <sparsepp/spp_bitset.h>
-#include <sparsepp/spp_smartptr.h>
+#include "spp_stdint.h" // includes spp_config.h
+#include "spp_bitset.h"
+#include "spp_smartptr.h"
 
 #define USE_BTREE 1
 
 #if USE_BTREE
-    #include <sparsepp/spp_btree.h>
+    #include "spp_btree.h"
     #define BTREE_SET spp_::btree_set
 #elif USE_CPP_BTREE
     #ifdef _WIN32

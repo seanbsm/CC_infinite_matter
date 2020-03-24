@@ -1,14 +1,18 @@
 #ifndef DIAGRAMS_H
 #define DIAGRAMS_H
 
-#include "eigen3/Eigen/Dense"
-#include <makeintmat.h>
-#include <makeampmat.h>
+#include "../eigen3/Eigen/Dense"
+#include "../eigen3/Eigen/Core"
+#include "makeintmat.h"
+#include "makeampmat.h"
 #include <complex>
-#include <Systems/system.h>
-#include <Systems/heg.h>
-#include <Systems/mp.h>
-#include <Systems/pm.h>
+#include "omp.h"
+#include <chrono>
+#include <time.h>
+#include <unistd.h>
+#include "Systems/system.h"
+#include "Systems/heg.h"
+#include "Systems/mp.h"
 
 class Diagrams
 {

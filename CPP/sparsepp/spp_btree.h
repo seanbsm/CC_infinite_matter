@@ -31,9 +31,9 @@
 #include <cassert>
 #include <algorithm>
 
-#include <sparsepp/spp_traits.h>
-#include <sparsepp/spp_stdint.h>
-#include <sparsepp/spp_utils.h>
+#include "spp_traits.h"
+#include "spp_stdint.h"
+#include "spp_utils.h"
 
 #ifdef _WIN32
     typedef int64_t ssize_t;

@@ -1,8 +1,8 @@
 #ifndef MASTER_H
 #define MASTER_H
 
-#include <Systems/system.h>
-#include "eigen3/Eigen/Dense"
+#include "Systems/system.h"
+#include "../eigen3/Eigen/Dense"
 
 
 class Master

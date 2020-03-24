@@ -1,11 +1,5 @@
 #include "diagrams.h"
 
-#include "eigen3/Eigen/Dense"
-#include "eigen3/Eigen/Core"
-#include <omp.h>
-#include <chrono>
-#include <time.h>
-#include <unistd.h>
 
 typedef std::chrono::high_resolution_clock Clock;   //needed for timing
 

@@ -1,13 +1,12 @@
 #ifndef MAKEAMPMAT_H
 #define MAKEAMPMAT_H
 
-#include "eigen3/Eigen/Dense"
-#include <makeintmat.h>
+#include "../eigen3/Eigen/Dense"
+#include "makeintmat.h"
 #include <complex>
-#include <Systems/system.h>
-#include <Systems/heg.h>
-#include <Systems/mp.h>
-#include <Systems/pm.h>
+#include "Systems/system.h"
+#include "Systems/heg.h"
+#include "Systems/mp.h"
 
 class MakeAmpMat
 {

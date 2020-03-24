@@ -6,8 +6,8 @@
 #include <stdexcept>
 #include <cassert>
 
-#include <sparsepp/spp_stdint.h> // includes spp_config.h
-#include <sparsepp/spp_utils.h>
+#include "spp_stdint.h" // includes spp_config.h
+#include "spp_utils.h"
 
 namespace spp_
 {

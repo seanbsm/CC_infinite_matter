@@ -3864,24 +3864,24 @@ MakeAmpMat::MatrixX MakeAmpMat::T2e_makemat(int channel1, int channel2){    //ma
     double prefac1;
     double prefac2;
 
-    std::cout << "start print" << std::endl;
+    //~ std::cout << "start print" << std::endl;
 
-    std::cout << channel1 << " " << channel2 << std::endl;
+    //~ std::cout << channel1 << " " << channel2 << std::endl;
 
-    std::cout << std::endl;
+    //~ std::cout << std::endl;
 
-    std::cout << m_intClass->blockArrays_ppmm_pphh(0,range_lower1) << std::endl;
-    std::cout << m_intClass->blockArrays_ppmm_pphh(1,range_lower1) << std::endl;
-    std::cout << m_intClass->blockArrays_ppmm_pphh(2,range_lower1) << std::endl;
-    std::cout << m_intClass->blockArrays_ppmm_pphh(3,range_lower1) << std::endl;
-    std::cout << m_intClass->blockArrays_pm_hp(0,range_lower2) << std::endl;
-    std::cout << m_intClass->blockArrays_pm_hp(1,range_lower2) << std::endl;
+    //~ std::cout << m_intClass->blockArrays_ppmm_pphh(0,range_lower1) << std::endl;
+    //~ std::cout << m_intClass->blockArrays_ppmm_pphh(1,range_lower1) << std::endl;
+    //~ std::cout << m_intClass->blockArrays_ppmm_pphh(2,range_lower1) << std::endl;
+    //~ std::cout << m_intClass->blockArrays_ppmm_pphh(3,range_lower1) << std::endl;
+    //~ std::cout << m_intClass->blockArrays_pm_hp(0,range_lower2) << std::endl;
+    //~ std::cout << m_intClass->blockArrays_pm_hp(1,range_lower2) << std::endl;
 
-    std::cout << std::endl;
+    //~ std::cout << std::endl;
 
-    std::cout << m_intClass->blockArrays_ppmm_pphh.col(range_lower1) << std::endl;
+    //~ std::cout << m_intClass->blockArrays_ppmm_pphh.col(range_lower1) << std::endl;
 
-    std::cout << "end print" << std::endl;
+    //~ std::cout << "end print" << std::endl;
 
     for (unsigned long int i1 = range_lower1; i1<range_upper1; i1++){
         b = m_intClass->blockArrays_ppmm_pphh(0,i1);

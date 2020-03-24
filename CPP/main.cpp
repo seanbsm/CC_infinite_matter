@@ -8,17 +8,15 @@
 #include <math.h>
 #include <chrono>
 #include <omp.h>
-#include "eigen3/Eigen/Dense"
+#include "../eigen3/Eigen/Dense"
 
 typedef std::chrono::high_resolution_clock Clock;   //needed for timing
 
 //author made files
-#include "makestatespace.h"
 #include "master.h"
 #include "Systems/system.h"
 #include "Systems/heg.h"
 #include "Systems/mp.h"
-#include "Systems/chiral.h"
 #include "makeampmat.h"
 #include "makeintmat.h"
 

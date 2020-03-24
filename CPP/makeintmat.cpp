@@ -1,10 +1,5 @@
+
 #include "makeintmat.h"
-#include "Systems/system.h"
-#include "Systems/heg.h"
-#include "eigen3/Eigen/Dense"
-#include <omp.h>
-#include <iostream>
-#include <iomanip>
 
 using namespace std;
 
@@ -2285,10 +2280,10 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
             }
         }
         range_lower = range_upper - counter;
-        std::cout << std::endl;
-        std::cout << range_lower << " " << range_upper << std::endl;
-        std::cout << fullVec_pm_hp[range_lower] << " " << fullVec_pm_hp[range_upper] << std::endl;
-        std::cout << std::endl;
+        //~ std::cout << std::endl;
+        //~ std::cout << range_lower << " " << range_upper << std::endl;
+        //~ std::cout << fullVec_pm_hp[range_lower] << " " << fullVec_pm_hp[range_upper] << std::endl;
+        //~ std::cout << std::endl;
         counter = 0;
         indexHolder_pm_hp.col(hp) << range_lower, range_upper; //this now has same indices as sortVec
     }
@@ -2635,10 +2630,10 @@ void MakeIntMat::makeBlockMat(System* system, int Nh, int Ns){
                     }
                 }
                 range_lower = range_upper - counter;
-                std::cout << std::endl;
-                std::cout << range_lower << " " << range_upper << std::endl;
-                std::cout << fullVec_ppmm_pphh[range_lower] << " " << fullVec_ppmm_pphh[range_upper] << std::endl;
-                std::cout << std::endl;
+                //~ std::cout << std::endl;
+                //~ std::cout << range_lower << " " << range_upper << std::endl;
+                //~ std::cout << fullVec_ppmm_pphh[range_lower] << " " << fullVec_ppmm_pphh[range_upper] << std::endl;
+                //~ std::cout << std::endl;
                 counter = 0;
                 indexHolder_ppmm_pphh.col(pphh) << range_lower, range_upper; //this now has same indices as sortVec
         }
