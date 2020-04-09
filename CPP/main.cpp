@@ -1,5 +1,7 @@
-//imported files
-//other libraries
+
+
+
+/* External libraries */
 #include <iostream>
 #include <iomanip>
 #include <cstdlib>
@@ -12,11 +14,11 @@
 
 typedef std::chrono::high_resolution_clock Clock;   //needed for timing
 
-//author made files
+/* Self-written code */
 #include "master.h"
-#include "Systems/system.h"
-#include "Systems/heg.h"
-#include "Systems/mp.h"
+#include "potentials/system.h"
+#include "potentials/heg.h"
+#include "potentials/mp.h"
 #include "makeampmat.h"
 #include "makeintmat.h"
 

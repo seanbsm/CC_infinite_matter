@@ -1,10 +1,8 @@
 #ifndef MAKEINTMAT_H
 #define MAKEINTMAT_H
 
+/* External libraries */
 #include "../eigen3/Eigen/Dense"
-#include "Systems/system.h"
-#include "Systems/heg.h"
-#include "Systems/mp.h"
 #include <iostream>
 #include <omp.h>
 #include <iomanip>
@@ -14,11 +12,17 @@
 #include <unordered_map>
 #include "sparsepp/spp.h"
 
+/* Selv-written code */
+#include "type_definitions.h"
+#include "potentials/system.h"
+#include "potentials/heg.h"
+#include "potentials/mp.h"
+
 class MakeIntMat
 {
 private:
 
-    typedef Eigen::Matrix<short int, Eigen::Dynamic, Eigen::Dynamic>         MatrixXsi;
+    //~ typedef Eigen::Matrix<short int, Eigen::Dynamic, Eigen::Dynamic>         MatrixXsi;
 
     //index-keepers
     Eigen::VectorXi identify_pppp;
@@ -36,8 +40,8 @@ public:
 
     //this is the type to be used in the interactions and amplitudes
     //set to std::complex<double> if you wish to work with the chiral model, otherwise use double
-    typedef double variable_type;
-    typedef Eigen::Matrix<variable_type, Eigen::Dynamic, Eigen::Dynamic> MatrixX;
+    //~ typedef double variable_type;
+    //~ typedef Eigen::Matrix<variable_type, Eigen::Dynamic, Eigen::Dynamic> MatrixX;
 
     int m_Nh        = 0;
     int m_Ns        = 0;
@@ -53,7 +57,7 @@ public:
     unsigned long int m_Nh3Ns2    = 0;
 
     //Eigen matrix with unsigned long int as type
-    typedef Eigen::Matrix<unsigned long int, Eigen::Dynamic, Eigen::Dynamic> MatrixXuli;
+    //~ typedef Eigen::Matrix<unsigned long int, Eigen::Dynamic, Eigen::Dynamic> MatrixXuli;
     //typedef Eigen::Matrix<short int, Eigen::Dynamic, Eigen::Dynamic>         MatrixXsi;
 
 
@@ -200,74 +204,75 @@ public:
 
     MakeIntMat();
     System* m_system = nullptr;
-    void                            mapper_1(std::vector<int> &sortVecIn, std::vector<int> &fullVecIn, MatrixXsi &blockArraysIn, int i1, int s1);
-    void                            mapper_2(std::vector<int> &sortVecIn, std::vector<int> &fullVecIn, MatrixXsi &blockArraysIn, int i1, int i2, int s1, int s2);
-    void                            mapper_2_alt();
-    void                            mapper_3(std::vector<int> &sortVecIn, std::vector<int> &fullVecIn, MatrixXsi &blockArraysIn, int i1, int i2, int i3, int s1, int s2, int s3);
-    void                            mapper_4(std::vector<int> &sortVecIn, std::vector<int> &fullVecIn, MatrixXsi &blockArraysIn, int i1, int i2, int i3, int i4, int s1, int s2, int s3, int s4);
-    void                            mapper_5(std::vector<int> &sortVecIn, std::vector<int> &fullVecIn, MatrixXsi &blockArraysIn, int i1, int i2, int i3, int i4, int i5, int s1, int s2, int s3, int s4, int s5);
-    void                            mapper_hp();        //special func made for Lc diagram, not necessary IF I fix sign convention for ph and hp
+    void    mapper_1(std::vector<int> &sortVecIn, std::vector<int> &fullVecIn, MatrixXsi &blockArraysIn, int i1, int s1);
+    void    mapper_2(std::vector<int> &sortVecIn, std::vector<int> &fullVecIn, MatrixXsi &blockArraysIn, int i1, int i2, int s1, int s2);
+    void    mapper_2_alt();
+    void    mapper_3(std::vector<int> &sortVecIn, std::vector<int> &fullVecIn, MatrixXsi &blockArraysIn, int i1, int i2, int i3, int s1, int s2, int s3);
+    void    mapper_4(std::vector<int> &sortVecIn, std::vector<int> &fullVecIn, MatrixXsi &blockArraysIn, int i1, int i2, int i3, int i4, int s1, int s2, int s3, int s4);
+    void    mapper_5(std::vector<int> &sortVecIn, std::vector<int> &fullVecIn, MatrixXsi &blockArraysIn, int i1, int i2, int i3, int i4, int i5, int s1, int s2, int s3, int s4, int s5);
+    void    mapper_hp();        //special func made for Lc diagram, not necessary IF I fix sign convention for ph and hp
 
-    void                            makeBlockMat(System* system, int Nh, int Ns);
-    void                            setTriples(bool argument);
-    bool                            m_triplesOn;
+    void    makeBlockMat(System* system, int Nh, int Ns);
+    void    setTriples(bool argument);
+    bool    m_triplesOn;
 
-    int                             numOfKu;        //number of blocks in V_hh_pp
-    int                             numOfKu3;       //number of blocks in V_hhh_ppp
-    MatrixX                 makeSquareBlock(MatrixXsi& array, unsigned long int range_lower, unsigned long int range_upper);
-    MatrixX                 makeSquareBlock_s(MatrixXsi& array, unsigned long range_lower, unsigned long range_upper);
-    MatrixX                 makeRektBlock(MatrixXsi& array1, MatrixXsi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
+    int     numOfKu;        //number of blocks in V_hh_pp
+    int     numOfKu3;       //number of blocks in V_hhh_ppp
+    MatrixX makeSquareBlock(MatrixXsi& array, unsigned long int range_lower, unsigned long int range_upper);
+    MatrixX makeSquareBlock_s(MatrixXsi& array, unsigned long range_lower, unsigned long range_upper);
+    MatrixX makeRektBlock(MatrixXsi& array1, MatrixXsi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
 
 
     //CCD terms
-    MatrixX                 I1_makemat(int channel1, int channel2);
-    MatrixX                 I2_makemat(int channel1, int channel2);
-    MatrixX                 I3_makemat(int channel1, int channel2);
-    MatrixX                 I4_makemat(int channel1, int channel2);
+    MatrixX I1_makemat(int channel1, int channel2);
+    MatrixX I2_makemat(int channel1, int channel2);
+    MatrixX I3_makemat(int channel1, int channel2);
+    MatrixX I4_makemat(int channel1, int channel2);
 
     //T3 contributions to T2
-    MakeIntMat::MatrixX                 D10b_makemat(int channel1, int channel2);
-    MakeIntMat::MatrixX                 D10c_makemat(int channel1, int channel2);
+    MatrixX D10b_makemat(int channel1, int channel2);
+    MatrixX D10c_makemat(int channel1, int channel2);
 
     //linear T2 terms in T3
-    MakeIntMat::MatrixX                 T1a_makemat(int channel1, int channel2);
-    MakeIntMat::MatrixX                 T1b_makemat(int channel1, int channel2);
+    MatrixX T1a_makemat(int channel1, int channel2);
+    MatrixX T1b_makemat(int channel1, int channel2);
 
     //linear T3 terms in T3 (these already stored directly, and need no "make" function)
 
     //quadratic T2 terms in T3
-    MakeIntMat::MatrixX                 T3b_makemat(int channel1, int channel2);
-    MakeIntMat::MatrixX                 T3c_makemat(int channel1, int channel2);
-    MakeIntMat::MatrixX                 T3d_makemat(int channel1, int channel2);
-    MakeIntMat::MatrixX                 T3e_makemat(int channel1, int channel2);
+    MatrixX T3b_makemat(int channel1, int channel2);
+    MatrixX T3c_makemat(int channel1, int channel2);
+    MatrixX T3d_makemat(int channel1, int channel2);
+    MatrixX T3e_makemat(int channel1, int channel2);
 
     //T2*T3 terms in T3
-    MakeIntMat::MatrixX                 T5a_makemat(int channel1, int channel2);
-    MakeIntMat::MatrixX                 T5b_makemat(int channel1, int channel2);
-    MakeIntMat::MatrixX                 T5c_makemat(int channel1, int channel2);
-    MakeIntMat::MatrixX                 T5d_makemat(int channel1, int channel2);
-    MakeIntMat::MatrixX                 T5e_makemat(int channel1, int channel2);
-    MakeIntMat::MatrixX                 T5f_makemat(int channel1, int channel2); //T5f and T5g are identical, but it's nice to think of them seperate
-    MakeIntMat::MatrixX                 T5g_makemat(int channel1, int channel2);
+    MatrixX T5a_makemat(int channel1, int channel2);
+    MatrixX T5b_makemat(int channel1, int channel2);
+    MatrixX T5c_makemat(int channel1, int channel2);
+    MatrixX T5d_makemat(int channel1, int channel2);
+    MatrixX T5e_makemat(int channel1, int channel2);
+    MatrixX T5f_makemat(int channel1, int channel2); //T5f and T5g are identical, but it's nice to think of them seperate
+    MatrixX T5g_makemat(int channel1, int channel2);
 
-    MakeIntMat::MatrixX                 make3x1Block(int ku, int i1, int i2, int i3, int i4);
-    MakeIntMat::MatrixX                 make2x2Block(int ku, int i1, int i2, int i3, int i4);
-    MakeIntMat::MatrixX                 make2x2Block_alt(int channel);
+    MatrixX make3x1Block(int ku, int i1, int i2, int i3, int i4);
+    MatrixX make2x2Block(int ku, int i1, int i2, int i3, int i4);
+    MatrixX make2x2Block_alt(int channel);
 
-    void                            makeMatMap_hhhp(MatrixXsi& array1, MatrixXsi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
-    void                            makeMatMap_hhpp(MatrixXsi& array1, MatrixXsi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
-    void                            makeMatMap_ppph(MatrixXsi& array1, MatrixXsi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
+    void    makeMatMap_hhhp(MatrixXsi& array1, MatrixXsi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
+    void    makeMatMap_hhpp(MatrixXsi& array1, MatrixXsi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
+    void    makeMatMap_ppph(MatrixXsi& array1, MatrixXsi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
 
-    void                            makeMatVec(MatrixXsi& array1, MatrixXsi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
-    unsigned long int               Identity_hhhp(int h1, int h2, int h3, int p1);
-    unsigned long int               Identity_hhpp(int h1, int h2, int p1, int p2);
-    unsigned long int               Identity_hh(int h1, int h2);
-    unsigned long int               Identity_pp(int p1, int p2);
-    unsigned long int               Identity_ppph(int p1, int p2, int p3, int h1);
-    unsigned long int               Identity_hhhppp(int h1, int h2, int h3, int p1, int p2, int p3);
-    unsigned long int               Identity_hhh(int h1, int h2, int h3);
-    unsigned long int               Identity_ppp(int p1, int p2, int p3);
-    unsigned long int               Identity_hhhhhp(int h1, int h2, int h3, int h4, int h5, int p1); //this is a special function for T3e alone
+    void              makeMatVec(MatrixXsi& array1, MatrixXsi& array2, unsigned long int range_lower1, unsigned long int range_upper1, unsigned long int range_lower2, unsigned long int range_upper2);
+    unsigned long int Identity_hhhp(int h1, int h2, int h3, int p1);
+    unsigned long int Identity_hhpp(int h1, int h2, int p1, int p2);
+    unsigned long int Identity_hh(int h1, int h2);
+    unsigned long int Identity_pp(int p1, int p2);
+    unsigned long int Identity_ppph(int p1, int p2, int p3, int h1);
+    unsigned long int Identity_hhhppp(int h1, int h2, int h3, int p1, int p2, int p3);
+    unsigned long int Identity_hhh(int h1, int h2, int h3);
+    unsigned long int Identity_ppp(int p1, int p2, int p3);
+    unsigned long int Identity_hhhhhp(int h1, int h2, int h3, int h4, int h5, int p1); //this is a special function for T3e alone
+    
     spp::sparse_hash_map<unsigned long int, variable_type>           Vhhhp_elements; //needed for T3
     spp::sparse_hash_map<unsigned long int, variable_type>           Vhhpp_elements;
     spp::sparse_hash_map<unsigned long int, variable_type>           Vppph_elements; //needed for T3
@@ -281,12 +286,12 @@ public:
     int                             Vhhpp_counter = 0;
 
     //interaction matrices for CCD
-    std::vector<MakeIntMat::MatrixX>   Vhhpp;
+    std::vector<MatrixX>   Vhhpp;
 
     //these are special
-    std::vector<MakeIntMat::MatrixX>   Vpppp; //for La
-    std::vector<MakeIntMat::MatrixX>   Vhhhh; //for Lb
-    std::vector<MakeIntMat::MatrixX>   Vhphp; //for Lc
+    std::vector<MatrixX>   Vpppp; //for La
+    std::vector<MatrixX>   Vhhhh; //for Lb
+    std::vector<MatrixX>   Vhphp; //for Lc
 
     std::vector<MatrixXsi>   V_hp_hp;
     std::vector<MatrixXsi>   V_hh_pp;

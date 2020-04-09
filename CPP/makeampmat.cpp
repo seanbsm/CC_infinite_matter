@@ -1,11 +1,4 @@
 #include "makeampmat.h"
-#include <iostream>
-#include <stdlib.h>
-#include <chrono>
-#include <time.h>
-#include <unistd.h>
-
-#include <omp.h>
 
 typedef std::chrono::high_resolution_clock Clock;   //needed for timing
 

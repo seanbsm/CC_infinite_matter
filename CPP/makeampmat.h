@@ -1,20 +1,30 @@
 #ifndef MAKEAMPMAT_H
 #define MAKEAMPMAT_H
 
+/* External libraries */
 #include "../eigen3/Eigen/Dense"
-#include "makeintmat.h"
 #include <complex>
-#include "Systems/system.h"
-#include "Systems/heg.h"
-#include "Systems/mp.h"
+#include <iostream>
+#include <stdlib.h>
+#include <chrono>
+#include <time.h>
+#include <unistd.h>
+#include <omp.h>
+
+/* Self-written code */
+#include "type_definitions.h"
+#include "makeintmat.h"
+#include "potentials/system.h"
+#include "potentials/heg.h"
+#include "potentials/mp.h"
 
 class MakeAmpMat
 {
 public:
     MakeAmpMat();
 
-    typedef MakeIntMat::variable_type   variable_type;
-    typedef MakeIntMat::MatrixX         MatrixX;
+    //~ typedef MakeIntMat::variable_type   variable_type;
+    //~ typedef MakeIntMat::MatrixX         MatrixX;
 
     void makeFockMaps();
     void emptyFockMaps();
@@ -32,8 +42,8 @@ public:
     System*      m_system   = nullptr;
     std::vector<MatrixX>  Amplitudes;
 
-    typedef Eigen::Matrix<unsigned long int, Eigen::Dynamic, Eigen::Dynamic> MatrixXuli;
-    typedef Eigen::Matrix<short int, Eigen::Dynamic, Eigen::Dynamic>         MatrixXsi;
+    //~ typedef Eigen::Matrix<unsigned long int, Eigen::Dynamic, Eigen::Dynamic> MatrixXuli;
+    //~ typedef Eigen::Matrix<short int, Eigen::Dynamic, Eigen::Dynamic>         MatrixXsi;
 
     spp::sparse_hash_map<unsigned long int, variable_type>           T2_elements;
     spp::sparse_hash_map<unsigned long int, variable_type>           T2_temp;

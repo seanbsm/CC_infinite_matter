@@ -1,9 +1,21 @@
 #ifndef MASTER_H
 #define MASTER_H
 
-#include "Systems/system.h"
+/* External libraries */
 #include "../eigen3/Eigen/Dense"
+#include <iostream>
+#include <chrono>
+#include <omp.h>
+#include <iomanip>
 
+/* Self-written code */
+#include "type_definitions.h"
+#include "potentials/system.h"
+#include "potentials/heg.h"
+#include "potentials/mp.h"
+#include "makeampmat.h"
+#include "makeintmat.h"
+#include "diagrams.h"
 
 class Master
 {
@@ -29,10 +41,9 @@ public:
 
     //this is the type to be used in the interactions and amplitudes
     //set to std::complex if you wish to work with the chiral model, otherwise use double
-    typedef double variable_type;
-    typedef Eigen::Matrix<variable_type, Eigen::Dynamic, Eigen::Dynamic> MatrixX;
-
-    typedef Eigen::Matrix<unsigned long int, Eigen::Dynamic, Eigen::Dynamic> MatrixXuli;
+    //~ typedef double variable_type;
+    //~ typedef Eigen::Matrix<variable_type, Eigen::Dynamic, Eigen::Dynamic> MatrixX;
+	//~ typedef Eigen::Matrix<unsigned long int, Eigen::Dynamic, Eigen::Dynamic> MatrixXuli;
 
     void setSize();
     void setSystem(class System* system);

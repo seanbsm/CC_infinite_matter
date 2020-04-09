@@ -1,14 +1,4 @@
 #include "master.h"
-#include "Systems/heg.h"
-#include "Systems/mp.h"
-#include "makeampmat.h"
-#include "makeintmat.h"
-#include "diagrams.h"
-
-#include <iostream>
-#include <chrono>
-#include <omp.h>
-#include <iomanip> //needed for std::setprecision
 
 typedef std::chrono::high_resolution_clock Clock;   //needed for timing
 

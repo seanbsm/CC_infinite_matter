@@ -1,6 +1,7 @@
 #ifndef DIAGRAMS_H
 #define DIAGRAMS_H
 
+/* External libraries */
 #include "../eigen3/Eigen/Dense"
 #include "../eigen3/Eigen/Core"
 #include "makeintmat.h"
@@ -10,9 +11,12 @@
 #include <chrono>
 #include <time.h>
 #include <unistd.h>
-#include "Systems/system.h"
-#include "Systems/heg.h"
-#include "Systems/mp.h"
+
+/* Self-written code */
+#include "type_definitions.h"
+#include "potentials/system.h"
+#include "potentials/heg.h"
+#include "potentials/mp.h"
 
 class Diagrams
 {
@@ -21,14 +25,14 @@ public:
     MakeAmpMat*  m_ampClass = nullptr;
     System*      m_system   = nullptr;
 
-    typedef MakeIntMat::variable_type   variable_type;
-    typedef MakeIntMat::MatrixX         MatrixX;
+    //~ typedef MakeIntMat::variable_type   variable_type;
+    //~ typedef MakeIntMat::MatrixX         MatrixX;
 
     Diagrams();
 
     //Eigen::MatrixXi distributeChannels(Eigen::MatrixXi channels, int elements);
 
-    typedef Eigen::Matrix<unsigned long int, Eigen::Dynamic, Eigen::Dynamic> MatrixXuli;
+    //~ typedef Eigen::Matrix<unsigned long int, Eigen::Dynamic, Eigen::Dynamic> MatrixXuli;
 
     void setThreads(int numthreads);
     int m_numThreads;

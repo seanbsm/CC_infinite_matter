@@ -1,6 +1,5 @@
 #include "diagrams.h"
 
-
 typedef std::chrono::high_resolution_clock Clock;   //needed for timing
 
 Diagrams::Diagrams()
