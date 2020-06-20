@@ -118,7 +118,7 @@ int main(int argc, char** argv)
         L3  = double(Nh)/rho;
         L2  = pow(L3, 2./3.);
         L1  = pow(L3, 1./3.);
-        master->setSystem(new MP(master, m, L3, L2, L1));
+        master->setSystem(new MP(m, L3, L2, L1));
     }
     else if (std::string(argv[1]) == "HEG"){
         m          = 1;             //Electron mass [MeV?]
@@ -128,7 +128,7 @@ int main(int argc, char** argv)
         L3         = 4.*pi*Nh*r1/3.;
         L2         = pow(L3, 2./3.);
         L1         = pow(L3, 1./3.);
-        master->setSystem(new HEG(master, m, L3, L2, L1));
+        master->setSystem(new HEG(m, L3, L2, L1));
     }
     else if (std::string(argv[1]) == "MP"){
         m   = 939.565;              //Neutron mass [MeV]
@@ -136,7 +136,7 @@ int main(int argc, char** argv)
         L3  = double(Nh)/rho;
         L2  = pow(L3, 2./3.);
         L1  = pow(L3, 1./3.);
-        master->setSystem(new MP(master, m, L3, L2, L1));
+        master->setSystem(new MP(m, L3, L2, L1));
     }
     else{
         std::cout << "Failure: You need to submit a model, e.g. HEG or MP" << std::endl;

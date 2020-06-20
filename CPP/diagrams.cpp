@@ -1272,7 +1272,7 @@ void Diagrams::makeT5cIndexMat(){
     }
 }
 
-Diagrams::MatrixX Diagrams::contructMatT5b(int index){
+MatrixX Diagrams::contructMatT5b(int index){
     int rows = m_ampClass->T3_T5b_indices[index].rows();
     int cols = m_ampClass->T3_T5b_indices[index].cols();
     MatrixX returnMat;
@@ -1287,7 +1287,7 @@ Diagrams::MatrixX Diagrams::contructMatT5b(int index){
     return returnMat;
 }
 
-Diagrams::MatrixX Diagrams::contructMatT5c(int index){
+MatrixX Diagrams::contructMatT5c(int index){
     int rows = m_ampClass->T3_T5c_indices[index].rows();
     int cols = m_ampClass->T3_T5c_indices[index].cols();
     MatrixX returnMat;

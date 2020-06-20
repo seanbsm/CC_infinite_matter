@@ -82,8 +82,6 @@ public:
     MatrixX                 make3x3Block_I(int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<variable_type>& T_vec);
     MatrixX                 make3x3Block_I_D10c(int ku, int i1, int i2, int i3, int i4, int i5, int i6, std::vector<variable_type>& T_vec);
 
-
-
     //CCD terms
     MatrixX                 I1_makemat_1(int channel1, int channel2);
     MatrixX                 I1_makemat_2(int channel1, int channel2);

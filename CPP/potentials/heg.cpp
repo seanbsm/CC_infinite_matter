@@ -2,18 +2,27 @@
 
 using namespace std;
 
-HEG::HEG(Master* master, double m, double L3, double L2, double L1) : System(master) /* Homogenous Electron Gas */
+HEG::HEG(double m, double L3, double L2, double L1) : System() /* Homogenous Electron Gas */
 {
-    m_Nh = master->m_Nh;
-    m_Nb = master->m_Nb;
     m_dk = 2*m_Nb + 1;
-    m_master = master;
 
     m_m  = m;
     m_L3 = L3;
     m_L2 = L2;
     m_L1 = L1;
     makeStateSpace();
+}
+
+void HEG::set_Nh(int Nh){
+	m_Nh = Nh;
+}
+
+void HEG::set_Nb(int Nb){
+	m_Nb = Nb;
+}
+
+void HEG::retrieve_Ns(int &Ns){
+	Ns = m_Ns;
 }
 
 void HEG::makeStateSpace(){
@@ -33,7 +42,6 @@ void HEG::makeStateSpace(){
         }
     }
 
-    m_master->m_Ns = m_states.cols();
     below_fermi = Eigen::VectorXi::LinSpaced(m_Nh,0,m_Nh);
     above_fermi = Eigen::VectorXi::LinSpaced(m_Ns,m_Nh,m_Ns);
 }
@@ -98,7 +106,7 @@ int HEG::kUnique5(int k, int p, int q, int s, int t, int s1, int s2, int s3, int
     return kuni;
 }
 
-System::variable_type HEG::f(int p){
+variable_type HEG::f(int p){
     variable_type returnVal = h0(p);
     for (int i=0; i<m_Nh; i++){
         returnVal += assym_single(p, i);
@@ -106,12 +114,12 @@ System::variable_type HEG::f(int p){
     return returnVal;
 }
 
-System::variable_type HEG::h0(int p){
+variable_type HEG::h0(int p){
     double energy = m_states(0,p);
     return energy*2*pi*pi/(m_m*m_L2);
 }
 
-System::variable_type HEG::assym(int p, int q, int r, int s){
+variable_type HEG::assym(int p, int q, int r, int s){
 
     Eigen::Vector3i kp( m_states(1,p), m_states(2,p), m_states(3,p) );
     Eigen::Vector3i kq( m_states(1,q), m_states(2,q), m_states(3,q) );
@@ -139,7 +147,7 @@ System::variable_type HEG::assym(int p, int q, int r, int s){
 }
 
 //can test this func by copying assym, and set int r = p, int s = q
-System::variable_type HEG::assym_single(int p, int q){
+variable_type HEG::assym_single(int p, int q){
 
     Eigen::Vector3i kp( m_states(1,p), m_states(2,p), m_states(3,p) );
     Eigen::Vector3i kq( m_states(1,q), m_states(2,q), m_states(3,q) );

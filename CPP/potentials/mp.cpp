@@ -2,12 +2,9 @@
 
 using namespace std;
 
-MP::MP(Master* master, double m, double L3, double L2, double L1) : System(master) /* Minnesota Potential */
+MP::MP(double m, double L3, double L2, double L1) : System() /* Minnesota Potential */
 {
-    m_Nh = master->m_Nh;
-    m_Nb = master->m_Nb;
     m_dk = 2*m_Nb + 1;
-    m_master = master;
 
     m_m  = m;
     m_L3 = L3;
@@ -18,6 +15,18 @@ MP::MP(Master* master, double m, double L3, double L2, double L1) : System(maste
     V_0T_fac = -V_0T*pow(pi/kappa_T, 1.5)/m_L3;
     piOverL  = pi/m_L1;
     makeStateSpace();
+}
+
+void MP::set_Nh(int Nh){
+	m_Nh = Nh;
+}
+
+void MP::set_Nb(int Nb){
+	m_Nb = Nb;
+}
+
+void MP::retrieve_Ns(int &Ns){
+	Ns = m_Ns;
 }
 
 void MP::makeStateSpace(){
@@ -37,7 +46,6 @@ void MP::makeStateSpace(){
         }//end of nx-loop
     }//end of n2-loop
 
-    m_master->m_Ns = m_states.cols();
     below_fermi = Eigen::VectorXi::LinSpaced(m_Nh,0,m_Nh);
     above_fermi = Eigen::VectorXi::LinSpaced(m_Ns,m_Nh,m_Ns);
 }
@@ -168,7 +176,7 @@ int MP::kUnique5(int k, int p, int q, int s, int t, int s1, int s2, int s3, int 
     return kuni;
 }*/
 
-System::variable_type MP::f(int p){
+variable_type MP::f(int p){
     variable_type returnVal = h0(p);
     for (int i=0; i<m_Nh; i++){
         returnVal += assym_single(p, i);
@@ -176,7 +184,7 @@ System::variable_type MP::f(int p){
     return returnVal;
 }
 
-System::variable_type MP::h0(int p){
+variable_type MP::h0(int p){
     double energy = m_states(0,p);
     return energy*2*pi*pi*m_hbarc*m_hbarc/(m_m*m_L2);
 }
@@ -303,7 +311,7 @@ int MP::spinExchangeTerm(const int &i, const int &j, const int &k, const int &l)
 }
 //TEST FUNCTIONS END
 
-System::variable_type MP::assym(int p, int q, int r, int s){
+variable_type MP::assym(int p, int q, int r, int s){
     Eigen::Vector3i kp( m_states(1,p), m_states(2,p), m_states(3,p) );
     Eigen::Vector3i kq( m_states(1,q), m_states(2,q), m_states(3,q) );
     Eigen::Vector3i kr( m_states(1,r), m_states(2,r), m_states(3,r) );
@@ -363,7 +371,7 @@ System::variable_type MP::assym(int p, int q, int r, int s){
     //return assym_test(p,q,r,s);
 }
 
-System::variable_type MP::assym_single(int p, int q){
+variable_type MP::assym_single(int p, int q){
     return assym(p,q,p,q);
 }
 

@@ -24,6 +24,9 @@ void Master::setThreads(){
 
 void Master::setSystem(class System* system){
     m_system = system;
+    m_system->set_Nh(m_Nh);
+    m_system->set_Nh(m_Nb);
+    m_system->retrieve_Ns(m_Ns);
 }
 
 void Master::setTriples(bool argument){
@@ -175,7 +178,7 @@ double Master::CC_master(double eps, double conFac){
     return ECC;
 }
 
-Master::variable_type Master::Iterator(double eps, double conFac, variable_type E_MBPT2){
+variable_type Master::Iterator(double eps, double conFac, variable_type E_MBPT2){
     int counter = 0;
     variable_type ECCD_old = E_MBPT2;
     variable_type ECCD     = 0;
