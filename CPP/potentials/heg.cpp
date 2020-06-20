@@ -4,13 +4,10 @@ using namespace std;
 
 HEG::HEG(double m, double L3, double L2, double L1) : System() /* Homogenous Electron Gas */
 {
-    m_dk = 2*m_Nb + 1;
-
     m_m  = m;
     m_L3 = L3;
     m_L2 = L2;
     m_L1 = L1;
-    makeStateSpace();
 }
 
 void HEG::set_Nh(int Nh){
@@ -19,10 +16,11 @@ void HEG::set_Nh(int Nh){
 
 void HEG::set_Nb(int Nb){
 	m_Nb = Nb;
+	m_dk = 2*m_Nb + 1;
 }
 
-void HEG::retrieve_Ns(int &Ns){
-	Ns = m_Ns;
+void HEG::retrieve_Ns(int *Ns){
+	*Ns = m_Ns;
 }
 
 void HEG::makeStateSpace(){
@@ -41,7 +39,8 @@ void HEG::makeStateSpace(){
             }
         }
     }
-
+	
+	m_Ns = m_states.cols();
     below_fermi = Eigen::VectorXi::LinSpaced(m_Nh,0,m_Nh);
     above_fermi = Eigen::VectorXi::LinSpaced(m_Ns,m_Nh,m_Ns);
 }

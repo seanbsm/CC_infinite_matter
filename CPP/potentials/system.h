@@ -25,7 +25,7 @@ class System
 		virtual void makeStateSpace() 	  = 0;
 		virtual void set_Nh(int Nh)	      = 0;
 		virtual void set_Nb(int Nb)	      = 0;
-		virtual void retrieve_Ns(int &Ns) = 0;
+		virtual void retrieve_Ns(int *Ns) = 0;
 		virtual variable_type  assym        (int p, int q, int r, int s) = 0;
 		virtual variable_type  assym_single (int p, int q)               = 0;
 		virtual variable_type  h0           (int p)                      = 0;

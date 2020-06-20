@@ -4,8 +4,6 @@ using namespace std;
 
 MP::MP(double m, double L3, double L2, double L1) : System() /* Minnesota Potential */
 {
-    m_dk = 2*m_Nb + 1;
-
     m_m  = m;
     m_L3 = L3;
     m_L2 = L2;
@@ -14,7 +12,6 @@ MP::MP(double m, double L3, double L2, double L1) : System() /* Minnesota Potent
     V_0S_fac = -V_0S*pow(pi/kappa_S, 1.5)/m_L3; //the minus signs come from morten's code
     V_0T_fac = -V_0T*pow(pi/kappa_T, 1.5)/m_L3;
     piOverL  = pi/m_L1;
-    makeStateSpace();
 }
 
 void MP::set_Nh(int Nh){
@@ -23,10 +20,11 @@ void MP::set_Nh(int Nh){
 
 void MP::set_Nb(int Nb){
 	m_Nb = Nb;
+	m_dk = 2*m_Nb + 1;
 }
 
-void MP::retrieve_Ns(int &Ns){
-	Ns = m_Ns;
+void MP::retrieve_Ns(int *Ns){
+	*Ns = m_Ns;
 }
 
 void MP::makeStateSpace(){
@@ -46,6 +44,7 @@ void MP::makeStateSpace(){
         }//end of nx-loop
     }//end of n2-loop
 
+	m_Ns = m_states.cols();
     below_fermi = Eigen::VectorXi::LinSpaced(m_Nh,0,m_Nh);
     above_fermi = Eigen::VectorXi::LinSpaced(m_Ns,m_Nh,m_Ns);
 }

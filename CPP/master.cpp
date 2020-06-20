@@ -25,8 +25,9 @@ void Master::setThreads(){
 void Master::setSystem(class System* system){
     m_system = system;
     m_system->set_Nh(m_Nh);
-    m_system->set_Nh(m_Nb);
-    m_system->retrieve_Ns(m_Ns);
+    m_system->set_Nb(m_Nb);
+    m_system->makeStateSpace();
+    m_system->retrieve_Ns(&m_Ns);
 }
 
 void Master::setTriples(bool argument){

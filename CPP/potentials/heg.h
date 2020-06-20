@@ -36,7 +36,7 @@ class HEG : public System
 		void makeStateSpace();
 		void set_Nh(int Nh);
 		void set_Nb(int Nb);
-		void retrieve_Ns(int &Ns);
+		void retrieve_Ns(int *Ns);
 		variable_type  assym           (int p, int q, int r, int s);
 		variable_type  assym_single    (int p, int q);
 		variable_type  h0              (int p);
