@@ -25,13 +25,21 @@ typedef std::chrono::high_resolution_clock Clock;   //needed for timing
 
 using namespace std;
 
-//argv will accept: System (string), Nh (int), Nb (int), rs/rho (double), precision (double), degree of triples (CCD, CCDT-1, CCDT-2, etc), #threads
+/*argv will accept:
+    1) System (string)
+    2) Nh (int)
+    3) Nb (int)
+    4) rs/rho (double)
+    5) precision (double)
+    6) degree of triples (CCD, CCDT-1, CCDT-2, etc)
+    7) #threads */
+
 int main(int argc, char** argv)
 {
     Eigen::initParallel();
 
     double       eps     = 1e-16;              //remember to adjust setprecision in master when changing this
-    double       conFac  = 1;                          //convergence factor
+    double       conFac  = 1;                  //convergence factor
     const double pi      = M_PI;
 
 
